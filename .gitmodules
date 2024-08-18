@@ -1,0 +1,24 @@
+[submodule "cc/thirdparty/benchmark"]
+	path = cc/thirdparty/benchmark
+	url = git@github.com:google/benchmark.git
+[submodule "cc/thirdparty/glog"]
+	path = cc/thirdparty/glog
+	url = git@github.com:google/glog.git
+[submodule "cc/thirdparty/googletest"]
+	path = cc/thirdparty/googletest
+	url = git@github.com:google/googletest.git
+[submodule "cc/thirdparty/gperftools"]
+	path = cc/thirdparty/gperftools
+	url = git@github.com:stdpain/gperftools.git
+[submodule "cc/thirdparty/robin-hood-hashing"]
+	path = cc/thirdparty/robin-hood-hashing
+	url = git@github.com:martinus/robin-hood-hashing.git
+[submodule "cc/thirdparty/abseil-cpp"]
+	path = cc/thirdparty/abseil-cpp
+	url = git@github.com:abseil/abseil-cpp.git
+[submodule "c/minilisp"]
+	path = c/minilisp
+	url = git@github.com:rui314/minilisp.git
+[submodule "c/chibicc"]
+	path = c/chibicc
+	url = git@github.com:rui314/chibicc.git
