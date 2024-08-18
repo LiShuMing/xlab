@@ -33,7 +33,7 @@ TEST_F(AbseilTest, assertion) {
     auto iter = map1.find(1);
     ASSERT_TRUE(iter != map1.end());
     std::cout << "result: " << iter->second;
-    ASSERT_TRUE(iter->second, "a");
+    ASSERT_EQ(iter->second, "a");
 }
 
 } // namespace test
