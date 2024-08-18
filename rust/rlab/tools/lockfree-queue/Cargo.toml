@@ -1,0 +1,27 @@
+[package]
+name = "lockfree-queue"
+version = "0.1.0"
+edition = "2024"
+description = "Lock-free queue implementations for learning concurrency and atomic operations"
+
+[dependencies]
+crossbeam-utils = "0.8"
+
+[dev-dependencies]
+criterion = "0.5"
+
+[[bench]]
+name = "queue_bench"
+harness = false
+
+[[example]]
+name = "mpmc_demo"
+path = "examples/mpmc_demo.rs"
+
+[[example]]
+name = "mpsc_demo"
+path = "examples/mpsc_demo.rs"
+
+[[example]]
+name = "compare"
+path = "examples/compare.rs"

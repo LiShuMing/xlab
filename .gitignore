@@ -1,0 +1,115 @@
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+*~
+.clion.source.upload.marker
+.gdb_history
+
+# Tags and local tool state
+tags
+tags.*
+.codex/
+
+# Logs and local secrets
+logs/
+log/
+*.log
+.env
+.env.*
+!.env.example
+.secrect_key
+master.log
+shell/bin/bash-history-export-*.txt
+
+# C/C++ build artifacts
+*.d
+*.slo
+*.lo
+*.o
+*.obj
+*.gch
+*.pch
+*.so
+*.so.*
+*.dylib
+*.dll
+*.mod
+*.smod
+*.lai
+*.la
+*.a
+*.lib
+*.exe
+*.out
+*.app
+*.dSYM/
+*.su
+a.out
+speed_avx512bw_g++
+verify_avx512bw_g++
+
+# CMake and test outputs
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+Testing/
+compile_commands.json
+_deps/
+cmake-build-*/
+build/
+build_*/
+build_Release/
+target/
+
+# Profiling and coverage
+*.gcda
+*.gcno
+*.profraw
+*.profdata
+.coverage
+htmlcov/
+
+# Python
+*.py[cod]
+*$py.class
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+.venv/
+venv/
+env/
+ENV/
+*.egg-info/
+.ipynb_checkpoints/
+
+# Node/frontend
+node_modules/
+dist/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local/generated data
+spark-warehouse/
+rust/rdb/data/
+python/projects/py-radar/data/sync/
+python/projects/py-radar/data/items.duckdb
+*.duckdb
+cc/cclab/bplusplus.out.boot
+vocab.bpe
+gpt2-124M.ckpt
+
+# Third-party source trees are tracked as submodules when needed.
+# Keep these commented so accidental local checkouts still show up in status.
+# cc/thirdparty/
+# python/thirdparty/
+# rust/thirdparty/

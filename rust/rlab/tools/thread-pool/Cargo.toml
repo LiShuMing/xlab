@@ -1,0 +1,24 @@
+[package]
+name = "thread-pool"
+version = "0.1.0"
+edition = "2024"
+description = "A simple thread pool implementation for learning purposes"
+
+[dependencies]
+crossbeam = "0.8"
+num_cpus = "1.16"
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
+
+[[bench]]
+name = "thread_pool_bench"
+harness = false
+
+[[example]]
+name = "basic"
+path = "examples/basic.rs"
+
+[[example]]
+name = "performance"
+path = "examples/performance.rs"

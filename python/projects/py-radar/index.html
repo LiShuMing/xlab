@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DB News - Database & OLAP News Aggregator</title>
+    <style>
+        :root {
+            --hn-orange: #ff6600;
+            --hn-orange-dark: #cc5200;
+            --bg-color: #f6f6ef;
+            --text-color: #828282;
+            --link-color: #000000;
+            --visited-color: #828282;
+            --border-color: #e0e0e0;
+            --highlight-bg: #fff7e6;
+            --summary-bg: #f0f4f8;
+            --summary-border: #4a9eff;
+            --code-font: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+            --body-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--body-font);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--hn-orange);
+            padding: 2px 8px;
+            border-bottom: 1px solid var(--hn-orange-dark);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 4px 0;
+        }
+
+        .logo {
+            font-family: var(--code-font);
+            font-size: 18px;
+            font-weight: 700;
+            color: #000;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .logo span {
+            color: #fff;
+        }
+
+        .tagline {
+            font-size: 12px;
+            color: #000;
+            opacity: 0.8;
+            font-family: var(--code-font);
+        }
+
+        nav {
+            margin-left: auto;
+            display: flex;
+            gap: 12px;
+        }
+
+        nav a {
+            color: #000;
+            text-decoration: none;
+            font-size: 13px;
+            font-family: var(--code-font);
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        nav a:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+
+        /* Main Content */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 8px;
+        }
+
+        .news-list {
+            list-style: none;
+        }
+
+        .news-item {
+            display: flex;
+            gap: 8px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.2s;
+        }
+
+        .news-item:hover {
+            background-color: var(--highlight-bg);
+        }
+
+        .rank {
+            font-family: var(--code-font);
+            font-size: 13px;
+            color: var(--text-color);
+            min-width: 30px;
+            text-align: right;
+            padding-top: 2px;
+        }
+
+        .arrow {
+            color: var(--hn-orange);
+            font-size: 10px;
+            padding-top: 4px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .arrow:hover {
+            transform: scale(1.2);
+        }
+
+        .content {
+            flex: 1;
+        }
+
+        .title {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .title a {
+            color: var(--link-color);
+            text-decoration: none;
+        }
+
+        .title a:hover {
+            text-decoration: underline;
+        }
+
+        .title a:visited {
+            color: var(--visited-color);
+        }
+
+        .site {
+            font-size: 11px;
+            color: var(--text-color);
+            font-family: var(--code-font);
+        }
+
+        .site a {
+            color: var(--text-color);
+            text-decoration: none;
+        }
+
+        .site a:hover {
+            text-decoration: underline;
+        }
+
+        .meta {
+            font-size: 11px;
+            color: var(--text-color);
+            margin-top: 4px;
+            font-family: var(--code-font);
+        }
+
+        .meta a {
+            color: var(--text-color);
+            text-decoration: none;
+        }
+
+        .meta a:hover {
+            text-decoration: underline;
+        }
+
+        /* AI Summary Button */
+        .ai-summary-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: linear-gradient(135deg, #ff6600 0%, #ff8533 100%);
+            color: #fff;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-family: var(--code-font);
+            cursor: pointer;
+            margin-left: 10px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(255, 102, 0, 0.2);
+        }
+
+        .ai-summary-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(255, 102, 0, 0.3);
+        }
+
+        .ai-summary-btn .sparkle {
+            font-size: 13px;
+        }
+
+        /* AI Summary Panel */
+        .ai-summary-panel {
+            display: none;
+            background: #fff;
+            border-left: 4px solid var(--hn-orange);
+            padding: 16px 20px;
+            margin: 10px 0 10px 42px;
+            border-radius: 0 6px 6px 0;
+            font-size: 14px;
+            line-height: 1.7;
+            color: #1a1a1a;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .ai-summary-panel.visible {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .ai-summary-panel .summary-content {
+            font-family: var(--body-font);
+            color: #2a2a2a;
+            font-weight: 400;
+        }
+
+        .ai-summary-panel .summary-content p {
+            margin: 0;
+            text-align: justify;
+        }
+
+        .ai-summary-panel .tags {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .ai-summary-panel .tag {
+            background: linear-gradient(135deg, rgba(255, 102, 0, 0.1) 0%, rgba(255, 133, 51, 0.1) 100%);
+            color: var(--hn-orange);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-family: var(--code-font);
+            font-weight: 600;
+            border: 1px solid rgba(255, 102, 0, 0.2);
+            font-size: 10px;
+            font-family: var(--code-font);
+        }
+
+        /* Footer */
+        .more-link {
+            display: block;
+            text-align: center;
+            padding: 20px;
+            color: var(--hn-orange);
+            text-decoration: none;
+            font-family: var(--code-font);
+            font-size: 13px;
+            border-top: 2px solid var(--hn-orange);
+            margin-top: 20px;
+            background: #fff;
+        }
+
+        .more-link:hover {
+            background: var(--highlight-bg);
+        }
+
+        /* Footer Branding */
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 11px;
+            color: var(--text-color);
+            font-family: var(--code-font);
+        }
+
+        .deerflow-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--hn-orange);
+            text-decoration: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            transition: background-color 0.2s;
+            font-size: 11px;
+        }
+
+        .deerflow-badge:hover {
+            background-color: rgba(255, 102, 0, 0.1);
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            nav {
+                width: 100%;
+                justify-content: center;
+                margin-top: 4px;
+            }
+
+            .ai-summary-panel {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="#" class="logo">◈ DB<span>News</span></a>
+            <span class="tagline">Database & OLAP Technical News</span>
+            <nav>
+                <a href="#">new</a>
+                <a href="#">past</a>
+                <a href="#">comments</a>
+                <a href="#">show</a>
+                <a href="#">jobs</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <ul class="news-list" id="news-list">
+            <!-- News items will be populated by JavaScript -->
+        </ul>
+        <a href="#" class="more-link">More</a>
+    </main>
+
+    <footer>
+        <a href="https://deerflow.tech" target="_blank" class="deerflow-badge">
+            ✦ Created By Deerflow
+        </a>
+    </footer>
+
+    <script>
+        // Simulated database news data (based on provided RSS sources)
+        const newsData = [
+            {
+                id: 1,
+                title: "Understanding LSM-Tree Compaction Strategies in Modern Databases",
+                url: "https://www.cs.cmu.edu/~pavlo/blog/2026/03/lsm-compaction-strategies.html",
+                site: "cmu.edu",
+                source: "Andy Pavlo",
+                points: 327,
+                user: "pavlo",
+                time: "2 hours ago",
+                comments: 89,
+                summary: "This comprehensive post explores different compaction strategies in LSM-tree based databases (RocksDB, Cassandra, LevelDB). The author compares leveled vs tiered compaction through extensive benchmarks. Key findings: (1) Leveled compaction reduces space amplification by 5-10x but increases write amplification to 10-20x; (2) Tiered compaction is better for write-heavy workloads but can have 50x space overhead; (3) Hybrid approaches like RocksDB's FIFO compaction offer middle ground. The post includes detailed perf graphs showing I/O patterns during compaction cycles.",
+                tags: ["LSM-Tree", "Storage Engine", "Performance", "RocksDB"]
+            },
+            {
+                id: 2,
+                title: "Building a Real-Time OLAP System on ClickHouse: Lessons from Production",
+                url: "https://www.tinybird.co/blog-posts/realtime-olap-clickhouse-production",
+                site: "tinybird.co",
+                source: "Tinybird Engineering",
+                points: 284,
+                user: "realtime_db",
+                time: "4 hours ago",
+                comments: 67,
+                summary: "A deep dive into production challenges when building real-time analytics on ClickHouse at scale (10B+ events/day). Covers: (1) Materialized views optimization - reduced storage by 60% using AggregatingMergeTree; (2) Partitioning strategies for time-series data - daily partitions with TTL policies; (3) Handling high-cardinality dimensions - using LowCardinality encoding for 10x compression; (4) Query optimization - projection-based pre-aggregation reduced p99 latency from 2s to 200ms. Includes actual EXPLAIN plans and cluster configuration.",
+                tags: ["OLAP", "ClickHouse", "Real-Time Analytics", "Time-Series"]
+            },
+            {
+                id: 3,
+                title: "PostgreSQL Query Planning: How the Optimizer Chooses Execution Plans",
+                url: "https://michaeljswart.com/2026/03/postgresql-query-planning-deep-dive/",
+                site: "michaeljswart.com",
+                source: "Michael J. Swart",
+                points: 412,
+                user: "sqlwhisperer",
+                time: "6 hours ago",
+                comments: 134,
+                summary: "Detailed explanation of PostgreSQL's cost-based optimizer internals. Topics covered: (1) Statistics collection - how ANALYZE builds histograms and most-common-values lists; (2) Selectivity estimation - calculating row counts for filters and joins; (3) Plan enumeration - exploring join order combinations with dynamic programming; (4) Cost model - sequential vs index scan costing, random_page_cost tuning. The author demonstrates reading EXPLAIN (ANALYZE, BUFFERS) output and identifies a case where outdated statistics caused a 100x slowdown. Includes pg_stats system table deep dive.",
+                tags: ["PostgreSQL", "Query Optimization", "SQL", "Query Planner"]
+            },
+            {
+                id: 4,
+                title: "The Hidden Costs of Distributed Transactions in CockroachDB",
+                url: "https://www.cockroachlabs.com/blog/distributed-transactions-latency-analysis/",
+                site: "cockroachlabs.com",
+                source: "Cockroach Labs",
+                points: 356,
+                user: "distributed_sys",
+                time: "8 hours ago",
+                comments: 112,
+                summary: "Performance analysis of two-phase commit (2PC) in CockroachDB across multi-region deployments. Key metrics: (1) Single-region txn latency: 5-10ms; (2) Cross-region (us-east to us-west): 80-120ms due to coordinator round-trips; (3) Contention hotspots cause 10x tail latency spikes. Solutions presented: (a) Colocating related data using zone configs reduces cross-node txns by 90%; (b) Using FOLLOWER_READS for stale reads eliminates coordinator latency; (c) Batch operations amortize 2PC overhead. Includes latency histograms and contention heatmaps from production.",
+                tags: ["Distributed Systems", "CockroachDB", "Transactions", "2PC"]
+            },
+            {
+                id: 5,
+                title: "Why I Built a Database From Scratch: A Journey into Storage Engines",
+                url: "https://notes.eatonphil.com/2026/03/15/building-database-storage-engine.html",
+                site: "eatonphil.com",
+                source: "Phil Eaton",
+                points: 567,
+                user: "eatonphil",
+                time: "10 hours ago",
+                comments: 178,
+                summary: "Part 3 of Phil's database implementation series covers storage engine design. Implementation details: (1) B+Tree node structure - 8KB pages with cell pointer array, supporting 500+ keys per node; (2) WAL design - sequential append-only log with LSN, checkpoint every 1000 txns; (3) Concurrency control - optimistic locking with MVCC using transaction timestamps; (4) Recovery - ARIES-style redo/undo with fuzzy checkpointing. Code snippets show page layout, lock table implementation, and crash recovery logic. Total: ~3000 lines of Rust for core storage engine.",
+                tags: ["Database Internals", "B-Tree", "Systems Programming", "Rust"]
+            },
+            {
+                id: 6,
+                title: "Optimizing MySQL for High Write Throughput: Beyond the Default Config",
+                url: "https://hackmysql.com/post/mysql-high-write-throughput-2026",
+                site: "hackmysql.com",
+                source: "Hack MySQL",
+                points: 289,
+                user: "mysqlperf",
+                time: "12 hours ago",
+                comments: 94,
+                summary: "Comprehensive tuning guide for write-heavy MySQL workloads (100K+ writes/sec). Key configurations: (1) innodb_buffer_pool_size = 70-80% of RAM for dedicated servers; (2) innodb_log_file_size = 1-2GB to reduce checkpoint frequency; (3) innodb_flush_method = O_DIRECT to avoid double buffering; (4) Disable doublewrite buffer on NVMe (risky without proper backups); (5) tune innodb_io_capacity based on disk IOPS. Benchmarks show 3x throughput improvement. Also covers partitioning for time-series data and write batching strategies.",
+                tags: ["MySQL", "Performance Tuning", "InnoDB", "Configuration"]
+            },
+            {
+                id: 7,
+                title: "Vitess at Scale: Managing 100,000+ Tables in Production",
+                url: "https://vitess.io/blog/2026-03-scaling-100k-tables/",
+                site: "vitess.io",
+                source: "Vitess Team",
+                points: 445,
+                user: "sharding_expert",
+                time: "14 hours ago",
+                comments: 156,
+                summary: "Case study from a fintech company running Vitess with 500+ shards and 100K+ tables. Architecture highlights: (1) Sharding strategy - 8192 shards using consistent hashing with virtual buckets; (2) VSchema design - using foreign keys for data locality, avoiding cross-shard joins; (3) Schema migrations - online DDL with pt-osc style approach, 0 downtime for 50M row tables; (4) Backup strategy - parallel backup from replicas with compression. Metrics: 2M QPS sustained, p99 latency < 50ms. Includes VSchema JSON examples and migration runbooks.",
+                tags: ["Vitess", "Sharding", "MySQL", "Scale"]
+            },
+            {
+                id: 8,
+                title: "Understanding Jepsen Test Results: What Makes a Database 'Safe'",
+                url: "https://aphyr.com/posts/401-interpreting-jepsen-results",
+                site: "aphyr.com",
+                source: "Kyle Kingsbury (Aphyr)",
+                points: 623,
+                user: "aphyr",
+                time: "16 hours ago",
+                comments: 201,
+                summary: "Kyle's guide to reading Jepsen test reports for distributed databases. Covers: (1) Consistency models - linearizability vs sequential consistency vs eventual; (2) Common anomalies - stale reads, lost writes, write reordering, phantom reads; (3) Test methodology - Knossos model checking, ELLE dependency analysis; (4) Interpreting results - what 'probably linearizable' means. Case studies: Redis Cluster's documented violations, CockroachDB's serializable isolation proof. Essential for evaluating database claims. Includes Knossos output examples and anomaly visualization.",
+                tags: ["Jepsen", "Distributed Systems", "Consistency", "Testing"]
+            },
+            {
+                id: 9,
+                title: "Supabase Realtime: Building Change Data Capture on PostgreSQL",
+                url: "https://supabase.com/blog/realtime-cdc-postgres-architecture",
+                site: "supabase.com",
+                source: "Supabase",
+                points: 534,
+                user: "realtime_cdc",
+                time: "18 hours ago",
+                comments: 167,
+                summary: "Technical architecture of Supabase Realtime (100K+ concurrent WebSocket connections). Implementation: (1) Logical replication via pgoutput plugin, capturing changes from replication slots; (2) Transformation layer - converting WAL tuples to JSON with row-level security filtering; (3) Broadcast - Redis pub/sub fan-out to edge nodes; (4) Client subscriptions - filtering by table, event type, custom predicates. Handles 50K changes/sec peak. Latency: <100ms end-to-end. Includes architecture diagrams and load test results.",
+                tags: ["PostgreSQL", "CDC", "Real-Time", "WebSockets"]
+            },
+            {
+                id: 10,
+                title: "Database Performance Benchmarking: Why Your Numbers Are Wrong",
+                url: "https://smalldatum.blogspot.com/2026/03/benchmarking-fallacies.html",
+                site: "smalldatum.blogspot.com",
+                source: "Mark Callaghan",
+                points: 234,
+                user: "dbperformance",
+                time: "22 hours ago",
+                comments: 81,
+                summary: "Mark Callaghan critiques common benchmarking practices in database performance testing. Highlights issues with synthetic workloads, warm-up periods, and statistical significance. Recommends using production-like data and measuring tail latencies (p99, p99.9). Key insight: average latency is meaningless without variance metrics. Includes analysis of YCSB limitations and proposals for better benchmark methodologies.",
+                tags: ["Benchmarking", "Performance", "Testing", "Methodology"]
+            },
+            {
+                id: 11,
+                title: "Aurora's Serverless v2: How Auto-Scaling Actually Works",
+                url: "https://aws.amazon.com/blogs/database/aurora-serverless-v2-internals/",
+                site: "aws.amazon.com",
+                source: "AWS Database Blog",
+                points: 189,
+                user: "cloud_dba",
+                time: "1 day ago",
+                comments: 62,
+                summary: "AWS engineers explain the internals of Aurora Serverless v2's sub-second scaling mechanism. Covers capacity units, storage-compute separation, and the new proxy layer that enables rapid failover. Pricing analysis shows cost benefits for variable workloads. Architecture details: (1) Decoupled storage layer with 6-way replication; (2) Compute nodes can scale 0.5-128 ACUs in 0.5 increments; (3) Warm pool maintains pre-initialized instances for instant scaling.",
+                tags: ["Aurora", "Serverless", "AWS", "Auto-Scaling"]
+            },
+            {
+                id: 12,
+                title: "Implementing Snapshot Isolation Without MVCC",
+                url: "https://transactional.blog/2026/03/snapshot-isolation-alternatives.html",
+                site: "transactional.blog",
+                source: "Alex Miller",
+                points: 276,
+                user: "txn_expert",
+                time: "1 day ago",
+                comments: 98,
+                summary: "Explores alternative approaches to snapshot isolation beyond traditional MVCC. Discusses timestamp-based systems, hybrid logical clocks, and the trade-offs in storage overhead vs. read performance. Includes implementation details from a custom database prototype. Key finding: timestamp ordering can reduce storage overhead by 40% compared to full MVCC, but requires careful clock synchronization in distributed settings.",
+                tags: ["Transactions", "Isolation Levels", "Database Theory", "MVCC"]
+            },
+            {
+                id: 13,
+                title: "ParadeDB: Bringing Elasticsearch-Style Search to PostgreSQL",
+                url: "https://paradedb.com/blog/pgroonga-tantivy-benchmark/",
+                site: "paradedb.com",
+                source: "ParadeDB",
+                points: 421,
+                user: "pg_search",
+                time: "1 day ago",
+                comments: 137,
+                summary: "Introduction to ParadeDB, a PostgreSQL extension that integrates pgroonga and Tantivy for full-text search. Benchmarks show 10x improvement over standard PostgreSQL text search for large datasets. Discusses index types and query optimization strategies. Architecture: (1) Parallel index building using PostgreSQL parallel query framework; (2) Real-time index updates via logical replication; (3) Query planner integration for cost-based index selection.",
+                tags: ["PostgreSQL", "Full-Text Search", "Extensions", "Elasticsearch"]
+            },
+            {
+                id: 14,
+                title: "The Physics of Database Recovery: WAL, Checkpoints, and ARIES",
+                url: "https://databasearchitects.blogspot.com/2026/03/aries-recovery-explained.html",
+                site: "databasearchitects.blogspot.com",
+                source: "Database Architects",
+                points: 167,
+                user: "db_architect",
+                time: "1 day ago",
+                comments: 45,
+                summary: "Deep technical explanation of crash recovery algorithms in modern databases. Covers write-ahead logging fundamentals, checkpoint optimization, and the ARIES recovery algorithm step-by-step. Essential reading for understanding database durability guarantees. Includes: (1) WAL record format and LSN tracking; (2) Fuzzy checkpointing vs sharp checkpoints; (3) Analysis, Redo, Undo phases with concrete examples; (4) Optimizations like log group commit.",
+                tags: ["WAL", "Recovery", "ARIES", "Durability"]
+            },
+            {
+                id: 15,
+                title: "Lessons from Running Oracle at Extreme Scale",
+                url: "https://code.openark.org/blog/oracle-petabyte-scale-lessons/",
+                site: "code.openark.org",
+                source: "Shlomi Noach",
+                points: 198,
+                user: "oracle_dba",
+                time: "2 days ago",
+                comments: 76,
+                summary: "Shlomi Noach shares war stories from managing Oracle databases with petabytes of data. Topics include partitioning strategies, parallel query tuning, and handling RAC interconnect bottlenecks. Practical advice on monitoring and capacity planning. Key lessons: (1) Interval partitioning for time-series reduces maintenance overhead; (2) In-memory column store accelerates analytics 50x; (3) RAC cache fusion becomes bottleneck beyond 8 nodes.",
+                tags: ["Oracle", "Scale", "DBA", "RAC"]
+            },
+            {
+                id: 16,
+                title: "CedarDB's Approach to HTAP Workloads",
+                url: "https://cedardb.com/blog/htap-architecture-deep-dive/",
+                site: "cedardb.com",
+                source: "CedarDB",
+                points: 143,
+                user: "htap_fan",
+                time: "2 days ago",
+                comments: 38,
+                summary: "Technical overview of CedarDB's hybrid transactional/analytical processing architecture. Explains how they maintain separate row and column stores with synchronous replication. Benchmarks show simultaneous OLTP and OLAP workloads with minimal interference. Implementation details: (1) Row store optimized for point queries and updates; (2) Column store with vectorized execution for analytics; (3) Change data propagation via in-memory queue with <10ms lag.",
+                tags: ["HTAP", "OLAP", "Architecture", "Column Store"]
+            },
+            {
+                id: 17,
+                title: "Convex's Reactive Database: Rethinking Backend Architecture",
+                url: "https://stack.convex.dev/reactive-database-design",
+                site: "stack.convex.dev",
+                source: "Convex",
+                points: 356,
+                user: "reactive_db",
+                time: "2 days ago",
+                comments: 112,
+                summary: "Introduces Convex's reactive database model where queries automatically re-run when data changes. Discusses the underlying subscription mechanism, consistency guarantees, and how this simplifies frontend-backend synchronization. Comparison with traditional REST/GraphQL approaches. Architecture: (1) Deterministic functions with automatic caching; (2) Real-time subscription graph with incremental updates; (3) ACID transactions with optimistic concurrency control.",
+                tags: ["Reactive", "Database", "Architecture", "Real-Time"]
+            },
+            {
+                id: 18,
+                title: "PlanetScale's Branching Model: Git for Databases",
+                url: "https://planetscale.com/blog/database-branching-workflows",
+                site: "planetscale.com",
+                source: "PlanetScale",
+                points: 289,
+                user: "db_devops",
+                time: "2 days ago",
+                comments: 87,
+                summary: "Explains PlanetScale's database branching feature built on Vitess. Covers schema change workflows, non-blocking deploys, and data diff between branches. Demonstrates how this enables CI/CD practices for database development similar to code version control. Features: (1) Instant branching via copy-on-write; (2) Schema comparison and migration preview; (3) Deploy queues with automatic rollback on failure.",
+                tags: ["PlanetScale", "DevOps", "Schema Management", "Vitess"]
+            },
+            {
+                id: 19,
+                title: "Distributed Consensus Protocols: Raft vs Paxos in Practice",
+                url: "https://muratbuffalo.blogspot.com/2026/03/raft-paxos-comparison.html",
+                site: "muratbuffalo.blogspot.com",
+                source: "Murat Demirbas",
+                points: 224,
+                user: "consensus_nerd",
+                time: "3 days ago",
+                comments: 69,
+                summary: "Comparative analysis of Raft and Paxos consensus algorithms from a practitioner's perspective. Discusses implementation complexity, performance characteristics, and failure scenarios. Includes lessons from deploying consensus-based systems in production. Key insights: (1) Raft's leader election is simpler to implement but can have availability issues during network partitions; (2) Multi-Paxos optimizations reduce message overhead by 50%; (3) Etcd and Consul use Raft, while Spanner uses Paxos variants.",
+                tags: ["Consensus", "Raft", "Paxos", "Distributed Systems"]
+            },
+            {
+                id: 20,
+                title: "Franck Pachot: Oracle Execution Plans Deep Dive",
+                url: "https://dev.to/franckpachot/oracle-execution-plans-2026",
+                site: "dev.to",
+                source: "Franck Pachot",
+                points: 176,
+                user: "oracle_tuner",
+                time: "3 days ago",
+                comments: 52,
+                summary: "Detailed walkthrough of Oracle execution plan interpretation, covering access paths, join methods, and optimizer transformations. Shows how to identify performance issues from plan statistics and use hints effectively without breaking future optimizer improvements. Topics: (1) Nested loops vs hash joins vs sort-merge joins; (2) Index range scan vs full table scan costing; (3) Adaptive query execution in 19c+; (4) SQL Plan Management best practices.",
+                tags: ["Oracle", "Query Tuning", "Execution Plans", "SQL"]
+            }
+        ];
+
+        // AI Summaries (simulated - would be generated by LLM in production)
+        const aiSummaries = {};
+
+        // Render news items
+        function renderNews() {
+            const newsList = document.getElementById('news-list');
+            if (!newsList) return;
+
+            newsList.innerHTML = newsData.map((item, index) => `
+                <li class="news-item">
+                    <span class="rank">${index + 1}</span>
+                    <span class="arrow" onclick="toggleSummary(${item.id})">▶</span>
+                    <div class="content">
+                        <div class="title">
+                            <a href="${item.url}" target="_blank" rel="noopener">${item.title}</a>
+                            <a href="#" class="ai-summary-btn" onclick="event.preventDefault(); toggleSummary(${item.id})">
+                                <span class="sparkle">✦</span>
+                                <span>AI Summary</span>
+                            </a>
+                        </div>
+                        <div class="site">
+                            <a href="${item.url}" target="_blank" rel="noopener">(${item.site})</a>
+                        </div>
+                        <div class="meta">
+                            <span>${item.points} points</span>
+                            <span> by </span>
+                            <a href="#">${item.user}</a>
+                            <span> ${item.time} </span>
+                            <span> | </span>
+                            <a href="#">${item.comments} comments</a>
+                        </div>
+                        <div class="ai-summary-panel" id="summary-${item.id}">
+                            <div class="label">
+                                <span>✦</span>
+                                <span>AI-Generated Summary</span>
+                            </div>
+                            <div class="summary-content">
+                                <p>${item.summary}</p>
+                            </div>
+                            <div class="tags">
+                                ${item.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            `).join('');
+        }
+
+        // Toggle AI summary panel
+        function toggleSummary(id) {
+            const panel = document.getElementById(`summary-${id}`);
+            if (!panel) return;
+
+            const isVisible = panel.classList.contains('visible');
+            
+            // Close all other panels
+            document.querySelectorAll('.ai-summary-panel').forEach(p => {
+                p.classList.remove('visible');
+            });
+
+            // Toggle current panel
+            if (!isVisible) {
+                panel.classList.add('visible');
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', renderNews);
+    </script>
+</body>
+</html>

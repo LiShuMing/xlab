@@ -1,0 +1,39 @@
+engine_id: columbia
+display_name: "Columbia"
+version: "academic"
+language: cpp
+optimizer_framework: columbia
+optimizer_root: "./src"
+
+patterns:
+  rbo_rules:
+    glob: "**/rules/*.{cpp,h}"
+    class_pattern: "class \\w+Rule\\s*:\\s*public Rule"
+    key_methods: ["fire", "top_match", "next_substitute"]
+  cbo_rules:
+    glob: "**/rules/impl_*.{cpp,h}"
+    class_pattern: "class Impl_\\w+Rule"
+    key_methods: ["fire"]
+  scalar_rules:
+    glob: "*.{cpp,h}"
+    func_pattern: ""
+  post_opt:
+    glob: "**/opt/*.cpp"
+    func_pattern: ""
+  properties:
+    glob: "**/physprop/*.{cpp,h}"
+    class_pattern: "class PhysProp"
+    key_methods: ["Dominated", "operator=="]
+  statistics:
+    glob: "**/cat/*.cpp"
+    entry_points: ["SCHEMA", "FDSET", "PHYS_PROP"]
+
+lifecycle_entry:
+  optimizer_class: "Optimizer"
+  entry_method: "optimize"
+  plan_root_class: "LOG_OP"
+
+scanner_hints:
+  skip_generated_files: false
+  prefer_dsl_over_generated: false
+  max_tokens_per_snippet: 2000

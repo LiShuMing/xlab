@@ -1,0 +1,46 @@
+# Prompt Registry for DB Radar
+# Version tracking for all LLM prompts
+
+version: "1.0.0"
+prompts:
+  summarize:
+    current_version: "v1"
+    versions:
+      v1:
+        file: "summarize_v1.txt"
+        description: "Main summarization prompt for daily radar reports"
+        created_at: "2026-03-29"
+        variables:
+          - item_count
+          - item_data
+          - current_date
+
+  translate_main:
+    current_version: "v1"
+    versions:
+      v1:
+        file: "translate_main_v1.txt"
+        description: "Main translation prompt for executive summary, themes, and action items"
+        created_at: "2026-03-29"
+        variables:
+          - input_json
+
+  translate_update:
+    current_version: "v1"
+    versions:
+      v1:
+        file: "translate_update_v1.txt"
+        description: "Translation prompt for individual top_update items"
+        created_at: "2026-03-29"
+        variables:
+          - input_json
+
+  translate_release:
+    current_version: "v1"
+    versions:
+      v1:
+        file: "translate_release_v1.txt"
+        description: "Translation prompt for release note items"
+        created_at: "2026-03-29"
+        variables:
+          - input_json

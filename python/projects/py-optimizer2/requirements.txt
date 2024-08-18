@@ -1,0 +1,7 @@
+pyyaml>=6.0
+javalang>=0.13.0
+anthropic>=0.21.0
+pydantic>=2.5.0
+rich>=13.7.0
+click>=8.1.0
+typing-extensions>=4.9.0

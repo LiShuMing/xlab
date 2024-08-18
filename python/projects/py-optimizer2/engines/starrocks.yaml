@@ -1,0 +1,45 @@
+engine_id: starrocks
+display_name: "StarRocks"
+version: "3.x"
+language: java
+optimizer_framework: cascades
+optimizer_root: "./fe/fe-core/src/main/java/com/starrocks/sql/optimizer"
+
+patterns:
+  rbo_rules:
+    glob: "**/rule/transformation/*.java"
+    class_pattern: 'class \w+Rule\s+extends\s+(TransformationRule|Rule)'
+    key_methods: ["transform", "check", "buildPattern"]
+  cbo_rules:
+    glob: "**/rule/implementation/*.java"
+    class_pattern: 'class \w+Rule\s+extends\s+(ImplementationRule|Rule)'
+    key_methods: ["transform", "check"]
+  scalar_rules:
+    glob: "**/rewrite/scalar/*.java"
+    class_pattern: 'class \w+\s+extends\s+BaseScalarOperatorRewriteRule'
+    key_methods: ["apply", "check"]
+  post_opt:
+    glob: "**/task/*.java"
+    class_pattern: 'class \w+Task'
+    key_methods: ["execute"]
+  properties:
+    glob: "**/base/*.java"
+    class_pattern: 'class (DistributionSpec|PhysicalPropertySet|SortProperty)'
+    key_methods: ["isSatisfied", "appendEnforcers"]
+  statistics:
+    glob: "**/statistics/**/*.java"
+    entry_points: ["StatisticsCalculator", "StatisticsProvider", "Histogram"]
+
+lifecycle_entry:
+  optimizer_class: "Optimizer"
+  entry_method: "optimize"
+  plan_root_class: "OptExpression"
+
+rule_registry:
+  file: "rule/RuleType.java"
+  enum_name: "RuleType"
+
+scanner_hints:
+  java_ast_parser: true
+  skip_generated_files: false
+  max_tokens_per_snippet: 2000

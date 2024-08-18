@@ -1,0 +1,1 @@
+sysbench --db-driver=mysql --time=300 --threads=1 --report-interval=30 --mysql-host= --mysql-port=9032 --mysql-user=root --mysql-password= --mysql-db=db1 temp.lua run

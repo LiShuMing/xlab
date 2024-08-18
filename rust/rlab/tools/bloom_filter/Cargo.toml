@@ -1,0 +1,34 @@
+[package]
+name = "bloom_filter"
+version = "0.1.0"
+edition = "2021"
+authors = ["Your Name <you@example.com>"]
+description = "Bloom Filter implementations: Classic, Split Block, and XOR Filter"
+license = "MIT OR Apache-2.0"
+
+[[bin]]
+name = "bloom_filter"
+path = "src/main.rs"
+
+[dependencies]
+rlab = { path = "../../lib/rlab" }
+
+# For hashing
+ahash = "0.8"
+
+# For random number generation
+fastrand = "2.0"
+
+# For benchmarking
+ criterion = { version = "0.5", optional = true }
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
+
+[[bench]]
+name = "bloom_bench"
+harness = false
+
+[features]
+default = []
+bench = ["criterion"]

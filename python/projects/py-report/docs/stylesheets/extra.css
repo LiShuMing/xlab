@@ -1,0 +1,22 @@
+/* LLM Research Hub - custom styles */
+:root {
+  --md-primary-fg-color: #3f51b5;
+  --md-accent-fg-color: #7c4dff;
+}
+
+.md-content table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.md-content table th,
+.md-content table td {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+}
+
+blockquote {
+  border-left: 4px solid var(--md-accent-fg-color);
+  padding-left: 1rem;
+  color: var(--md-default-fg-color--light);
+}

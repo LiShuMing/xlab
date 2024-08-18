@@ -1,0 +1,24 @@
+id: trino
+name: Trino
+category: open_source
+homepage: https://trino.io/
+description: "Distributed SQL query engine for big data analytics"
+
+sources:
+  - type: github_releases
+    url: https://api.github.com/repos/trinodb/trino/releases
+    priority: 100
+
+analysis:
+  audience:
+    - data_engineer
+    - data_platform_engineer
+    - product_manager
+  competitor_set:
+    - spark
+    - clickhouse
+    - duckdb
+  prompt_profile: query_engine
+
+version_rules:
+  strategy: semver_loose

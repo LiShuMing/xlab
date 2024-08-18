@@ -1,0 +1,46 @@
+engine_id: doris
+display_name: "Apache Doris (Nereids)"
+version: "2.x"
+language: java
+optimizer_framework: cascades
+optimizer_root: "/home/lism/work/doris/fe/fe-core/src/main/java/org/apache/doris/nereids"
+
+patterns:
+  rbo_rules:
+    glob: "**/rules/rewrite/**/*.java"
+    class_pattern: "class \\w+\\s+(?:extends|implements)"
+    key_methods: ["buildRules", "build", "rewrite", "visit", "customRewrite"]
+  cbo_rules:
+    glob: "**/rules/implementation/**/*.java"
+    class_pattern: "class \\w+\\s+(?:extends|implements)"
+    key_methods: ["buildRules", "build"]
+  scalar_rules:
+    glob: "**/rules/expression/**/*.java"
+    class_pattern: "class \\w+\\s+(?:extends|implements)"
+    key_methods: ["matchThen", "rewrite"]
+  post_opt:
+    glob: "**/jobs/**/*.java"
+    class_pattern: "class \\w+Task"
+    key_methods: ["execute", "apply"]
+  properties:
+    glob: "**/properties/**/*.java"
+    class_pattern: "class \\w+(?:Property|Spec)"
+    key_methods: ["satisfy", "output", "computeFromChildren", "getProperty"]
+  statistics:
+    glob: "**/stats/**/*.java"
+    entry_points: ["StatsDeriveResult", "StatsCalculator", "HboStatsProvider"]
+
+lifecycle_entry:
+  optimizer_class: "NereidsPlanner"
+  entry_method: "plan"
+  plan_root_class: "LogicalPlan"
+
+rule_registry:
+  file: "nereids/rules/RuleType.java"
+  enum_name: "RuleType"
+  list_func: "buildRules"
+
+scanner_hints:
+  java_ast_parser: false
+  skip_generated_files: false
+  max_tokens_per_snippet: 2000

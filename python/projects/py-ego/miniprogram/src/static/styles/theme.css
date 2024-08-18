@@ -1,0 +1,209 @@
+:root {
+  --ego-paper: #f4f1eb;
+  --ego-panel: #fbfaf7;
+  --ego-ink: #1f1f1d;
+  --ego-muted: #5f5b52;
+  --ego-line: #1f1f1d;
+  --ego-soft-line: #d8d3ca;
+  --ego-green: #16c15f;
+  --ego-sans: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  --ego-serif: Georgia, "Times New Roman", "Songti SC", serif;
+  --ego-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app,
+uni-page-body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+.page-shell {
+  width: 100%;
+  max-width: 100vw;
+  min-height: 100vh;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  padding: 56rpx 32rpx 36rpx;
+  background: var(--ego-paper);
+}
+
+.topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24rpx;
+  margin-bottom: 52rpx;
+  color: var(--ego-muted);
+  font-family: var(--ego-mono);
+  font-size: 22rpx;
+}
+
+.nav-label {
+  flex: 1 1 auto;
+}
+
+.nav-status {
+  flex: 0 0 auto;
+  text-align: right;
+}
+
+.topline text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.grid-panel {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--ego-line);
+  background: var(--ego-panel);
+}
+
+.section {
+  padding: 34rpx 34rpx;
+  border-bottom: 1px solid var(--ego-line);
+}
+
+.section:last-child {
+  border-bottom: 0;
+}
+
+.kicker {
+  display: block;
+  margin-bottom: 16rpx;
+  color: var(--ego-muted);
+  font-family: var(--ego-mono);
+  font-size: 22rpx;
+}
+
+.hero-title {
+  display: block;
+  margin: 0 0 28rpx;
+  color: var(--ego-ink);
+  font-family: var(--ego-serif);
+  font-size: 72rpx;
+  font-weight: 400;
+  line-height: 1.04;
+}
+
+.section-title {
+  display: block;
+  color: var(--ego-ink);
+  font-family: var(--ego-sans);
+  font-size: 28rpx;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.body-text {
+  display: block;
+  color: var(--ego-muted);
+  font-size: 28rpx;
+  line-height: 1.72;
+}
+
+.mono {
+  font-family: var(--ego-mono);
+}
+
+.ego-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  min-height: 88rpx;
+  box-sizing: border-box;
+  padding: 0 34rpx;
+  border: 1px solid var(--ego-line);
+  border-radius: 0;
+  background: var(--ego-ink);
+  color: var(--ego-panel);
+  font-size: 28rpx;
+  line-height: 1;
+}
+
+.ego-button::after,
+.split-action::after {
+  border: 0;
+}
+
+.ghost-button {
+  background: transparent;
+  color: var(--ego-ink);
+}
+
+.input-line {
+  width: 100%;
+  min-height: 92rpx;
+  box-sizing: border-box;
+  padding: 22rpx 24rpx;
+  border: 1px solid var(--ego-line);
+  background: transparent;
+  color: var(--ego-ink);
+  font-family: var(--ego-mono);
+  font-size: 28rpx;
+}
+
+.terminal {
+  padding: 26rpx;
+  border: 1px solid var(--ego-line);
+  background: #ebe8df;
+  color: var(--ego-ink);
+  font-family: var(--ego-mono);
+  font-size: 22rpx;
+  line-height: 1.65;
+}
+
+.terminal-title {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 12rpx;
+  margin-bottom: 16rpx;
+  border-bottom: 1px dashed var(--ego-muted);
+}
+
+.split-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid var(--ego-line);
+  border-left: 1px solid var(--ego-line);
+}
+
+.split-action {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 132rpx;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 22rpx;
+  border-right: 1px solid var(--ego-line);
+  border-bottom: 1px solid var(--ego-line);
+  border-radius: 0;
+  background: transparent;
+  line-height: normal;
+  text-align: left;
+}
+
+.split-action-title {
+  display: block;
+  margin-bottom: 12rpx;
+  color: var(--ego-ink);
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.split-action-meta {
+  display: block;
+  color: var(--ego-muted);
+  font-family: var(--ego-mono);
+  font-size: 20rpx;
+}

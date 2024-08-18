@@ -1,0 +1,26 @@
+.docname {mem}
+.docdescription {my memory and my diary}
+.doctype {paged}
+.doclang {Chinese}
+.theme {paperwhite} layout:{latex}
+
+.docauthors
+  - Kevin Li
+
+.pagemargin {bottomcenter}
+    .currentpage
+
+# mem
+
+Welcome to [Quarkdown](https://github.com/iamgio/quarkdown)! This is the starting point of your document.
+
+
+- To compile this document, please `cd` to this file's parent directory and run:
+  `quarkdown c main.qd`
+
+- To enable live preview, run:
+  `quarkdown c main.qd -p -w`
+
+For further information and guides, please check out the [official wiki](https://quarkdown.com/wiki).
+
+!(50%)[Quarkdown](image/logo.png)

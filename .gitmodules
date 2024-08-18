@@ -1,0 +1,231 @@
+# Submodule policy:
+# - Keep heavy research dependencies optional; initialize only the module you need.
+# - Prefer targeted commands such as:
+#     git submodule update --init cc/thirdparty/googletest cc/thirdparty/abseil-cpp
+# - Avoid default recursive initialization unless you explicitly need all third-party code.
+#
+# Categories:
+# - Core C++ build/test dependencies: small or commonly required by cc/cclab.
+# - C language references: compiler/interpreter study material.
+# - C++ systems/database research: large optional source references.
+# - Rust systems/database research: large optional source references.
+# - Python references: optional source references.
+
+# Core C++ build/test dependencies.
+[submodule "cc/thirdparty/benchmark"]
+	path = cc/thirdparty/benchmark
+	url = git@github.com:google/benchmark.git
+[submodule "cc/thirdparty/glog"]
+	path = cc/thirdparty/glog
+	url = git@github.com:google/glog.git
+[submodule "cc/thirdparty/googletest"]
+	path = cc/thirdparty/googletest
+	url = git@github.com:google/googletest.git
+[submodule "cc/thirdparty/robin-hood-hashing"]
+	path = cc/thirdparty/robin-hood-hashing
+	url = git@github.com:martinus/robin-hood-hashing.git
+[submodule "cc/thirdparty/abseil-cpp"]
+	path = cc/thirdparty/abseil-cpp
+	url = git@github.com:abseil/abseil-cpp.git
+
+# C language references.
+[submodule "c/minilisp"]
+	path = c/minilisp
+	url = git@github.com:rui314/minilisp.git
+[submodule "c/chibicc"]
+	path = c/chibicc
+	url = git@github.com:rui314/chibicc.git
+
+# C++ systems/database research and optional third-party references.
+[submodule "cc/thirdparty/gperftools"]
+	path = cc/thirdparty/gperftools
+	url = git@github.com:gperftools/gperftools.git
+[submodule "cc/thirdparty/concurrentqueue"]
+	path = cc/thirdparty/concurrentqueue
+	url = git@github.com:cameron314/concurrentqueue.git
+[submodule "cc/thirdparty/x86-simd-sort"]
+	path = cc/thirdparty/x86-simd-sort
+	url = git@github.com:intel/x86-simd-sort.git
+[submodule "cc/thirdparty/clang_combined_time_trace"]
+	path = cc/thirdparty/clang_combined_time_trace
+	url = git@github.com:woodroof/clang_combined_time_trace.git
+[submodule "cc/thirdparty/ClangBuildAnalyzer"]
+	path = cc/thirdparty/ClangBuildAnalyzer
+	url = git@github.com:aras-p/ClangBuildAnalyzer.git
+[submodule "cc/thirdparty/C-Plus-Plus"]
+	path = cc/thirdparty/C-Plus-Plus
+	url = git@github.com:TheAlgorithms/C-Plus-Plus.git
+[submodule "cc/thirdparty/wren"]
+	path = cc/thirdparty/wren
+	url = git@github.com:wren-lang/wren.git
+[submodule "cc/thirdparty/libcoro"]
+	path = cc/thirdparty/libcoro
+	url = git@github.com:jbaldwin/libcoro.git
+[submodule "cc/thirdparty/sqlite"]
+	path = cc/thirdparty/sqlite
+	url = git@github.com:sqlite/sqlite.git
+[submodule "cc/thirdparty/hardware-effects"]
+	path = cc/thirdparty/hardware-effects
+	url = git@github.com:Kobzol/hardware-effects.git
+[submodule "cc/thirdparty/liburing4cpp"]
+	path = cc/thirdparty/liburing4cpp
+	url = git@github.com:CarterLi/liburing4cpp.git
+[submodule "cc/thirdparty/Radix-Hash-Join"]
+	path = cc/thirdparty/Radix-Hash-Join
+	url = git@github.com:giorgospan/Radix-Hash-Join.git
+[submodule "cc/thirdparty/simde"]
+	path = cc/thirdparty/simde
+	url = git@github.com:simd-everywhere/simde.git
+[submodule "cc/thirdparty/seastar"]
+	path = cc/thirdparty/seastar
+	url = git@github.com:LiShuMing/seastar.git
+[submodule "cc/thirdparty/noisepage"]
+	path = cc/thirdparty/noisepage
+	url = git@github.com:cmu-db/noisepage.git
+[submodule "cc/thirdparty/fmt"]
+	path = cc/thirdparty/fmt
+	url = git@github.com:fmtlib/fmt.git
+[submodule "cc/thirdparty/babylon"]
+	path = cc/thirdparty/babylon
+	url = git@github.com:baidu/babylon.git
+[submodule "cc/thirdparty/boost"]
+	path = cc/thirdparty/boost
+	url = git@github.com:boostorg/boost.git
+[submodule "cc/thirdparty/flight-benchmark"]
+	path = cc/thirdparty/flight-benchmark
+	url = git@github.com:vichry2/flight-benchmark.git
+[submodule "cc/thirdparty/junction"]
+	path = cc/thirdparty/junction
+	url = git@github.com:preshing/junction.git
+[submodule "cc/thirdparty/libchef"]
+	path = cc/thirdparty/libchef
+	url = git@github.com:q191201771/libchef.git
+[submodule "cc/thirdparty/simple-sqlite"]
+	path = cc/thirdparty/simple-sqlite
+	url = git@github.com:madushadhanushka/simple-sqlite.git
+[submodule "cc/thirdparty/templight-tools"]
+	path = cc/thirdparty/templight-tools
+	url = git@github.com:mikael-s-persson/templight-tools.git
+[submodule "cc/thirdparty/rocksdb"]
+	path = cc/thirdparty/rocksdb
+	url = git@github.com:facebook/rocksdb.git
+[submodule "cc/thirdparty/mimalloc"]
+	path = cc/thirdparty/mimalloc
+	url = git@github.com:microsoft/mimalloc.git
+[submodule "cc/thirdparty/lua"]
+	path = cc/thirdparty/lua
+	url = git@github.com:lua/lua.git
+[submodule "cc/thirdparty/brpc"]
+	path = cc/thirdparty/brpc
+	url = git@github.com:apache/brpc.git
+[submodule "cc/thirdparty/velox"]
+	path = cc/thirdparty/velox
+	url = git@github.com:facebookincubator/velox.git
+[submodule "cc/thirdparty/muduo"]
+	path = cc/thirdparty/muduo
+	url = git@github.com:chenshuo/muduo.git
+[submodule "cc/thirdparty/dlmalloc"]
+	path = cc/thirdparty/dlmalloc
+	url = git@github.com:ennorehling/dlmalloc.git
+
+# Rust systems/database research and optional third-party references.
+[submodule "rust/thirdparty/dbeel"]
+	path = rust/thirdparty/dbeel
+	url = git@github.com:tontinton/dbeel.git
+[submodule "rust/thirdparty/feldera"]
+	path = rust/thirdparty/feldera
+	url = git@github.com:feldera/feldera.git
+[submodule "rust/thirdparty/timely-dataflow"]
+	path = rust/thirdparty/timely-dataflow
+	url = git@github.com:TimelyDataflow/timely-dataflow.git
+[submodule "rust/thirdparty/arroyo"]
+	path = rust/thirdparty/arroyo
+	url = git@github.com:ArroyoSystems/arroyo.git
+[submodule "rust/thirdparty/optd"]
+	path = rust/thirdparty/optd
+	url = git@github.com:cmu-db/optd.git
+[submodule "rust/thirdparty/sqleibniz"]
+	path = rust/thirdparty/sqleibniz
+	url = git@github.com:xNaCly/sqleibniz.git
+[submodule "rust/thirdparty/differential-dataflow"]
+	path = rust/thirdparty/differential-dataflow
+	url = https://github.com/TimelyDataflow/differential-dataflow.git
+[submodule "rust/thirdparty/osblog"]
+	path = rust/thirdparty/osblog
+	url = git@github.com:sgmarz/osblog.git
+[submodule "rust/thirdparty/toydb"]
+	path = rust/thirdparty/toydb
+	url = git@github.com:erikgrinaker/toydb.git
+[submodule "rust/thirdparty/risingwave"]
+	path = rust/thirdparty/risingwave
+	url = https://github.com/risingwavelabs/risingwave.git
+[submodule "rust/thirdparty/materialize"]
+	path = rust/thirdparty/materialize
+	url = https://github.com/MaterializeInc/materialize.git
+[submodule "rust/thirdparty/datafusion"]
+	path = rust/thirdparty/datafusion
+	url = git@github.com:apache/datafusion.git
+
+# Python references.
+[submodule "python/thirdparty/tinydb"]
+	path = python/thirdparty/tinydb
+	url = git@github.com:msiemens/tinydb.git
+[submodule "python/thirdparty/pydbsp"]
+	path = python/thirdparty/pydbsp
+	url = git@github.com:brurucy/pydbsp.git
+[submodule "python/thirdparty/Python"]
+	path = python/thirdparty/Python
+	url = git@github.com:TheAlgorithms/Python.git
+
+# Additional C++ database/runtime references.
+[submodule "cc/thirdparty/duckdb"]
+	path = cc/thirdparty/duckdb
+	url = git@github.com:duckdb/duckdb.git
+[submodule "cc/thirdparty/duckdb_ivm"]
+	path = cc/thirdparty/duckdb_ivm
+	url = git@github.com:ila/duckdb.git
+[submodule "cc/thirdparty/perf-tools"]
+	path = cc/thirdparty/perf-tools
+	url = git@github.com:brendangregg/perf-tools.git
+[submodule "rust/thirdparty/denormalized"]
+	path = rust/thirdparty/denormalized
+	url = git@github.com:probably-nothing-labs/denormalized.git
+[submodule "cc/thirdparty/datasketch-cpp"]
+	path = cc/thirdparty/datasketch-cpp
+	url = git@github.com:apache/datasketches-cpp.git
+[submodule "cc/thirdparty/doris"]
+	path = cc/thirdparty/doris
+	url = git@github.com:apache/doris.git
+[submodule "cc/thirdparty/json"]
+	path = cc/thirdparty/json
+	url = git@github.com:nlohmann/json.git
+[submodule "python/thirdparty/parquet-python"]
+	path = python/thirdparty/parquet-python
+	url = git@github.com:jcrobak/parquet-python.git
+[submodule "cc/thirdparty/parquet-format"]
+	path = cc/thirdparty/parquet-format
+	url = git@github.com:apache/parquet-format.git
+[submodule "cc/thirdparty/arrow"]
+	path = cc/thirdparty/arrow
+	url = git@github.com:apache/arrow.git
+[submodule "cc/thirdparty/Clickhouse"]
+	path = cc/thirdparty/Clickhouse
+	url = git@github.com:ClickHouse/ClickHouse.git
+[submodule "cc/thirdparty/btop"]
+	path = cc/thirdparty/btop
+	url = git@github.com:aristocratos/btop.git
+[submodule "cc/thirdparty/leveldb"]
+	path = cc/thirdparty/leveldb
+	url = git@github.com:google/leveldb.git
+[submodule "rust/thirdparty/tantivy"]
+	path = rust/thirdparty/tantivy
+	url = git@github.com:quickwit-oss/tantivy.git
+[submodule "cc/thirdparty/fastgrind"]
+	path = cc/thirdparty/fastgrind
+	url = git@github.com:adny-code/fastgrind.git
+[submodule "cc/thirdparty/folly"]
+	path = cc/thirdparty/folly
+	url = git@github.com:facebook/folly.git
+[submodule "cc/thirdparty/fast_float"]
+	path = cc/thirdparty/fast_float
+	url = git@github.com:fastfloat/fast_float.git

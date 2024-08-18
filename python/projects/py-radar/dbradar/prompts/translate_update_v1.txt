@@ -1,0 +1,13 @@
+Translate the following JSON content from English to Chinese (Simplified). Keep the JSON structure and keep product names, URLs unchanged.
+
+Input:
+{{input_json}}
+
+Return ONLY the JSON object, no markdown:
+{
+    "product": "keep original",
+    "title": "translated title",
+    "what_changed": ["翻译1", "翻译2"],
+    "why_it_matters": ["翻译1", "翻译2"],
+    "evidence": ["keep original or translate if natural"]
+}
