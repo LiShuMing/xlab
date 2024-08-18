@@ -22,3 +22,6 @@
 [submodule "cc/thirdparty/gperftools"]
 	path = cc/thirdparty/gperftools
 	url = git@github.com:gperftools/gperftools.git
+[submodule "cc/thirdparty/concurrentqueue"]
+	path = cc/thirdparty/concurrentqueue
+	url = git@github.com:cameron314/concurrentqueue.git
