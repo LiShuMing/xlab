@@ -1,0 +1,126 @@
+syntax = "proto3";
+package umbra;
+
+service MemoryService {
+  rpc Add(AddRequest) returns (AddResponse);
+  rpc Search(SearchRequest) returns (SearchResponse);
+  rpc Get(GetRequest) returns (GetResponse);
+  rpc Update(UpdateRequest) returns (UpdateResponse);
+  rpc Delete(DeleteRequest) returns (DeleteResponse);
+  rpc DeleteAll(DeleteAllRequest) returns (DeleteAllResponse);
+  rpc GetHistory(GetHistoryRequest) returns (GetHistoryResponse);
+}
+
+message Message {
+  string role = 1;
+  string content = 2;
+  optional string name = 3;
+}
+
+// ============== Add ==============
+message AddRequest {
+  repeated Message messages = 1;
+  optional string user_id = 2;
+  optional string agent_id = 3;
+  optional string run_id = 4;
+  map<string, string> metadata = 5;
+}
+
+message AddResult {
+  string id = 1;
+  string memory = 2;
+  string event = 3;
+  optional string actor_id = 4;
+  optional string role = 5;
+}
+
+message AddResponse {
+  repeated AddResult results = 1;
+}
+
+// ============== Search ==============
+message SearchRequest {
+  string query = 1;
+  int32 top_k = 2;
+  double threshold = 3;
+  map<string, string> filters = 4;
+  bool rerank = 5;
+}
+
+message SearchResult {
+  string id = 1;
+  string memory = 2;
+  double score = 3;
+  optional string created_at = 4;
+  optional string updated_at = 5;
+  optional string user_id = 6;
+  optional string agent_id = 7;
+  optional string run_id = 8;
+  optional string actor_id = 9;
+  optional string role = 10;
+  map<string, string> metadata = 11;
+}
+
+message SearchResponse {
+  repeated SearchResult results = 1;
+}
+
+// ============== Get ==============
+message GetRequest {
+  string memory_id = 1;
+}
+
+message GetResponse {
+  optional SearchResult result = 1;
+}
+
+// ============== Update ==============
+message UpdateRequest {
+  string memory_id = 1;
+  string data = 2;
+  map<string, string> metadata = 3;
+}
+
+message UpdateResponse {
+  string message = 1;
+}
+
+// ============== Delete ==============
+message DeleteRequest {
+  string memory_id = 1;
+}
+
+message DeleteResponse {
+  string message = 1;
+}
+
+// ============== DeleteAll ==============
+message DeleteAllRequest {
+  optional string user_id = 1;
+  optional string agent_id = 2;
+  optional string run_id = 3;
+}
+
+message DeleteAllResponse {
+  uint64 deleted_count = 1;
+}
+
+// ============== GetHistory ==============
+message GetHistoryRequest {
+  string memory_id = 1;
+}
+
+message HistoryRecord {
+  string id = 1;
+  string memory_id = 2;
+  optional string old_memory = 3;
+  optional string new_memory = 4;
+  string event = 5;
+  optional string actor_id = 6;
+  optional string created_at = 7;
+  int32 is_deleted = 8;
+}
+
+message GetHistoryResponse {
+  repeated HistoryRecord records = 1;
+}

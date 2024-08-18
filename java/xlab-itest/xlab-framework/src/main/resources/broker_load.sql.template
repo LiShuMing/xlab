@@ -1,0 +1,19 @@
+main(db, table, labelId, hdfsPath, format, columnList, columnSeparator) ::=<<
+USE <db>;
+LOAD LABEL <db>.label_<labelId> (
+-- DATA INFILE("hdfs://172.26.92.141:9002<hdfsPath>")
+DATA INFILE("hdfs://172.26.194.238:9000<hdfsPath>")
+INTO TABLE `<table>`
+<if(columnSeparator)>
+COLUMNS TERMINATED BY "<columnSeparator>"   
+<endif>
+FORMAT AS "<format>"
+(<columnList:{col|<col>}; separator=", ">)
+)
+WITH BROKER hdfs_broker ("username"="root", "password"="")
+PROPERTIES
+(
+    "timeout" = "3600",
+    "max_filter_ratio" = "0.99"
+)
+>>

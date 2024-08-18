@@ -1,0 +1,4 @@
+core*
+bin/
+__pycache__
+*.swp

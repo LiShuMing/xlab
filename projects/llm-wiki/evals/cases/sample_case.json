@@ -1,0 +1,14 @@
+{
+  "name": "sample_e2e",
+  "description": "End-to-end sample: ingest photo → extract → embed → match → bridge",
+  "steps": [
+    {"action": "create_user", "handle": "alice", "name": "Alice", "city": "上海", "bio": "技术工程师，喜欢咖啡和citywalk"},
+    {"action": "create_user", "handle": "bob", "name": "Bob", "city": "上海", "bio": "产品经理，喜欢探店和展览"},
+    {"action": "add_note", "user": "alice", "type": "preference", "text": "希望认识同城技术同好"},
+    {"action": "add_note", "user": "bob", "type": "preference", "text": "希望认识喜欢展览和咖啡的朋友"},
+    {"action": "embed", "user": "alice"},
+    {"action": "embed", "user": "bob"},
+    {"action": "match", "user": "alice", "top_k": 3},
+    {"action": "bridge", "user": "alice", "target": "bob"}
+  ]
+}

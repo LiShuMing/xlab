@@ -1,0 +1,92 @@
+{
+  "cityId": "wuhan",
+  "cityName": "武汉",
+  "lines": [
+    {
+      "id": "wh-line-1",
+      "name": "1号线",
+      "color": "#006BA6",
+      "stations": [
+        { "id": "wh-jhd", "name": "径河", "x": 516, "y": 912 },
+        { "id": "wh-zjb", "name": "竹叶海", "x": 650, "y": 1022 },
+        { "id": "wh-zsgy", "name": "中山公园", "x": 960, "y": 1504 },
+        { "id": "wh-dzx", "name": "大智路", "x": 1110, "y": 1460 },
+        { "id": "wh-xcl", "name": "循礼门", "x": 1060, "y": 1324 },
+        { "id": "wh-hkbl", "name": "汉口北", "x": 1588, "y": 770 }
+      ]
+    },
+    {
+      "id": "wh-line-2",
+      "name": "2号线",
+      "color": "#F3A6C9",
+      "stations": [
+        { "id": "wh-tianhe", "name": "天河机场", "x": 922, "y": 704 },
+        { "id": "wh-jht", "name": "巨龙大道", "x": 1048, "y": 842 },
+        { "id": "wh-hkz", "name": "汉口火车站", "x": 1034, "y": 1118 },
+        { "id": "wh-xcl", "name": "循礼门", "x": 1060, "y": 1324 },
+        { "id": "wh-jhtan", "name": "江汉路", "x": 1142, "y": 1422 },
+        { "id": "wh-hj", "name": "洪山广场", "x": 1470, "y": 1602 },
+        { "id": "wh-guanggu", "name": "光谷广场", "x": 1840, "y": 1842 }
+      ]
+    },
+    {
+      "id": "wh-line-3",
+      "name": "3号线",
+      "color": "#C4A25F",
+      "stations": [
+        { "id": "wh-hkz", "name": "汉口火车站", "x": 1034, "y": 1118 },
+        { "id": "wh-fanhu", "name": "范湖", "x": 1080, "y": 1220 },
+        { "id": "wh-wzj", "name": "王家湾", "x": 840, "y": 1570 },
+        { "id": "wh-zy", "name": "宗关", "x": 782, "y": 1462 },
+        { "id": "wh-dongfeng", "name": "东风公司", "x": 766, "y": 1840 }
+      ]
+    },
+    {
+      "id": "wh-line-4",
+      "name": "4号线",
+      "color": "#93D22B",
+      "stations": [
+        { "id": "wh-bailin", "name": "柏林", "x": 50, "y": 1480 },
+        { "id": "wh-wzj", "name": "王家湾", "x": 840, "y": 1570 },
+        { "id": "wh-zsn", "name": "钟家村", "x": 1054, "y": 1522 },
+        { "id": "wh-hj", "name": "洪山广场", "x": 1470, "y": 1602 },
+        { "id": "wh-whhcz", "name": "武汉火车站", "x": 2080, "y": 1820 }
+      ]
+    },
+    {
+      "id": "wh-line-6",
+      "name": "6号线",
+      "color": "#007A3D",
+      "stations": [
+        { "id": "wh-jinyinhu", "name": "金银湖公园", "x": 650, "y": 960 },
+        { "id": "wh-hkz", "name": "汉口火车站", "x": 1034, "y": 1118 },
+        { "id": "wh-zsgy", "name": "中山公园", "x": 960, "y": 1504 },
+        { "id": "wh-zsn", "name": "钟家村", "x": 1054, "y": 1522 },
+        { "id": "wh-jiangcheng", "name": "江城大道", "x": 1176, "y": 2042 }
+      ]
+    },
+    {
+      "id": "wh-line-7",
+      "name": "7号线",
+      "color": "#F5821F",
+      "stations": [
+        { "id": "wh-hkz", "name": "汉口火车站", "x": 1034, "y": 1118 },
+        { "id": "wh-ctq", "name": "螃蟹岬", "x": 1348, "y": 1488 },
+        { "id": "wh-whh", "name": "武昌火车站", "x": 1370, "y": 1650 },
+        { "id": "wh-yzlh", "name": "野芷湖", "x": 1364, "y": 1930 }
+      ]
+    },
+    {
+      "id": "wh-line-8",
+      "name": "8号线",
+      "color": "#8CA7A8",
+      "stations": [
+        { "id": "wh-jintan-road", "name": "金潭路", "x": 1116, "y": 1044 },
+        { "id": "wh-zhongyi-road", "name": "中一路", "x": 1250, "y": 1258 },
+        { "id": "wh-hj", "name": "洪山广场", "x": 1470, "y": 1602 },
+        { "id": "wh-jiedaokou", "name": "街道口", "x": 1552, "y": 1740 },
+        { "id": "wh-yzlh", "name": "野芷湖", "x": 1364, "y": 1930 }
+      ]
+    }
+  ]
+}

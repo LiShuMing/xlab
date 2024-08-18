@@ -1,0 +1,39 @@
+engine_id: cockroachdb
+display_name: "CockroachDB"
+version: "24.x"
+language: go
+optimizer_framework: optgen
+optimizer_root: "./pkg/sql/opt"
+
+patterns:
+  rbo_rules:
+    glob: "**/norm/*.opt"
+    dsl_rule_pattern: "^\\[\\w+,\\s*Normalize\\]"
+  cbo_rules:
+    glob: "**/xform/*.opt"
+    dsl_rule_pattern: "^\\[\\w+,\\s*(Explore|Generate\\w+)\\]"
+  scalar_rules:
+    glob: "**/norm/scalar*.opt"
+    dsl_rule_pattern: "^\\[\\w+\\]"
+  post_opt:
+    glob: "**/xform/optimizer.go"
+    func_pattern: "func \\(o \\*Optimizer\\) \\w+"
+    key_methods: []
+  properties:
+    glob: "**/physical/required.go"
+    class_pattern: "type \\w+Required struct"
+    key_methods: []
+  statistics:
+    glob: "**/stats/**/*.go"
+    entry_points: ["TableStatistic", "HistogramData", "SampledColumn"]
+
+lifecycle_entry:
+  optimizer_class: "Optimizer"
+  entry_method: "Optimize"
+  plan_root_class: "Expr"
+
+scanner_hints:
+  skip_generated_files: true
+  prefer_dsl_over_generated: true
+  optgen_dsl_parser: true
+  max_tokens_per_snippet: 2000

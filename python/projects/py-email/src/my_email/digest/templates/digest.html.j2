@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Digest - {{ digest.date }}</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #f5f0e8;
+            padding: 24px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; display: flex; gap: 24px; }
+        .main { flex: 1; min-width: 0; }
+        .sidebar { width: 300px; flex-shrink: 0; }
+        @media (max-width: 900px) {
+            .container { flex-direction: column; }
+            .sidebar { width: 100%; }
+        }
+        .header {
+            background: white;
+            color: #1a1a1a;
+            padding: 32px;
+            border-radius: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+        .header > div:nth-child(2) {
+            color: #6b7280;
+            font-size: 15px;
+        }
+        .stats { display: flex; gap: 32px; margin-top: 20px; }
+        .stat { text-align: center; }
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #d97706;
+            letter-spacing: -0.02em;
+        }
+        .stat-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #6b7280;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.04);
+            transition: all 0.2s ease;
+        }
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border-color: rgba(217, 119, 6, 0.1);
+        }
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+        .card-title { font-size: 18px; font-weight: 600; color: #1a1a1a; }
+        .relevance {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .relevance-high { background: #fef2f2; color: #dc2626; }
+        .relevance-medium { background: #fffbeb; color: #d97706; }
+        .relevance-low { background: #f3f4f6; color: #6b7280; }
+        .meta { font-size: 13px; color: #6b7280; margin-bottom: 12px; }
+        .meta strong { color: #374151; }
+        .topics { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+        .topic {
+            background: #fffbeb;
+            color: #d97706;
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        .summary { color: #4b5563; margin-bottom: 12px; line-height: 1.7; }
+        .key-points { list-style: none; }
+        .key-points li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 6px;
+            font-size: 14px;
+            color: #4b5563;
+        }
+        .key-points li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #d97706;
+        }
+        .action-items {
+            background: #fef2f2;
+            border-left: 3px solid #dc2626;
+            padding: 16px 20px;
+            margin-top: 16px;
+            border-radius: 0 12px 12px 0;
+        }
+        .action-items h4 { color: #dc2626; font-size: 13px; margin-bottom: 8px; font-weight: 600; }
+        .action-items ul { margin-left: 16px; }
+        .action-items li { font-size: 13px; color: #7f1d1d; margin-bottom: 4px; }
+        .sidebar-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+        .sidebar-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .topic-row { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.04); }
+        .topic-row:last-child { border-bottom: none; }
+        .topic-name { flex: 1; font-size: 14px; color: #374151; }
+        .topic-trend { font-size: 16px; margin-left: 8px; }
+        .topic-count { font-size: 12px; color: #9ca3af; margin-left: 8px; font-weight: 500; }
+        .footer { text-align: center; padding: 24px; color: #9ca3af; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="main">
+            <div class="header">
+                <h1>Daily Digest</h1>
+                <div>{{ digest.date }}</div>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value">{{ digest.total_emails }}</div>
+                        <div class="stat-label">技术邮件</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">{{ digest.high_relevance_count }}</div>
+                        <div class="stat-label">高优先级</div>
+                    </div>
+                    {% if digest.skipped_count > 0 %}
+                    <div class="stat">
+                        <div class="stat-value" style="color: #888;">{{ digest.skipped_count }}</div>
+                        <div class="stat-label">已跳过</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% for summary in summaries %}
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{{ summary.title }}</div>
+                    <span class="relevance relevance-{{ summary.relevance }}">
+                        {%- if summary.relevance == 'high' -%}高优先级
+                        {%- elif summary.relevance == 'medium' -%}中等
+                        {%- elif summary.relevance == 'low' -%}低
+                        {%- else -%}{{ summary.relevance }}
+                        {%- endif -%}
+                    </span>
+                </div>
+                <div class="meta">
+                    <strong>{{ summary.sender_org }}</strong>
+                    {% if summary.received_at %} • {{ summary.received_at[:10] }}{% endif %}
+                </div>
+                {% if summary.topics %}
+                <div class="topics">
+                    {% for topic in summary.topics[:6] %}
+                    <span class="topic">{{ topic }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <div class="summary">{{ summary.summary }}</div>
+                {% if summary.key_points %}
+                <ul class="key-points">
+                    {% for point in summary.key_points[:5] %}
+                    <li>{{ point }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% if summary.action_items %}
+                <div class="action-items">
+                    <h4>⚠️ 待办事项</h4>
+                    <ul>
+                        {% for item in summary.action_items %}
+                        <li>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <div class="footer">
+                由 my-email 生成 • {{ digest.date }}
+            </div>
+        </div>
+
+        {% if active_topics %}
+        <div class="sidebar">
+            <div class="sidebar-card">
+                <div class="sidebar-title">📊 热门话题 (30天)</div>
+                {% for topic in active_topics[:15] %}
+                <div class="topic-row">
+                    <span class="topic-name">{{ topic.topic }}</span>
+                    <span class="topic-trend">{{ topic.trend_arrow }}</span>
+                    <span class="topic-count">{{ topic.total_mentions }}</span>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if digest.top_topics %}
+            <div class="sidebar-card">
+                <div class="sidebar-title">🔥 今日话题</div>
+                <div class="topics">
+                    {% for topic in digest.top_topics[:10] %}
+                    <span class="topic">{{ topic }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

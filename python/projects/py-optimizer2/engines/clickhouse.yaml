@@ -1,0 +1,47 @@
+engine_id: clickhouse
+display_name: "ClickHouse"
+version: "24.x"
+language: cpp
+optimizer_framework: custom
+optimizer_root: "./src/Processors/QueryPlan/Optimizations"
+
+patterns:
+  rbo_rules:
+    glob: "**/Optimizations/*.cpp"
+    func_pattern: "^(size_t|bool)\\s+try[A-Z]\\w+\\(QueryPlan::Node"
+    key_methods: []
+  cbo_rules:
+    glob: "**/Optimizations/optimizeTreeSecondPass.cpp"
+    func_pattern: "void\\s+optimizeTree\\w+"
+    key_methods: []
+  scalar_rules:
+    glob: "**/Interpreters/ActionsDAG.cpp"
+    func_pattern: "void\\s+ActionsDAG::\\w+"
+    key_methods: []
+  post_opt:
+    glob: "**/QueryPlan/QueryPlan.cpp"
+    func_pattern: "void\\s+QueryPlan::optimize"
+    key_methods: []
+  properties:
+    glob: "**/Processors/QueryPlan/IQueryPlanStep.h"
+    class_pattern: "struct DataStream"
+    key_methods: []
+  statistics:
+    glob: "**/Interpreters/DatabaseCatalog.cpp"
+    entry_points: ["TableStatistics", "ColumnStats"]
+
+lifecycle_entry:
+  optimizer_class: "QueryPlan"
+  entry_method: "optimize"
+  plan_root_class: "QueryPlan::Node"
+
+rule_registry:
+  file: "src/Processors/QueryPlan/Optimizations/Optimizations.cpp"
+  registry_array_pattern: "static const Optimization optimizations\\[\\]"
+
+scanner_hints:
+  skip_generated_files: false
+  prefer_dsl_over_generated: false
+  max_tokens_per_snippet: 2000
+  rule_registry_file: "src/Processors/QueryPlan/Optimizations/Optimizations.cpp"
+  registry_array_pattern: "static const Optimization optimizations\\[\\]"

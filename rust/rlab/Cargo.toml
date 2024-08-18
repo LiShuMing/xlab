@@ -1,0 +1,22 @@
+[workspace]
+members = [
+    "lib/rlab",
+    "tools/rlab-tools",
+    "tools/thread-pool",
+    "tools/lockfree-queue",
+    "tools/bloom_filter",
+    "tools/leetcode",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["ming.moriarty@gmail.com"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/LiShuMing/xlab"
+
+[workspace.dependencies]
+# Common dependencies that might be shared
+fastrand = "2.0"
+anyhow = "1.0"

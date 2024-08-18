@@ -1,0 +1,13 @@
+[global]
+ioengine=libaio
+direct=1
+size=1G
+runtime=10s
+time_based
+
+[myjob]
+stonewall
+rw=randwrite
+bs=4k
+size=1G
+numjobs=4

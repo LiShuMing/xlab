@@ -1,0 +1,16 @@
+{
+  "users": [
+    {
+      "handle": "kevin",
+      "display_name": "Kevin Li",
+      "city": "上海",
+      "bio": "数据库工程师，关注 AI infra、数据库系统、咖啡、旅行和城市漫游"
+    },
+    {
+      "handle": "amy",
+      "display_name": "Amy",
+      "city": "上海",
+      "bio": "喜欢探店、展览、夜市和轻户外，也对科技展、AI infra 展示和创业活动感兴趣"
+    }
+  ]
+}

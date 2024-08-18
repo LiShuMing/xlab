@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1024" height="1024" rx="200" fill="#0EA5E9"/>
+  
+  <!-- Brain/book icon -->
+  <g transform="translate(256, 256) scale(0.5)">
+    <!-- Book shape -->
+    <path d="M100 50 C 150 50, 200 60, 250 80 L 250 500 C 200 480, 150 470, 100 470 Z" fill="white" fill-opacity="0.9"/>
+    <path d="M250 80 C 300 60, 350 60, 400 80 L 400 500 C 350 480, 300 470, 250 500 Z" fill="white"/>
+    
+    <!-- Brain waves -->
+    <path d="M130 150 Q 175 100, 220 150 Q 175 200, 130 150" fill="#0EA5E9"/>
+    <path d="M280 150 Q 325 100, 370 150 Q 325 200, 280 150" fill="#0EA5E9"/>
+    
+    <path d="M130 250 Q 175 200, 220 250 Q 175 300, 130 250" fill="#0EA5E9" fill-opacity="0.7"/>
+    <path d="M280 250 Q 325 200, 370 250 Q 325 300, 280 250" fill="#0EA5E9" fill-opacity="0.7"/>
+    
+    <path d="M130 350 Q 175 300, 220 350 Q 175 400, 130 350" fill="#0EA5E9" fill-opacity="0.5"/>
+    <path d="M280 350 Q 325 300, 370 350 Q 325 400, 280 350" fill="#0EA5E9" fill-opacity="0.5"/>
+    
+    <!-- Fragment pieces -->
+    <circle cx="450" cy="150" r="30" fill="#D946EF"/>
+    <circle cx="500" cy="250" r="25" fill="#D946EF" fill-opacity="0.7"/>
+    <circle cx="470" cy="350" r="35" fill="#D946EF" fill-opacity="0.5"/>
+  </g>
+</svg>

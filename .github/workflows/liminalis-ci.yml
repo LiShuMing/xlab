@@ -1,0 +1,103 @@
+name: liminalis-ci
+
+on:
+  push:
+    branches: [main, dev2]
+    paths:
+      - "liminalis/**"
+      - ".github/workflows/liminalis-ci.yml"
+  pull_request:
+    paths:
+      - "liminalis/**"
+      - ".github/workflows/liminalis-ci.yml"
+
+defaults:
+  run:
+    working-directory: liminalis
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: liminalis
+          POSTGRES_PASSWORD: liminalis
+          POSTGRES_DB: liminalis_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U liminalis -d liminalis_db"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+
+    env:
+      ENVIRONMENT: development
+      PGSQL_HOST: localhost
+      PGSQL_PORT: "5432"
+      PGSQL_USER: liminalis
+      PGSQL_PASSWORD: liminalis
+      PGSQL_DATABASE: liminalis_db
+      REDIS_URL: redis://localhost:6379/0
+      RADAR_ADMIN_PASSWORD: ci-test-password
+      SESSION_SECRET: ci-test-session-secret-must-be-32-chars-or-more
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: liminalis/pyproject.toml
+
+      - name: Install backend (dev extras)
+        run: pip install -e ".[dev]"
+
+      - name: Ruff lint
+        run: python -m ruff check backend tests scripts
+
+      - name: Ruff format check
+        run: python -m ruff format --check backend tests scripts
+
+      - name: Alembic upgrade (fresh DB)
+        run: alembic upgrade head
+
+      - name: Alembic round-trip downgrade
+        run: alembic downgrade base && alembic upgrade head
+
+      - name: Pytest
+        run: python -m pytest -q
+
+      - name: OpenAPI snapshot is in sync
+        run: python -m scripts.dump_openapi --check
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: liminalis/package-lock.json
+
+      - name: Install (reproducible)
+        run: npm ci
+
+      - name: Build
+        run: npm run build

@@ -1,0 +1,21 @@
+[package]
+name = "umbra-server"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+umbra-core = { path = "../umbra-core" }
+tokio.workspace = true
+tonic.workspace = true
+prost.workspace = true
+datafusion.workspace = true
+figment.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+
+[build-dependencies]
+tonic-build.workspace = true

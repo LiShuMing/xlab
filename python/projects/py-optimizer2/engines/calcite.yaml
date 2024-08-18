@@ -1,0 +1,46 @@
+engine_id: calcite
+display_name: "Apache Calcite"
+version: "1.37.x"
+language: java
+optimizer_framework: volcano
+optimizer_root: "/home/lism/work/calcite/core/src/main/java/org/apache/calcite"
+
+patterns:
+  rbo_rules:
+    glob: "**/rel/rules/*.java"
+    class_pattern: "class \\w+Rule"
+    key_methods: ["onMatch", "matches", "perform"]
+    annotation_filter: "@Value.Immutable"
+  cbo_rules:
+    glob: "**/adapter/enumerable/Enumerable*Rule.java"
+    class_pattern: "class Enumerable\\w+Rule"
+    key_methods: ["onMatch"]
+  scalar_rules:
+    glob: "**/rex/RexSimplify.java"
+    class_pattern: "class RexSimplify"
+    key_methods: ["simplify", "simplifyAnd", "simplifyOr"]
+  post_opt:
+    glob: "**/rel/RelDecorrelator.java"
+    class_pattern: "class RelDecorrelator"
+    key_methods: ["decorrelateQuery", "decorrelateRel"]
+  properties:
+    glob: "**/plan/RelTrait*.java"
+    class_pattern: "class \\w+TraitDef"
+    key_methods: ["convert", "canConvert", "getTraitClass"]
+  statistics:
+    glob: "**/rel/metadata/**/*.java"
+    entry_points: ["RelMdRowCount", "RelMdSelectivity", "RelMdDistinctRowCount"]
+
+lifecycle_entry:
+  optimizer_class: "VolcanoPlanner"
+  entry_method: "findBestExp"
+  plan_root_class: "RelNode"
+
+rule_registry:
+  file: "rel/rules/CoreRules.java"
+  list_func: "class CoreRules"
+
+scanner_hints:
+  java_ast_parser: false
+  skip_generated_files: false
+  max_tokens_per_snippet: 2000

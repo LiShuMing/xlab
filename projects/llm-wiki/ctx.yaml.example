@@ -1,0 +1,36 @@
+app:
+  environment: poc
+  default_user: kevin
+  listen_addr: 127.0.0.1:8787
+
+server:
+  auth_token: ""
+
+database:
+  backend: file
+  # backend: postgres
+  url: postgres://ctx:ctx@localhost:5432/context_poc
+
+asset_store:
+  type: local
+  path: ./data/assets
+  processed_path: ./data/processed
+
+models:
+  default_provider: mock
+
+privacy:
+  default_visibility: private
+  max_sensitivity_for_matching: 1
+  expose_exact_gps: false
+  allow_face_identity: false
+  allow_child_context_for_matching: false
+  require_review_for_photo_context: true
+
+matching:
+  top_k_retrieval: 200
+  top_k_output: 10
+  recency_half_life_days: 60
+
+replay:
+  golden_path: ./evals/golden

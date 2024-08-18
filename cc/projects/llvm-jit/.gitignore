@@ -1,0 +1,4 @@
+CMakeFiles
+src/CMakeFiles/
+test/CMakeFiles/
+*-build/

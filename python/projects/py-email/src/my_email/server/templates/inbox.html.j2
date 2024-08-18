@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Inbox</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f0e8;
+            color: #1a1a1a;
+            line-height: 1.6;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 24px; }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+        .header-actions { display: flex; gap: 12px; }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        .btn-primary {
+            background: #d97706;
+            color: white;
+            box-shadow: 0 1px 2px rgba(217, 119, 6, 0.2);
+        }
+        .btn-primary:hover {
+            background: #b45309;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+        }
+        .btn-secondary {
+            background: rgba(0,0,0,0.04);
+            color: #374151;
+        }
+        .btn-secondary:hover {
+            background: rgba(0,0,0,0.08);
+        }
+
+        /* Stats */
+        .stats {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .stat {
+            flex: 1;
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            transition: transform 0.2s ease;
+        }
+        .stat:hover {
+            transform: translateY(-2px);
+        }
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #d97706;
+            letter-spacing: -0.02em;
+        }
+        .stat-label {
+            font-size: 13px;
+            color: #6b7280;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid rgba(0,0,0,0.08);
+            border-radius: 20px;
+            background: white;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: #4b5563;
+            transition: all 0.2s ease;
+        }
+        .filter-btn:hover {
+            border-color: #d97706;
+            color: #d97706;
+        }
+        .filter-btn.active {
+            background: #d97706;
+            color: white;
+            border-color: #d97706;
+            box-shadow: 0 2px 8px rgba(217, 119, 6, 0.25);
+        }
+
+        /* Message List */
+        .message-list {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .message {
+            padding: 20px 24px;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .message:last-child { border-bottom: none; }
+        .message:hover {
+            background: #fafaf9;
+        }
+        .message.unread {
+            background: #fffbeb;
+            border-left: 3px solid #d97706;
+        }
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            align-items: center;
+        }
+        .message-subject {
+            font-weight: 600;
+            color: #1a1a1a;
+            font-size: 15px;
+        }
+        .message-meta {
+            font-size: 13px;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .message-sender {
+            font-weight: 500;
+            color: #374151;
+        }
+        .message-time {
+            color: #9ca3af;
+            font-size: 12px;
+        }
+        .message-summary {
+            font-size: 14px;
+            color: #4b5563;
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+        .message-tags { margin-top: 12px; }
+        .tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-right: 6px;
+            letter-spacing: 0.02em;
+        }
+        .tag-high { background: #fef2f2; color: #dc2626; }
+        .tag-medium { background: #fffbeb; color: #d97706; }
+        .tag-low { background: #eff6ff; color: #2563eb; }
+        .tag-unread { background: #fffbeb; color: #d97706; }
+        .tag-starred { background: #fefce8; color: #ca8a04; }
+        .tag-thread { background: #f3f4f6; color: #4b5563; }
+
+        /* Message Body */
+        .message-body {
+            display: none;
+            margin-top: 16px;
+            padding: 20px;
+            background: #fafaf9;
+            border-radius: 12px;
+            font-size: 14px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #374151;
+            line-height: 1.7;
+        }
+        .message-body.visible { display: block; }
+        .message-actions {
+            margin-top: 16px;
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 60px 40px;
+            color: #6b7280;
+        }
+        .loading::before {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 16px;
+            border: 3px solid #f3f4f6;
+            border-top-color: #d97706;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📧 Email Inbox</h1>
+            <div class="header-actions">
+                <a href="/settings" class="btn btn-secondary">Settings</a>
+                <button onclick="triggerSync()" class="btn btn-primary" id="sync-btn">Sync</button>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value">{{ counts.unread }}</div>
+                <div class="stat-label">Unread</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">{{ counts.high_relevance }}</div>
+                <div class="stat-label">High Priority</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">{{ counts.total }}</div>
+                <div class="stat-label">Total</div>
+            </div>
+        </div>
+
+        <div class="filters">
+            <button class="filter-btn active" onclick="filterByState('all')">All</button>
+            <button class="filter-btn" onclick="filterByState('unread')">Unread</button>
+            <button class="filter-btn" onclick="filterByRelevance('high')">High Priority</button>
+            <button class="filter-btn" onclick="filterByDays(7)">Last 7 days</button>
+        </div>
+
+        <div class="message-list" id="message-list">
+            {% for msg in messages %}
+            <div class="message {% if msg.msg_state == 'unread' %}unread{% endif %}"
+                 data-id="{{ msg.id }}"
+                 data-state="{{ msg.msg_state }}"
+                 data-relevance="{{ msg.relevance }}">
+                <div class="message-header">
+                    <div class="message-subject">{{ msg.subject or '(no subject)' }}</div>
+                </div>
+                <div class="message-meta">
+                    <span class="message-sender">{{ msg.sender or 'Unknown' }}</span>
+                    <span class="message-time">{{ msg.received_at[:10] }}</span>
+                </div>
+                {% if msg.summary_json %}
+                <div class="message-summary">{{ (msg.summary_json | from_json).summary | default('') }}</div>
+                {% endif %}
+                <div class="message-tags">
+                    {% if msg.thread_count and msg.thread_count > 1 %}<span class="tag tag-thread">{{ msg.thread_count }} messages</span>{% endif %}
+                    {% if msg.msg_state == 'unread' %}<span class="tag tag-unread">unread</span>{% endif %}
+                    {% if msg.msg_state == 'starred' %}<span class="tag tag-starred">starred</span>{% endif %}
+                    {% if msg.relevance == 'high' %}<span class="tag tag-high">high priority</span>{% endif %}
+                    {% if msg.relevance == 'medium' %}<span class="tag tag-medium">medium</span>{% endif %}
+                    {% if msg.relevance == 'low' %}<span class="tag tag-low">low</span>{% endif %}
+                </div>
+                <div class="message-body" id="body-{{ msg.id }}">
+                    Loading...
+                </div>
+                <div class="message-actions" style="display:none" id="actions-{{ msg.id }}">
+                    <button class="btn btn-secondary" onclick="markAsRead('{{ msg.id }}')">Mark as Read</button>
+                    <button class="btn btn-secondary" onclick="toggleBody('{{ msg.id }}')">Hide Body</button>
+                </div>
+            </div>
+            {% endfor %}
+
+            {% if not messages %}
+            <div class="loading">
+                <div>No messages found</div>
+                <p style="margin-top: 8px; font-size: 13px; color: #9ca3af;">Click "Sync" to fetch emails</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // Filter functions
+        function filterByState(state) {
+            updateFilters({ state: state === 'all' ? null : state });
+        }
+
+        function filterByRelevance(relevance) {
+            updateFilters({ relevance: relevance });
+        }
+
+        function filterByDays(days) {
+            updateFilters({ days: days });
+        }
+
+        async function updateFilters(params = {}) {
+            const query = new URLSearchParams();
+            if (params.state) query.set('state', params.state);
+            if (params.relevance) query.set('relevance', params.relevance);
+            if (params.days) query.set('days', params.days);
+
+            const response = await fetch(`/api/messages?${query}`);
+            const data = await response.json();
+
+            // Update UI
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+
+            // Re-render messages
+            const list = document.getElementById('message-list');
+            list.innerHTML = '';
+
+            if (data.messages.length === 0) {
+                list.innerHTML = '<div class="loading">No messages found.</div>';
+                return;
+            }
+
+            data.messages.forEach(msg => {
+                const div = document.createElement('div');
+                div.className = 'message' + (msg.msg_state === 'unread' ? ' unread' : '');
+                div.innerHTML = `
+                    <div class="message-header">
+                        <div class="message-subject">${escapeHtml(msg.subject || '(no subject)')}</div>
+                    </div>
+                    <div class="message-meta">
+                        <span class="message-sender">${escapeHtml(msg.sender || 'Unknown')}</span>
+                        <span class="message-time">${msg.received_at?.substring(0, 10) || ''}</span>
+                    </div>
+                    ${msg.summary ? `<div class="message-summary">${escapeHtml(msg.summary)}</div>` : ''}
+                    <div class="message-tags">
+                        ${msg.thread_count ? '<span class="tag tag-thread">' + msg.thread_count + ' messages</span>' : ''}
+                        ${msg.msg_state === 'unread' ? '<span class="tag tag-unread">unread</span>' : ''}
+                        ${msg.msg_state === 'starred' ? '<span class="tag tag-starred">starred</span>' : ''}
+                        ${msg.relevance === 'high' ? '<span class="tag tag-high">high priority</span>' : ''}
+                    </div>
+                    <div class="message-body" id="body-${msg.id}">Loading...</div>
+                `;
+                div.onclick = () => showMessageBody(msg.id);
+                list.appendChild(div);
+            });
+        }
+
+        // Show message body
+        async function showMessageBody(id) {
+            const bodyDiv = document.getElementById('body-' + id);
+            const actionsDiv = document.getElementById('actions-' + id);
+
+            if (bodyDiv.classList.contains('visible')) {
+                bodyDiv.classList.remove('visible');
+                if (actionsDiv) actionsDiv.style.display = 'none';
+                return;
+            }
+
+            if (!bodyDiv.dataset.loaded) {
+                const response = await fetch(`/api/messages/${id}`);
+                const msg = await response.json();
+                bodyDiv.textContent = msg.body_text || '(no content)';
+                bodyDiv.dataset.loaded = 'true';
+            }
+
+            bodyDiv.classList.add('visible');
+
+            // Add actions
+            if (!actionsDiv) {
+                const parent = bodyDiv.parentElement;
+                const actions = document.createElement('div');
+                actions.className = 'message-actions';
+                actions.id = 'actions-' + id;
+                actions.innerHTML = `
+                    <button class="btn btn-secondary" onclick="event.stopPropagation(); markAsRead('${id}')">Mark as Read</button>
+                    <button class="btn btn-secondary" onclick="event.stopPropagation(); toggleBody('${id}')">Hide Body</button>
+                `;
+                parent.appendChild(actions);
+            }
+        }
+
+        function toggleBody(id) {
+            const bodyDiv = document.getElementById('body-' + id);
+            const actionsDiv = document.getElementById('actions-' + id);
+            bodyDiv.classList.remove('visible');
+            if (actionsDiv) actionsDiv.style.display = 'none';
+        }
+
+        // Mark as read
+        async function markAsRead(id) {
+            await fetch(`/api/messages/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ msg_state: 'read' })
+            });
+            location.reload();
+        }
+
+        // Trigger sync
+        async function triggerSync() {
+            const btn = document.getElementById('sync-btn');
+            btn.textContent = 'Syncing...';
+            btn.disabled = true;
+
+            try {
+                await fetch('/api/sync', { method: 'POST' });
+                location.reload();
+            } catch (e) {
+                alert('Sync failed: ' + e.message);
+            } finally {
+                btn.textContent = 'Sync';
+                btn.disabled = false;
+            }
+        }
+
+        // Escape HTML
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Add click handlers
+        document.querySelectorAll('.message').forEach(el => {
+            el.addEventListener('click', () => {
+                const id = el.dataset.id;
+                showMessageBody(id);
+            });
+        });
+    </script>
+</body>
+</html>

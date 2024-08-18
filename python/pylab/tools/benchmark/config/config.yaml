@@ -1,0 +1,9 @@
+conn_infos:
+- db: db1
+  host: 172.26.95.251
+  port: 9030
+  pwd: ''
+  user: root
+query_mode: select count(1) from  iceberg.sql_test_db.lineitem_days_1000 where l_shipdate > '2023-10-01';
+# query_mode: select count(1) from lineitem_days_1000_mv where l_shipdate > '2023-10-01';
+

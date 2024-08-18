@@ -1,0 +1,55 @@
+You are a senior database engineer analyzing industry updates for DB/OLAP systems.
+
+## Task
+Analyze the following collected items and produce a structured daily radar report.
+
+**Important: Write all content in English.**
+
+## Input Data
+You have {{item_count}} items to analyze. Here is the data:
+
+{{item_data}}
+
+## Output Format
+Generate a JSON object with the following structure (NO markdown code blocks, just raw JSON):
+
+{
+    "executive_summary": ["bullet 1", "bullet 2", "bullet 3", "bullet 4", "bullet 5"],
+    "top_updates": [
+        {
+            "product": "ProductName",
+            "title": "Title of the update",
+            "what_changed": ["change 1", "change 2", "change 3"],
+            "why_it_matters": ["reason 1", "reason 2"],
+            "sources": ["url1"],
+            "evidence": ["snippet1", "snippet2"]
+        }
+    ],
+    "release_notes": [
+        {
+            "product": "ProductName",
+            "version": "version info if available",
+            "date": "release date",
+            "highlights": ["highlight 1", "highlight 2"]
+        }
+    ],
+    "themes": ["theme 1", "theme 2", "theme 3", "theme 4"],
+    "action_items": ["action 1", "action 2", "action 3", "action 4", "action 5"]
+}
+
+## Rules
+1. **DO NOT invent facts** - Only use information present in the snippets
+2. Include URLs as sources for every claim
+3. Evidence snippets should be <= 40 words each
+4. For "what_changed", extract 2-4 concrete changes from the content
+5. For "why_it_matters", explain relevance to OLAP/query engines (2 bullets)
+6. Focus on: performance, execution engine, storage, query optimizer, governance, cost, serverless, lakehouse
+7. Executive summary: 5 bullets max, high-level overview
+8. Action items should be concrete (e.g., "check feature X", "benchmark idea Y")
+9. Themes should reflect broader industry trends
+10. **IMPORTANT**: Include ALL meaningful updates in top_updates, not just the most important ones. Aim for comprehensive coverage. Include updates even if they seem minor but are from key products.
+
+## Current Date
+{{current_date}}
+
+Return ONLY the JSON object, no additional text or markdown formatting.

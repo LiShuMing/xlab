@@ -1,0 +1,21 @@
+[server]
+grpc_port = 9090
+flight_sql_port = 9091
+
+[storage]
+base_path = "file:///tmp/umbra-data"
+
+[embedding]
+provider = "openai"
+model = "text-embedding-3-small"
+dimensions = 1536
+api_key = "${UMBRA_OPENAI_API_KEY}"
+base_url = "https://api.openai.com/v1"
+batch_size = 100
+
+[search]
+semantic_weight = 0.5
+bm25_weight = 0.3
+entity_boost_weight = 0.2
+default_top_k = 20
+default_threshold = 0.1

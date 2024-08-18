@@ -1,0 +1,165 @@
+package com.starrocks.itest.benchmark.cases.multimvs
+
+import com.starrocks.itest.framework.MVSuite
+import com.starrocks.itest.framework.utils.Util
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
+import java.util.stream.Stream
+
+class MultiMvsBench : MVSuite() {
+    val SSB_SQLS = arrayOf(
+        "q1-1.sql", // 0
+        "q1-2.sql", // 1
+        "q1-3.sql", // 2
+
+        "q2-1.sql", // 3
+        "q2-2.sql", // 4
+        "q2-3.sql", // 5
+
+        "q3-1.sql", // 6
+        "q3-2.sql", // 7
+        "q3-3.sql", // 8
+        "q3-4.sql", // 9
+        "q4-1.sql", // 10
+        "q4-2.sql", // 11
+        "q4-3.sql", // 12
+    )
+
+    private val MV_NAME = "lineorder_flat_mv"
+    private val MV_NUM = 100
+
+    private fun getMVName(i: Int): String {
+        return "${MV_NAME}_${i}"
+    }
+
+    @BeforeAll
+    override fun before() {
+        super.before()
+
+        // create base tables
+        val createTableSql = Util.readContentFromResource("ssb/create_table.sql")
+        sql(createTableSql)
+
+        // add constraints
+        val addConstraintsSql = Util.readContentFromResource("ssb/add_constraints.sql")
+        sql(addConstraintsSql)
+
+        // mock data
+        val insertDataSql = Util.readContentFromResource("ssb/insert.sql")
+        sql(insertDataSql)
+
+    }
+
+    @AfterAll
+    override fun after() {
+        super.after()
+    }
+
+    val query = "SELECT\n" +
+            "       l.LO_ORDERKEY AS LO_ORDERKEY,\n" +
+            "       l.LO_LINENUMBER AS LO_LINENUMBER,\n" +
+            "       l.LO_CUSTKEY AS LO_CUSTKEY,\n" +
+            "       l.LO_PARTKEY AS LO_PARTKEY,\n" +
+            "       l.LO_SUPPKEY AS LO_SUPPKEY,\n" +
+            "       l.LO_ORDERDATE AS LO_ORDERDATE,\n" +
+            "       l.LO_ORDERPRIORITY AS LO_ORDERPRIORITY,\n" +
+            "       l.LO_SHIPPRIORITY AS LO_SHIPPRIORITY,\n" +
+            "       l.LO_QUANTITY AS LO_QUANTITY,\n" +
+            "       l.LO_EXTENDEDPRICE AS LO_EXTENDEDPRICE,\n" +
+            "       l.LO_ORDTOTALPRICE AS LO_ORDTOTALPRICE,\n" +
+            "       l.LO_DISCOUNT AS LO_DISCOUNT,\n" +
+            "       l.LO_REVENUE AS LO_REVENUE,\n" +
+            "       l.LO_SUPPLYCOST AS LO_SUPPLYCOST,\n" +
+            "       l.LO_TAX AS LO_TAX,\n" +
+            "       l.LO_COMMITDATE AS LO_COMMITDATE,\n" +
+            "       l.LO_SHIPMODE AS LO_SHIPMODE,\n" +
+            "       c.C_NAME AS C_NAME,\n" +
+            "       c.C_ADDRESS AS C_ADDRESS,\n" +
+            "       c.C_CITY AS C_CITY,\n" +
+            "       c.C_NATION AS C_NATION,\n" +
+            "       c.C_REGION AS C_REGION,\n" +
+            "       c.C_PHONE AS C_PHONE,\n" +
+            "       c.C_MKTSEGMENT AS C_MKTSEGMENT,\n" +
+            "       s.S_NAME AS S_NAME,\n" +
+            "       s.S_ADDRESS AS S_ADDRESS,\n" +
+            "       s.S_CITY AS S_CITY,\n" +
+            "       s.S_NATION AS S_NATION,\n" +
+            "       s.S_REGION AS S_REGION,\n" +
+            "       s.S_PHONE AS S_PHONE,\n" +
+            "       p.P_NAME AS P_NAME,\n" +
+            "       p.P_MFGR AS P_MFGR,\n" +
+            "       p.P_CATEGORY AS P_CATEGORY,\n" +
+            "       p.P_BRAND AS P_BRAND,\n" +
+            "       p.P_COLOR AS P_COLOR,\n" +
+            "       p.P_TYPE AS P_TYPE,\n" +
+            "       p.P_SIZE AS P_SIZE,\n" +
+            "       p.P_CONTAINER AS P_CONTAINER,\n" +
+            "       d.d_date AS d_date,\n" +
+            "       d.d_dayofweek AS d_dayofweek,\n" +
+            "       d.d_month AS d_month,\n" +
+            "       d.d_year AS d_year,\n" +
+            "       d.d_yearmonthnum AS d_yearmonthnum,\n" +
+            "       d.d_yearmonth AS d_yearmonth,\n" +
+            "       d.d_daynuminweek AS d_daynuminweek,\n" +
+            "       d.d_daynuminmonth AS d_daynuminmonth,\n" +
+            "       d.d_daynuminyear AS d_daynuminyear,\n" +
+            "       d.d_monthnuminyear AS d_monthnuminyear,\n" +
+            "       d.d_weeknuminyear AS d_weeknuminyear,\n" +
+            "       d.d_sellingseason AS d_sellingseason,\n" +
+            "       d.d_lastdayinweekfl AS d_lastdayinweekfl,\n" +
+            "       d.d_lastdayinmonthfl AS d_lastdayinmonthfl,\n" +
+            "       d.d_holidayfl AS d_holidayfl,\n" +
+            "       d.d_weekdayfl AS d_weekdayfl\n" +
+            "   FROM lineorder AS l\n" +
+            "            INNER JOIN customer AS c ON c.C_CUSTKEY = l.LO_CUSTKEY\n" +
+            "            INNER JOIN supplier AS s ON s.S_SUPPKEY = l.LO_SUPPKEY\n" +
+            "            INNER JOIN part AS p ON p.P_PARTKEY = l.LO_PARTKEY\n" +
+            "            INNER JOIN dates AS d ON l.lo_orderdate = d.d_datekey;\n"
+
+    fun getMVDefine(i: Int): String {
+        return "CREATE MATERIALIZED VIEW ${MV_NAME}_${i}\n" +
+                "DISTRIBUTED BY HASH(LO_ORDERDATE, LO_ORDERKEY) BUCKETS 48\n" +
+                "PARTITION BY (lo_orderdate) \n" +
+                "REFRESH DEFERRED MANUAL\n" +
+                "AS " +
+                "$query"
+    }
+
+    private fun getParameters(): Stream<Arguments> {
+        return (0..200 step  25).map{x -> Arguments.of(x)}.stream()
+    }
+
+    @ParameterizedTest
+    @MethodSource("getParameters")
+    fun testExplainTimes(mvNum: Int) {
+        // create mv
+        for (i in 0..mvNum) {
+            val mvName = getMVName(i)
+            if (existsMV(mvName)) {
+                continue
+            }
+
+            val define = getMVDefine(i)
+            sql(define)
+
+            refreshMV(mvName)
+        }
+
+        //assertContains(query, MV_NAME)
+
+        val realMVNum = mvNum + 1
+        rdExplainTime(query, "multi mvs(num=${realMVNum}) cold run costs(ms)")
+        // 1. record query0 explain cost time
+        for (i in 0..2) {
+            explain(query)
+        }
+        rdExplainTime(query, "multi mvs(num=${realMVNum}) hot run (after 3 runs) costs(ms)")
+
+        // check hit mv
+        rdHeader("Whether can hit mv(num=${realMVNum})?")
+        rdContent(if (isContains(query, MV_NAME)) "hit mv" else "no hit mv")
+    }
+}

@@ -1,0 +1,110 @@
+{
+  "cityId": "shanghai",
+  "cityName": "上海",
+  "lines": [
+    {
+      "id": "sh-line-1",
+      "name": "1号线",
+      "color": "#E6002D",
+      "stations": [
+        { "id": "sh-fj", "name": "富锦路", "x": 1026, "y": 108 },
+        { "id": "sh-shanghai-railway", "name": "上海火车站", "x": 1048, "y": 1116 },
+        { "id": "sh-people-square", "name": "人民广场", "x": 1052, "y": 1408 },
+        { "id": "sh-south-shaanxi", "name": "陕西南路", "x": 944, "y": 1572 },
+        { "id": "sh-xujiahui", "name": "徐家汇", "x": 836, "y": 1740 },
+        { "id": "sh-xinzhuang", "name": "莘庄", "x": 590, "y": 2190 }
+      ]
+    },
+    {
+      "id": "sh-line-2",
+      "name": "2号线",
+      "color": "#8CC63E",
+      "stations": [
+        { "id": "sh-hongqiao-airport", "name": "虹桥2号航站楼", "x": 540, "y": 1330 },
+        { "id": "sh-zhongshan-park", "name": "中山公园", "x": 794, "y": 1426 },
+        { "id": "sh-jingan-temple", "name": "静安寺", "x": 906, "y": 1470 },
+        { "id": "sh-people-square", "name": "人民广场", "x": 1052, "y": 1408 },
+        { "id": "sh-century-avenue", "name": "世纪大道", "x": 1360, "y": 1550 },
+        { "id": "sh-longyang-road", "name": "龙阳路", "x": 1560, "y": 1746 },
+        { "id": "sh-pudong-airport", "name": "浦东1号2号航站楼", "x": 2240, "y": 2140 }
+      ]
+    },
+    {
+      "id": "sh-line-4",
+      "name": "4号线",
+      "color": "#522398",
+      "stations": [
+        { "id": "sh-shanghai-railway", "name": "上海火车站", "x": 1048, "y": 1116 },
+        { "id": "sh-zhongshan-park", "name": "中山公园", "x": 794, "y": 1426 },
+        { "id": "sh-shanghai-stadium", "name": "上海体育馆", "x": 874, "y": 1816 },
+        { "id": "sh-century-avenue", "name": "世纪大道", "x": 1360, "y": 1550 },
+        { "id": "sh-hailun-road", "name": "海伦路", "x": 1240, "y": 1160 },
+        { "id": "sh-shanghai-railway", "name": "上海火车站", "x": 1048, "y": 1116 }
+      ]
+    },
+    {
+      "id": "sh-line-7",
+      "name": "7号线",
+      "color": "#F58220",
+      "stations": [
+        { "id": "sh-meilan-lake", "name": "美兰湖", "x": 632, "y": 88 },
+        { "id": "sh-zhenru", "name": "真如", "x": 860, "y": 1122 },
+        { "id": "sh-jingan-temple", "name": "静安寺", "x": 906, "y": 1470 },
+        { "id": "sh-longyang-road", "name": "龙阳路", "x": 1560, "y": 1746 },
+        { "id": "sh-huamu-road", "name": "花木路", "x": 1660, "y": 1660 }
+      ]
+    },
+    {
+      "id": "sh-line-8",
+      "name": "8号线",
+      "color": "#009DDC",
+      "stations": [
+        { "id": "sh-shiguang-road", "name": "市光路", "x": 1270, "y": 714 },
+        { "id": "sh-hailun-road", "name": "海伦路", "x": 1240, "y": 1160 },
+        { "id": "sh-people-square", "name": "人民广场", "x": 1052, "y": 1408 },
+        { "id": "sh-laoximen", "name": "老西门", "x": 1150, "y": 1510 },
+        { "id": "sh-oriental-sports", "name": "东方体育中心", "x": 1124, "y": 2112 },
+        { "id": "sh-shendu-highway", "name": "沈杜公路", "x": 1300, "y": 2576 }
+      ]
+    },
+    {
+      "id": "sh-line-10",
+      "name": "10号线",
+      "color": "#B8A7D9",
+      "stations": [
+        { "id": "sh-hongqiao-railway", "name": "虹桥火车站", "x": 534, "y": 1364 },
+        { "id": "sh-jiaotong-university", "name": "交通大学", "x": 878, "y": 1670 },
+        { "id": "sh-south-shaanxi", "name": "陕西南路", "x": 944, "y": 1572 },
+        { "id": "sh-laoximen", "name": "老西门", "x": 1150, "y": 1510 },
+        { "id": "sh-hailun-road", "name": "海伦路", "x": 1240, "y": 1160 },
+        { "id": "sh-wujiaochang", "name": "五角场", "x": 1516, "y": 842 }
+      ]
+    },
+    {
+      "id": "sh-line-11",
+      "name": "11号线",
+      "color": "#7A1830",
+      "stations": [
+        { "id": "sh-jiading-north", "name": "嘉定北", "x": 152, "y": 376 },
+        { "id": "sh-shanghai-west", "name": "上海西站", "x": 836, "y": 1052 },
+        { "id": "sh-jiangsu-road", "name": "江苏路", "x": 846, "y": 1518 },
+        { "id": "sh-jiaotong-university", "name": "交通大学", "x": 878, "y": 1670 },
+        { "id": "sh-xujiahui", "name": "徐家汇", "x": 836, "y": 1740 },
+        { "id": "sh-disney", "name": "迪士尼", "x": 1908, "y": 1990 }
+      ]
+    },
+    {
+      "id": "sh-line-13",
+      "name": "13号线",
+      "color": "#EFA7C8",
+      "stations": [
+        { "id": "sh-jinyun-road", "name": "金运路", "x": 260, "y": 1234 },
+        { "id": "sh-zhenru", "name": "真如", "x": 860, "y": 1122 },
+        { "id": "sh-jingan-temple", "name": "静安寺", "x": 906, "y": 1470 },
+        { "id": "sh-south-shaanxi", "name": "陕西南路", "x": 944, "y": 1572 },
+        { "id": "sh-lupu-bridge", "name": "世博会博物馆", "x": 1208, "y": 1760 },
+        { "id": "sh-zhangjiang-road", "name": "张江路", "x": 1760, "y": 1904 }
+      ]
+    }
+  ]
+}

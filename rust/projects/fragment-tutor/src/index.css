@@ -1,0 +1,178 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --surface: 248 250 252;
+    --panel: 255 255 255;
+    --ink: 15 23 42;
+    --muted: 100 116 139;
+    --line: 226 232 240;
+  }
+
+  html {
+    background: rgb(var(--surface));
+  }
+
+  body {
+    @apply text-slate-950 antialiased;
+    background:
+      linear-gradient(90deg, rgba(15, 23, 42, 0.035) 1px, transparent 1px),
+      linear-gradient(rgba(15, 23, 42, 0.035) 1px, transparent 1px),
+      rgb(var(--surface));
+    background-size: 28px 28px;
+    font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
+  }
+
+  * {
+    @apply border-slate-200;
+  }
+
+  button,
+  a,
+  input,
+  textarea,
+  select {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex h-9 items-center justify-center gap-2 rounded-md px-3 text-sm font-medium
+           transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-cyan-500/30
+           disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply btn bg-slate-950 text-white hover:bg-slate-800;
+  }
+
+  .btn-secondary {
+    @apply btn border border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50;
+  }
+
+  .btn-accent {
+    @apply btn bg-cyan-600 text-white hover:bg-cyan-700;
+  }
+
+  .btn-ghost {
+    @apply btn bg-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-950;
+  }
+
+  .btn-danger {
+    @apply btn bg-rose-600 text-white hover:bg-rose-700;
+  }
+
+  .icon-button {
+    @apply inline-flex h-9 w-9 items-center justify-center rounded-md border border-transparent
+           text-slate-500 transition-colors hover:border-slate-200 hover:bg-white hover:text-slate-950;
+  }
+
+  .card {
+    @apply overflow-hidden rounded-lg border border-slate-200/80 bg-white shadow-none;
+  }
+
+  .panel {
+    @apply rounded-lg border border-slate-200/80 bg-white;
+  }
+
+  .input {
+    @apply w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-950
+           outline-none transition-colors placeholder:text-slate-400
+           focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/10;
+  }
+
+  .label {
+    @apply mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs font-medium;
+  }
+
+  .badge-primary {
+    @apply badge border-cyan-200 bg-cyan-50 text-cyan-700;
+  }
+
+  .badge-success {
+    @apply badge border-emerald-200 bg-emerald-50 text-emerald-700;
+  }
+
+  .badge-warning {
+    @apply badge border-amber-200 bg-amber-50 text-amber-700;
+  }
+
+  .badge-error {
+    @apply badge border-rose-200 bg-rose-50 text-rose-700;
+  }
+
+  .sidebar-item {
+    @apply flex h-10 w-full items-center gap-3 rounded-md px-3 text-sm font-medium text-slate-500
+           transition-colors hover:bg-slate-100 hover:text-slate-950;
+  }
+
+  .sidebar-item-active {
+    @apply sidebar-item bg-slate-950 text-white hover:bg-slate-900 hover:text-white;
+  }
+
+  .stat-card {
+    @apply panel p-4;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .animate-in {
+    animation: animate-in 0.18s ease-out;
+  }
+
+  .view-enter {
+    animation: view-enter 0.22s ease-out;
+  }
+
+  @keyframes animate-in {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes view-enter {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.slate.300') transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: theme('colors.slate.300');
+    border-radius: 3px;
+  }
+}

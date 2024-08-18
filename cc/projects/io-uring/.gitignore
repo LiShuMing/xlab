@@ -1,0 +1,70 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+*.dSYM
+
+doc/sphinx/build/*
+docs/build/*
+docs/doxygen
+skiplist.xcodeproj/*
+build/*
+
+# Python
+__pycache__
+.cache
+*.pyc
+.hypothesis
+
+.eggs
+*.egg
+dist/
+orderedstructs.egg-info/
+
+.project
+.pydevproject
+
+.DS_Store
+
+# Temporary stuff
+tmp/
+
+# Dependency file
+.depend
+
+# PyCharm
+.idea/
+
+# Benchmarks
+.benchmarks/*
+benchmark_*.svg
+
+# CMake artifacts
+cmake-build-debug/
+cmake-build-release/

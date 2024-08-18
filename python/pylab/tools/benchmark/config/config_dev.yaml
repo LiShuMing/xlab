@@ -1,0 +1,7 @@
+conn_infos:
+- db: test
+  host: 172.26.92.227
+  port: 9131
+  pwd: ''
+  user: root
+query_mode: SELECT * FROM mv_iceberg_56df583fbae748a991253d5d4b93828d.sql_test_db.lineitem_days;

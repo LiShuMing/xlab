@@ -1,0 +1,22 @@
+{
+  "name": "bridge_case_01",
+  "description": "Two users with overlapping interests in coffee, AI, and Shanghai weekend activities.",
+  "input": {
+    "user_a_contexts": [
+      {"text": "喜欢在上海喝咖啡和逛展览，周末会去citywalk", "topics": ["咖啡", "展览", "citywalk", "上海"]},
+      {"text": "数据库工程师，关注AI infra和开源技术", "topics": ["AI infra", "数据库", "开源"]}
+    ],
+    "user_b_contexts": [
+      {"text": "上海咖啡店探店和AI技术交流，喜欢参加科技展览", "topics": ["咖啡", "AI", "展览", "上海"]},
+      {"text": "周末喜欢去夜市和轻户外活动", "topics": ["周末", "夜市", "轻户外"]}
+    ]
+  },
+  "expected": {
+    "connection_reason": "你们在上海、咖啡、AI和周末活动这些话题上有自然交集，适合从低压力的生活话题开始连接。",
+    "icebreakers": [
+      "你最近有没有发现什么适合周末走走的地方？",
+      "你更喜欢咖啡馆聊天，还是边走边聊的citywalk？",
+      "最近有什么让你觉得有意思的新技术话题吗？"
+    ]
+  }
+}

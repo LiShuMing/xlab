@@ -1,0 +1,49 @@
+# Local development services for liminalis.
+#
+# This file is OPTIONAL — if you already have PostgreSQL and Redis running
+# locally (or pointing to a managed service), set the matching env vars in
+# `.env.local` and skip `docker compose up`.
+#
+# Ports default to 5433/6380 to avoid clashing with system-installed
+# PostgreSQL/Redis on 5432/6379. Match these in your env:
+#   PGSQL_HOST=localhost
+#   PGSQL_PORT=5433
+#   PGSQL_USER=liminalis
+#   PGSQL_PASSWORD=liminalis
+#   PGSQL_DATABASE=liminalis_db
+#   REDIS_URL=redis://localhost:6380/0
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: liminalis-postgres
+    environment:
+      POSTGRES_USER: liminalis
+      POSTGRES_PASSWORD: liminalis
+      POSTGRES_DB: liminalis_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - liminalis_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U liminalis -d liminalis_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: liminalis-redis
+    ports:
+      - "6380:6379"
+    volumes:
+      - liminalis_redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  liminalis_pgdata:
+  liminalis_redisdata:

@@ -1,0 +1,83 @@
+{
+  "pages": [
+    {
+      "path": "pages/login/index",
+      "style": {
+        "navigationBarTitleText": "Login",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationBarTitleText": "Record",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/chat/index",
+      "style": {
+        "navigationBarTitleText": "Chat",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/timeline/index",
+      "style": {
+        "navigationBarTitleText": "Timeline",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/profile/index",
+      "style": {
+        "navigationBarTitleText": "Me",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/role/index",
+      "style": {
+        "navigationBarTitleText": "Roles",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/record/index",
+      "style": {
+        "navigationBarTitleText": "Record Detail",
+        "navigationStyle": "custom"
+      }
+    }
+  ],
+  "tabBar": {
+    "color": "#5f5b52",
+    "selectedColor": "#1f1f1d",
+    "backgroundColor": "#f4f1eb",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "Record"
+      },
+      {
+        "pagePath": "pages/chat/index",
+        "text": "Chat"
+      },
+      {
+        "pagePath": "pages/timeline/index",
+        "text": "Timeline"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "Me"
+      }
+    ]
+  },
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "py-ego",
+    "navigationBarBackgroundColor": "#f4f1eb",
+    "backgroundColor": "#f4f1eb"
+  }
+}

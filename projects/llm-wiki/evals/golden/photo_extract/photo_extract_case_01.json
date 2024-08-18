@@ -1,0 +1,19 @@
+{
+  "name": "photo_extract_case_01",
+  "description": "Street photo in Shanghai during weekend.",
+  "input": {
+    "filename": "shanghai_street_weekend.jpg",
+    "metadata": {
+      "city": "上海",
+      "district": "静安区",
+      "content_type": "image/jpeg",
+      "width": 4032,
+      "height": 3024
+    }
+  },
+  "expected": {
+    "topics": ["城市漫步", "周末活动", "上海"],
+    "sensitivity": 1,
+    "min_confidence": 0.8
+  }
+}

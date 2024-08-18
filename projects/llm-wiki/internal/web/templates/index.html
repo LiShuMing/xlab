@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Context Social</title>
+  <style>
+    :root {
+      --page: #f4f0e7;
+      --paper: #fffefa;
+      --soft: #f8f4eb;
+      --ink: #211d19;
+      --muted: #746b61;
+      --subtle: #9c9287;
+      --line: #ded5c8;
+      --line-2: #c9bdae;
+      --accent: #b85c38;
+      --blue: #315f7d;
+      --green: #3f6f58;
+      --red: #9d3d3f;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; color: var(--ink); background: var(--page); font-family: ui-serif, Georgia, Cambria, "Times New Roman", serif; font-size: 15px; letter-spacing: 0; }
+    button, input, select, textarea { font: inherit; color: var(--ink); letter-spacing: 0; }
+    button { min-height: 38px; border: 1px solid var(--line-2); border-radius: 999px; background: transparent; padding: 0 15px; cursor: pointer; }
+    button.primary { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+    button.text { border-color: transparent; padding: 0; color: var(--accent); min-height: 0; }
+    input, select, textarea { width: 100%; border: 1px solid var(--line); background: var(--paper); padding: 10px 11px; outline: none; border-radius: 2px; }
+    textarea { resize: vertical; line-height: 1.5; min-height: 74px; max-height: 180px; }
+    input:focus, select:focus, textarea:focus { border-color: var(--ink); }
+    h1, h2, h3 { margin: 0; font-weight: 520; }
+    h1 { font-size: 22px; }
+    h2 { font-size: 20px; }
+    h3 { font-size: 16px; }
+    .app { min-height: 100vh; display: grid; grid-template-rows: auto 1fr auto; }
+    header { min-height: 64px; display: flex; align-items: center; justify-content: space-between; padding: 0 18px; border-bottom: 1px solid var(--line); background: rgba(244,240,231,.96); position: sticky; top: 0; z-index: 10; }
+    .brand { display: flex; flex-direction: column; gap: 2px; }
+    .kicker, .muted { color: var(--muted); }
+    .small { font-size: 13px; }
+    .pill { display: inline-flex; align-items: center; min-height: 24px; padding: 2px 8px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); background: rgba(255,254,250,.55); font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 12px; }
+    .pill.good { color: var(--green); border-color: rgba(63,111,88,.28); }
+    .pill.warn { color: var(--accent); border-color: rgba(184,92,56,.28); }
+    .pill.bad { color: var(--red); border-color: rgba(157,61,63,.28); }
+    .pill.blue { color: var(--blue); border-color: rgba(49,95,125,.28); }
+    main { width: 100%; max-width: 1120px; margin: 0 auto; padding: 14px; min-height: 0; }
+    .page { display: none; height: 100%; }
+    .page.active { display: block; }
+    .mobile-shell { min-height: calc(100vh - 142px); display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 18px; }
+    .chat-card, .side-card, .sheet { border: 1px solid var(--line); background: var(--paper); }
+    .chat-card { min-height: 0; display: grid; grid-template-rows: auto 1fr auto; }
+    .chat-head { padding: 14px; border-bottom: 1px solid var(--line); background: var(--soft); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .identity { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--ink); color: var(--paper); display: grid; place-items: center; flex: 0 0 auto; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .composer { padding: 10px; border-top: 1px solid var(--line); background: rgba(248,244,235,.98); }
+    .composer-box { border: 1px solid var(--line); background: var(--paper); padding: 8px; border-radius: 18px; }
+    .composer textarea { border: 0; padding: 8px 10px; background: transparent; font-size: 16px; min-height: 42px; max-height: 108px; }
+    .composer textarea:focus { border: 0; }
+    .composer-tools { display: flex; justify-content: space-between; align-items: center; gap: 8px; border-top: 1px solid var(--line); padding-top: 8px; margin-top: 4px; flex-wrap: wrap; }
+    .tool-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .tool-row input { width: 96px; }
+    .tool-row select { width: 124px; }
+    .file-name { color: var(--muted); font-size: 13px; max-width: 210px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .feed { overflow: auto; min-height: 0; padding: 18px 14px 22px; background: linear-gradient(180deg, rgba(255,254,250,.45), rgba(248,244,235,.72)); }
+    .message-row { display: flex; gap: 9px; align-items: flex-end; margin: 0 auto 14px; max-width: 780px; }
+    .message-row.user { justify-content: flex-end; }
+    .message-row.ai { justify-content: flex-start; }
+    .chat-avatar { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; flex: 0 0 auto; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 12px; background: var(--ink); color: var(--paper); }
+    .message-row.ai .chat-avatar { background: var(--accent); }
+    .message { max-width: min(76%, 560px); }
+    .message-meta { margin: 0 4px 5px; color: var(--muted); font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 12px; }
+    .message-row.user .message-meta { text-align: right; }
+    .bubble { border: 1px solid var(--line); border-radius: 16px; padding: 10px 12px; box-shadow: 0 1px 0 rgba(33,29,25,.04); }
+    .bubble.ai { background: var(--paper); border-bottom-left-radius: 4px; }
+    .bubble.ai.pending { opacity: .76; }
+    .bubble.user { background: #dfeccd; border-color: #c7d9ac; border-bottom-right-radius: 4px; }
+    .bubble-head { display: none; }
+    .bubble-text { white-space: pre-wrap; line-height: 1.55; font-size: 16px; }
+    .bubble img { width: 100%; max-height: 360px; object-fit: cover; border: 1px solid var(--line); border-radius: 12px; margin-top: 10px; }
+    .ai-note { margin-top: 9px; border-left: 2px solid var(--accent); background: rgba(248,244,235,.62); padding: 7px 9px; color: var(--muted); line-height: 1.45; font-size: 13px; }
+    .suggestions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .suggestions .pill { cursor: pointer; }
+    .composer-actions { display: flex; align-items: flex-end; gap: 8px; }
+    .composer-main { display: grid; grid-template-columns: 38px minmax(0, 1fr) auto; gap: 8px; align-items: end; }
+    .composer-main button { min-width: 38px; padding: 0 11px; }
+    .side-card { padding: 14px; overflow: auto; }
+    .side-section { padding-bottom: 16px; margin-bottom: 16px; border-bottom: 1px solid var(--line); }
+    .side-section:last-child { border-bottom: 0; margin-bottom: 0; }
+    .memory-list, .people-list { display: grid; gap: 10px; }
+    .memory-item, .person-card { border: 1px solid var(--line); background: var(--paper); padding: 12px; }
+    .memory-item textarea { margin-top: 8px; min-height: 90px; background: var(--soft); }
+    .memory-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .tabs { height: 64px; display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); background: rgba(244,240,231,.96); position: sticky; bottom: 0; z-index: 20; }
+    .tab { border: 0; border-radius: 0; background: transparent; color: var(--muted); display: grid; place-items: center; min-height: 64px; }
+    .tab.active { color: var(--ink); background: rgba(255,254,250,.62); }
+    .auth { position: fixed; inset: 0; z-index: 50; background: rgba(244,240,231,.96); display: none; align-items: center; justify-content: center; padding: 20px; }
+    .auth.visible { display: flex; }
+    .login-card { width: min(420px, 100%); border: 1px solid var(--line); background: var(--paper); padding: 22px; }
+    .login-card input { margin-top: 10px; }
+    .metric { display: grid; grid-template-columns: 1fr auto; gap: 10px; border-bottom: 1px solid var(--line); padding: 8px 0; }
+    .metric:last-child { border-bottom: 0; }
+    .status { color: var(--muted); font-size: 13px; margin-top: 8px; min-height: 18px; }
+    .empty { border: 1px dashed var(--line-2); background: rgba(255,254,250,.45); color: var(--muted); padding: 22px; }
+    .inline-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+    .link-action { border: 0; border-radius: 0; padding: 0; min-height: 0; color: var(--accent); background: transparent; font-size: 13px; }
+    pre { white-space: pre-wrap; word-break: break-word; margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; line-height: 1.45; max-height: 220px; overflow: auto; }
+    @media (max-width: 820px) {
+      header { min-height: 58px; }
+      main { padding: 0; }
+      .mobile-shell { min-height: calc(100vh - 122px); grid-template-columns: 1fr; gap: 0; }
+      .side-card { display: none; }
+      .chat-card, .sheet { border-left: 0; border-right: 0; }
+      .page { min-height: calc(100vh - 122px); }
+      .tool-row input { width: 92px; }
+      .tool-row select { width: 118px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="auth visible" id="authPanel">
+    <div class="login-card">
+      <h1>Context Social</h1>
+      <p class="muted">输入 4 位 PIN 进入。同一网络地址 + 同一 PIN 会回到同一个 memory 账号。</p>
+      <input id="loginUser" placeholder="optional handle, e.g. kevin" />
+      <input id="loginPin" type="password" inputmode="numeric" maxlength="4" placeholder="4-digit PIN" />
+      <div style="height:12px"></div>
+      <button class="primary" id="loginBtn" style="width:100%">Login</button>
+      <div class="status" id="loginStatus"></div>
+    </div>
+  </div>
+
+  <div class="app">
+    <header>
+      <div class="brand">
+        <h1>Context Social</h1>
+        <span class="kicker small">AI memory for real relationships</span>
+      </div>
+      <span class="pill blue" id="provider">provider</span>
+    </header>
+
+    <main>
+      <section class="page active" id="tab-chat">
+        <div class="mobile-shell">
+          <section class="chat-card">
+            <div class="chat-head">
+              <div class="identity">
+                <div class="avatar" id="avatar">?</div>
+                <div>
+                  <div id="userLabel">user</div>
+                  <div class="muted small">Chat with AI. Everything useful becomes memory.</div>
+                </div>
+              </div>
+              <button class="text" id="seed">Seed demo</button>
+            </div>
+            <div class="feed" id="feedList"></div>
+            <div class="composer">
+              <div class="composer-box">
+                <div class="composer-main">
+                  <button id="attachPhoto">+</button>
+                  <textarea id="chatInput" placeholder="和 AI 说点什么，或直接给它一个指令..."></textarea>
+                  <button class="primary" id="sendChat">Send</button>
+                </div>
+                <div class="composer-tools">
+                  <div class="tool-row">
+                    <input type="file" id="chatPhoto" accept="image/*" hidden />
+                    <span class="file-name" id="fileName"></span>
+                  </div>
+                  <div class="tool-row">
+                    <input id="chatCity" placeholder="city" />
+                    <input id="chatDistrict" placeholder="district" />
+                    <select id="chatVisibility">
+                      <option value="match_only">match_only</option>
+                      <option value="private">private</option>
+                      <option value="public">public</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="status" id="status">Ready.</div>
+            </div>
+          </section>
+          <aside class="side-card">
+            <div class="side-section">
+              <h2>AI memory</h2>
+              <div id="signalList" style="margin-top:10px"></div>
+            </div>
+            <div class="side-section">
+              <h2>People</h2>
+              <div id="matchList" style="margin-top:10px"></div>
+              <button class="primary" id="semantic" style="width:100%; margin-top:10px">Find people</button>
+            </div>
+            <div class="side-section">
+              <h2>Result</h2>
+              <pre id="result">Ready.</pre>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="page" id="tab-memory">
+        <div class="sheet" style="padding:16px">
+          <h2>My Memory</h2>
+          <p class="muted">These are the context signals AI has collected from your chats and photos.</p>
+          <input id="contextQuery" placeholder="Search memory" />
+          <div class="memory-list" id="contexts" style="margin-top:14px"></div>
+        </div>
+      </section>
+
+      <section class="page" id="tab-people">
+        <div class="sheet" style="padding:16px">
+          <h2>People</h2>
+          <p class="muted">AI recommends strangers based on memory that is safe for matching.</p>
+          <div class="people-list" id="peopleList"></div>
+          <div style="height:12px"></div>
+          <button class="primary" id="findPeople" style="width:100%">Find people</button>
+          <div class="side-section" style="margin-top:18px">
+            <h3>Privacy summary</h3>
+            <div id="privacy"></div>
+          </div>
+          <details style="margin-top:14px">
+            <summary class="muted">Advanced</summary>
+            <div style="height:10px"></div>
+            <button id="embed" style="width:100%">Prepare embeddings</button>
+            <div style="height:8px"></div>
+            <select id="target"></select>
+            <div style="height:8px"></div>
+            <button id="bridge" style="width:100%">Generate bridge</button>
+          </details>
+        </div>
+      </section>
+    </main>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="chat">Chat</button>
+      <button class="tab" data-tab="memory">Memory</button>
+      <button class="tab" data-tab="people">People</button>
+    </nav>
+  </div>
+
+  <script>
+    let state = {};
+    let currentUser = "";
+    let ephemeralReplies = [];
+    let localMessages = [];
+    let isSending = false;
+    const $ = id => document.getElementById(id);
+    const savedUser = localStorage.getItem("ctx_username") || "";
+    if (savedUser) $("loginUser").value = savedUser;
+    const status = text => { $("status").textContent = text || "Ready."; };
+
+    function getCSRF() {
+      const match = document.cookie.match(/(?:^|;\s*)ctx_csrf=([^;]*)/);
+      return match ? match[1] : "";
+    }
+    async function ensureCSRF() {
+      if (getCSRF()) return;
+      await fetch("/api/csrf", {credentials: "same-origin"});
+    }
+    async function api(path, opts = {}) {
+      opts.headers = opts.headers || {};
+      const token = localStorage.getItem("ctx_token");
+      if (token) opts.headers.Authorization = "Bearer " + token;
+      if (opts.method && opts.method !== "GET") {
+        await ensureCSRF();
+        opts.headers["X-CSRF-Token"] = getCSRF();
+      }
+      const res = await fetch(path, opts);
+      const data = await res.json().catch(() => ({}));
+      if (res.status === 401) {
+        showAuth(true);
+        throw new Error("Please login first.");
+      }
+      if (!res.ok) throw new Error(data.error || res.statusText);
+      return data;
+    }
+    function showAuth(visible) { $("authPanel").classList.toggle("visible", visible); }
+    async function login() {
+      const username = $("loginUser").value.trim();
+      const pin = $("loginPin").value.trim();
+      if (!/^\d{4}$/.test(pin)) { $("loginStatus").textContent = "Enter a 4-digit PIN."; return; }
+      const res = await fetch("/api/auth?username=" + encodeURIComponent(username) + "&pin=" + encodeURIComponent(pin), {credentials: "same-origin"});
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data.error) { $("loginStatus").textContent = data.error || "Login failed."; return; }
+      localStorage.setItem("ctx_username", data.username || username);
+      currentUser = data.username || username;
+      $("loginPin").value = "";
+      showAuth(false);
+      await ensureCSRF();
+      await load(false);
+      status("Logged in.");
+    }
+    async function initializeSession() {
+      const session = await api("/api/session");
+      currentUser = session.username || "";
+      if (currentUser) localStorage.setItem("ctx_username", currentUser);
+      await load(false);
+    }
+    async function load(keepUser = true) {
+      state = await api("/api/state");
+      $("provider").textContent = state.provider || "provider";
+      renderUser();
+      renderFeed();
+      renderSignals();
+      renderContexts();
+      renderPeople();
+      renderPrivacy(state.privacy || {});
+    }
+    function renderUser() {
+      const username = currentUser || state.selected || "user";
+      $("userLabel").textContent = username;
+      $("avatar").textContent = (username[0] || "?").toUpperCase();
+      const users = state.users || [];
+      const options = users.filter(u => u.handle !== username).map(u => "<option value=\"" + esc(u.handle) + "\">" + esc(u.handle) + "</option>").join("");
+      $("target").innerHTML = options || users.map(u => "<option value=\"" + esc(u.handle) + "\">" + esc(u.handle) + "</option>").join("");
+    }
+    function contextsByAsset() {
+      const out = {};
+      for (const ctx of state.contexts || []) {
+        if (!ctx.source_asset_id) continue;
+        out[ctx.source_asset_id] = out[ctx.source_asset_id] || [];
+        out[ctx.source_asset_id].push(ctx);
+      }
+      return out;
+    }
+    function feedItems() {
+      const byAsset = contextsByAsset();
+      const assets = (state.assets || []).map(asset => ({kind: "asset", asset, contexts: byAsset[asset.id] || [], created_at: asset.created_at}));
+      const replies = ephemeralReplies.map(reply => ({kind: "reply", reply, created_at: reply.created_at}));
+      const locals = localMessages.map(message => ({kind: "local", message, created_at: message.created_at}));
+      return assets.concat(locals, replies).sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
+    }
+    function renderFeed() {
+      const items = feedItems();
+      $("feedList").innerHTML = items.map(item => {
+        if (item.kind === "reply") {
+          const reply = item.reply || {};
+          const memories = (reply.memory_used || []).map(text => "<div class=\"ai-note\">I remembered: " + esc(text) + "</div>").join("");
+          const suggestions = (reply.suggestions || []).map(text => "<span class=\"pill\" onclick=\"useSuggestion('" + escAttr(text) + "')\">" + esc(text) + "</span>").join("");
+          return "<div class=\"message-row ai\"><div class=\"chat-avatar\">AI</div><div class=\"message\"><div class=\"message-meta\">AI companion · " + esc(reply.provider || "memory") + "</div><article class=\"bubble ai " + (reply.pending ? "pending" : "") + "\"><div class=\"bubble-text\">" + esc(reply.text || "") + "</div>" + memories + (suggestions ? "<div class=\"suggestions\">" + suggestions + "</div>" : "") + "</article></div></div>";
+        }
+        if (item.kind === "local") {
+          const message = item.message || {};
+          return "<div class=\"message-row user\"><div class=\"message\"><div class=\"message-meta\">You</div><article class=\"bubble user\"><div class=\"bubble-text\">" + esc(message.text || "") + "</div></article></div><div class=\"chat-avatar\">" + esc(userInitial()) + "</div></div>";
+        }
+        const asset = item.asset;
+        const contexts = item.contexts || [];
+        const md = asset.metadata || {};
+        const img = asset.asset_type === "photo" ? "<img src=\"/api/asset/file?id=" + encodeURIComponent(asset.id) + "\" />" : "";
+        const text = asset.asset_type === "note" ? asset.text : (asset.original_filename || "Photo");
+        const note = contexts.length && asset.asset_type === "photo" ? "<div class=\"ai-note\">memory created: " + esc(contexts[0].text) + "</div>" : "";
+        const meta = [asset.asset_type === "photo" ? "Photo" : "You", md.city, md.district].filter(Boolean).join(" · ");
+        return "<div class=\"message-row user\"><div class=\"message\"><div class=\"message-meta\">" + esc(meta) + "</div><article class=\"bubble user\"><div class=\"bubble-text\">" + esc(text) + "</div>" + img + note + "</article></div><div class=\"chat-avatar\">" + esc(userInitial()) + "</div></div>";
+      }).join("") || "<div class=\"empty\">Start a conversation. Text and images will become memory.</div>";
+      $("feedList").scrollTop = $("feedList").scrollHeight;
+    }
+    function userInitial() {
+      return (currentUser || state.selected || "U").slice(0, 1).toUpperCase();
+    }
+    function renderSignals() {
+      const items = (state.contexts || []).slice().sort((a,b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 6);
+      $("signalList").innerHTML = items.map(ctx => "<div class=\"ai-note\">" + esc(ctx.text) + "<div style=\"margin-top:6px\">" + pill(ctx.type, "blue") + " " + pill(ctx.visibility, ctx.visibility === "private" ? "warn" : "good") + "</div></div>").join("") || "<div class=\"muted\">No memory yet.</div>";
+    }
+    function renderContexts() {
+      const q = ($("contextQuery")?.value || "").toLowerCase();
+      const items = (state.contexts || []).filter(item => JSON.stringify(item).toLowerCase().includes(q));
+      $("contexts").innerHTML = items.map(item => {
+        const approve = item.state === "pending_review" ? "<button class=\"link-action\" onclick=\"approve('" + item.id + "')\">Approve</button>" : "";
+        return "<div class=\"memory-item\"><h3>" + esc(item.type) + "</h3><div class=\"muted small\">" + esc(item.id) + "</div><textarea id=\"edit_" + esc(item.id) + "\">" + esc(item.text) + "</textarea><div class=\"memory-meta\">" + pill(item.state, item.state === "active" ? "good" : "warn") + pill(item.visibility, item.visibility === "private" ? "warn" : "blue") + "</div><div class=\"inline-actions\"><button class=\"link-action\" onclick=\"saveContext('" + item.id + "')\">Save</button>" + approve + "</div></div>";
+      }).join("") || "<div class=\"empty\">No memory yet.</div>";
+    }
+    function renderPeople() {
+      const items = (state.matches || []).slice(0, 8);
+      const html = items.map(m => "<div class=\"person-card\"><h3>" + esc(m.target_handle || m.target_name || "target") + "</h3><div style=\"margin:6px 0\">" + pill(Number(m.score || 0).toFixed(3), "good") + "</div><div>" + esc(m.connection_reason || "AI found a possible connection.") + "</div><div class=\"muted small\" style=\"margin-top:8px\">" + esc((m.icebreakers || []).join("\n")) + "</div></div>").join("") || "<div class=\"empty\">No people yet. Tap Find people.</div>";
+      $("peopleList").innerHTML = html;
+      $("matchList").innerHTML = html;
+    }
+    function renderPrivacy(p) {
+      $("privacy").innerHTML = metric("contexts", p.contexts) + metric("photos", p.photos) + metric("private", p.private) + metric("match_only", p.match_only);
+    }
+    function metric(k, v) { return "<div class=\"metric\"><span>" + esc(k) + "</span><span>" + (v ?? 0) + "</span></div>"; }
+    function pill(text, cls) { return "<span class=\"pill " + (cls || "") + "\">" + esc(text || "") + "</span>"; }
+    function esc(v) {
+      return String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    }
+    function escAttr(v) {
+      return esc(v).replace(/\\/g, "\\\\").replace(/\n/g, " ");
+    }
+    function useSuggestion(text) {
+      $("chatInput").value = text;
+      $("chatInput").focus();
+    }
+    function setResult(data) { const el = $("result"); if (el) el.textContent = JSON.stringify(data, null, 2); }
+    async function run(label, path) {
+      try { status(label + "..."); const data = await api(path, {method:"POST"}); setResult(data); await load(true); status(label + " done."); }
+      catch(e) { status(e.message); setResult({error:e.message}); }
+    }
+    async function sendChat() {
+      if (isSending) return;
+      const user = currentUser || state.selected || "";
+      const text = $("chatInput").value.trim();
+      const file = $("chatPhoto").files[0];
+      if (!text && !file) { status("Type text or attach an image."); return; }
+      const result = {};
+      const pendingID = "pending_" + Date.now();
+      const localID = "local_" + Date.now();
+      isSending = true;
+      $("sendChat").disabled = true;
+      $("sendChat").textContent = "Thinking";
+      status("AI is reading your memory...");
+      try {
+        if (text) {
+          localMessages.push({
+            id: localID,
+            text,
+            created_at: new Date().toISOString()
+          });
+          ephemeralReplies.push({
+            id: pendingID,
+            text: "我在读你的 memory，也在想怎么接住这句话...",
+            suggestions: ["正在生成回复"],
+            provider: "thinking",
+            pending: true,
+            created_at: new Date().toISOString()
+          });
+          renderFeed();
+          const body = new URLSearchParams();
+          body.set("user", user); body.set("type", "feed"); body.set("text", text); body.set("visibility", $("chatVisibility").value); body.set("purpose", "self_memory,matching,generation");
+          result.text = await api("/api/chat", {method:"POST", body});
+          if (result.text.reply) {
+            ephemeralReplies = ephemeralReplies.map(reply => reply.id === pendingID ? {...result.text.reply, id: pendingID, created_at: reply.created_at} : reply);
+          }
+          localMessages = localMessages.filter(message => message.id !== localID);
+        }
+        if (file) {
+          const body = new FormData();
+          body.set("user", user); body.set("photo", file); body.set("album", "feed"); body.set("city", $("chatCity").value); body.set("district", $("chatDistrict").value); body.set("visibility", $("chatVisibility").value === "public" ? "match_only" : $("chatVisibility").value);
+          result.photo = await api("/api/photo", {method:"POST", body});
+          result.process = await api("/api/process", {method:"POST"});
+          const created = result.process.created || [];
+          ephemeralReplies.push({
+            text: created.length ? "我看完这张图了。它像是一块新的生活切片，我会把它记成你的 context；以后聊到相近的人、地方或心情时，我会把它拿出来帮你连接。" : "图片已经收下了。如果它背后有一个故事，你可以继续讲，我会把文字和图片一起整理成更完整的 memory。",
+            memory_used: created.map(ctx => ctx.text).slice(0, 3),
+            suggestions: ["讲讲这张图背后的故事", "说说你想因此认识谁", "补充城市或场景"],
+            provider: "image memory",
+            created_at: new Date().toISOString()
+          });
+        }
+        $("chatInput").value = ""; $("chatPhoto").value = ""; $("fileName").textContent = "";
+        setResult(result); await load(true); status("Sent.");
+      } catch (e) {
+        ephemeralReplies = ephemeralReplies.map(reply => reply.id === pendingID ? {...reply, text: "这次回复没有生成出来，但我已经把你的输入记下来了。可以再点一次 Send，或者换一句更具体的话试试。", provider: "error", pending: false, suggestions: [e.message]} : reply);
+        renderFeed();
+        throw e;
+      } finally {
+        isSending = false;
+        $("sendChat").disabled = false;
+        $("sendChat").textContent = "Send";
+      }
+    }
+    async function approve(id) { await run("Approve", "/api/review/approve?id=" + encodeURIComponent(id)); }
+    async function saveContext(id) {
+      const body = new URLSearchParams(); body.set("id", id); body.set("text", $("edit_" + id).value);
+      const data = await api("/api/context/edit", {method:"POST", body}); setResult(data); await load(true); status("Saved.");
+    }
+    function setTab(tab) {
+      document.querySelectorAll(".tab").forEach(btn => btn.classList.toggle("active", btn.dataset.tab === tab));
+      document.querySelectorAll(".page").forEach(page => page.classList.toggle("active", page.id === "tab-" + tab));
+    }
+    document.querySelectorAll(".tab").forEach(btn => btn.onclick = () => setTab(btn.dataset.tab));
+    $("loginBtn").onclick = login;
+    $("loginPin").addEventListener("input", e => { e.target.value = e.target.value.replace(/\D/g, "").slice(0, 4); });
+    $("loginPin").addEventListener("keydown", e => { if (e.key === "Enter") login(); });
+    $("sendChat").onclick = () => sendChat().catch(e => { status(e.message); setResult({error:e.message}); });
+    $("chatInput").addEventListener("keydown", e => { if ((e.metaKey || e.ctrlKey) && e.key === "Enter") sendChat().catch(err => status(err.message)); });
+    $("attachPhoto").onclick = () => $("chatPhoto").click();
+    $("chatPhoto").onchange = () => { $("fileName").textContent = $("chatPhoto").files[0]?.name || ""; };
+    $("seed").onclick = () => run("Seed demo", "/api/demo/seed");
+    $("contextQuery").addEventListener("input", renderContexts);
+    $("embed").onclick = () => run("Prepare embeddings", "/api/embed?all=true");
+    $("semantic").onclick = $("findPeople").onclick = () => run("Find people", "/api/match?semantic=true");
+    $("bridge").onclick = () => run("Generate bridge", "/api/bridge?target=" + encodeURIComponent($("target").value));
+    initializeSession().then(() => showAuth(false)).catch(() => showAuth(true));
+  </script>
+</body>
+</html>

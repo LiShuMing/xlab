@@ -1,0 +1,50 @@
+# 每日精进 Agent 配置文件
+# 版本: v0.1
+
+schedule:
+  timezone: "Asia/Tokyo"
+  push_time: "08:00"
+  reminder_time: "20:00"
+  timeout_hours: 24
+  reminder_enabled: true
+
+telegram:
+  bot_token: "${TELEGRAM_BOT_TOKEN}"
+  chat_id: "${TELEGRAM_CHAT_ID}"
+
+llm:
+  provider: "openai"
+  model: "${LLM_MODEL:qwen-turbo}"
+  base_url: "${LLM_BASE_URL}"
+  api_key: "${LLM_API_KEY}"
+  question_max_tokens: 1200
+  reflect_max_tokens: 800
+  retry_max: 3
+
+crawler:
+  enabled: false  # v0.1 暂不启用
+  run_day: "Monday"
+  run_time: "07:00"
+  sources:
+    - name: lwn
+      url: "https://lwn.net/Articles/"
+    - name: vldb
+      url: "https://vldb.org/pvldb/"
+    - name: clickhouse_blog
+      url: "https://clickhouse.com/blog"
+
+learning:
+  default_level: 3
+  level_up_threshold: 9.0      # 连续N次满足才升级
+  level_up_consecutive: 2
+  level_down_threshold: 4.0
+  level_down_consecutive: 2
+  weak_threshold: 6.0          # avg_score 低于此值标记薄弱
+  weak_recovery_score: 8.0     # 连续N次高于此值解除薄弱
+  weak_recovery_consecutive: 2
+  hint_penalty: 1.0            # /hint 扣分
+
+paths:
+  data_dir: "./data"
+  logs_dir: "./logs"
+  topics_file: "./topics.yaml"

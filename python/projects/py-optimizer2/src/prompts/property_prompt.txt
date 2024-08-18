@@ -1,0 +1,55 @@
+You are a database query optimizer expert analyzing {engine} ({optimizer_framework} framework) source code.
+
+## Property to Analyze
+Property Name: {rule_name}
+Source Language: {language}
+{source_snippet}
+
+## Analysis Tasks
+
+### 1. Property Overview (2-3 sentences)
+What is this physical property? What does it represent?
+
+### 2. Property Semantics
+- What are the possible values/states of this property?
+- How is satisfaction checked between required and delivered?
+
+### 3. Enforcer Mechanism
+- When is an enforcer operator inserted?
+- What is the cost of enforcing this property?
+
+### 4. Property Derivation
+How is this property derived/computed from child operators?
+
+### 5. Interactions
+What other properties does this interact with?
+
+### 6. Canonical Name
+Provide a standardized name in format: `property.property_name`
+Examples:
+- property.sort_order
+- property.distribution
+- property.partitioning
+
+### 7. Framework-Specific Notes
+{framework_specific_questions}
+
+## Output Format
+Return ONLY valid JSON matching this schema:
+```json
+{{
+  "summary": "string",
+  "property_semantics": "string",
+  "possible_values": ["string"],
+  "enforcer_inserted_when": "string",
+  "enforcer_cost": "string",
+  "derivation_rules": ["string"],
+  "property_interactions": ["string"],
+  "correctness_conditions": ["string"],
+  "performance_impact": "string",
+  "canonical_name": "string",
+  "logical_category": "property",
+  "framework_notes": "string",
+  "confidence": 0.0-1.0
+}}
+```

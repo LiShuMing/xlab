@@ -1,0 +1,32 @@
+{
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "start": "bash scripts/start.sh",
+    "stop": "bash scripts/stop.sh",
+    "check": "bash scripts/check.sh",
+    "api": "python -m uvicorn backend.app:app --host 127.0.0.1 --port 8010",
+    "serve": "npm run build && python -m backend.app",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "sync:radar": "python3 scripts/sync_py_radar_feed.py"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^5.1.1",
+    "baseline-browser-mapping": "^2.10.25",
+    "cookie": "^1.1.1",
+    "lucide-react": "^1.14.0",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "react-router": "^7.15.1",
+    "react-router-dom": "^7.15.1",
+    "set-cookie-parser": "^2.7.2",
+    "vite": "^7.2.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.2.4",
+    "autoprefixer": "^10.5.0",
+    "postcss": "^8.5.13",
+    "tailwindcss": "^4.2.4"
+  }
+}

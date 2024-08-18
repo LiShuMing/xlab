@@ -1,0 +1,76 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "liminalis"
+version = "0.1.0"
+description = "Unified Liminalis frontend and Python API runtime."
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.109.0",
+    "uvicorn[standard]>=0.27.0",
+    "pydantic-settings>=2.1.0",
+    "psycopg[binary]>=3.2.0",
+    "itsdangerous>=2.2.0",
+    "werkzeug>=3.1.0",
+    # M0: async DB stack
+    "sqlalchemy[asyncio]>=2.0.30",
+    "asyncpg>=0.29.0",
+    "alembic>=1.13.0",
+    "pgvector>=0.3.0",
+    # M0: task queue
+    "arq>=0.26.0",
+    "redis>=5.0.0",
+    # M0: shared infrastructure
+    "structlog>=24.1.0",
+    "click>=8.1.0",
+    # M0: auth (JWT + WeChat OAuth carry-over from py-ego)
+    "python-jose[cryptography]>=3.3.0",
+    "passlib[bcrypt]>=1.7.4",
+]
+
+[project.optional-dependencies]
+dev = [
+    "httpx>=0.26.0",
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.23.0",
+    "ruff>=0.6.0",
+]
+
+[project.scripts]
+liminalis = "backend.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["backend*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+filterwarnings = [
+    "ignore::DeprecationWarning:websockets",
+]
+
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+extend-exclude = ["dist", "liminalis.egg-info"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # bugbear
+    "UP",  # pyupgrade
+    "SIM", # simplify
+    "C4",  # comprehensions
+]
+ignore = [
+    "E501",  # line length is enforced by ruff format
+    "B008",  # FastAPI Depends() uses function calls in defaults
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B018"]

@@ -1,0 +1,38 @@
+# Haskell build artifacts
+dist/
+dist-newstyle/
+.stack-work/
+cabal.project.local
+cabal.project.local~
+.HTF/
+.ghc.environment.*
+
+# Compiled files
+*.hi
+*.o
+*.so
+*.dylib
+*.dll
+*.a
+*.exe
+
+# Profiling
+*.prof
+*.aux
+*.hp
+*.eventlog
+*.tix
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Temporary files
+*.log
+*.tmp
+.cabal-sandbox/
+cabal.sandbox.config

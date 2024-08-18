@@ -1,0 +1,219 @@
+{
+  "main": {
+    "id": "4d1f2a86fb975371",
+    "type": "split",
+    "children": [
+      {
+        "id": "ce6facc34cad7c26",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "4c224f5e0f911616",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "新标签页"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "416cd6791504e36f",
+    "type": "split",
+    "children": [
+      {
+        "id": "de6c0782cca4cbd5",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "b88418c43f4e5b00",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "0c881c8250e00979",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "d81c772a777d689d",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "2244952b0221b0f2",
+    "type": "split",
+    "children": [
+      {
+        "id": "fa05e738869fb1d0",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "bae76b9109c37c76",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "反向链接"
+            }
+          },
+          {
+            "id": "b055535f3a6a32b4",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "出链"
+            }
+          },
+          {
+            "id": "97e273c6de86a6ce",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "a4a577eaf0bb374d",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "添加笔记属性"
+            }
+          },
+          {
+            "id": "a033b58c4eec8a2d",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "大纲"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "bases:新建数据库": false
+    }
+  },
+  "active": "4c224f5e0f911616",
+  "lastOpenFiles": [
+    "cvt_books/_zhihu/articles/vol3-ch11-21-semiconductors-superconductivity-finale.md",
+    "cvt_books/_zhihu/assets/vol3-ch11-21-semiconductors-superconductivity-finale",
+    "cvt_books/_zhihu/articles/vol3-ch01-10-quantum-mechanics-foundations.md",
+    "cvt_books/_zhihu/assets/vol3-ch01-10-quantum-mechanics-foundations",
+    "cvt_books/_zhihu/articles/vol2-ch29-42-particles-tensors-fluids-curved-spacetime.md",
+    "cvt_books/_zhihu/assets/vol2-ch29-42-particles-tensors-fluids-curved-spacetime",
+    "cvt_books/_zhihu/articles/vol2-ch19-28-waves-circuits-relativity.md",
+    "cvt_books/_zhihu/assets/vol2-ch19-28-waves-circuits-relativity",
+    "cvt_books/_zhihu/articles/vol2-ch07-18-fields-maxwell.md",
+    "cvt_books/_zhihu/assets/vol2-ch07-18-fields-maxwell",
+    "cvt_books/_zhihu/articles/vol2-ch01-06-electromagnetism-vectors.md",
+    "cvt_books/_zhihu/assets/vol2-ch01-06-electromagnetism-vectors",
+    "cvt_books/_zhihu/articles/vol1-ch47-52-waves-symmetry-finale.md",
+    "cvt_books/_zhihu/assets/vol1-ch47-52-waves-symmetry-finale",
+    "cvt_books/_zhihu/articles/vol1-ch37-46-quantum-thermodynamics.md",
+    "cvt_books/_zhihu/assets/vol1-ch37-46-quantum-thermodynamics",
+    "cvt_books/_zhihu/articles/vol1-ch26-36-optics.md",
+    "cvt_books/_zhihu/assets/vol1-ch26-36-optics",
+    "cvt_books/_zhihu/articles/vol1-ch18-25-rotation-oscillation-linear-systems.md",
+    "cvt_books/_zhihu/assets/vol1-ch18-25-rotation-oscillation-linear-systems",
+    "cvt_books/_zhihu/articles/vol1-ch15-17-special-relativity-spacetime.md",
+    "cvt_books/_zhihu/articles/vol1-ch12-14-forces-potential-energy.md",
+    "cvt_books/_zhihu/articles/vol1-ch10-11-momentum-vectors.md",
+    "cvt_books/_zhihu/articles/vol1-ch08-09-motion-newtons-laws.md",
+    "cvt_books/_zhihu/articles/vol1-ch07-gravitation.md",
+    "cvt_books/_zhihu/articles/vol1-ch06-probability.md",
+    "cvt_books/_zhihu/articles/vol1-ch05-time-and-distance.md",
+    "cvt_books/_zhihu/articles/vol1-ch04-conservation-of-energy.md",
+    "cvt_books/_zhihu/articles/vol1-ch03-physics-and-other-sciences.md",
+    "cvt_books/_zhihu/articles/vol1-ch02-basic-physics.md",
+    "cvt_books/_zhihu/articles/vol1-ch01-atoms-in-motion.md",
+    "cvt_books/README.md",
+    "books/feiman-book/vol3-ch11-21-semiconductors-superconductivity-finale.md",
+    "books/feiman-book/vol3-ch01-10-quantum-mechanics-foundations.md",
+    "books/feiman-book/vol2-ch29-42-particles-tensors-fluids-curved-spacetime.md",
+    "books/feiman-book/vol2-ch19-28-waves-circuits-relativity.md",
+    "quarkdown/mem/image/logo.png"
+  ]
+}

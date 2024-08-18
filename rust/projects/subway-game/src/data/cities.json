@@ -1,0 +1,56 @@
+{
+  "cities": [
+    {
+      "id": "beijing",
+      "name": "北京",
+      "nameEn": "Beijing",
+      "country": "中国",
+      "flag": "CN",
+      "icon": "地铁",
+      "color": "#C23A30",
+      "difficulty": "medium",
+      "lineCount": 9,
+      "stationCount": 57,
+      "description": "北京核心线路简化图，适合练习直达和换乘"
+    },
+    {
+      "id": "hangzhou",
+      "name": "杭州",
+      "nameEn": "Hangzhou",
+      "country": "中国",
+      "flag": "CN",
+      "icon": "西湖",
+      "color": "#D91F3C",
+      "difficulty": "medium",
+      "lineCount": 7,
+      "stationCount": 29,
+      "description": "杭州核心线路练习，覆盖西湖、钱江和机场方向"
+    },
+    {
+      "id": "wuhan",
+      "name": "武汉",
+      "nameEn": "Wuhan",
+      "country": "中国",
+      "flag": "CN",
+      "icon": "江城",
+      "color": "#006D8F",
+      "difficulty": "medium",
+      "lineCount": 7,
+      "stationCount": 27,
+      "description": "武汉三镇核心线路练习，适合观察跨江换乘"
+    },
+    {
+      "id": "shanghai",
+      "name": "上海",
+      "nameEn": "Shanghai",
+      "country": "中国",
+      "flag": "CN",
+      "icon": "申城",
+      "color": "#E6002D",
+      "difficulty": "hard",
+      "lineCount": 8,
+      "stationCount": 31,
+      "description": "上海核心轨交线路练习，网络更密集更有挑战"
+    }
+  ]
+}

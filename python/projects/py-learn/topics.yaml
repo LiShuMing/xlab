@@ -1,0 +1,211 @@
+# 知识图谱配置
+# 定义6个领域的学习主题
+
+domains:
+  - id: lang
+    label: "语言精通"
+    rotation_day: 1  # Monday
+    topics:
+      - id: cpp_memory_model
+        name: "C++ 内存模型"
+        level_default: 3
+        tags: ["面试高频", "L3"]
+        subtopics:
+          - "内存序 (memory_order)"
+          - "原子操作与同步"
+          - " happens-before 关系"
+          - "缓存一致性协议"
+        key_points:
+          - "Release-Acquire 语义"
+          - "Sequential Consistency 代价"
+          - "与 Java volatile 的对比"
+        references:
+          - "C++ Concurrency in Action"
+          - "cppreference: memory_order"
+
+      - id: java_jvm_gc
+        name: "JVM 垃圾回收"
+        level_default: 3
+        tags: ["面试高频", "L3"]
+        subtopics:
+          - "G1/ZGC/Shenandoah 对比"
+          - "停顿时间与吞吐量 tradeoff"
+          - "GC 日志分析"
+          - "调参策略"
+        key_points:
+          - "Region-based 内存布局"
+          - "并发标记三色算法"
+          - "读屏障与写屏障"
+        references:
+          - "JVM G1/Region-Based"
+
+  - id: algo
+    label: "算法解题"
+    rotation_day: 2  # Tuesday
+    topics:
+      - id: segment_tree
+        name: "线段树与树状数组"
+        level_default: 3
+        tags: ["竞赛", "L3"]
+        subtopics:
+          - "懒标记 (Lazy Propagation)"
+          - "区间更新与查询"
+          - "可持久化线段树"
+        key_points:
+          - "空间换时间的 tradeoff"
+          - "与平衡树的适用场景对比"
+        references:
+          - "OI-wiki 线段树"
+
+      - id: network_flow
+        name: "网络流算法"
+        level_default: 4
+        tags: ["竞赛", "L4"]
+        subtopics:
+          - "Dinic / ISAP / HLPP"
+          - "最小割与最大流对偶"
+          - "费用流"
+        key_points:
+          - "时间复杂度对比与实现细节"
+          - "建模技巧：拆点、分层"
+        references:
+          - "OI-wiki 网络流"
+
+  - id: os
+    label: "Linux 精通"
+    rotation_day: 3  # Wednesday
+    topics:
+      - id: linux_ebpf
+        name: "eBPF 编程"
+        level_default: 4
+        tags: ["前沿", "L4"]
+        subtopics:
+          - "BPF Map 类型选择"
+          - "Verifier 限制与绕过"
+          - "kprobe vs tracepoint"
+          - "CO-RE 编译"
+        key_points:
+          - "内核态与用户态数据交换"
+          - "性能开销与安全性 tradeoff"
+        references:
+          - "BPF Performance Tools"
+
+      - id: linux_io_uring
+        name: "io_uring 异步 IO"
+        level_default: 3
+        tags: ["高性能", "L3"]
+        subtopics:
+          - "提交队列与完成队列"
+          - "Polling 模式"
+          - "与 epoll/aio 对比"
+        key_points:
+          - "零拷贝与批处理"
+          - "应用场景选择"
+        references:
+          - "Lord of the io_uring"
+
+  - id: db
+    label: "OLAP / 数据库"
+    rotation_day: 4  # Thursday
+    topics:
+      - id: cascades_optimizer
+        name: "Cascades 优化器框架"
+        level_default: 4
+        tags: ["面试高频", "L4"]
+        subtopics:
+          - "Memo 结构与等价类"
+          - "Physical Properties 传播"
+          - "Enforcer 插入机制"
+          - "Cost Model 接口设计"
+        key_points:
+          - "Group / Expression / Winner 三层结构"
+          - "Top-down 搜索 vs bottom-up"
+          - "与 Volcano/Starburst 的演进关系"
+        references:
+          - "Cascades paper: Graefe 1995"
+          - "CMU 15-721 Lecture 13"
+
+      - id: query_execution
+        name: "向量化执行引擎"
+        level_default: 3
+        tags: ["工程", "L3"]
+        subtopics:
+          - "Volcano vs Vectorized"
+          - "SIMD 优化"
+          - "Pipeline Breaker"
+        key_points:
+          - "批量处理 vs 单行处理 tradeoff"
+          - "内存局部性优化"
+        references:
+          - "MonetDB/X100"
+
+  - id: arch
+    label: "大规模架构"
+    rotation_day: 5  # Friday
+    topics:
+      - id: distributed_consensus
+        name: "分布式一致性协议"
+        level_default: 4
+        tags: ["面试高频", "L4"]
+        subtopics:
+          - "Paxos / Multi-Paxos / Raft"
+          - "Leader 选举与日志复制"
+          - "成员变更 (Joint Consensus)"
+        key_points:
+          - "安全与可用性 tradeoff"
+          - "网络分区处理"
+          - "与 ZooKeeper/Etcd 实现差异"
+        references:
+          - "Raft paper"
+          - "Paxos Made Simple"
+
+      - id: stream_processing
+        name: "流处理系统"
+        level_default: 3
+        tags: ["工程", "L3"]
+        subtopics:
+          - "Exactly-once 语义"
+          - "Watermark 与迟到数据"
+          - "State 管理"
+        key_points:
+          - "低延迟与高吞吐 tradeoff"
+          - "Chandy-Lamport 快照"
+        references:
+          - "Flink/Spark Streaming"
+
+  - id: frontier
+    label: "前沿追踪"
+    rotation_day: 6  # Saturday
+    topics:
+      - id: wasm_runtime
+        name: "WASM 运行时"
+        level_default: 3
+        tags: ["前沿", "L3"]
+        subtopics:
+          - "WASM 内存模型"
+          - "WASI 接口"
+          - "与容器对比"
+        key_points:
+          - "沙箱安全与性能 tradeoff"
+          - "适用场景"
+        references:
+          - "WASM spec"
+
+      - id: ai_training_infra
+        name: "AI 训练基础设施"
+        level_default: 4
+        tags: ["前沿", "L4"]
+        subtopics:
+          - "数据并行 vs 模型并行"
+          - "All-reduce 优化"
+          - "显存优化 (ZeRO/Offload)"
+        key_points:
+          - "通信与计算重叠"
+          - "容错与 checkpoint"
+        references:
+          - "Megatron-LM / DeepSpeed"
+
+  - id: review
+    label: "综合复盘"
+    rotation_day: 0  # Sunday
+    topics: []  # 动态从薄弱点中选择

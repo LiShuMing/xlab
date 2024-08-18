@@ -1,0 +1,17 @@
+{
+  "name": "summary_case_01",
+  "description": "User profile summary from multiple context items.",
+  "input": {
+    "user_id": "user_a",
+    "contexts": [
+      {"text": "数据库工程师，关注AI infra和开源技术", "type": "preference"},
+      {"text": "喜欢在上海喝咖啡和逛展览，周末会去citywalk", "type": "preference"},
+      {"text": "最近想认识同城、对AI infra和数据库系统感兴趣的人", "type": "intent"}
+    ]
+  },
+  "expected": {
+    "interests": ["AI infra", "数据库", "咖啡", "展览", "citywalk"],
+    "city": "上海",
+    "social_goal": "认识同城技术同好"
+  }
+}
