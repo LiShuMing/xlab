@@ -25,11 +25,13 @@ public:
     ~ConsistentHash() {
         serverNodes.clear();
     };
-
-    static uint32_t FNVHash(std::string key);
     void Initialize();
+
+    static uint32_t FNVHash(const std::string& key);
     void AddNewPhysicalNode(const std::string& nodeIp);
     void DeletePhysicalNode(const std::string& nodeIp);
     std::string GetServerIndex(const std::string& key);
-    void StatisticPerf(std::string& label, int left, int right);
+    void StatisticPerf(const std::string& label, int left, int right);
+private:
+    uint32_t _GetHash(const std::string& nodeIp, int idx);
 };

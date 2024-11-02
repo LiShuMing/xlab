@@ -7,7 +7,7 @@
 
 // 32-bit Fowler-Noll-Vo hash func
 // https://en.wikipedia.org/wiki/Fowler–Noll–Vo_hash_function
-uint32_t ConsistentHash::FNVHash(std::string key) {
+uint32_t ConsistentHash::FNVHash(const std::string& key) {
     const int p = 16777619;
     uint32_t hash = 2166136261;
     for (int idx = 0; idx < key.size(); ++idx) {
@@ -35,20 +35,23 @@ void ConsistentHash::Initialize() {
     }
 }
 
+uint32_t ConsistentHash::_GetHash(const std::string& nodeIp, int idx) {
+    // std::stringstream nodeKey;
+    // nodeKey << nodeIp << "#" << j;
+    return FNVHash(nodeIp + "#" + std::to_string(idx));
+}
+
 void ConsistentHash::AddNewPhysicalNode(const std::string& nodeIp) {
     for (int j = 0; j < virtualNodeNum; ++j) {
-        std::stringstream nodeKey;
-        nodeKey << nodeIp << "#" << j;
-        uint32_t partition = FNVHash(nodeKey.str());
+        uint32_t partition = _GetHash(nodeIp, j);
         serverNodes.insert({partition, nodeIp});
     }
 }
 
 void ConsistentHash::DeletePhysicalNode(const std::string& nodeIp) {
     for (int j = 0; j < virtualNodeNum; ++j) {
-        std::stringstream nodeKey;
-        nodeKey << nodeIp << "#" << j;
-        uint32_t partition = FNVHash(nodeKey.str());
+        uint32_t partition = _GetHash(nodeIp, j);
+        serverNodes.insert({partition, nodeIp});
         auto it = serverNodes.find(partition);
         if (it != serverNodes.end()) {
             serverNodes.erase(it);
@@ -68,7 +71,7 @@ std::string ConsistentHash::GetServerIndex(const std::string& key) {
     return it->second;
 }
 
-void ConsistentHash::StatisticPerf(std::string& label, int objMin, int objMax) {
+void ConsistentHash::StatisticPerf(const std::string& label, int objMin, int objMax) {
     std::map<std::string, int> cnt;
     for (int i = objMin; i <= objMax; i++) {
         std::string nodeIp = GetServerIndex(std::to_string(i));
