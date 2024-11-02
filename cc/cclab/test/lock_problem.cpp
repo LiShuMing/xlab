@@ -225,7 +225,6 @@ TEST_F(LockTest, TestTwoThreads2) {
                              << endl;
                         exit = true;
                     }
-                    :w
                     // notify all since all threads are waiting
                     cv.notify_all();
                 }
