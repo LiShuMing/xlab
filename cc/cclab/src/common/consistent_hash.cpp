@@ -1,8 +1,9 @@
 #include "common/consistent_hash.h"
+
 #include <iostream>
 #include <map>
-#include <string>
 #include <sstream>
+#include <string>
 
 // 32-bit Fowler-Noll-Vo hash func
 // https://en.wikipedia.org/wiki/Fowler–Noll–Vo_hash_function
@@ -23,10 +24,9 @@ uint32_t ConsistentHash::FNVHash(std::string key) {
     return hash;
 }
 
-void ConsistentHash::Initialize()
-{
-    for(auto& ip : physicalNodes) {
-        for(int j = 0; j < virtualNodeNum; ++j) {
+void ConsistentHash::Initialize() {
+    for (auto& ip : physicalNodes) {
+        for (int j = 0; j < virtualNodeNum; ++j) {
             std::stringstream nodeKey;
             nodeKey << ip << "#" << j;
             uint32_t partition = FNVHash(nodeKey.str());
@@ -35,9 +35,8 @@ void ConsistentHash::Initialize()
     }
 }
 
-void ConsistentHash::AddNewPhysicalNode(const std::string& nodeIp)
-{
-    for(int j = 0; j < virtualNodeNum; ++j) {
+void ConsistentHash::AddNewPhysicalNode(const std::string& nodeIp) {
+    for (int j = 0; j < virtualNodeNum; ++j) {
         std::stringstream nodeKey;
         nodeKey << nodeIp << "#" << j;
         uint32_t partition = FNVHash(nodeKey.str());
@@ -45,21 +44,19 @@ void ConsistentHash::AddNewPhysicalNode(const std::string& nodeIp)
     }
 }
 
-void ConsistentHash::DeletePhysicalNode(const std::string& nodeIp)
-{
-    for(int j = 0; j < virtualNodeNum; ++j) {
+void ConsistentHash::DeletePhysicalNode(const std::string& nodeIp) {
+    for (int j = 0; j < virtualNodeNum; ++j) {
         std::stringstream nodeKey;
         nodeKey << nodeIp << "#" << j;
         uint32_t partition = FNVHash(nodeKey.str());
         auto it = serverNodes.find(partition);
-        if(it != serverNodes.end()) {
+        if (it != serverNodes.end()) {
             serverNodes.erase(it);
         }
     }
 }
 
-std::string ConsistentHash::GetServerIndex(const std::string& key)
-{
+std::string ConsistentHash::GetServerIndex(const std::string& key) {
     uint32_t partition = FNVHash(key);
     auto it = serverNodes.lower_bound(partition);
     if (it == serverNodes.end()) {
@@ -80,6 +77,7 @@ void ConsistentHash::StatisticPerf(std::string& label, int objMin, int objMax) {
     int total = objMax - objMin + 1;
     std::cout << "==== " << label << " ====" << '\n';
     for (auto& p : cnt) {
-        std::cout << "nodeIp: " << p.first << " rate: " << 100 * p.second / (total * 1.0) << "%" << '\n';
+        std::cout << "nodeIp: " << p.first << " rate: " << 100 * p.second / (total * 1.0) << "%"
+                  << '\n';
     }
 }

@@ -15,7 +15,7 @@ foreach (src ${TESTS})
 
     add_executable(${exe} ${src} )
     target_include_directories(${exe} PRIVATE "../../thirdparty")
-    target_link_libraries(${exe} ${link_libs} pthread gtest absl::node_hash_map Threads::Threads)
+    target_link_libraries(${exe} ${link_libs} cc_common pthread gtest absl::node_hash_map Threads::Threads)
 
     list(APPEND unittest_deps ${exe})
 endforeach ()
