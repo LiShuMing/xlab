@@ -90,34 +90,31 @@ void Conditional_Code()
     std::lock( lock1, lock2 );
     std::cout << "Conditional id:" << this_thread::get_id() << " waiting \n";
 
-    while( !cond )
-        cond_var.wait( lock1 );
-
+    // wait until condition is met
+    while( !cond ) {
+        cond_var.wait(lock1);
+    }
     std::cout << "t4: condition met \n";
 }
 
 // Basic Test
 class LockTest : public testing::Test {};
 
-TEST_F(LockTest, bad_case) {
+// test lock with multiple mutex
+TEST_F(LockTest, TestWithMultiMutexes) {
     std::thread t1( Take_Locks ), t2( Take_Locks ), t3( Take_Locks );
     std::thread t4( Conditional_Code );
 
     std::cout << "threads started \n";
-    std::this_thread::sleep_for( 10s );
 
-    std::unique_lock<std::mutex> lock1( mutex1 );
-    std::cout << "mutex1 locked \n" ;
-    std::this_thread::sleep_for( 5s );
-
-    std::cout << "setting condition/notify \n";
-    cond = true;
-    cond_var.notify_one();
-    std::this_thread::sleep_for( 5s );
-
-    lock1.unlock();
-    std::cout << "mutex1 unlocked \n";
-    std::this_thread::sleep_for( 6s );
+    {
+        std::unique_lock<std::mutex> lock1(mutex1);
+        std::cout << "mutex1 locked \n" << "setting condition/notify \n";
+        cond = true;
+        cond_var.notify_one();
+        lock1.unlock();
+        std::cout << "mutex1 unlocked \n";
+    }
 
     done = true;
     t4.join(); t3.join(); t2.join(); t1.join();
@@ -126,33 +123,119 @@ TEST_F(LockTest, bad_case) {
 void worker() {
     cout<<"thread:"<<this_thread::get_id()<<", start to work..."<<endl;
 
-    unique_lock<mutex> lk(m);
-    cv.wait(lk, [] {return ready;});
-    cout<<"thread:"<<this_thread::get_id()<<", wait done..."<<endl;
-    // data += "thread:"+ to_string(this_thread::get_id()) +" after processed.";
-//    data += "thread after processed.";
-    processed=true;
-    lk.unlock();
-    cv.notify_one();
+    {
+        unique_lock<mutex> lk(m);
+        cv.wait(lk, [] { return ready; });
+        cout << "thread:" << this_thread::get_id() << ", wait done..." << endl;
+        processed = true;
+        cout << "2. processed done..." << endl;
+        lk.unlock();
+        cv.notify_one();
+    }
 }
 
-TEST_F(LockTest, test_worker) {
+TEST_F(LockTest, TestWorker) {
     thread t1(worker);
     string data = "berfore start ...";
+
+    // no notify, but with condition set
     {
         lock_guard<mutex> lk(m);
         ready=true;
+        cout << "1. ready to notify worker..." << endl;
     }
+
     {
         unique_lock<mutex> lk(m);
         cv.wait(lk, []{return processed;});
+        cout << "3. processed done..." << endl;
     }
-    cout<<"wait 2s..."<<endl;
-    this_thread::sleep_for(chrono::milliseconds(2000));
-    cout<<"wait 2s done..."<<endl;
-
     cv.notify_one();
+    cout << "main thread notify worker..." << endl;
     t1.join();
+}
+
+TEST_F(LockTest, TestTwoThreads1) {
+    bool ready1 = true;
+    bool ready2 = false;
+    int k = 10;
+    thread t1([&](){
+        while(k > 0) {
+            {
+                unique_lock<mutex> lk(m);
+                cv.wait(lk, [&] { return ready1; });
+
+                cout << "thread:" << this_thread::get_id() << ", start to work..." << k << endl;
+                ready1 = false;
+                ready2 = true;
+                k -= 1;
+                lk.unlock();
+                cv.notify_one();
+            }
+        }
+    });
+
+    thread t2([&]() {
+        while (k > 0) {
+            {
+                unique_lock<mutex> lk(m);
+                cv.wait(lk, [&] { return ready2; });
+
+                cout << "thread:" << this_thread::get_id() << ", start to work..." << k << endl;
+                ready2 = false;
+                ready1 = true;
+
+                k -= 1;
+                lk.unlock();
+                cv.notify_one();
+            }
+        }
+    });
+
+    //cv.notify_one();
+    t1.join();
+    t2.join();
+}
+
+TEST_F(LockTest, TestTwoThreads2) {
+    int k = 100;
+    bool exit = false;
+    vector<thread> threads;
+    for (int i = 0; i <10; i++) {
+        thread t([&](int tid){
+            while(k > 0) {
+                {
+                    unique_lock<mutex> lk(m);
+
+                    // wait until k % 10 == tid or exit
+                    cv.wait(lk, [&] { return exit || k % 10 == tid ; });
+
+                    // only output when not exist
+                    if (!exit) {
+                        cout << "thread:" << tid << "," << this_thread::get_id()
+                             << ", start to work..." << k << endl;
+                    }
+
+                    // next
+                    k -= 1;
+
+                    // check if exit
+                    if (k <= 0) {
+                        cout << "thread:" << tid << "," << this_thread::get_id() << ", exit..."
+                             << endl;
+                        exit = true;
+                    }
+                    :w
+                    // notify all since all threads are waiting
+                    cv.notify_all();
+                }
+            }
+        }, i);
+        threads.push_back(move(t));
+    }
+    for (int i = 0; i < 10; i++) {
+        threads[i].join();
+    }
 }
 
 int main(int argc, char** argv) {
