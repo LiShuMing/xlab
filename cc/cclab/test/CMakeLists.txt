@@ -6,6 +6,7 @@ set(TESTS
         lock_problem.cpp
         lock_problem_dining.cpp
         thread_test.cpp
+        mpmc_queue_test.cpp
         )
 
 foreach (src ${TESTS})

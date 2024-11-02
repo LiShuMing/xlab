@@ -155,7 +155,7 @@ TEST_F(LockTest, TestWorker) {
     t1.join();
 }
 
-TEST_F(LockTest, TestTwoThreads1) {
+TEST_F(LockTest, TestMultiThreads1) {
     bool ready1 = true;
     bool ready2 = false;
     int k = 10;
@@ -235,6 +235,60 @@ TEST_F(LockTest, TestTwoThreads2) {
     for (int i = 0; i < 10; i++) {
         threads[i].join();
     }
+}
+
+TEST_F(LockTest, TestMemoryBarrier1) {
+    atomic<int> a(0);
+    atomic<bool> is_ready = false;
+    thread t1([&](){
+        a.store(1, memory_order_relaxed);
+        is_ready.store(true, memory_order_release);
+    });
+
+    thread t2([&](){
+        while (!is_ready.load(memory_order_acquire)) {
+            this_thread::yield();
+        }
+        cout << "a=" << a.load(memory_order_relaxed) << endl;
+        GTEST_ASSERT_EQ(a.load(memory_order_relaxed), 1);
+    });
+    t1.join();
+    t2.join();
+}
+
+TEST_F(LockTest, TestMemoryBarrier2) {
+    atomic<int> a(100);
+    atomic<bool> is_ready1 = true;
+    atomic<bool> is_ready2 = false;
+    thread t1([&](){
+        while (a.load(memory_order_relaxed) > 0) {
+            while (!is_ready1.load(memory_order_acquire)) {
+                this_thread::yield();
+            }
+            cout << "thread:" << std::this_thread::get_id() << ", a:" << a.load(memory_order_relaxed) << endl;
+            // a.store(1, memory_order_relaxed);
+            a--;
+
+            is_ready1.store(false, memory_order_release);
+            is_ready2.store(true, memory_order_release);
+        }
+    });
+
+    thread t2([&]() {
+        while (a.load(memory_order_relaxed) > 0) {
+            while (!is_ready2.load(memory_order_acquire)) {
+                this_thread::yield();
+            }
+            cout << "thread:" << std::this_thread::get_id() << ", a:" << a.load(memory_order_relaxed) << endl;
+            // a.store(1, memory_order_relaxed);
+            a--;
+
+            is_ready1.store(true, memory_order_release);
+            is_ready2.store(false, memory_order_release);
+        }
+    });
+    t1.join();
+    t2.join();
 }
 
 int main(int argc, char** argv) {
