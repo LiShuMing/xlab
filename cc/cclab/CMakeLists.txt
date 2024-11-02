@@ -61,7 +61,7 @@ endif()
 SET(CMAKE_CXX_FLAGS "${CXX_COMMON_FLAGS} ${CMAKE_CXX_FLAGS}")
 
 #include
-include_directories(main)
+include_directories(src)
 # include_directories(SYSTEM ${PROJECT_SOURCE_DIR}/third-party/gtest-1.7.0/fused-cpp)
 
 # pthread, required by absl see https://github.com/abseil/abseil-cpp/issues/183#issuecomment-458453010
@@ -84,7 +84,7 @@ add_subdirectory(../thirdparty/abseil-cpp abseil-cpp)
 # cpp
 add_subdirectory(bench)
 add_subdirectory(test)
-add_subdirectory(main)
+add_subdirectory(src)
 
 # use ccache
 find_program(CCACHE_PROGRAM ccache)

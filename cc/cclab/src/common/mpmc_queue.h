@@ -1,11 +1,10 @@
 
-//#include "stdafx.h"
+#pragma once
+
 #include <stdio.h>
 #include <time.h>
 
 #include <iostream>
-//#include <intrin.h>
-//#include <windows.h>
 #include <stdatomic.h>
 
 #include <atomic>
@@ -13,8 +12,8 @@
 #include <string>
 
 using namespace std;
-template <typename T>
 
+template <typename T>
 class MpmcQueue {
 public:
     MpmcQueue(size_t buffer_size)

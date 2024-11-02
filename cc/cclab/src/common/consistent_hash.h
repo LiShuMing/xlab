@@ -1,5 +1,4 @@
-#ifndef consistent_hash_hpp
-#define consistent_hash_hpp
+#pragma once
 
 #include <stdio.h>
 #include <set>
@@ -22,9 +21,11 @@ public:
         physicalNodes.insert(std::string("192.168.1.103"));
         physicalNodes.insert(std::string("192.168.1.104"));
     };
+
     ~ConsistentHash() {
         serverNodes.clear();
     };
+
     static uint32_t FNVHash(std::string key);
     void Initialize();
     void AddNewPhysicalNode(const std::string& nodeIp);
@@ -32,5 +33,3 @@ public:
     std::string GetServerIndex(const std::string& key);
     void StatisticPerf(std::string& label, int left, int right);
 };
-
-#endif /* consistent_hash_hpp */

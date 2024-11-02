@@ -1,4 +1,4 @@
-#include "consistent_hash.h"
+#include "common/consistent_hash.h"
 #include <iostream>
 #include <map>
 #include <string>
@@ -83,26 +83,3 @@ void ConsistentHash::StatisticPerf(std::string& label, int objMin, int objMax) {
         std::cout << "nodeIp: " << p.first << " rate: " << 100 * p.second / (total * 1.0) << "%" << '\n';
     }
 }
-
-//int main() {
-//    ConsistentHash ch(1);
-//    ch.Initialize();
-//    std::string label = "初始情况: 1 virtualNodeNum";
-//    ch.StatisticPerf(label, 0, 65536);
-//
-//    ConsistentHash ch2(32);
-//    ch2.Initialize();
-//    std::string label2 = "初始情况: 32 virtualNodeNum";
-//    ch2.StatisticPerf(label2, 0, 65536);
-//
-//    label2 = "初始情况: 32 virtualNodeNum(delete one node)";
-//	ch2.DeletePhysicalNode("192.168.1.101");
-//    ch2.StatisticPerf(label2, 0, 65536);
-//
-//    label2 = "初始情况: 32 virtualNodeNum(add one node)";
-//	ch2.AddNewPhysicalNode("192.168.1.105");
-//    ch2.StatisticPerf(label2, 0, 65536);
-//
-//    //std::cin.get();
-//	return 0;
-//}

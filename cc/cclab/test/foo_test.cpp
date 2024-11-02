@@ -2,7 +2,7 @@
 
 #include <atomic>
 
-#include "foo.h"
+#include "utils/foo.h"
 
 namespace test {
 

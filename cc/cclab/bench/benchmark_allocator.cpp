@@ -1,6 +1,6 @@
 #include "benchmark/benchmark.h"
 
-#include "default_init_default.h"
+#include "utils/default_init_default.h"
 
 template <class T, typename A = std::allocator<T>>
 static void BM_Stl_Resize(benchmark::State& state) {

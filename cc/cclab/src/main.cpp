@@ -13,11 +13,9 @@
 // limitations under the License.#include "foo.h"
 
 #include <iostream>
-#include "foo.h"
-#include "consistent_hash.h"
+#include "utils/foo.h"
+#include "common/consistent_hash.h"
 
 int main() {
-//    bool ret = detail::Functions::template func1<false>();
-//    std::cout << "ret:" << ret << std::endl;
     return 0;
 }

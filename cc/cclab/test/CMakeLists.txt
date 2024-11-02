@@ -1,12 +1,13 @@
 message(STATUS "link_libs=${link_libs}")
 set(TESTS
         abseil_test.cpp
-        allocator_test.cpp
+        foo_test.cpp
         basic_test.cpp
         lock_problem.cpp
         lock_problem_dining.cpp
         thread_test.cpp
         mpmc_queue_test.cpp
+        consistent_hash_test.cpp
         )
 
 foreach (src ${TESTS})
@@ -18,4 +19,5 @@ foreach (src ${TESTS})
 
     list(APPEND unittest_deps ${exe})
 endforeach ()
+
 add_custom_target(unittest DEPENDS ${unittest_deps})

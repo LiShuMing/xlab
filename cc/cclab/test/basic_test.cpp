@@ -11,7 +11,7 @@
 #include <shared_mutex>
 #include <vector>
 
-#include "foo.h"
+#include "utils/foo.h"
 
 using namespace std;
 

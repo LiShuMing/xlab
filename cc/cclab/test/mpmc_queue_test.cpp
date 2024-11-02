@@ -1,6 +1,6 @@
 
 #include <gtest/gtest.h>
-#include "mpmc_queue.h"
+#include "common/mpmc_queue.h"
 
 #include <array>
 #include <chrono>
