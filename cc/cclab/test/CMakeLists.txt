@@ -10,6 +10,8 @@ set(TESTS
         consistent_hash_test.cpp
         robin_hood_map_test.cpp
         shared_ptr_test.cpp
+        skiplist_test.cpp
+        skiplist_v2_test.cpp
         )
 
 foreach (src ${TESTS})

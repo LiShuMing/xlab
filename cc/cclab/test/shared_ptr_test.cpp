@@ -17,12 +17,11 @@ using namespace std;
 
 class SharedPtrMap {
 private:
-    int _id;
     std::unordered_map<int, std::vector<std::shared_ptr<int>>> _data;
     std::shared_mutex _m1;
 
 public:
-    SharedPtrMap(int id) : _id(id) {}
+    SharedPtrMap() {}
 
     void addValue(int key, int value) {
         std::unique_lock<std::shared_mutex> lock(_m1); // 独占锁
@@ -86,7 +85,7 @@ void incrFunc(SharedPtrMap& a) {
             continue;
         }
 
-        cout << "id:" << id << ", thread_id::" << this_thread::get_id()
+        cout << "thread_id::" << this_thread::get_id()
              << ", size:" << ret->size() << ", ";
         for (auto a : *ret) {
             cout << "a:" << *a << ",";
@@ -110,7 +109,7 @@ void changeDataFunc(SharedPtrMap& a) {
 
 class PtrTest : public testing::Test {};
 TEST_F(PtrTest, TestBasic) {
-    SharedPtrMap a(1);
+    SharedPtrMap a;
     // how to wait it finish?
     a.change_data();
     incrFunc(a);
