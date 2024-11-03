@@ -15,5 +15,5 @@ add_subdirectory(common)
 # add_custom_target(main DEPENDS ${main_deps})
 
 # Create the executable
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME} main.cc)
 

@@ -1,17 +1,17 @@
 message(STATUS "link_libs=${link_libs}")
 set(TESTS
-        abseil_test.cpp
-        foo_test.cpp
-        basic_test.cpp
-        lock_problem.cpp
-        lock_problem_dining.cpp
-        thread_test.cpp
-        mpmc_queue_test.cpp
-        consistent_hash_test.cpp
-        robin_hood_map_test.cpp
-        shared_ptr_test.cpp
-        skiplist_test.cpp
-        skiplist_v2_test.cpp
+        abseil_test.cc
+        foo_test.cc
+        basic_test.cc
+        lock_problem.cc
+        lock_problem_dining.cc
+        thread_test.cc
+        mpmc_queue_test.cc
+        consistent_hash_test.cc
+        robin_hood_map_test.cc
+        shared_ptr_test.cc
+        skiplist_test.cc
+        skiplist_v2_test.cc
         )
 
 foreach (src ${TESTS})
