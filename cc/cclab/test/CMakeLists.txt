@@ -8,6 +8,7 @@ set(TESTS
         thread_test.cpp
         mpmc_queue_test.cpp
         consistent_hash_test.cpp
+        robin_hood_map_test.cpp
         )
 
 foreach (src ${TESTS})
