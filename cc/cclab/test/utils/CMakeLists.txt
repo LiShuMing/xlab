@@ -1,6 +1,9 @@
 message(STATUS "link_libs=${link_libs}")
 set(TESTS
     os_exec_op_test.cc
+    defer_test.cc
+    env_var_test.cc
+    task_thread_test.cc
 )
 
 foreach (src ${TESTS})
