@@ -11,6 +11,7 @@
 #include <shared_mutex>
 #include <vector>
 
+#include "utils/default_init_default.h"
 #include "utils/foo.h"
 
 using namespace std;
@@ -336,6 +337,44 @@ TEST_F(BasicTest, TestVector_CopyBack) {
 
     // !!!
     a2.resize(0);
+}
+
+TEST_F(BasicTest, TestAllocator1) {
+    {
+        std::vector<int32_t> vec;
+        vec.resize(10);
+        for (auto& v : vec) {
+            std::cout << v << " ";
+        }
+        std::cout << std::endl;
+    }
+    {
+        raw::raw_vector<int32_t> vec;
+        vec.resize(10);
+        for (auto& v : vec) {
+            std::cout << v << " ";
+        }
+        std::cout << std::endl;
+    }
+}
+
+TEST_F(BasicTest, TestAllocator2) {
+    {
+        std::vector<int32_t> vec;
+        vec.resize(10, 1);
+        for (auto& v : vec) {
+            std::cout << v << " ";
+        }
+        std::cout << std::endl;
+    }
+    {
+        raw::raw_vector<int32_t> vec;
+        vec.resize(10, 1);
+        for (auto& v : vec) {
+            std::cout << v << " ";
+        }
+        std::cout << std::endl;
+    }
 }
 
 } // namespace test
