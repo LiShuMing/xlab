@@ -68,7 +68,15 @@ include_directories(src)
 # pthread, required by absl see https://github.com/abseil/abseil-cpp/issues/183#issuecomment-458453010
 SET(CMAKE_THREAD_PREFER_PTHREAD TRUE)
 SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
+
+
 find_package(Threads REQUIRED)
+find_program(CCACHE_PROGRAM ccache)
+
+if(CCACHE_PROGRAM)
+    set(CMAKE_C_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
+    set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
+endif()
 
 # thirdparty
 add_subdirectory(../thirdparty/googletest googletest)

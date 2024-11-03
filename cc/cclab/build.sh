@@ -31,8 +31,6 @@ cd $BUILD_DIR &&
         -Dgperftools_enable_libunwind=NO \
         -Dgperftools_enable_frame_pointers=ON \
         -Dgperftools_build_benchmark=OFF \
-        -DBUILD_TESTING=OFF \
-        -DBENCHMARK_ENABLE_TESTING=OFF \
         -DFMT_INSTALL=ON \
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
         .. && cmake --build . --parallel $BUILD_THREAD

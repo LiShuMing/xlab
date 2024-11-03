@@ -11,7 +11,7 @@
 #include <shared_mutex>
 #include <vector>
 
-#include "foo.h"
+#include "utils/foo.h"
 
 using namespace std;
 
@@ -30,11 +30,9 @@ TEST_F(StringTest, Test1) {
     // trim padding
 
     // compute size
-    for (size i = 0; i < str_size; i += 2) {
+    for (int i = 0; i < str_size; i += 2) {
     }
 }
-
-
 } // namespace test
 
 int main(int argc, char** argv) {
