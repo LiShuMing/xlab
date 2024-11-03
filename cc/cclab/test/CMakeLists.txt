@@ -9,6 +9,7 @@ set(TESTS
         mpmc_queue_test.cpp
         consistent_hash_test.cpp
         robin_hood_map_test.cpp
+        shared_ptr_test.cpp
         )
 
 foreach (src ${TESTS})
