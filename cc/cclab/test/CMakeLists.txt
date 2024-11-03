@@ -12,6 +12,8 @@ set(TESTS
         shared_ptr_test.cc
         skiplist_test.cc
         skiplist_v2_test.cc
+        bplusplustree_test.cc
+        btree_test.cc
         )
 
 foreach (src ${TESTS})
