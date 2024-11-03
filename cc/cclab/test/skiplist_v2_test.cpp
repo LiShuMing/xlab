@@ -17,7 +17,7 @@
 #include <sstream>
 
 
-#include "common/skiplist_v2.h"
+#include "common/skip_list/skiplist_v2.h"
 
 class SkipListV2Test : public testing::Test {};
 

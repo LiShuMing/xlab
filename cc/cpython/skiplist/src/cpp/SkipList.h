@@ -428,13 +428,8 @@
 
 #endif // INCLUDE_METHODS_THAT_USE_STREAMS
 
-#ifdef SKIPLIST_THREAD_SUPPORT
 #include <mutex>
-#endif
-
-#ifdef SKIPLIST_THREAD_SUPPORT_TRACE
 #include <thread>
-#endif
 
 namespace OrderedStructs {
 namespace SkipList {

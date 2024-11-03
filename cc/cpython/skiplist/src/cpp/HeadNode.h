@@ -16,9 +16,6 @@
 #include "IntegrityEnums.h"
 #include "Node.h"
 
-#pragma mark -
-#pragma mark class HeadNode definition
-
 /** HeadNode
  *
  * @brief A HeadNode is a skip list. This is the single node leading to all other content Nodes.
@@ -129,11 +126,6 @@ private:
     HeadNode(const HeadNode &that);
     HeadNode &operator=(const HeadNode &that) const;
 };
-
-#pragma mark -
-#pragma mark class HeadNode implementation
-
-#pragma mark class HeadNode public const methods
 
 /**
  * Returns true if the value is present in the skip list.
@@ -338,8 +330,6 @@ const Node<T, _Compare> *HeadNode<T, _Compare>::_nodeAt(size_t idx) const {
     // Should not get here as _throw_exceeds_size() will always throw.
     return NULL;
 }
-
-#pragma mark class HeadNode public non-const methods
 
 /**
  * Insert a value.
