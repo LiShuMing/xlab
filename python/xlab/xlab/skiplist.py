@@ -8,7 +8,6 @@ from threading import Lock
 
 from .iterators import geometric
 
-
 class NIL(object):
     """Sentinel object that always compares greater than another object"""
     __slots__ = ()
@@ -148,8 +147,7 @@ class SkiplistAbstractBase:
 
         del node
 
-
-class Skiplist(SkiplistAbstractBase, collections.MutableMapping):
+class Skiplist(SkiplistAbstractBase, collections.abc.MutableMapping):
 
     def _remove(self, key):
         super(Skiplist, self)._remove(key)
