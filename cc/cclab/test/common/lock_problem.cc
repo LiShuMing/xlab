@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <atomic>
+#include <cassert>
 #include <chrono>
 #include <condition_variable>
 #include <iostream>
@@ -291,6 +292,25 @@ TEST_F(LockTest, TestMemoryBarrier2) {
     t2.join();
 }
 
+std::atomic<bool> g_ready(false);
+int g_data = 0;
+void producer() {
+    g_data = 42; // 修改共享数据
+    g_ready.store(true, std::memory_order_release); // 设置标志位
+}
+
+void consumer() {
+    while (!g_ready.load(std::memory_order_acquire)); // 等待标志位
+    assert(g_data == 42); // 验证共享数据
+}
+    
+TEST_F(LockTest, TestMemoryBarrier3) {
+    std::thread t1(producer);
+    std::thread t2(consumer);
+    t1.join();
+    t2.join();
+
+}
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

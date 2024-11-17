@@ -1,9 +1,9 @@
 sqls = """
-SELECT k1, sum(case when k6 > 1 then k6 else 0 end) from t1 group by k1 order by k1;
-SELECT k1, sum(case when k6 > 1 then k6 + 1 else 0 end) from t1 group by k1 order by k1;
-SELECT k1, sum(case when k6 = 1 then k6 else 0 end) from t1 group by k1 order by k1;
-SELECT k1, sum(case when k6 = 1 then k6 + 1 else 0 end) from t1 group by k1 order by k1;
-SELECT k1, sum(if(k6 > 1, k6, 0)) as cnt0 from t1 group by k1 order by k1;
+SELECT * FROM test_hours order by l_orderkey;
+SELECT * FROM test_hours where l_shipdate >= '2024-11-13 00:00:00' order by l_orderkey;
+SELECT * FROM iceberg.lism.lineitem_hours where l_returnflag = 'R' and l_linestatus = 'F' and l_shipdate = '2024-11-13 00:00:00' order by l_orderkey;
+SELECT * FROM iceberg.lism.lineitem_hours where l_shipdate >= '2024-11-13 00:00:00' order by l_orderkey;
+SELECT * FROM iceberg.lism.lineitem_hours order by l_orderkey;
 """
 
 values = """(1,"2020-06-15"),(2,"2020-06-18"),(3,"2020-06-21"),(4,"2020-06-24"),
@@ -17,7 +17,8 @@ def func1():
         if sql.strip() == "":
             continue
         # print("function: check_hit_materialized_view(\"" + sql + "\", \"mv0\", \"UNION\")")
-        print("function: check_hit_materialized_view(\"" + sql + "\", \"test_mv1\")")
+        # print("function: check_hit_materialized_view(\"" + sql + "\", \"test_mv1\")")
+        print("function: print_hit_materialized_views(\"" + sql + "\")")
         # print("function: check_no_hit_materialized_view(\"" + sql + "\", \"test_mv1\")")
         #print(sql[:-1] + " order by dt;")
 
