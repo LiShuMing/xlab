@@ -1,6 +1,7 @@
 message(STATUS "link_libs=${link_libs}")
 
 add_subdirectory(common)
+# add_subdirectory(experiment)
 
 # set(SRC
 #    common/consistent_hash.cpp

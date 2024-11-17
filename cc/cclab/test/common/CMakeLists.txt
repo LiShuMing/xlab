@@ -15,6 +15,7 @@ set(TESTS
         bplusplustree_test.cc
         btree_test.cc
         string_test.cc
+        bthread_test.cc
         )
 
 foreach (src ${TESTS})

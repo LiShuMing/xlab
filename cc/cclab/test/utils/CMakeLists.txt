@@ -4,6 +4,7 @@ set(TESTS
     defer_test.cc
     env_var_test.cc
     task_thread_test.cc
+    ll_parser_test.cc
 )
 
 foreach (src ${TESTS})
