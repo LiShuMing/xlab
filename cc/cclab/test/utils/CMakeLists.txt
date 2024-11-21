@@ -5,6 +5,7 @@ set(TESTS
     env_var_test.cc
     task_thread_test.cc
     ll_parser_test.cc
+    simd_test.cc
 )
 
 foreach (src ${TESTS})
