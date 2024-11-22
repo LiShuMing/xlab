@@ -16,6 +16,8 @@ set(TESTS
         btree_test.cc
         string_test.cc
         bthread_test.cc
+        coroutine_test.cc
+        math_test.cc
         )
 
 foreach (src ${TESTS})

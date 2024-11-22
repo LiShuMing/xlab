@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.12.0)
 project(cclab)
 
+option(USE_SSE4_2 "Build with SSE4.2 instruction" ON)
+option(USE_BMI_2 "Build with BMI2 instruction" ON)
+option(USE_AVX2 "Build with AVX2 instruction" ON)
+option(USE_AVX512 "Build with AVX512f/AVX512BW instruction" OFF)
+
 set(CMAKE_CXX_STANDARD 20)
 
 set(CXX_GCC_FLAGS "${CXX_GCC_FLAGS} -fno-omit-frame-pointer")
@@ -57,6 +62,34 @@ elseif ("${CMAKE_BUILD_TYPE}" STREQUAL "LSAN")
 else()
     message(FATAL_ERROR "Unknown build type: ${CMAKE_BUILD_TYPE}")
 endif()
+
+# set CMAKE_BUILD_TARGET_ARCH
+# use `lscpu | grep 'Architecture' | awk '{print $2}'` only support system which language is en_US.UTF-8
+execute_process(COMMAND bash "-c" "uname -m"
+                OUTPUT_VARIABLE
+                CMAKE_BUILD_TARGET_ARCH
+                OUTPUT_STRIP_TRAILING_WHITESPACE)
+message(STATUS "Build target arch is ${CMAKE_BUILD_TARGET_ARCH}")
+if ("${CMAKE_BUILD_TARGET_ARCH}" STREQUAL "x86" OR "${CMAKE_BUILD_TARGET_ARCH}" STREQUAL "x86_64")
+    if (${USE_SSE4_2})
+        # the compiler will define __SSE4_2__
+        set(CXX_COMMON_FLAGS "${CXX_COMMON_FLAGS} -msse4.2")
+    endif()
+    if (${USE_AVX2})
+        # the compiler will define __AVX2__
+        set(CXX_COMMON_FLAGS "${CXX_COMMON_FLAGS} -mavx2")
+    endif()
+    if (${USE_BMI_2})
+        set(CXX_COMMON_FLAGS "${CXX_COMMON_FLAGS} -mbmi2")
+    endif()
+    if (${USE_AVX512})
+        # the compiler will define __AVX512F__ __AVX512BW__
+        set(CXX_COMMON_FLAGS "${CXX_COMMON_FLAGS} -mavx512f -mavx512bw")
+    endif()
+elseif ("${CMAKE_BUILD_TARGET_ARCH}" STREQUAL "aarch64")
+    set(CXX_COMMON_FLAGS "${CXX_COMMON_FLAGS} -march=armv8-a+crc")
+endif()
+set(CXX_COMMON_FLAGS "${CXX_COMMON_FLAGS}  -Wno-attributes -DS2_USE_GFLAGS -DS2_USE_GLOG")
 
 # Add flags that are common across build types
 SET(CMAKE_CXX_FLAGS "${CXX_COMMON_FLAGS} ${CMAKE_CXX_FLAGS}")
