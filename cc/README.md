@@ -1,5 +1,3 @@
-
-
 # Reference
 - https://github.com/yhirose/cpp-httplib
 - https://github.com/taskflow/taskflow
@@ -12,3 +10,24 @@
 - git clone git@github.com:tontinton/dbeel.git
 - git clone git@github.com:simd-everywhere/simde.git
 
+
+cc/C-Plus-Plus/
+cc/babylon/
+cc/concurrentqueue/
+cc/fmt/
+cc/hardware-effects/
+cc/libchef/
+cc/libcoro/
+cc/liburing/
+cc/liburing4cpp/
+cc/simde/
+cc/simple-sqlite/
+cc/sqlite/
+cc/wren/
+cc/write-a-C-interpreter/
+cc/x86-simd-sort/
+rust/dbeel/
+rust/optd/
+rust/osblog/
+rust/sqleibniz/
+rust/toydb/
