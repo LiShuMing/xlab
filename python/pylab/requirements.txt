@@ -1,0 +1,10 @@
+# This is a comment, to show how #-prefixed lines are ignored.
+# It is possible to specify requirements as plain names.
+pytest
+pytest-cov
+beautifulsoup4
+
+# The syntax supported here is the same as that of requirement specifiers.
+docopt == 0.6.1
+requests [security] >= 2.8.1, == 2.8.* ; python_version < "2.7"
+#urllib3 @ https://github.com/urllib3/urllib3/archive/refs/tags/1.26.8.zip

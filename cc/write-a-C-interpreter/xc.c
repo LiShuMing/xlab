@@ -4,15 +4,15 @@
 #include <string.h>
 #define int long long // to work with 64bit address
 
-int debug;    // print the executed instructions
-int assembly; // print out the assembly and source
+int debug = 1;    // print the executed instructions
+int assembly = 1; // print out the assembly and source
 
 int token; // current token
 
 // instructions
 enum {
     LEA,
-    IMM,
+    IMM,    // load immediate value to ax
     JMP,
     CALL,
     JZ,
@@ -20,10 +20,10 @@ enum {
     ENT,
     ADJ,
     LEV,
-    LI,
-    LC,
-    SI,
-    SC,
+    LI, 
+    LC,     // load character to ax, address in ax
+    SI,     // save integer to address, value in ax, address on stack
+    SC,     // save character to address, value in ax, address on stack
     PUSH,
     OR,
     XOR,
@@ -102,15 +102,49 @@ enum { CHAR, INT, PTR };
 // type of declaration.
 enum { Global, Local };
 
+/**
+ * Memory Layout:
+ * 
+ * +------------------+
+ * |    stack   |     |      high address
+ * |    ...     v     |
+ * |                  |
+ * |                  |
+ * |                  |
+ * |                  |
+ * |    ...     ^     |
+ * |    heap    |     |
+ * +------------------+
+ * | bss  segment     |
+ * +------------------+
+ * | data segment     |
+ * +------------------+
+ * | text segment     |      low address
+ * +------------------+
+ * 
+ */
 int *text,      // text segment
-        *stack; // stack
+    *stack;     // stack
 int* old_text;  // for dump text segment
 char* data;     // data segment
 int* idmain;
 
 char *src, *old_src; // pointer to source code string;
 
+
 int poolsize;                 // default size of text/data/stack
+
+/**
+ * 1. `PC`: program counter, it stores an memory address in which stores the 
+ * **next** instruction to be run.
+ * 2. `SP`: stack pointer, which always points to the *top* of the stack. Notice 
+ * the stack grows from high address to low address so that when we push a new 
+ * element to the stack, `SP` decreases.
+ * 3. `BP`: base pointer, points to some elements on the stack. It is used in
+ * function calls.
+ * 4. `AX`: a general register that we used to store the result of an instruction.
+ * 
+ */
 int *pc, *bp, *sp, ax, cycle; // virtual machine registers
 
 int *current_id,   // current parsed ID
@@ -142,7 +176,7 @@ void next() {
         if (token == '\n') {
             if (assembly) {
                 // print compile info
-                printf("%l: %.*s", line, src - old_src, old_src);
+                printf("%d: %.*s", line, src - old_src, old_src);
                 old_src = src;
 
                 while (old_text < text) {
@@ -1374,6 +1408,7 @@ int main(int argc, char** argv) {
         return -1;
     }
 
+    // 256KB
     poolsize = 256 * 1024; // arbitrary size
     line = 1;
 

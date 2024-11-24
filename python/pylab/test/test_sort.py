@@ -1,6 +1,7 @@
-
+import pytest
 
 def test_sort_1():
+    print("start test_sort_1")
     datas = []
     for i in range(1, 100):
         data = {"key":1, "c0":i}
@@ -46,7 +47,7 @@ def handle_files(f_name):
     fp2.write(content)
     fp2.close()
 
-if __name__ == "__main__":
+def test_handle_files():
     # test_sort_1()
     # print1()
     f_dir = "/Users/lishuming/work/starrocks/fe/fe-core/src/test/resources/sql/materialized-view/tpch"
