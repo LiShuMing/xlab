@@ -1,4 +1,4 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from typing import Protocol, TypeVar
 from typing import Callable, Generic, Iterator, List, Optional, cast
 from types import NotImplementedType
@@ -75,7 +75,6 @@ class Stream(Generic[T]):
     identity: bool
     default: T
     default_changes: OrderedDict[int, T]
-
     def __init__(self, group_op: AbelianGroupOperation[T]) -> None:
         self.inner = OrderedDict()
         self.group_op = group_op
@@ -91,7 +90,6 @@ class Stream(Generic[T]):
         if element != self.default:
             self.inner[self.timestamp + 1] = element
             self.identity = False
-
         self.timestamp += 1
 
     def group(self) -> AbelianGroupOperation[T]:
@@ -153,18 +151,13 @@ class Stream(Generic[T]):
         """
         if not isinstance(other, Stream):
             return NotImplemented
-
         if self.is_identity() and other.is_identity():
             return True
-
         cast(Stream[T], other)
-
         self_timestamp = self.current_time()
         other_timestamp = other.current_time()
-
         if self_timestamp != other_timestamp:
             return False
-
         return self.inner == other.inner  # type: ignore
 
 StreamReference = Callable[[], Stream[T]]
@@ -180,8 +173,8 @@ class StreamHandle(Generic[T]):
         """Returns the referenced stream."""
         return self.ref()
 
+class Operator(ABC, Generic[T]):
 
-class Operator(Protocol[T]):
     @abstractmethod
     def step(self) -> bool:
         raise NotImplementedError
@@ -190,18 +183,8 @@ class Operator(Protocol[T]):
     def output_handle(self) -> StreamHandle[T]:
         raise NotImplementedError
 
-def step_until_fixpoint(operator: Operator[T]) -> None:
-    while not operator.step():
-        pass
-
-def step_until_fixpoint_and_return(operator: Operator[T]) -> Stream[T]:
-    step_until_fixpoint(operator)
-    return operator.output_handle().get()
-
-
-class UnaryOperator(Operator[R], Protocol[T, R]):
+class UnaryOperator(Operator[T], ABC, Generic[T, R]):
     """Base class for stream operators with a single input and output."""
-
     input_stream_handle: StreamHandle[T]
     output_stream_handle: StreamHandle[R]
 
@@ -210,7 +193,7 @@ class UnaryOperator(Operator[R], Protocol[T, R]):
         stream_handle: Optional[StreamHandle[T]],
         output_stream_group: Optional[AbelianGroupOperation[R]],
     ) -> None:
-        print(f"Stream handle: {stream_handle}")
+        # print(f"UnaryOperator Stream handle: {stream_handle}")
         if stream_handle is not None:
             #print(f"Setting input stream: {stream_handle.get().to_list()}")
             self.set_input(stream_handle, output_stream_group)
@@ -221,12 +204,12 @@ class UnaryOperator(Operator[R], Protocol[T, R]):
         output_stream_group: Optional[AbelianGroupOperation[R]],
     ) -> None:
         """Sets the input stream and initializes the output stream."""
+        # print(f"Output stream:")
         self.input_stream_handle = stream_handle
         if output_stream_group is not None:
             output = Stream(output_stream_group)
             self.output_stream_handle = StreamHandle(lambda: output)
         else:
-            print(f"Output stream:")
             output = cast(Stream[R], Stream(self.input_a().group()))
             self.output_stream_handle = StreamHandle(lambda: output)
 
@@ -238,11 +221,10 @@ class UnaryOperator(Operator[R], Protocol[T, R]):
 
     def output_handle(self) -> StreamHandle[R]:
         handle = StreamHandle(lambda: self.output())
-
         return handle
 
 
-class BinaryOperator(Operator[S], Protocol[T, R, S]):
+class BinaryOperator(Operator[S], ABC, Generic[T, R, S]):
     """Base class for stream operators with two inputs and one output."""
 
     input_stream_handle_a: StreamHandle[T]
@@ -300,9 +282,9 @@ class Delay(UnaryOperator[T, T]):
     """
     Delays the input stream by one timestamp.
     """
-
     def __init__(self, stream: Optional[StreamHandle[T]]) -> None:
-        print(f"Delaying stream: {stream.get().to_list()}")
+        # print(f"Delaying stream: {stream.get().to_list()}")
+        # print(f"super:"+str(super()))
         super().__init__(stream, None)
 
     def step(self) -> bool:
@@ -339,14 +321,11 @@ class Lift1(UnaryOperator[T, R]):
         input_timestamp = self.input_a().current_time()
         join = max(input_timestamp, output_timestamp, self.frontier)
         meet = min(input_timestamp, output_timestamp, self.frontier)
-
         if join == meet:
             return True
-
         next_frontier = self.frontier + 1
         self.output().send(self.f1(self.input_a()[next_frontier]))
         self.frontier = next_frontier
-
         return False
 
 
@@ -389,10 +368,8 @@ class Lift2(BinaryOperator[T, R, S]):
 
         application = self.f2(a, b)
         self.output().send(application)
-
         self.frontier_a = next_frontier_a
         self.frontier_b = next_frontier_b
-
         return False
 
 
@@ -405,10 +382,10 @@ class LiftedGroupAdd(Lift2[T, T, T]):
             None,
         )
 
-
 class LiftedGroupNegate(Lift1[T, T]):
     def __init__(self, stream: StreamHandle[T]):
         super().__init__(stream, lambda x: stream.get().group().neg(x), None)
+
 
 class Differentiate(UnaryOperator[T, T]):
     """
@@ -582,8 +559,16 @@ class StreamAddition(AbelianGroupOperation[Stream[T]]):
         Returns an identity stream for the addition operation.
         """
         identity_stream = Stream(self.group)
-
         return identity_stream
+
+
+def step_until_fixpoint(operator: Operator[T]) -> None:
+    while not operator.step():
+        pass
+
+def step_until_fixpoint_and_return(operator: Operator[T]) -> Stream[T]:
+    step_until_fixpoint(operator)
+    return operator.output_handle().get()
 
 JoinCmp = Callable[[T, R], bool]
 PostJoinProjection = Callable[[T, R], S]
