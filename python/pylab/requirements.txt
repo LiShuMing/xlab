@@ -4,6 +4,9 @@ pytest
 pytest-cov
 beautifulsoup4
 
+numpy == 2.1
+scipy >= 0.19.1
+
 # The syntax supported here is the same as that of requirement specifiers.
 docopt == 0.6.1
 requests [security] >= 2.8.1, == 2.8.* ; python_version < "2.7"

@@ -1,6 +1,6 @@
 import unittest
 
-from xlab import Skiplist
+from pylab import Skiplist
 class TestSkipList(unittest.TestCase):
     def test_basic(self):
         sl = Skiplist()

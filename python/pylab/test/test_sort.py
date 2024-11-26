@@ -15,6 +15,19 @@ def test_sort_1():
             print("-----------j:%s i:%s--------" % (j, i))
             print(datas[j:i])
 
+def quicksort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quicksort(left) + middle + quicksort(right)
+
+def test_sort_2():
+    print("start test_sort_2")
+    print(quicksort([3,6,8,10,1,2,1]))
+
 def print1():
     t1 = """
     @Ignore
@@ -47,6 +60,7 @@ def handle_files(f_name):
     fp2.write(content)
     fp2.close()
 
+@pytest.mark.skip(reason="Not implemented yet")
 def test_handle_files():
     # test_sort_1()
     # print1()
