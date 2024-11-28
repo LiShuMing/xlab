@@ -7,7 +7,7 @@
 
 using namespace std;
 
-class InterviewTest : public testing::Test {};
+class Interview1Test : public testing::Test {};
 
 bool dfs(const vector<vector<char>> &grids, const std::string &target, int x, int y, string &path,
          set<pair<int, int>> &visited) {
@@ -48,7 +48,7 @@ string findPath(const vector<vector<char>> &grids, const std::string &target) {
     return "";
 }
 
-TEST_F(InterviewTest, Test1) {
+TEST_F(Interview1Test, Test1) {
     vector<vector<char>> grids = {
         {'a', 'b', 'c', 'd'},
         {'e', 'f', 'g', 'h'},

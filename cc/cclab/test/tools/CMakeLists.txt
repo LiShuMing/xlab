@@ -1,4 +1,4 @@
-message(STATUS "link_libs=${link_libs}")
+# message(STATUS "link_libs=${link_libs}")
 
 # set(COMMON_TESTS
 #     abseil_test.cc
@@ -30,4 +30,5 @@ message(STATUS "link_libs=${link_libs}")
 # endforeach ()
 
 # add_custom_target(common_unittest DEPENDS ${unittest_deps})
-add_directory_tests("${CMAKE_SOURCE_DIR}/test/common")
+
+add_directory_for_each_test("${CMAKE_SOURCE_DIR}/test/tools")

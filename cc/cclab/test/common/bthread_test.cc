@@ -98,8 +98,3 @@ TEST_F(BThreadTest, BasicTest) {
   res = (int)bthread_jump_fcontext(&fcm, fc, (intptr_t)&p);
   printf("Back to Main Again: %d + %d = %d\n", p.first, p.second, res);
 }
-
-int main(int argc, char** argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}

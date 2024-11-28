@@ -277,7 +277,6 @@ class BinaryOperator(Operator[S], ABC, Generic[T, R, S]):
 
         return handle
 
-
 class Delay(UnaryOperator[T, T]):
     """
     Delays the input stream by one timestamp.
@@ -347,7 +346,6 @@ class Lift2(BinaryOperator[T, R, S]):
         self.f2 = f2
         self.frontier_a = 0
         self.frontier_b = 0
-
         super().__init__(stream_a, stream_b, output_stream_group)
 
     def step(self) -> bool:

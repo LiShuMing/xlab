@@ -54,8 +54,3 @@ TEST_F(SkipListTest, TestBasic) {
     GTEST_ASSERT_EQ(sl.size(), 2);
     GTEST_ASSERT_EQ(sl.at(1), 84.0);
 }
-
-int main(int argc, char** argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}
