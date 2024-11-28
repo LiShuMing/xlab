@@ -11,6 +11,10 @@
 #include <shared_mutex>
 #include <vector>
 
+#include <iostream>
+#include <memory>
+#include <cstdio>
+#include <string_view>
 #include "utils/foo.h"
 
 using namespace std;
@@ -33,9 +37,18 @@ TEST_F(StringTest, Test1) {
     for (int i = 0; i < str_size; i += 2) {
     }
 }
-} // namespace test
 
-int main(int argc, char** argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+void print_me(std::string_view s) {
+    printf("%s\n", s.data());
 }
+
+TEST_F(StringTest, TestStringView) {
+    char next[] = {'n','e','x','t'};
+    char hello[] = {'H','e','l','l','o', ' ', 'W','o','r','l','d'};
+    std::string_view sub(hello, 5);
+    std::cout << sub << "\n";
+    print_me(sub);
+}
+
+
+} // namespace test

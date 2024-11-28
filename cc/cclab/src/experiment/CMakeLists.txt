@@ -1,7 +1,6 @@
 message(STATUS "link_libs=${link_libs}")
 
-add_library(
-   experiment
+add_library(experiment
    helloworld.cc
 )
 

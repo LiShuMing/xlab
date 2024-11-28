@@ -7,12 +7,22 @@ else
     export PATH=$GCC_HOME/bin:$PATH
 fi
 
-#CC=clang 
-#CXX=clang++
+if command -v clang >/dev/null 2>&1; then
+    CC="clang"
+    CXX="clang++"
+    echo "Using clang for compilation."
+elif command -v gcc >/dev/null 2>&1; then
+    CC="gcc"
+    CXX="g++"
+    echo "Clang not found. Using gcc instead."
+else
+    echo "Error: Neither clang nor gcc is available on this system."
+    exit 1
+fi
 
 BUILD_THREAD=12
-#BUILD_TYPE=ASAN
-BUILD_TYPE=Release
+BUILD_TYPE=ASAN
+# BUILD_TYPE=RELEASE
 BUILD_DIR=build_$BUILD_TYPE
 DIR=$(cd $(dirname $0) && pwd )
 
@@ -24,8 +34,8 @@ DIR=$(cd $(dirname $0) && pwd )
 mkdir -p $BUILD_DIR
 cd $BUILD_DIR &&
     cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
-        -DCMAKE_C_COMPILER=clang \
-        -DCMAKE_CXX_COMPILER=clang++ \
+        -DCMAKE_C_COMPILER=${CC} \
+        -DCMAKE_CXX_COMPILER=${CXX} \
         -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
         -Dgperftools_enable_libunwind=NO \

@@ -50,8 +50,3 @@ TEST_F(CoroutineTest, TestAscendingWithReeenrant) {
         printf("got number %d\n", ascending(&z));
     } while (z);
 }
-
-int main(int argc, char** argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}

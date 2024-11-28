@@ -46,8 +46,3 @@ TEST_F(BTreeTest, TestMap) {
     }
 }
 } // namespace test
-
-int main(int argc, char** argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}

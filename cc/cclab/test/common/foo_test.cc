@@ -7,6 +7,7 @@
 namespace test {
 
 class GTestDemo : public testing::Test {};
+
 TEST_F(GTestDemo, assertion) {
     ASSERT_EQ(1, 1);
     ASSERT_TRUE(true);
@@ -14,8 +15,8 @@ TEST_F(GTestDemo, assertion) {
 }
 
 TEST_F(GTestDemo, foobar) {
-    ASSERT_EQ(add(1, 2), 3);
-    GTEST_LOG_(INFO) << "1+2=" << add(1, 2);
+    ASSERT_EQ(detail::add(1, 2), 3);
+    GTEST_LOG_(INFO) << "1+2=" << detail::add(1, 2);
 }
 
 TEST_F(GTestDemo, atomic) {
@@ -25,8 +26,3 @@ TEST_F(GTestDemo, atomic) {
 }
 
 } // namespace test
-
-int main(int argc, char** argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}

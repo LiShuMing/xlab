@@ -1,20 +1,50 @@
 cmake_minimum_required(VERSION 3.12.0)
 project(cclab)
 
+# set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+# pthread, required by absl see https://github.com/abseil/abseil-cpp/issues/183#issuecomment-458453010
+SET(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
+
 option(USE_SSE4_2 "Build with SSE4.2 instruction" ON)
 option(USE_BMI_2 "Build with BMI2 instruction" ON)
 option(USE_AVX2 "Build with AVX2 instruction" ON)
 option(USE_AVX512 "Build with AVX512f/AVX512BW instruction" OFF)
 
-set(CMAKE_CXX_STANDARD 20)
-
 set(CXX_GCC_FLAGS "${CXX_GCC_FLAGS} -fno-omit-frame-pointer")
 set(CXX_FLAGS_DEBUG "${CXX_GCC_FLAGS} -Werror -ggdb3 -O0 -gdwarf-2")
-#set(CXX_FLAGS_RELEASE "${CXX_GCC_FLAGS} -O3 -gdwarf-2 -DNDEBUG -fopt-info-vec-optimized -fopt-info-vec-missed")
+# set(CXX_FLAGS_RELEASE "${CXX_GCC_FLAGS} -O3 -gdwarf-2 -DNDEBUG -fopt-info-vec-optimized -fopt-info-vec-missed")
 set(CXX_FLAGS_RELEASE "${CXX_GCC_FLAGS} -O3 -fPIC -gdwarf-2 -DNDEBUG")
+#use -fsanitize=address to enable address sanitizer
+# set(CXX_FLAGS_ASAN "${CXX_GCC_FLAGS} -O3 -fPIC -gdwarf-2 -DNDEBUG -fsanitize=address -DADDRESS_SANITIZER")
 SET(CXX_FLAGS_ASAN "${CXX_GCC_FLAGS} -ggdb3 -O0 -gdwarf-2 -fsanitize=address -DADDRESS_SANITIZER")
 SET(CXX_FLAGS_LSAN "${CXX_GCC_FLAGS} -ggdb3 -O0 -gdwarf-2 -fsanitize=leak -DLEAK_SANITIZER")
 SET(CXX_FLAGS_UBSAN "${CXX_GCC_FLAGS} -ggdb3 -O0 -gdwarf-2 -fno-wrapv -fsanitize=undefined")
+
+if ("${CMAKE_BUILD_TYPE}" STREQUAL "DEBUG")
+    SET(CMAKE_CXX_FLAGS ${CXX_FLAGS_DEBUG})
+elseif ("${CMAKE_BUILD_TYPE}" STREQUAL "RELEASE")
+    SET(CMAKE_CXX_FLAGS ${CXX_FLAGS_RELEASE})
+elseif ("${CMAKE_BUILD_TYPE}" STREQUAL "ASAN")
+    SET(CMAKE_CXX_FLAGS "${CXX_FLAGS_ASAN}")
+elseif ("${CMAKE_BUILD_TYPE}" STREQUAL "LSAN")
+    SET(CMAKE_CXX_FLAGS "${CXX_FLAGS_LSAN}")
+else()
+    message(FATAL_ERROR "Unknown build type: ${CMAKE_BUILD_TYPE}")
+endif()
+
+find_package(Threads REQUIRED)
+find_program(CCACHE_PROGRAM ccache)
+
+if (CCACHE_PROGRAM)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+    set(CMAKE_C_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
+    set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
+endif(CCACHE_PROGRAM)
 
 # compiler flags that are common across debug/release builds
 #  -Wall: Enable all warnings.
@@ -30,12 +60,13 @@ SET(CXX_FLAGS_UBSAN "${CXX_GCC_FLAGS} -ggdb3 -O0 -gdwarf-2 -fno-wrapv -fsanitize
 #  -fno-omit-frame-pointers: Keep frame pointer for functions in register
 set(CXX_COMMON_FLAGS "${CXX_COMMON_FLAGS} -Wall -Wno-sign-compare -Wno-unknown-pragmas -pthread -Wno-register")
 set(CXX_COMMON_FLAGS "${CXX_COMMON_FLAGS} -Wno-strict-aliasing -fno-omit-frame-pointer")
-set(CXX_COMMON_FLAGS "${CXX_COMMON_FLAGS} -std=c++20 -D__STDC_FORMAT_MACROS")
+set(CXX_COMMON_FLAGS "${CXX_COMMON_FLAGS} -std=c++${CMAKE_CXX_STANDARD} -D__STDC_FORMAT_MACROS")
 set(CXX_COMMON_FLAGS "${CXX_COMMON_FLAGS} -Wno-deprecated -Wno-vla -Wno-comment")
 set(CXX_COMMON_FLAGS "${CXX_COMMON_FLAGS} -DBOOST_DATE_TIME_POSIX_TIME_STD_CONFIG")
 set(CXX_COMMON_FLAGS "${CXX_COMMON_FLAGS} -DBOOST_SYSTEM_NO_DEPRECATED -DBOOST_UUID_RANDOM_PROVIDER_FORCE_POSIX")
 set(CXX_COMMON_FLAGS "${CXX_COMMON_FLAGS} -Werror=return-type -Werror=switch")
 
+message(STATUS "CMAKE_CXX_COMPILER_ID: ${CMAKE_CXX_COMPILER_ID}")
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     set(CXX_COMMON_FLAGS "${CXX_COMMON_FLAGS} -Wno-unused-parameter -Wno-documentation -Wno-weak-vtables")
     set(CXX_COMMON_FLAGS "${CXX_COMMON_FLAGS} -Wno-reserved-identifier -Wno-suggest-destructor-override")
@@ -45,23 +76,16 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         set(CXX_COMMON_FLAGS "${CXX_COMMON_FLAGS} -Wno-bitwise-instead-of-logical")
     endif()
 endif()
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    add_compile_options (-fdiagnostics-color=always)
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    add_compile_options (-fcolor-diagnostics)
+endif ()
 
 #SET(CXX_FLAGS_UBSAN "${CXX_FLAGS_UBSAN} -fno-sanitize=alignment,function,vptr,float-divide-by-zero,float-cast-overflow")
 string(TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE)
 
 add_definitions(-DSKIPLIST_THREAD_SUPPORT_TRACE)
-
-if ("${CMAKE_BUILD_TYPE}" STREQUAL "DEBUG")
-    SET(CMAKE_CXX_FLAGS ${CXX_FLAGS_DEBUG})
-elseif ("${CMAKE_BUILD_TYPE}" STREQUAL "RELEASE")
-    SET(CMAKE_CXX_FLAGS ${CXX_FLAGS_RELEASE})
-elseif ("${CMAKE_BUILD_TYPE}" STREQUAL "ASAN")
-    SET(CMAKE_CXX_FLAGS "${CXX_FLAGS_ASAN}")
-elseif ("${CMAKE_BUILD_TYPE}" STREQUAL "LSAN")
-    SET(CMAKE_CXX_FLAGS "${CXX_FLAGS_LSAN}")
-else()
-    message(FATAL_ERROR "Unknown build type: ${CMAKE_BUILD_TYPE}")
-endif()
 
 # set CMAKE_BUILD_TARGET_ARCH
 # use `lscpu | grep 'Architecture' | awk '{print $2}'` only support system which language is en_US.UTF-8
@@ -93,27 +117,17 @@ set(CXX_COMMON_FLAGS "${CXX_COMMON_FLAGS}  -Wno-attributes -DS2_USE_GFLAGS -DS2_
 
 # Add flags that are common across build types
 SET(CMAKE_CXX_FLAGS "${CXX_COMMON_FLAGS} ${CMAKE_CXX_FLAGS}")
+message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 
 #include
 include_directories(src)
 # include_directories(SYSTEM ${PROJECT_SOURCE_DIR}/third-party/gtest-1.7.0/fused-cpp)
 
-# pthread, required by absl see https://github.com/abseil/abseil-cpp/issues/183#issuecomment-458453010
-SET(CMAKE_THREAD_PREFER_PTHREAD TRUE)
-SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
-
-
-find_package(Threads REQUIRED)
-find_program(CCACHE_PROGRAM ccache)
-
-if(CCACHE_PROGRAM)
-    set(CMAKE_C_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
-    set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
-endif()
+# set(PARENT_BUILD_TYPE ${CMAKE_BUILD_TYPE})
 
 # thirdparty
+# set(CMAKE_BUILD_TYPE RELEASE)
 add_subdirectory(../thirdparty/googletest googletest)
-add_subdirectory(../thirdparty/benchmark benchmark)
 add_subdirectory(../thirdparty/robin-hood-hashing robin-hood-hashing)
 add_subdirectory(../thirdparty/abseil-cpp abseil-cpp)
 #add_subdirectory(../thirdparty/brpc brpc)
@@ -122,21 +136,13 @@ add_subdirectory(../thirdparty/abseil-cpp abseil-cpp)
 #add_subdirectory(thirdparty/glog)
 #add_subdirectory(thirdparty/boost)
 #add_subdirectory(thirdparty/folly)
+# set(CMAKE_BUILD_TYPE ${PARENT_BUILD_TYPE})
 
-# cpp
-add_subdirectory(bench)
-add_subdirectory(test)
 add_subdirectory(src)
+add_subdirectory(test)
 
-# use ccache
-find_program(CCACHE_PROGRAM ccache)
-if(CCACHE_PROGRAM)
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
-endif(CCACHE_PROGRAM)
-
-# I like colors, even with ninja build
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    add_compile_options (-fdiagnostics-color=always)
-elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    add_compile_options (-fcolor-diagnostics)
-endif ()
+# only build benchmark in release mode
+if (${CMAKE_BUILD_TYPE} STREQUAL "RELEASE")
+    add_subdirectory(../thirdparty/benchmark benchmark)
+    add_subdirectory(bench)
+endif()

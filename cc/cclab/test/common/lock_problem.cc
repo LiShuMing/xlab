@@ -311,7 +311,3 @@ TEST_F(LockTest, TestMemoryBarrier3) {
     t2.join();
 
 }
-int main(int argc, char** argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}

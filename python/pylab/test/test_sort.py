@@ -1,6 +1,7 @@
-
+import pytest
 
 def test_sort_1():
+    print("start test_sort_1")
     datas = []
     for i in range(1, 100):
         data = {"key":1, "c0":i}
@@ -13,6 +14,19 @@ def test_sort_1():
         for j in (0, 10):
             print("-----------j:%s i:%s--------" % (j, i))
             print(datas[j:i])
+
+def quicksort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quicksort(left) + middle + quicksort(right)
+
+def test_sort_2():
+    print("start test_sort_2")
+    print(quicksort([3,6,8,10,1,2,1]))
 
 def print1():
     t1 = """
@@ -46,7 +60,8 @@ def handle_files(f_name):
     fp2.write(content)
     fp2.close()
 
-if __name__ == "__main__":
+@pytest.mark.skip(reason="Not implemented yet")
+def test_handle_files():
     # test_sort_1()
     # print1()
     f_dir = "/Users/lishuming/work/starrocks/fe/fe-core/src/test/resources/sql/materialized-view/tpch"

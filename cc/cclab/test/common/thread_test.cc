@@ -68,7 +68,24 @@ TEST_F(ThreadTest, TestThreadFunc1) {
     t2.join();
 }
 
-int main(int argc, char** argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+std::atomic<int> flag{0};
+int data = 0;
+
+static void producer() {
+    data = 42;
+    __asm__ __volatile__("" ::: "memory"); // 编译屏障
+    flag.store(1, std::memory_order_relaxed);
+}
+
+static void consumer() {
+    while (flag.load(std::memory_order_relaxed) == 0);
+    __asm__ __volatile__("" ::: "memory"); // 编译屏障
+    std::cout << "Data: " << data << std::endl; // 确保data读取的正确性
+}
+
+TEST_F(ThreadTest, TestMemoryBarrier) {
+    std::thread t1(::producer);
+    std::thread t2(::consumer);
+    t1.join();
+    t2.join();
 }

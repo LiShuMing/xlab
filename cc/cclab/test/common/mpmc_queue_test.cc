@@ -79,8 +79,3 @@ TEST_F(MpmcQueueTest, TestBasic) {
 
    std::cout << "cycles/op=" << time / (batch_size * iter_count * 2 * thread_count) << std::endl;
 }
-
-int main(int argc, char** argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}

@@ -7,8 +7,8 @@
 #include <list>
 #include <map>
 #include <queue>
-#include <string>
 #include <shared_mutex>
+#include <string>
 #include <vector>
 
 #include "utils/default_init_default.h"
@@ -26,7 +26,7 @@ struct X {
         std::cout << "default constructor:" << x << std::endl;
     }
 
-    X(const X&) { std::cout << "copy constructor\n"; }
+    X(const X &) { std::cout << "copy constructor\n"; }
 
     ~X() { std::cout << "deconstructor:" << x_ << std::endl; }
 
@@ -46,32 +46,31 @@ struct A3 : A2 {
 
 struct B1 {
     B1() { printf("B1 ctor\n"); }
-    B1(const B1& b) { printf("B1 copy\n"); }
+    B1(const B1 &b) { printf("B1 copy\n"); }
     ~B1() { printf("B1 dtor\n"); }
 };
 struct B2 : B1 {
     B2() { printf("B2 ctro\n"); }
-    B2(const B2& b) { printf("B2 copy\n"); }
+    B2(const B2 &b) { printf("B2 copy\n"); }
     ~B2() { printf("B2 dtor\n"); }
 };
 struct B3 : B2 {
     B3() { printf("B3 ctror\n"); }
-    B3(const B3& b) { printf("B3 copy\n"); }
+    B3(const B3 &b) { printf("B3 copy\n"); }
     ~B3() { printf("B3 dtor\n"); }
 };
 
 struct StructRef {
-    const B1& b1;
-    const B2& b2;
-    int a {1};
+    const B1 &b1;
+    const B2 &b2;
+    int a{1};
 };
 
 struct StructNonRef {
     B1 b1;
     B2 b2;
-    int a {1};
+    int a{1};
 };
-
 
 // Basic Test
 class BasicTest : public testing::Test {};
@@ -83,30 +82,30 @@ TEST_F(BasicTest, assertion) {
 }
 
 TEST_F(BasicTest, foobar) {
-    ASSERT_EQ(add(1, 2), 3);
-    GTEST_LOG_(INFO) << "1+2=" << add(1, 2);
+    ASSERT_EQ(detail::add(1, 2), 3);
+    GTEST_LOG_(INFO) << "1+2=" << detail::add(1, 2);
 }
 
 TEST_F(BasicTest, atomic) {
-    std::atomic<void*> a(nullptr);
-    void* b = a;
-    a.compare_exchange_strong(b, (void*)20);
+    std::atomic<void *> a(nullptr);
+    void *b = a;
+    a.compare_exchange_strong(b, (void *)20);
 }
 
 TEST_F(BasicTest, test1) {
     std::map<int, X> numbers = {{1, X()}, {2, X()}, {3, X()}};
     std::cout << "STARTING LOOP 1\n";
-    for (const std::pair<int, X>& p : numbers) {
+    for (const std::pair<int, X> &p : numbers) {
     }
     std::cout << "ENDING LOOP 1 \n";
 
     std::cout << "STARTING LOOP 2\n";
-    for (auto&& p : numbers) {
+    for (auto &&p : numbers) {
     }
     std::cout << "ENDING LOOP 2 \n";
 
     std::cout << "STARTING LOOP 3\n";
-    for (auto& it : numbers) {
+    for (auto &it : numbers) {
         // std::cout<<"it:"<<it.first<<", "<<it.second;
         std::cout << "it:" << it.first << std::endl;
     }
@@ -122,15 +121,15 @@ TEST_F(BasicTest, test2) {
 }
 
 TEST_F(BasicTest, test3) {
-    A1* a = new A3;
+    A1 *a = new A3;
     delete a;
     printf("\n");
 
-    B1* b = new B3;
+    B1 *b = new B3;
     delete b;
     printf("\n");
 
-    B3* b2 = new B3;
+    B3 *b2 = new B3;
     delete b2;
 }
 
@@ -201,7 +200,7 @@ TEST_F(BasicTest, TestString1) {
 }
 
 TEST_F(BasicTest, TestSharedPtr1) {
-    int* a = new int(1);
+    int *a = new int(1);
     {
         shared_ptr<int> a_ptr(a);
         std::cout << "shared ptr a:" << *a_ptr << std::endl;
@@ -217,27 +216,29 @@ TEST_F(BasicTest, TestSharedPtr1) {
 TEST_F(BasicTest, TestUniquePtr) {
     std::unique_ptr<int> u_a1;
     if (u_a1) {
-        std::cout << "u_a1 is not empty" << std::endl;;
+        std::cout << "u_a1 is not empty" << std::endl;
+        ;
     } else {
-        std::cout << "u_a1 is empty" << std::endl;;
+        std::cout << "u_a1 is empty" << std::endl;
+        ;
     }
 }
 
 class V1 {
-public:
+  public:
     V1(std::vector<int> a) : _a(std::move(a)) {}
-    const std::vector<int>& a() const { return _a; }
+    const std::vector<int> &a() const { return _a; }
 
-private:
+  private:
     std::vector<int> _a;
 };
 
 class V2 {
-public:
-    V2(std::vector<int>&& a) : _a(std::move(a)) {}
-    const std::vector<int>& a() const { return _a; }
+  public:
+    V2(std::vector<int> &&a) : _a(std::move(a)) {}
+    const std::vector<int> &a() const { return _a; }
 
-private:
+  private:
     std::vector<int> _a;
 };
 
@@ -247,14 +248,16 @@ TEST_F(BasicTest, TestMove) {
         std::vector<int> data;
         data.push_back(1);
         V1 v(data);
-        std::cout << "v1's data size:" << v.a().size() << ", data's size:" << data.size() << std::endl;
+        std::cout << "v1's data size:" << v.a().size() << ", data's size:" << data.size()
+                  << std::endl;
     }
     {
         std::cout << "V1" << std::endl;
         std::vector<int> data;
         data.push_back(1);
         V2 v(std::move(data));
-        std::cout << "v1's data size:" << v.a().size() << ", data's size:" << data.size() << std::endl;
+        std::cout << "v1's data size:" << v.a().size() << ", data's size:" << data.size()
+                  << std::endl;
     }
 }
 
@@ -307,8 +310,9 @@ TEST_F(BasicTest, TestAtomic) {
     cout << "t2:" << t2 << ", a1=" << a1 << endl;
 }
 
-void print_container(const std::list<int>& c) {
-    for (int i : c) std::cout << i << " ";
+void print_container(const std::list<int> &c) {
+    for (int i : c)
+        std::cout << i << " ";
     std::cout << '\n';
 }
 
@@ -327,12 +331,12 @@ TEST_F(BasicTest, TestList) {
 }
 
 TEST_F(BasicTest, TestVector_CopyBack) {
-    std::vector<std::string> a1 {"a", "b", "c"};
+    std::vector<std::string> a1{"a", "b", "c"};
     std::vector<std::string> a2;
     a2.resize(a1.size() - 1);
     std::copy_backward(a1.begin() + 1, a1.end(), a2.end());
-    for (auto& a: a2) {
-        std::cout <<"a:" << a << "\n";
+    for (auto &a : a2) {
+        std::cout << "a:" << a << "\n";
     }
 
     // !!!
@@ -343,7 +347,7 @@ TEST_F(BasicTest, TestAllocator1) {
     {
         std::vector<int32_t> vec;
         vec.resize(10);
-        for (auto& v : vec) {
+        for (auto &v : vec) {
             std::cout << v << " ";
         }
         std::cout << std::endl;
@@ -351,7 +355,7 @@ TEST_F(BasicTest, TestAllocator1) {
     {
         raw::raw_vector<int32_t> vec;
         vec.resize(10);
-        for (auto& v : vec) {
+        for (auto &v : vec) {
             std::cout << v << " ";
         }
         std::cout << std::endl;
@@ -362,7 +366,7 @@ TEST_F(BasicTest, TestAllocator2) {
     {
         std::vector<int32_t> vec;
         vec.resize(10, 1);
-        for (auto& v : vec) {
+        for (auto &v : vec) {
             std::cout << v << " ";
         }
         std::cout << std::endl;
@@ -370,7 +374,7 @@ TEST_F(BasicTest, TestAllocator2) {
     {
         raw::raw_vector<int32_t> vec;
         vec.resize(10, 1);
-        for (auto& v : vec) {
+        for (auto &v : vec) {
             std::cout << v << " ";
         }
         std::cout << std::endl;
@@ -378,8 +382,3 @@ TEST_F(BasicTest, TestAllocator2) {
 }
 
 } // namespace test
-
-int main(int argc, char** argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}

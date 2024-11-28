@@ -1,10 +1,12 @@
+#pragma once
+#ifndef FOO_H
+#define FOO_H
 #include<vector>
+namespace detail {
 
-int add(int a, int b) {
+static int add(int a, int b) {
     return a + b;
 }
-
-namespace detail {
 
 class Functions {
 public:
@@ -17,3 +19,4 @@ template<> bool Functions::func1<true>();
 template<> bool Functions::func1<false>();
 
 } // namespace detail
+#endif // MY_HEADER_H

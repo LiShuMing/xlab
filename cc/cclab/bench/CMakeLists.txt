@@ -7,9 +7,9 @@ set(BENCHMARKS
 
 # for each benchmark generate a target link lib
 foreach (src ${BENCHMARKS})
-    get_filename_component(exe ${src} NAME_WE)
+    get_filename_component(exe bench_${src} NAME_WE)
     add_executable(${exe} ${src})
-    target_link_libraries(${exe} ${link_libs} benchmark pthread)
+    target_link_libraries(${exe} PRIVATE ${link_libs} benchmark pthread)
     list(APPEND benchmarks_deps ${exe})
 endforeach ()
 

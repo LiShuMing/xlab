@@ -215,8 +215,3 @@ TEST_F(SIMDTest, TestSelectIf1) {
     print_vector("ans     :", ans);
 }
 #endif
-
-int main(int argc, char **argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}

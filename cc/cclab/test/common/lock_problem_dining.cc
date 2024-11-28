@@ -195,8 +195,3 @@ TEST_F(DiningLockTest, TestLock3) {
 TEST_F(DiningLockTest, TestLock4) {
     test_lock(4);
 }
-
-int main(int argc, char** argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}

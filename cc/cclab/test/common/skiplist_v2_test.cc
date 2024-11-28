@@ -37,8 +37,3 @@ TEST_F(SkipListV2Test, TestClockResolution) {
     GTEST_ASSERT_FALSE(sl.search_element(21.0));
     GTEST_ASSERT_EQ(sl.size(), 2);
 }
-
-int main(int argc, char** argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}
