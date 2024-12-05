@@ -25,3 +25,6 @@
 [submodule "cc/thirdparty/concurrentqueue"]
 	path = cc/thirdparty/concurrentqueue
 	url = git@github.com:cameron314/concurrentqueue.git
+[submodule "x86-simd-sort"]
+	path = x86-simd-sort
+	url = git@github.com:intel/x86-simd-sort.git
