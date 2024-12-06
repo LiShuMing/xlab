@@ -37,3 +37,6 @@
 [submodule "cc/thirdparty/C-Plus-Plus"]
 	path = cc/thirdparty/C-Plus-Plus
 	url = git@github.com:TheAlgorithms/C-Plus-Plus.git
+[submodule "cc/thirdparty/wren"]
+	path = cc/thirdparty/wren
+	url = git@github.com:wren-lang/wren.git
