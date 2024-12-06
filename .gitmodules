@@ -25,6 +25,9 @@
 [submodule "cc/thirdparty/concurrentqueue"]
 	path = cc/thirdparty/concurrentqueue
 	url = git@github.com:cameron314/concurrentqueue.git
-[submodule "x86-simd-sort"]
-	path = x86-simd-sort
+[submodule "cc/thirdparty/x86-simd-sort"]
+	path = cc/thirdparty/x86-simd-sort
 	url = git@github.com:intel/x86-simd-sort.git
+[submodule "cc/thirdparty/clang_combined_time_trace"]
+	path = cc/thirdparty/clang_combined_time_trace
+	url = git@github.com:woodroof/clang_combined_time_trace.git
