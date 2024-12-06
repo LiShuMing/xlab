@@ -22,6 +22,7 @@ class BPlusPlusTreeTest: public testing::Test {};
 
 TEST_F(BPlusPlusTreeTest, TestBasic) {
     char* filename = "./bplusplus.out";
+
     {
         struct bplus_tree *tree = bplus_tree_init(filename, 1024);
         GTEST_ASSERT_TRUE(tree != nullptr);

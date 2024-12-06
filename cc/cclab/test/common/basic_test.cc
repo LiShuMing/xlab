@@ -92,26 +92,6 @@ TEST_F(BasicTest, atomic) {
     a.compare_exchange_strong(b, (void *)20);
 }
 
-TEST_F(BasicTest, test1) {
-    std::map<int, X> numbers = {{1, X()}, {2, X()}, {3, X()}};
-    std::cout << "STARTING LOOP 1\n";
-    for (const std::pair<int, X> &p : numbers) {
-    }
-    std::cout << "ENDING LOOP 1 \n";
-
-    std::cout << "STARTING LOOP 2\n";
-    for (auto &&p : numbers) {
-    }
-    std::cout << "ENDING LOOP 2 \n";
-
-    std::cout << "STARTING LOOP 3\n";
-    for (auto &it : numbers) {
-        // std::cout<<"it:"<<it.first<<", "<<it.second;
-        std::cout << "it:" << it.first << std::endl;
-    }
-    std::cout << "ENDING LOOP 3 \n";
-}
-
 TEST_F(BasicTest, test2) {
     X x;
     X x1(1);

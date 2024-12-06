@@ -25,3 +25,66 @@
 [submodule "cc/thirdparty/concurrentqueue"]
 	path = cc/thirdparty/concurrentqueue
 	url = git@github.com:cameron314/concurrentqueue.git
+[submodule "cc/thirdparty/x86-simd-sort"]
+	path = cc/thirdparty/x86-simd-sort
+	url = git@github.com:intel/x86-simd-sort.git
+[submodule "cc/thirdparty/clang_combined_time_trace"]
+	path = cc/thirdparty/clang_combined_time_trace
+	url = git@github.com:woodroof/clang_combined_time_trace.git
+[submodule "cc/thirdparty/ClangBuildAnalyzer"]
+	path = cc/thirdparty/ClangBuildAnalyzer
+	url = git@github.com:aras-p/ClangBuildAnalyzer.git
+[submodule "cc/thirdparty/C-Plus-Plus"]
+	path = cc/thirdparty/C-Plus-Plus
+	url = git@github.com:TheAlgorithms/C-Plus-Plus.git
+[submodule "cc/thirdparty/wren"]
+	path = cc/thirdparty/wren
+	url = git@github.com:wren-lang/wren.git
+[submodule "cc/thirdparty/libcoro"]
+	path = cc/thirdparty/libcoro
+	url = git@github.com:jbaldwin/libcoro.git
+[submodule "cc/thirdparty/sqlite"]
+	path = cc/thirdparty/sqlite
+	url = git@github.com:sqlite/sqlite.git
+[submodule "cc/thirdparty/hardware-effects"]
+	path = cc/thirdparty/hardware-effects
+	url = git@github.com:Kobzol/hardware-effects.git
+[submodule "cc/thirdparty/liburing4cpp"]
+	path = cc/thirdparty/liburing4cpp
+	url = git@github.com:CarterLi/liburing4cpp.git
+[submodule "cc/thirdparty/Radix-Hash-Join"]
+	path = cc/thirdparty/Radix-Hash-Join
+	url = git@github.com:giorgospan/Radix-Hash-Join.git
+[submodule "cc/thirdparty/simde"]
+	path = cc/thirdparty/simde
+	url = git@github.com:simd-everywhere/simde.git
+[submodule "cc/thirdparty/seastar"]
+	path = cc/thirdparty/seastar
+	url = git@github.com:LiShuMing/seastar.git
+[submodule "cc/thirdparty/noisepage"]
+	path = cc/thirdparty/noisepage
+	url = git@github.com:git@github.com:cmu-db/noisepage.git
+[submodule "cc/thirdparty/fmt"]
+	path = cc/thirdparty/fmt
+	url = git@github.com:git@github.com:fmtlib/fmt.git
+[submodule "cc/thirdparty/babylon"]
+	path = cc/thirdparty/babylon
+	url = git@github.com:baidu/babylon.git
+[submodule "cc/thirdparty/boost"]
+	path = cc/thirdparty/boost
+	url = git@github.com:boostorg/boost.git
+[submodule "cc/thirdparty/flight-benchmark"]
+	path = cc/thirdparty/flight-benchmark
+	url = git@github.com:vichry2/flight-benchmark.git
+[submodule "cc/thirdparty/junction"]
+	path = cc/thirdparty/junction
+	url = git@github.com:preshing/junction.git
+[submodule "cc/thirdparty/libchef"]
+	path = cc/thirdparty/libchef
+	url = git@github.com:q191201771/libchef.git
+[submodule "cc/thirdparty/simple-sqlite"]
+	path = cc/thirdparty/simple-sqlite
+	url = git@github.com:madushadhanushka/simple-sqlite.git
+[submodule "cc/thirdparty/templight-tools"]
+	path = cc/thirdparty/templight-tools
+	url = git@github.com:mikael-s-persson/templight-tools.git
