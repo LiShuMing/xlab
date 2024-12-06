@@ -52,3 +52,6 @@
 [submodule "cc/thirdparty/liburing4cpp"]
 	path = cc/thirdparty/liburing4cpp
 	url = git@github.com:CarterLi/liburing4cpp.git
+[submodule "cc/thirdparty/Radix-Hash-Join"]
+	path = cc/thirdparty/Radix-Hash-Join
+	url = git@github.com:giorgospan/Radix-Hash-Join.git
