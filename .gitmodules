@@ -34,3 +34,6 @@
 [submodule "cc/thirdparty/ClangBuildAnalyzer"]
 	path = cc/thirdparty/ClangBuildAnalyzer
 	url = git@github.com:aras-p/ClangBuildAnalyzer.git
+[submodule "cc/thirdparty/C-Plus-Plus"]
+	path = cc/thirdparty/C-Plus-Plus
+	url = git@github.com:TheAlgorithms/C-Plus-Plus.git
