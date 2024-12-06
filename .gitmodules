@@ -40,3 +40,6 @@
 [submodule "cc/thirdparty/wren"]
 	path = cc/thirdparty/wren
 	url = git@github.com:wren-lang/wren.git
+[submodule "cc/thirdparty/libcoro"]
+	path = cc/thirdparty/libcoro
+	url = git@github.com:jbaldwin/libcoro.git
