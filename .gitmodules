@@ -55,3 +55,6 @@
 [submodule "cc/thirdparty/Radix-Hash-Join"]
 	path = cc/thirdparty/Radix-Hash-Join
 	url = git@github.com:giorgospan/Radix-Hash-Join.git
+[submodule "cc/thirdparty/simde"]
+	path = cc/thirdparty/simde
+	url = git@github.com:simd-everywhere/simde.git
