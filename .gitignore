@@ -46,3 +46,8 @@ tags
 logs
 .pyc
 __pycache__
+
+cc/thirdparty
+python/thirdparty
+rust/thirdparty
+

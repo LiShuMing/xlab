@@ -1,8 +1,0 @@
-*Cargo.lock
-target
-flamegraph*
-perf*
-cachegrind*
-callgrind*
-dhat*
-massif*
