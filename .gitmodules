@@ -61,3 +61,12 @@
 [submodule "cc/thirdparty/seastar"]
 	path = cc/thirdparty/seastar
 	url = git@github.com:LiShuMing/seastar.git
+[submodule "cc/thirdparty/noisepage"]
+	path = cc/thirdparty/noisepage
+	url = git@github.com:git@github.com:cmu-db/noisepage.git
+[submodule "cc/thirdparty/fmt"]
+	path = cc/thirdparty/fmt
+	url = git@github.com:git@github.com:fmtlib/fmt.git
+[submodule "cc/thirdparty/babylon"]
+	path = cc/thirdparty/babylon
+	url = git@github.com:baidu/babylon.git
