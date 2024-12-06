@@ -31,3 +31,6 @@
 [submodule "cc/thirdparty/clang_combined_time_trace"]
 	path = cc/thirdparty/clang_combined_time_trace
 	url = git@github.com:woodroof/clang_combined_time_trace.git
+[submodule "cc/thirdparty/ClangBuildAnalyzer"]
+	path = cc/thirdparty/ClangBuildAnalyzer
+	url = git@github.com:aras-p/ClangBuildAnalyzer.git
