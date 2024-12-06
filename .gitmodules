@@ -46,3 +46,6 @@
 [submodule "cc/thirdparty/sqlite"]
 	path = cc/thirdparty/sqlite
 	url = git@github.com:sqlite/sqlite.git
+[submodule "cc/thirdparty/hardware-effects"]
+	path = cc/thirdparty/hardware-effects
+	url = git@github.com:Kobzol/hardware-effects.git
