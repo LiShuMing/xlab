@@ -58,3 +58,6 @@
 [submodule "cc/thirdparty/simde"]
 	path = cc/thirdparty/simde
 	url = git@github.com:simd-everywhere/simde.git
+[submodule "cc/thirdparty/seastar"]
+	path = cc/thirdparty/seastar
+	url = git@github.com:LiShuMing/seastar.git
