@@ -49,3 +49,6 @@
 [submodule "cc/thirdparty/hardware-effects"]
 	path = cc/thirdparty/hardware-effects
 	url = git@github.com:Kobzol/hardware-effects.git
+[submodule "cc/thirdparty/liburing4cpp"]
+	path = cc/thirdparty/liburing4cpp
+	url = git@github.com:CarterLi/liburing4cpp.git
