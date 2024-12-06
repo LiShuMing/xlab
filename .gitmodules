@@ -43,3 +43,6 @@
 [submodule "cc/thirdparty/libcoro"]
 	path = cc/thirdparty/libcoro
 	url = git@github.com:jbaldwin/libcoro.git
+[submodule "cc/thirdparty/sqlite"]
+	path = cc/thirdparty/sqlite
+	url = git@github.com:sqlite/sqlite.git
