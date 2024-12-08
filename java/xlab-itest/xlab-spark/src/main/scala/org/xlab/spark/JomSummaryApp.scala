@@ -1,18 +1,17 @@
-package com.alipay.spark.tools
-
-import com.alipay.spark.tools.models.{AppInfoSummary, TableInput}
-import org.json4s.DefaultFormats
-import org.json4s.jackson.JsonMethods.{parse => parseJson}
+package org.xlab.spark
 
 import org.apache.spark.internal.Logging
 import org.apache.spark.{SparkConf, SparkContext}
+import org.json4s.DefaultFormats
+import org.json4s.jackson.JsonMethods.{parse => parseJson}
+
+
 
 /**
  * @author shuming.lsm
  * @version 2018/11/28
  **/
 object JomSummaryApp extends Logging {
-
   def parseSummaryJson(json: String): Unit = {
     try {
       implicit val formats = DefaultFormats

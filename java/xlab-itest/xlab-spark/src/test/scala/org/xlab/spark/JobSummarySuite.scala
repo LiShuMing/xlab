@@ -1,10 +1,8 @@
-package com.alipay.spark.tools
+package org.xlab.spark
 
-
-import com.alipay.spark.tools.models.{AppInfoSummary, TableInput}
 import org.apache.spark.internal.Logging
 import org.json4s.DefaultFormats
-import org.json4s.jackson.JsonMethods.{parse => parseJson}
+import org.json4s.jackson.parseJson
 import org.scalatest.funsuite.AnyFunSuite
 
 /**
