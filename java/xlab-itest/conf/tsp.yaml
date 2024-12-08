@@ -1,0 +1,25 @@
+mysql-client:
+  host: 172.26.80.190
+  port: 9030
+  user: root
+  password:
+  http_port: 8040
+
+env:
+  oss_bucket:
+  hdfs_host:
+  hdfs_port:
+  hdfs_user:
+  hdfs_passwd:
+  hdfs_path: /starrocks_ci_data
+  hdfs_broker_name: hdfs_broker
+
+  hive_metastore_uris: thrift://172.26.194.238:9083
+  hudi_hive_metastore_uris: thrift://172.26.194.238:9083
+  iceberg_catalog_hive_metastore_uris: thrift://172.26.194.238:9083
+
+  external_mysql_ip:
+  external_mysql_port:
+  external_mysql_user:
+  external_mysql_password:
+  jdbc_url:

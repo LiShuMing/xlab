@@ -1,0 +1,46 @@
+*.swp
+*.pyc
+output
+*.so.tmp
+.DS_Store
+*.iml
+core.*
+**/ut_ports
+custom_env.sh
+ut_dir
+log/
+target/
+
+dependency-reduced-pom.xml
+tags
+.tags
+.cache
+*.vim
+*.swo
+compile_commands.json
+.factorypath
+.classpath
+.vimspector.json
+.gdb_history
+
+# ignore generated files
+StarRocksLex.tokens
+
+
+#ignore eclipse project file & idea project file
+.cproject
+.project
+.settings/
+.idea/
+.gradle/
+
+#ignore vscode project file
+.vscode
+!.gitignore
+!.clang-format
+!.github
+build/
+cmake-build-debug/
+CMakeLists.txt
+.bsp
+itest/.shell_cmds/*
