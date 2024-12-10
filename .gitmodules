@@ -145,3 +145,6 @@
 [submodule "rust/thirdparty/datafusion"]
 	path = rust/thirdparty/datafusion
 	url = git@github.com:apache/datafusion.git
+[submodule "python/thirdparty/tinydb"]
+	path = python/thirdparty/tinydb
+	url = git@github.com:msiemens/tinydb.git
