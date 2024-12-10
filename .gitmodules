@@ -118,3 +118,6 @@
 [submodule "rust/thirdparty/timely-dataflow"]
 	path = rust/thirdparty/timely-dataflow
 	url = git@github.com:TimelyDataflow/timely-dataflow.git
+[submodule "rust/thirdparty/arroyo"]
+	path = rust/thirdparty/arroyo
+	url = git@github.com:ArroyoSystems/arroyo.git
