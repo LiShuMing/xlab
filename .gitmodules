@@ -139,3 +139,6 @@
 [submodule "rust/thirdparty/risingwave"]
 	path = rust/thirdparty/risingwave
 	url = https://github.com/risingwavelabs/risingwave
+[submodule "rust/thirdparty/materialize"]
+	path = rust/thirdparty/materialize
+	url = https://github.com/MaterializeInc/materialize.git
