@@ -48,6 +48,6 @@ logs
 __pycache__
 
 cc/thirdparty
-python/thirdparty
-rust/thirdparty
+#python/thirdparty
+#rust/thirdparty
 
