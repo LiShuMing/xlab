@@ -130,3 +130,6 @@
 [submodule "rust/thirdparty/differential-dataflow"]
 	path = rust/thirdparty/differential-dataflow
 	url = https://github.com/TimelyDataflow/differential-dataflow
+[submodule "rust/thirdparty/osblog"]
+	path = rust/thirdparty/osblog
+	url = git@github.com:sgmarz/osblog.git
