@@ -14,7 +14,7 @@ def run_command(command, cwd=None):
         return result.stdout.strip()
     except subprocess.CalledProcessError as e:
         print(f"Error running command: {e.stderr.strip()}")
-        sys.exit(1)
+        raise e
 
 def get_submodule_git_url(subproject_path):
     # Ensure paths are absolute
@@ -22,7 +22,7 @@ def get_submodule_git_url(subproject_path):
     # Check if subproject is a valid Git repository
     if not os.path.exists(os.path.join(subproject_path, ".git")):
         print(f"Error: {subproject_path} is not a valid Git repository.")
-        sys.exit(1)
+        raise RuntimeError(f"{subproject_path} is not a valid Git repository.")
 
     # Get the remote URL of the subproject
     subproject_url = run_command(["git", "remote", "get-url", "origin"], cwd=subproject_path)
@@ -42,7 +42,7 @@ def add_submodule(parent_project_path, subproject_path, submodule_name=None):
     # Check if parent project is a valid Git repository
     if not os.path.exists(os.path.join(parent_project_path, ".git")):
         print(f"Error: {parent_project_path} is not a valid Git repository.")
-        sys.exit(1)
+        raise RuntimeError("{parent_project_path} is not a valid Git repository.")
 
     # Get the remote URL of the subproject
     subproject_url = get_submodule_git_url(subproject_path)
