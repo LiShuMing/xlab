@@ -142,3 +142,6 @@
 [submodule "rust/thirdparty/materialize"]
 	path = rust/thirdparty/materialize
 	url = https://github.com/MaterializeInc/materialize.git
+[submodule "rust/thirdparty/datafusion"]
+	path = rust/thirdparty/datafusion
+	url = git@github.com:apache/datafusion.git
