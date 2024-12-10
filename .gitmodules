@@ -121,3 +121,6 @@
 [submodule "rust/thirdparty/arroyo"]
 	path = rust/thirdparty/arroyo
 	url = git@github.com:ArroyoSystems/arroyo.git
+[submodule "rust/thirdparty/optd"]
+	path = rust/thirdparty/optd
+	url = git@github.com:cmu-db/optd.git
