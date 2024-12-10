@@ -148,3 +148,6 @@
 [submodule "python/thirdparty/tinydb"]
 	path = python/thirdparty/tinydb
 	url = git@github.com:msiemens/tinydb.git
+[submodule "python/thirdparty/pydbsp"]
+	path = python/thirdparty/pydbsp
+	url = git@github.com:brurucy/pydbsp.git
