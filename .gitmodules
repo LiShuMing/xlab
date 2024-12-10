@@ -127,3 +127,6 @@
 [submodule "rust/thirdparty/sqleibniz"]
 	path = rust/thirdparty/sqleibniz
 	url = git@github.com:xNaCly/sqleibniz.git
+[submodule "rust/thirdparty/differential-dataflow"]
+	path = rust/thirdparty/differential-dataflow
+	url = https://github.com/TimelyDataflow/differential-dataflow
