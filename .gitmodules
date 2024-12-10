@@ -133,3 +133,6 @@
 [submodule "rust/thirdparty/osblog"]
 	path = rust/thirdparty/osblog
 	url = git@github.com:sgmarz/osblog.git
+[submodule "rust/thirdparty/toydb"]
+	path = rust/thirdparty/toydb
+	url = git@github.com:erikgrinaker/toydb.git
