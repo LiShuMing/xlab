@@ -115,3 +115,6 @@
 [submodule "rust/thirdparty/feldera"]
 	path = rust/thirdparty/feldera
 	url = git@github.com:feldera/feldera.git
+[submodule "rust/thirdparty/timely-dataflow"]
+	path = rust/thirdparty/timely-dataflow
+	url = git@github.com:TimelyDataflow/timely-dataflow.git
