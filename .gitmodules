@@ -88,3 +88,27 @@
 [submodule "cc/thirdparty/templight-tools"]
 	path = cc/thirdparty/templight-tools
 	url = git@github.com:mikael-s-persson/templight-tools.git
+[submodule "cc/thirdparty/rocksdb"]
+	path = cc/thirdparty/rocksdb
+	url = git@github.com:facebook/rocksdb.git
+[submodule "cc/thirdparty/mimalloc"]
+	path = cc/thirdparty/mimalloc
+	url = git@github.com:microsoft/mimalloc.git
+[submodule "cc/thirdparty/lua"]
+	path = cc/thirdparty/lua
+	url = git@github.com:lua/lua.git
+[submodule "cc/thirdparty/brpc"]
+	path = cc/thirdparty/brpc
+	url = git@github.com:apache/brpc.git
+[submodule "cc/thirdparty/velox"]
+	path = cc/thirdparty/velox
+	url = git@github.com:facebookincubator/velox.git
+[submodule "cc/thirdparty/muduo"]
+	path = cc/thirdparty/muduo
+	url = git@github.com:chenshuo/muduo.git
+[submodule "cc/thirdparty/dlmalloc"]
+	path = cc/thirdparty/dlmalloc
+	url = git@github.com:ennorehling/dlmalloc.git
+[submodule "rust/thirdparty/dbeel"]
+	path = rust/thirdparty/dbeel
+	url = git@github.com:tontinton/dbeel.git
