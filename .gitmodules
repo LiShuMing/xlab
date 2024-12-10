@@ -136,3 +136,6 @@
 [submodule "rust/thirdparty/toydb"]
 	path = rust/thirdparty/toydb
 	url = git@github.com:erikgrinaker/toydb.git
+[submodule "rust/thirdparty/risingwave"]
+	path = rust/thirdparty/risingwave
+	url = https://github.com/risingwavelabs/risingwave
