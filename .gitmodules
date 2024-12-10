@@ -124,3 +124,6 @@
 [submodule "rust/thirdparty/optd"]
 	path = rust/thirdparty/optd
 	url = git@github.com:cmu-db/optd.git
+[submodule "rust/thirdparty/sqleibniz"]
+	path = rust/thirdparty/sqleibniz
+	url = git@github.com:xNaCly/sqleibniz.git
