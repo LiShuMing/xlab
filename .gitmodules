@@ -151,3 +151,6 @@
 [submodule "python/thirdparty/pydbsp"]
 	path = python/thirdparty/pydbsp
 	url = git@github.com:brurucy/pydbsp.git
+[submodule "python/thirdparty/Python"]
+	path = python/thirdparty/Python
+	url = git@github.com:TheAlgorithms/Python.git
