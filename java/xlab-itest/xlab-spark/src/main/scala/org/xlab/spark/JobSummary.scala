@@ -22,9 +22,8 @@ case class TableOutput(name: String, records: Long, bytes: Long)
 
 case class TableInput(name: String, records: Long, bytes: Long)
 
-case class TableSummary (
-                          @BeanProperty val input: Map[String, TableInput],
-                          @BeanProperty val output: Map[String, TableOutput])
+case class TableSummary (@BeanProperty val input: Map[String, TableInput],
+                         @BeanProperty val output: Map[String, TableOutput])
 
 case class ResourceSummary(@BeanProperty cpuRunTime: Long,
                            @BeanProperty memoryRunTime: Long)
