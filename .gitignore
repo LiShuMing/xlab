@@ -51,3 +51,6 @@ __pycache__
 #python/thirdparty
 #rust/thirdparty
 
+a.out
+vocab.bpe
+gpt2-124M.ckpt
