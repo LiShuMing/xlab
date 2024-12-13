@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":framework"))
+    implementation(project(":xlab-framework"))
 
     implementation(libs.guava)
     implementation("mysql:mysql-connector-java:5.1.49")

@@ -2,7 +2,7 @@ plugins {
     kotlin("jvm") version "1.9.20"
 }
 
-group = "org.example"
+group = "org.jlab"
 version = "unspecified"
 
 repositories {
@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":framework"))
+    implementation(project(":xlab-framework"))
 
     api("com.google.guava:guava")
     api("org.slf4j:slf4j-api")

@@ -4,7 +4,7 @@ plugins {
 
 rootProject.name = "xlab"
 
-include("framework")
-include("itest")
-include("benchmark")
+include("xlab-framework")
+include("xlab-itest")
+include("xlab-benchmark")
 include("xlab-groovy")
