@@ -93,7 +93,7 @@
 	url = git@github.com:facebook/rocksdb.git
 [submodule "cc/thirdparty/mimalloc"]
 	path = cc/thirdparty/mimalloc
-	url = git@github.com:microsoft/mimalloc.git
+	url = git@github.com:microsoft/mimalloc
 [submodule "cc/thirdparty/lua"]
 	path = cc/thirdparty/lua
 	url = git@github.com:lua/lua.git
@@ -154,3 +154,12 @@
 [submodule "python/thirdparty/Python"]
 	path = python/thirdparty/Python
 	url = git@github.com:TheAlgorithms/Python.git
+[submodule "cc/thirdparty/duckdb"]
+	path = cc/thirdparty/duckdb
+	url = git@github.com:duckdb/duckdb.git
+[submodule "cc/thirdparty/cc/thirdparty/duckdb_ivm"]
+	path = cc/thirdparty/cc/thirdparty/duckdb_ivm
+	url = git@github.com:ila/duckdb.git
+[submodule "cc/thirdparty/perf-tools"]
+	path = cc/thirdparty/perf-tools
+	url = git@github.com:brendangregg/perf-tools.git
