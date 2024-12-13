@@ -9,5 +9,10 @@ scipy >= 0.19.1
 
 # The syntax supported here is the same as that of requirement specifiers.
 docopt == 0.6.1
-requests [security] >= 2.8.1, == 2.8.* ; python_version < "2.7"
+requests == 2.32.3
 #urllib3 @ https://github.com/urllib3/urllib3/archive/refs/tags/1.26.8.zip
+
+# if you want lib clang, you can install this
+# libclang == 18.1.1
+
+duckdb == 1.1.3

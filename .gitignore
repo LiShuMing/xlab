@@ -47,7 +47,7 @@ logs
 .pyc
 __pycache__
 
-cc/thirdparty
+#cc/thirdparty
 #python/thirdparty
 #rust/thirdparty
 
