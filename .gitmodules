@@ -163,3 +163,12 @@
 [submodule "cc/thirdparty/perf-tools"]
 	path = cc/thirdparty/perf-tools
 	url = git@github.com:brendangregg/perf-tools.git
+[submodule "rust/thirdparty/denormalized"]
+	path = rust/thirdparty/denormalized
+	url = git@github.com:probably-nothing-labs/denormalized
+[submodule "cc/thirdparty/datasketch-cpp"]
+	path = cc/thirdparty/datasketch-cpp
+	url = git@github.com:apache/datasketches-cpp.git
+[submodule "cc/thirdparty/doris"]
+	path = cc/thirdparty/doris
+	url = git@github.com:apache/doris.git

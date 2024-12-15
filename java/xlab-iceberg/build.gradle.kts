@@ -34,6 +34,7 @@ dependencies {
     listOf("spark-core_2.13", "spark-sql_2.13", "spark-hive_2.13").forEach {
         implementation("org.apache.spark:${it}:3.5.1") {
             exclude(module="log4j-slf4j2-impl")
+            exclude(group="com.fasterxml.jackson.core")
         }
     }
 
