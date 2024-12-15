@@ -172,3 +172,6 @@
 [submodule "cc/thirdparty/doris"]
 	path = cc/thirdparty/doris
 	url = git@github.com:apache/doris.git
+[submodule "cc/thirdparty/json"]
+	path = cc/thirdparty/json
+	url = git@github.com:nlohmann/json.git

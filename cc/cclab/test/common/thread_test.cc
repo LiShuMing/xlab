@@ -89,3 +89,14 @@ TEST_F(ThreadTest, TestMemoryBarrier) {
     t1.join();
     t2.join();
 }
+
+thread_local int tls_i = 0;
+TEST_F(ThreadTest, TestThreadLocal) {
+    tls_i = 42;
+    std::thread t1([]() {
+        tls_i = 43;
+        std::cout << "tls_i in thread: " << tls_i << std::endl;
+    });
+    t1.join();
+    std::cout << "tls_i in main: " << tls_i << std::endl;
+}

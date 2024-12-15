@@ -1,2 +1,22 @@
 message(STATUS "link_libs=${link_libs}")
-add_directory_for_each_test("${CMAKE_SOURCE_DIR}/test/tools")
+
+# include_directories(/usr/include)
+# link_directories(/usr/lib)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LIBUNWIND REQUIRED libunwind)
+
+function(add_directory_for_tools dir)
+    file(GLOB TEST_SOURCES "${dir}/*.cc")
+    get_filename_component(target_name "${dir}" NAME)
+    foreach (src ${TEST_SOURCES})
+        get_filename_component(exe tools_${src} NAME_WE)
+        add_executable(${exe} ${src} )
+        target_include_directories(${exe} PRIVATE ${LIBUNWIND_INCLUDE_DIRS})
+        target_link_libraries(${exe} ${link_libs} PRIVATE ${LIBUNWIND_LIBRARIES} common pthread gtest absl::node_hash_map Threads::Threads)
+        # target_link_libraries(${exe} ${link_libs} PRIVATE common pthread gtest absl::node_hash_map Threads::Threads)
+        list(APPEND ${target_name}_tests ${exe})
+    endforeach()
+    add_custom_target(${target_name}_tests DEPENDS ${target_name}_tests)
+endfunction()
+
+add_directory_for_tools("${CMAKE_SOURCE_DIR}/test/tools")
