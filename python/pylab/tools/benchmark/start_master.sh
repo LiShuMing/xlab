@@ -1,0 +1,1 @@
+nohup locust -f run.py --web-port=8808 --master-port=5589 --master-bind-port=5589 --master > master.log 2>&1 &

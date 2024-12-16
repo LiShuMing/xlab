@@ -28,7 +28,6 @@ trait IcebergSupport {
       .config("spark.sql.catalog.local.uri", "thrift://localhost:9083")
 //      .config("spark.sql.catalog.spark_catalog.uri", "http://localhost:8181")
 //      .config("spark.sql.catalog.spark_catalog.type", "hive")
-
     case _ => sparkBuilder
       .config("spark.sql.catalog.iceberg.type", "hive")
       .config("spark.sql.catalog.local.uri", "thrift://localhost:9083")
