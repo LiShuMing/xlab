@@ -54,3 +54,6 @@ __pycache__
 a.out
 vocab.bpe
 gpt2-124M.ckpt
+
+spark-warehouse/
+.ipynb_checkpoints
