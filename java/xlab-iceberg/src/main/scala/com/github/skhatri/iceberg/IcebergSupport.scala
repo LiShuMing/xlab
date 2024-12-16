@@ -14,7 +14,7 @@ trait IcebergSupport {
   }
 
   private val sparkBuilder = SparkSession.builder()
-    .appName("xlab-spark-iceberg")
+    .appName("xlab-spark-iceberg2")
     .master("local[2]")
     .config("spark.sql.extensions", "org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions")
     .config("spark.sql.catalog.spark_catalog", "org.apache.iceberg.spark.SparkCatalog")
@@ -26,7 +26,7 @@ trait IcebergSupport {
       .config("spark.sql.catalog.local", "org.apache.iceberg.spark.SparkCatalog")
       .config("spark.sql.catalog.local.warehouse", warehouseLocation)
       .config("spark.sql.catalog.local.type", "hive")
-      .config("spark.sql.catalog.local.uri", "thrift://localhost:9083")
+      .config("spark.sql.catalog.local.uri", "thrift://172.26.194.238:9083")
 
 //      .config("spark.executor.extraJavaOptions", "--add-exports java.base/sun.nio.ch=ALL-UNNAMED")
 //      .config("spark.driver.extraJavaOptions", "--add-exports java.base/sun.nio.ch=ALL-UNNAMED")

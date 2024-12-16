@@ -32,18 +32,19 @@ dependencies {
     implementation("org.scala-lang:scala-library:2.13.13")
 
     listOf("spark-core_2.13", "spark-sql_2.13", "spark-hive_2.13").forEach {
-        implementation("org.apache.spark:${it}:3.5.1") {
+        implementation("org.apache.spark:${it}:3.4.4") {
             exclude(module="log4j-slf4j2-impl")
+            exclude(group="com.fasterxml.jackson.core")
         }
     }
 
-    listOf("iceberg-spark-3.5_2.13", "iceberg-spark-extensions-3.5_2.13", "iceberg-hive-runtime").forEach {
-        implementation("org.apache.iceberg:${it}:1.5.0")
+    listOf("iceberg-spark-3.4_2.13", "iceberg-spark-extensions-3.4_2.13", "iceberg-hive-runtime").forEach {
+        implementation("org.apache.iceberg:${it}:1.5.2")
     }
-    implementation("org.apache.hadoop:hadoop-aws:3.3.6")
-    implementation("ch.qos.logback:logback-classic:1.5.3")
-    implementation("net.logstash.logback:logstash-logback-encoder:7.4")
-    implementation("org.xerial:sqlite-jdbc:3.45.1.0")
+    //implementation("org.apache.hadoop:hadoop-aws:3.3.6")
+    //implementation("ch.qos.logback:logback-classic:1.5.3")
+    //implementation("net.logstash.logback:logstash-logback-encoder:7.4")
+    //implementation("org.xerial:sqlite-jdbc:3.45.1.0")
 }
 
 val targetApp = project.ext["name"]

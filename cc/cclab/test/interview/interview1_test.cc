@@ -46,7 +46,7 @@ string findPath(const vector<vector<char>> &grids, const std::string &target) {
         }
     }
     return "";
-}
+};
 
 TEST_F(Interview1Test, Test1) {
     vector<vector<char>> grids = {
