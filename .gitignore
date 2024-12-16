@@ -57,3 +57,4 @@ gpt2-124M.ckpt
 
 spark-warehouse/
 .ipynb_checkpoints
+.secrect_key
