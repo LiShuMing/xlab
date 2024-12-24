@@ -7,7 +7,7 @@ import com.starrocks.itest.framework.Suite
 object BrokerLoadUtil {
     fun getResourceDir(): String {
         val currentDir = System.getProperty("user.dir")
-        return "$currentDir/../framework/src/main/resources"
+        return "$currentDir/../xlab-framework/src/main/resources"
     }
 
     fun brokerLoadSql(db: String, tableName: String, format: String, hdfsPath: String, columns: List<String>, columnSeparator: String?): String {

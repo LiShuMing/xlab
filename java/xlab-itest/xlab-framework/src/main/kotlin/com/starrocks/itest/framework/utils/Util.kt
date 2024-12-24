@@ -716,7 +716,7 @@ object Util {
 
     fun getResourceDir(): String {
         val currentDir = System.getProperty("user.dir")
-        return "$currentDir/../framework/src/main/resources"
+        return "$currentDir/../xlab-framework/src/main/resources"
     }
 
     fun readPropertiesFromResource(path: String): Properties {

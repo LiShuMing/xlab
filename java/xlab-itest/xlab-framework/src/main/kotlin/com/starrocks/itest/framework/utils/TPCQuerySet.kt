@@ -6,7 +6,7 @@ import java.nio.charset.StandardCharsets
 object TPCQuerySet {
     fun getResourceDir(): String {
         val currentDir = System.getProperty("user.dir")
-        return "$currentDir/../framework/src/main/resources"
+        return "$currentDir/../xlab-framework/src/main/resources"
     }
 
     fun tpcdsQueries(): Map<Int, String> {

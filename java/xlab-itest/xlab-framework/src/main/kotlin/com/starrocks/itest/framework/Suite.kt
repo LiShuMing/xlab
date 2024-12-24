@@ -43,8 +43,8 @@ open class Suite {
 
     ///////// Connection / Session
     private val connSession = AtomicReference<MySQLSession>();
-    private val srConf = SRConf.parse(Paths.get("../conf", "sr.yaml"))
-//    private val srConf = SRConf.parse(Paths.get("../conf", "tsp.yaml"))
+//    private val srConf = SRConf.parse(Paths.get("../conf", "sr.yaml"))
+    private val srConf = SRConf.parse(Paths.get("../conf", "tsp.yaml"))
 
     private fun getOrInitSession(connNum : Int = 1): MySQLSession {
         if (connSession.get() == null) {
