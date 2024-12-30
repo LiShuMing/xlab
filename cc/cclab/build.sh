@@ -7,7 +7,11 @@ else
     export PATH=$GCC_HOME/bin:$PATH
 fi
 
-if command -v clang >/dev/null 2>&1; then
+if command -v clang-19 >/dev/null 2>&1; then
+    CC="clang-19"
+    CXX="clang++-19"
+    echo "Using clang for compilation."
+elif command -v clang >/dev/null 2>&1; then
     CC="clang"
     CXX="clang++"
     echo "Using clang for compilation."

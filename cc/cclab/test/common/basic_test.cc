@@ -179,6 +179,64 @@ TEST_F(BasicTest, TestString1) {
     ASSERT_EQ(ret, -1);
 }
 
+/**
+ * ==13663==ERROR: AddressSanitizer: heap-use-after-free on address 0x5020000016f0 at pc 0x562f28210c4a bp 0x7fffffd58f30 sp 0x7fffffd58f28
+READ of size 4 at 0x5020000016f0 thread T0
+    #0 0x562f28210c49 in test::BasicTest_TestSharedPtr1_Test::TestBody() /root/work/xlab/cc/cclab/test/common/basic_test.cc:191:30
+    #1 0x7f2706ccaba0 in void testing::internal::HandleSehExceptionsInMethodIfSupported<testing::Test, void>(testing::Test*, void (testing::Test::*)(), char const*) /root/work/xlab/cc/thirdparty/googletest/googletest/src/gtest.cc:2638:10
+    #2 0x7f2706ccaba0 in void testing::internal::HandleExceptionsInMethodIfSupported<testing::Test, void>(testing::Test*, void (testing::Test::*)(), char const*) /root/work/xlab/cc/thirdparty/googletest/googletest/src/gtest.cc:2674:14
+    #3 0x7f2706c709f8 in testing::Test::Run() /root/work/xlab/cc/thirdparty/googletest/googletest/src/gtest.cc:2713:5
+    #4 0x7f2706c74f9f in testing::TestInfo::Run() /root/work/xlab/cc/thirdparty/googletest/googletest/src/gtest.cc:2859:11
+    #5 0x7f2706c77cc4 in testing::TestSuite::Run() /root/work/xlab/cc/thirdparty/googletest/googletest/src/gtest.cc:3037:30
+    #6 0x7f2706cae5fa in testing::internal::UnitTestImpl::RunAllTests() /root/work/xlab/cc/thirdparty/googletest/googletest/src/gtest.cc:5967:44
+    #7 0x7f2706ccd9d0 in bool testing::internal::HandleSehExceptionsInMethodIfSupported<testing::internal::UnitTestImpl, bool>(testing::internal::UnitTestImpl*, bool (testing::internal::UnitTestImpl::*)(), char const*) /root/work/xlab/cc/thirdparty/googletest/googletest/src/gtest.cc:2638:10
+    #8 0x7f2706ccd9d0 in bool testing::internal::HandleExceptionsInMethodIfSupported<testing::internal::UnitTestImpl, bool>(testing::internal::UnitTestImpl*, bool (testing::internal::UnitTestImpl::*)(), char const*) /root/work/xlab/cc/thirdparty/googletest/googletest/src/gtest.cc:2674:14
+    #9 0x7f2706cad94a in testing::UnitTest::Run() /root/work/xlab/cc/thirdparty/googletest/googletest/src/gtest.cc:5546:10
+    #10 0x562f281eea70 in RUN_ALL_TESTS() /root/work/xlab/cc/thirdparty/googletest/googletest/include/gtest/gtest.h:2334:73
+    #11 0x562f281edbde in main /root/work/xlab/cc/cclab/test/common/abseil_test.cc:43:12
+    #12 0x7f27063afd8f  (/lib/x86_64-linux-gnu/libc.so.6+0x29d8f) (BuildId: 490fef8403240c91833978d494d39e537409b92e)
+    #13 0x7f27063afe3f in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x29e3f) (BuildId: 490fef8403240c91833978d494d39e537409b92e)
+    #14 0x562f2810b394 in _start (/root/work/xlab/cc/cclab/build_ASAN/test/common/common_test+0x67394) (BuildId: 475a7a8d84e053a9093431b58fab177e45334614)
+
+0x5020000016f0 is located 0 bytes inside of 4-byte region [0x5020000016f0,0x5020000016f4)
+freed by thread T0 here:
+    #0 0x562f281eb792 in operator delete(void*, unsigned long) (/root/work/xlab/cc/cclab/build_ASAN/test/common/common_test+0x147792) (BuildId: 475a7a8d84e053a9093431b58fab177e45334614)
+    #1 0x562f28220a4c in std::_Sp_counted_ptr<int*, (__gnu_cxx::_Lock_policy)2>::_M_dispose() /usr/lib/gcc/x86_64-linux-gnu/11/../../../../include/c++/11/bits/shared_ptr_base.h:348:9
+    #2 0x562f2820c499 in std::_Sp_counted_base<(__gnu_cxx::_Lock_policy)2>::_M_release() /usr/lib/gcc/x86_64-linux-gnu/11/../../../../include/c++/11/bits/shared_ptr_base.h:168:6
+    #3 0x562f2820c269 in std::__shared_count<(__gnu_cxx::_Lock_policy)2>::~__shared_count() /usr/lib/gcc/x86_64-linux-gnu/11/../../../../include/c++/11/bits/shared_ptr_base.h:705:11
+    #4 0x562f2820dc38 in std::__shared_ptr<int, (__gnu_cxx::_Lock_policy)2>::~__shared_ptr() /usr/lib/gcc/x86_64-linux-gnu/11/../../../../include/c++/11/bits/shared_ptr_base.h:1154:31
+    #5 0x562f2820bc24 in std::shared_ptr<int>::~shared_ptr() /usr/lib/gcc/x86_64-linux-gnu/11/../../../../include/c++/11/bits/shared_ptr.h:122:11
+    #6 0x562f28210bf0 in test::BasicTest_TestSharedPtr1_Test::TestBody() /root/work/xlab/cc/cclab/test/common/basic_test.cc:188:5
+    #7 0x7f2706ccaba0 in void testing::internal::HandleSehExceptionsInMethodIfSupported<testing::Test, void>(testing::Test*, void (testing::Test::*)(), char const*) /root/work/xlab/cc/thirdparty/googletest/googletest/src/gtest.cc:2638:10
+    #8 0x7f2706ccaba0 in void testing::internal::HandleExceptionsInMethodIfSupported<testing::Test, void>(testing::Test*, void (testing::Test::*)(), char const*) /root/work/xlab/cc/thirdparty/googletest/googletest/src/gtest.cc:2674:14
+    #9 0x7f2706c709f8 in testing::Test::Run() /root/work/xlab/cc/thirdparty/googletest/googletest/src/gtest.cc:2713:5
+    #10 0x7f2706c74f9f in testing::TestInfo::Run() /root/work/xlab/cc/thirdparty/googletest/googletest/src/gtest.cc:2859:11
+    #11 0x7f2706c77cc4 in testing::TestSuite::Run() /root/work/xlab/cc/thirdparty/googletest/googletest/src/gtest.cc:3037:30
+    #12 0x7f2706cae5fa in testing::internal::UnitTestImpl::RunAllTests() /root/work/xlab/cc/thirdparty/googletest/googletest/src/gtest.cc:5967:44
+    #13 0x7f2706ccd9d0 in bool testing::internal::HandleSehExceptionsInMethodIfSupported<testing::internal::UnitTestImpl, bool>(testing::internal::UnitTestImpl*, bool (testing::internal::UnitTestImpl::*)(), char const*) /root/work/xlab/cc/thirdparty/googletest/googletest/src/gtest.cc:2638:10
+    #14 0x7f2706ccd9d0 in bool testing::internal::HandleExceptionsInMethodIfSupported<testing::internal::UnitTestImpl, bool>(testing::internal::UnitTestImpl*, bool (testing::internal::UnitTestImpl::*)(), char const*) /root/work/xlab/cc/thirdparty/googletest/googletest/src/gtest.cc:2674:14
+    #15 0x7f2706cad94a in testing::UnitTest::Run() /root/work/xlab/cc/thirdparty/googletest/googletest/src/gtest.cc:5546:10
+    #16 0x562f281eea70 in RUN_ALL_TESTS() /root/work/xlab/cc/thirdparty/googletest/googletest/include/gtest/gtest.h:2334:73
+    #17 0x562f281edbde in main /root/work/xlab/cc/cclab/test/common/abseil_test.cc:43:12
+    #18 0x7f27063afd8f  (/lib/x86_64-linux-gnu/libc.so.6+0x29d8f) (BuildId: 490fef8403240c91833978d494d39e537409b92e)
+
+previously allocated by thread T0 here:
+    #0 0x562f281eab2d in operator new(unsigned long) (/root/work/xlab/cc/cclab/build_ASAN/test/common/common_test+0x146b2d) (BuildId: 475a7a8d84e053a9093431b58fab177e45334614)
+    #1 0x562f28210b11 in test::BasicTest_TestSharedPtr1_Test::TestBody() /root/work/xlab/cc/cclab/test/common/basic_test.cc:183:14
+    #2 0x7f2706ccaba0 in void testing::internal::HandleSehExceptionsInMethodIfSupported<testing::Test, void>(testing::Test*, void (testing::Test::*)(), char const*) /root/work/xlab/cc/thirdparty/googletest/googletest/src/gtest.cc:2638:10
+    #3 0x7f2706ccaba0 in void testing::internal::HandleExceptionsInMethodIfSupported<testing::Test, void>(testing::Test*, void (testing::Test::*)(), char const*) /root/work/xlab/cc/thirdparty/googletest/googletest/src/gtest.cc:2674:14
+    #4 0x7f2706c709f8 in testing::Test::Run() /root/work/xlab/cc/thirdparty/googletest/googletest/src/gtest.cc:2713:5
+    #5 0x7f2706c74f9f in testing::TestInfo::Run() /root/work/xlab/cc/thirdparty/googletest/googletest/src/gtest.cc:2859:11
+    #6 0x7f2706c77cc4 in testing::TestSuite::Run() /root/work/xlab/cc/thirdparty/googletest/googletest/src/gtest.cc:3037:30
+    #7 0x7f2706cae5fa in testing::internal::UnitTestImpl::RunAllTests() /root/work/xlab/cc/thirdparty/googletest/googletest/src/gtest.cc:5967:44
+    #8 0x7f2706ccd9d0 in bool testing::internal::HandleSehExceptionsInMethodIfSupported<testing::internal::UnitTestImpl, bool>(testing::internal::UnitTestImpl*, bool (testing::internal::UnitTestImpl::*)(), char const*) /root/work/xlab/cc/thirdparty/googletest/googletest/src/gtest.cc:2638:10
+    #9 0x7f2706ccd9d0 in bool testing::internal::HandleExceptionsInMethodIfSupported<testing::internal::UnitTestImpl, bool>(testing::internal::UnitTestImpl*, bool (testing::internal::UnitTestImpl::*)(), char const*) /root/work/xlab/cc/thirdparty/googletest/googletest/src/gtest.cc:2674:14
+    #10 0x7f2706cad94a in testing::UnitTest::Run() /root/work/xlab/cc/thirdparty/googletest/googletest/src/gtest.cc:5546:10
+    #11 0x562f281eea70 in RUN_ALL_TESTS() /root/work/xlab/cc/thirdparty/googletest/googletest/include/gtest/gtest.h:2334:73
+    #12 0x562f281edbde in main /root/work/xlab/cc/cclab/test/common/abseil_test.cc:43:12
+    #13 0x7f27063afd8f  (/lib/x86_64-linux-gnu/libc.so.6+0x29d8f) (BuildId: 490fef8403240c91833978d494d39e537409b92e)
+
+ */
 TEST_F(BasicTest, TestSharedPtr1) {
     int *a = new int(1);
     {
@@ -188,9 +246,9 @@ TEST_F(BasicTest, TestSharedPtr1) {
     }
 
     // WRONG VALUE!
-    std::cout << "ptr a:" << *a << std::endl;
-    // dangerous!!! double free
-    // delete a;
+    // dangerous!!! a is already deleted
+    // heap use after free
+    //std::cout << "ptr a:" << *a << std::endl;
 }
 
 TEST_F(BasicTest, TestUniquePtr) {
