@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.12.0)
 project(cclab)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
+# set(CMAKE_CXX_STANDARD 20)
 # set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -15,6 +16,7 @@ option(USE_BMI_2 "Build with BMI2 instruction" ON)
 option(USE_AVX2 "Build with AVX2 instruction" ON)
 option(USE_AVX512 "Build with AVX512f/AVX512BW instruction" OFF)
 
+#  -stdlib=libc++
 set(CXX_GCC_FLAGS "${CXX_GCC_FLAGS} -fno-omit-frame-pointer")
 set(CXX_FLAGS_DEBUG "${CXX_GCC_FLAGS} -Werror -ggdb3 -O0 -gdwarf-2")
 # set(CXX_FLAGS_RELEASE "${CXX_GCC_FLAGS} -O3 -gdwarf-2 -DNDEBUG -fopt-info-vec-optimized -fopt-info-vec-missed")

@@ -21,3 +21,6 @@ locust == 2.32.4
 matplotlib == 3.10.0
 pyspark == 3.4.4
 cryptography == 44.0.0
+
+pyzmq == 26.2.0
+gevent == 24.11.1

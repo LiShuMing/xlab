@@ -175,3 +175,12 @@
 [submodule "cc/thirdparty/json"]
 	path = cc/thirdparty/json
 	url = git@github.com:nlohmann/json.git
+[submodule "python/thirdparty/parquet-python"]
+	path = python/thirdparty/parquet-python
+	url = git@github.com:jcrobak/parquet-python.git
+[submodule "cc/thirdparty/parquet-format"]
+	path = cc/thirdparty/parquet-format
+	url = git@github.com:apache/parquet-format.git
+[submodule "cc/thirdparty/arrow"]
+	path = cc/thirdparty/arrow
+	url = git@github.com:apache/arrow.git
