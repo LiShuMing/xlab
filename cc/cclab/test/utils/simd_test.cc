@@ -179,7 +179,7 @@ inline void avx2_select_if(uint8_t*& selector, T*& dst, const T*& a, const T*& b
         print_m256i("vec_b          :", vec_b);
         __m256 res =
                 _mm256_blendv_ps(_mm256_castsi256_ps(vec_b), _mm256_castsi256_ps(vec_a), _mm256_castsi256_ps(cond));
-        print_m256i("res            :", res);
+        // print_m256i("res            :", res);
         _mm256_storeu_si256(reinterpret_cast<__m256i*>(dst), _mm256_castps_si256(res));
 
         dst += 8;

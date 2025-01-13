@@ -5,7 +5,7 @@
 #include <time.h>
 
 #include <iostream>
-#include <stdatomic.h>
+// #include <stdatomic.h>
 
 #include <atomic>
 #include <iostream>
