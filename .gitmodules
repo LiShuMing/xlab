@@ -184,3 +184,6 @@
 [submodule "cc/thirdparty/arrow"]
 	path = cc/thirdparty/arrow
 	url = git@github.com:apache/arrow.git
+[submodule "cc/thirdparty/brpc"]
+	path = cc/thirdparty/brpc
+	url = git@github.com:apache/brpc.git

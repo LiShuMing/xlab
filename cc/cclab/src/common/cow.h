@@ -396,6 +396,10 @@ public:
   */
 template <typename Base, typename Derived>
 class COWHelper : public Base {
+private:
+    Derived * derived() { return static_cast<Derived *>(this); }
+    const Derived * derived() const { return static_cast<const Derived *>(this); }
+
 public:
     using Ptr = typename Base::template immutable_ptr<Derived>;
     using MutablePtr = typename Base::template mutable_ptr<Derived>;
@@ -407,6 +411,10 @@ public:
 
     typename Base::MutablePtr clone() const override {
         return typename Base::MutablePtr(new Derived(static_cast<const Derived&>(*this)));
+    }
+
+    typename Base::Ptr clone_shared() const override {
+        return typename Base::Ptr(new Derived(static_cast<const Derived&>(*this)));
     }
 
 protected:

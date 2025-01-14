@@ -30,7 +30,6 @@ using namespace std;
 class IColumn : public COW<IColumn> {
   private:
     friend class COW<IColumn>;
-    virtual MutablePtr clone() const = 0;
     virtual MutablePtr deepMutate() const { return shallow_mutate(); }
 
   public:
@@ -38,6 +37,8 @@ class IColumn : public COW<IColumn> {
     IColumn(const IColumn &) = default;
     virtual ~IColumn() = default;
 
+    virtual MutablePtr clone() const = 0;
+    virtual Ptr clone_shared() const = 0;
     virtual int get() const = 0;
     virtual void set(int value) = 0;
     static MutablePtr mutate(Ptr ptr) { return ptr->deepMutate(); }
@@ -46,9 +47,39 @@ class IColumn : public COW<IColumn> {
 using ColumnPtr = IColumn::Ptr;
 using MutableColumnPtr = IColumn::MutablePtr;
 
-class ConcreteColumn final : public COWHelper<IColumn, ConcreteColumn> {
+
+template <typename Base, typename Derived, typename AncestorBase = Base>
+class ColumnFactory : public Base {
+// private:
+//     Derived* mutable_derived() { return static_cast<Derived*>(this); }
+//     const Derived* derived() const { return static_cast<const Derived*>(this); }
+
+public:
+    template <typename... Args>
+    ColumnFactory(Args&&... args) : Base(std::forward<Args>(args)...) {}
+
+     using AncestorBaseType = std::enable_if_t<std::is_base_of_v<AncestorBase, Base>, AncestorBase>;
+};
+
+// class ConcreteColumn final : public COWHelper<IColumn, ConcreteColumn> {
+//   private:
+//     friend class COWHelper<IColumn, ConcreteColumn>;
+
+//     int data;
+//     explicit ConcreteColumn(int data_) : data(data_) {}
+//     ConcreteColumn(const ConcreteColumn &) = default;
+
+//   public:
+//     int get() const override { return data; }
+//     void set(int value) override { data = value; }
+// };
+
+
+// use ColumnFactory to create ConcreteColumn
+class ConcreteColumn final : public COWHelper<ColumnFactory<IColumn, ConcreteColumn>, ConcreteColumn> {
+
   private:
-    friend class COWHelper<IColumn, ConcreteColumn>;
+    friend class COWHelper<ColumnFactory<IColumn, ConcreteColumn>, ConcreteColumn>;
 
     int data;
     explicit ConcreteColumn(int data_) : data(data_) {}
@@ -57,6 +88,10 @@ class ConcreteColumn final : public COWHelper<IColumn, ConcreteColumn> {
   public:
     int get() const override { return data; }
     void set(int value) override { data = value; }
+
+    // not override
+    void set_value(int val) { data = val; }
+    int get_value() { return data; }
 };
 
 template <typename ColPtr>
@@ -77,7 +112,29 @@ void TRACE_COW(const std::string &msg, const ColumnPtr &x, const ColPtr &y, cons
     std::cerr << "addresses: " << address_func(x) << ", " << address_func(y) << ", " << address_func(mut) << "\n";
 }
 
-TEST_F(ColumnTest, TestMap) {
+TEST_F(ColumnTest, TestClone) {
+    ColumnPtr x = ConcreteColumn::create(1);
+
+    auto cloned = x->clone();
+    // cloned is a shared copy of x, which its type is IColum, is not ConcreteColumn
+    cloned->set(2);
+
+    (static_cast<ConcreteColumn*>(cloned.get()))->set_value(3);
+    
+    ASSERT_TRUE(x->get() == 1 && cloned->get() == 3);
+}
+
+TEST_F(ColumnTest, TestCloneShared) {
+    ColumnPtr x = ConcreteColumn::create(1);
+
+    auto cloned = x->clone_shared();
+    // cannot set value of cloned, because it is shared
+    //cloned->set(2);
+    
+    ASSERT_TRUE(x->get() == 1 && cloned->get() == 1);
+}
+
+TEST_F(ColumnTest, TestBasic) {
     using IColumnPtr = const IColumn *;
     IColumnPtr x_ptr;
     IColumnPtr y_ptr;
