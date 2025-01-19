@@ -14,7 +14,7 @@ from pyspark.sql.types import *
 
 catalog_name = "local"
 warehouse_path = f"./tmp/iceberg"
-target_iceberg_table = f"{catalog_name}.sql_test_db.iceberg_lineitem_1000"
+target_iceberg_table = f"{catalog_name}.sql_test_db.iceberg_lineitem_utc_1000"
 
 def get_spark_session():
     spark = SparkSession.builder \
@@ -28,6 +28,7 @@ def get_spark_session():
         .config(f"spark.sql.catalog.{catalog_name}", "org.apache.iceberg.spark.SparkCatalog") \
         .config(f"spark.sql.catalog.{catalog_name}.type", "hive") \
         .config(f"spark.sql.catalog.{catalog_name}.uri", "thrift://172.26.194.238:9083") \
+        .config("spark.sql.session.timeZone", "UTC") \
         .config("spark.jars", "/home/disk1/lishuming/work/spark-3.5.1-bin-hadoop3/jars/iceberg-spark-runtime-3.5_2.12-1.5.1.jar") \
         .getOrCreate()
 
@@ -38,6 +39,9 @@ def get_spark_session():
     spark.sparkContext.setLogLevel('INFO')
     return spark
 
+'''
+see issue: https://github.com/apache/iceberg/issues/3494
+'''
 def create_table(spark: SparkSession, table_name: str):
     query = f"""
     CREATE TABLE IF NOT EXISTS {table_name}(
@@ -49,14 +53,14 @@ def create_table(spark: SparkSession, table_name: str):
                           l_extendedprice  DECIMAL(15, 2),
                           l_discount    DECIMAL(15, 2),
                           l_tax         DECIMAL(15, 2),
-                          l_commitdate  TIMESTAMP,
-                          l_receiptdate TIMESTAMP,
+                          l_commitdate  timestamp_ntz,
+                          l_receiptdate timestamp_ntz,
                           l_shipinstruct VARCHAR(25),
                           l_shipmode     VARCHAR(10),
                           l_comment      VARCHAR(44),
                           l_returnflag  VARCHAR(1),
                           l_linestatus  VARCHAR(1),
-                          l_shipdate    TIMESTAMP
+                          l_shipdate    timestamp_ntz
     ) USING ICEBERG
     PARTITIONED BY (l_returnflag, l_linestatus, days(l_shipdate));
     """
@@ -101,6 +105,7 @@ def write_data(spark: SparkSession, data: list, schema: StructType, table_name: 
     df.write \
         .format("iceberg") \
         .mode("append") \
+        .option("iceberg.write.timezone", "UTC") \
         .save(f"{table_name}")
 
 def create_table_and_generate_data(spark: SparkSession, year: int, is_drop_table: bool = True):

@@ -1,9 +1,7 @@
 sqls = """
-SELECT * FROM test_hours order by l_orderkey;
-SELECT * FROM test_hours where l_shipdate >= '2024-11-13 00:00:00' order by l_orderkey;
-SELECT * FROM iceberg.lism.lineitem_hours where l_returnflag = 'R' and l_linestatus = 'F' and l_shipdate = '2024-11-13 00:00:00' order by l_orderkey;
-SELECT * FROM iceberg.lism.lineitem_hours where l_shipdate >= '2024-11-13 00:00:00' order by l_orderkey;
-SELECT * FROM iceberg.lism.lineitem_hours order by l_orderkey;
+SELECT distinct prcdate FROM mv_iceberg_${uuid0}.sql_test_db.test_iceberg_with_month order by prcdate;
+SELECT distinct prcdate FROM mv_iceberg_${uuid0}.sql_test_db.test_iceberg_with_month where prcdate < '2025-01-03' order by prcdate;
+SELECT distinct prcdate FROM mv_iceberg_${uuid0}.sql_test_db.test_iceberg_with_month where prcdate > '2025-01-03' order by prcdate;
 """
 
 values = """(1,"2020-06-15"),(2,"2020-06-18"),(3,"2020-06-21"),(4,"2020-06-24"),
@@ -17,8 +15,8 @@ def func1():
         if sql.strip() == "":
             continue
         # print("function: check_hit_materialized_view(\"" + sql + "\", \"mv0\", \"UNION\")")
-        # print("function: check_hit_materialized_view(\"" + sql + "\", \"test_mv1\")")
-        print("function: print_hit_materialized_views(\"" + sql + "\")")
+        print("function: print_hit_materialized_view(\"" + sql + "\", \"test_mv1\")")
+        # print("function: print_hit_materialized_views(\"" + sql + "\")")
         # print("function: check_no_hit_materialized_view(\"" + sql + "\", \"test_mv1\")")
         #print(sql[:-1] + " order by dt;")
 

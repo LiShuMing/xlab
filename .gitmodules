@@ -187,3 +187,6 @@
 [submodule "cc/thirdparty/brpc"]
 	path = cc/thirdparty/brpc
 	url = git@github.com:apache/brpc.git
+[submodule "cc/thirdparty/Clickhouse"]
+	path = cc/thirdparty/Clickhouse
+	url = git@github.com:ClickHouse/ClickHouse.git

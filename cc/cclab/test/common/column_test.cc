@@ -41,7 +41,10 @@ class IColumn : public COW<IColumn> {
     virtual Ptr clone_shared() const = 0;
     virtual int get() const = 0;
     virtual void set(int value) = 0;
+
+    // use reference to avoid copy
     static MutablePtr mutate(Ptr ptr) { return ptr->deepMutate(); }
+    static MutablePtr cow(const Ptr& ptr) { return ptr->deepMutate(); }
 };
 
 using ColumnPtr = IColumn::Ptr;
@@ -116,25 +119,40 @@ TEST_F(ColumnTest, TestClone) {
     ColumnPtr x = ConcreteColumn::create(1);
 
     auto cloned = x->clone();
-    // cloned is a shared copy of x, which its type is IColum, is not ConcreteColumn
+    // cloned is a deep copy of x, which its type is IColum, is not ConcreteColumn
     cloned->set(2);
-
     (static_cast<ConcreteColumn*>(cloned.get()))->set_value(3);
-    
     ASSERT_TRUE(x->get() == 1 && cloned->get() == 3);
 }
 
 TEST_F(ColumnTest, TestCloneShared) {
     ColumnPtr x = ConcreteColumn::create(1);
-
-    auto cloned = x->clone_shared();
     // cannot set value of cloned, because it is shared
-    //cloned->set(2);
-    
+    auto cloned = x->clone_shared();
+    //cloned->set(2); !!! compile error
     ASSERT_TRUE(x->get() == 1 && cloned->get() == 1);
 }
 
-TEST_F(ColumnTest, TestBasic) {
+TEST_F(ColumnTest, TestCOW1) {
+    ColumnPtr x = ConcreteColumn::create(1);
+    // y1 is shadow copy of x, y1 and x are shared and have the same value
+    auto y1 = IColumn::cow(x);
+    TRACE_COW("x, y1", x, y1);
+    y1->set(2);
+    ASSERT_TRUE(x->get() == 2 && y1->get() == 2);
+    ASSERT_TRUE(x->use_count() == 2 && y1->use_count() == 2);
+    ASSERT_TRUE(x.get() == y1.get());
+
+    // y2 is cloned from x, y2 and x are not shared and have the same value
+    auto y2 = IColumn::cow(x);
+    y2->set(3);
+    TRACE_COW("x, y1, y2", x, y1, y2);
+    ASSERT_TRUE(x->get() == 2 && y2->get() == 3);
+    ASSERT_TRUE(x->use_count() == 2 && y2->use_count() == 1);
+    ASSERT_TRUE(x.get() != y2.get());
+}
+
+TEST_F(ColumnTest, TestCOW2) {
     using IColumnPtr = const IColumn *;
     IColumnPtr x_ptr;
     IColumnPtr y_ptr;
