@@ -53,9 +53,9 @@ using MutableColumnPtr = IColumn::MutablePtr;
 
 template <typename Base, typename Derived, typename AncestorBase = Base>
 class ColumnFactory : public Base {
-// private:
-//     Derived* mutable_derived() { return static_cast<Derived*>(this); }
-//     const Derived* derived() const { return static_cast<const Derived*>(this); }
+private:
+    Derived* mutable_derived() { return static_cast<Derived*>(this); }
+    const Derived* derived() const { return static_cast<const Derived*>(this); }
 
 public:
     template <typename... Args>
@@ -115,6 +115,11 @@ void TRACE_COW(const std::string &msg, const ColumnPtr &x, const ColPtr &y, cons
     std::cerr << "addresses: " << address_func(x) << ", " << address_func(y) << ", " << address_func(mut) << "\n";
 }
 
+TEST_F(ColumnTest, TestCast) {
+    ColumnPtr x = ConcreteColumn::create(1);
+    x->set(2);
+}
+
 TEST_F(ColumnTest, TestClone) {
     ColumnPtr x = ConcreteColumn::create(1);
 
@@ -135,6 +140,9 @@ TEST_F(ColumnTest, TestCloneShared) {
 
 TEST_F(ColumnTest, TestCOW1) {
     ColumnPtr x = ConcreteColumn::create(1);
+    // how to convert ColumnPtr to ConcreateColumnPtr
+    // ConcreteColumn::Ptr x1 = std::dynamic_pointer_cast<ConcreteColumn>(x);
+
     // y1 is shadow copy of x, y1 and x are shared and have the same value
     auto y1 = IColumn::cow(x);
     TRACE_COW("x, y1", x, y1);
