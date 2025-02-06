@@ -33,8 +33,12 @@ class IColumn : public COW<IColumn> {
     virtual MutablePtr deepMutate() const { return shallow_mutate(); }
 
   public:
-    IColumn() = default;
-    IColumn(const IColumn &) = default;
+    IColumn() {
+        std::cerr << "IColumn constructor" << std::endl;
+    }
+    IColumn(const IColumn &) {
+        std::cerr << "IColumn copy constructor" << std::endl;
+    }
     virtual ~IColumn() = default;
 
     virtual MutablePtr clone() const = 0;
@@ -49,7 +53,6 @@ class IColumn : public COW<IColumn> {
 
 using ColumnPtr = IColumn::Ptr;
 using MutableColumnPtr = IColumn::MutablePtr;
-
 
 template <typename Base, typename Derived, typename AncestorBase = Base>
 class ColumnFactory : public Base {
@@ -85,8 +88,20 @@ class ConcreteColumn final : public COWHelper<ColumnFactory<IColumn, ConcreteCol
     friend class COWHelper<ColumnFactory<IColumn, ConcreteColumn>, ConcreteColumn>;
 
     int data;
-    explicit ConcreteColumn(int data_) : data(data_) {}
-    ConcreteColumn(const ConcreteColumn &) = default;
+
+    explicit ConcreteColumn(int data_) : data(data_) {
+        std::cerr << "ConcreteColumn constructor:" << data << std::endl;
+    }
+
+    ConcreteColumn(const ConcreteColumn & col) {
+        std::cerr << "ConcreteColumn copy constructor" << std::endl;
+        this->data = col.data;
+    }
+
+    //ConcreteColumn(const ConcreteColumn & col) = delete;
+    ConcreteColumn& operator=(const ConcreteColumn&) = delete;
+    ConcreteColumn(ConcreteColumn && col) = delete;
+    ConcreteColumn& operator=(ConcreteColumn&&) = delete;
 
   public:
     int get() const override { return data; }
@@ -96,6 +111,44 @@ class ConcreteColumn final : public COWHelper<ColumnFactory<IColumn, ConcreteCol
     void set_value(int val) { data = val; }
     int get_value() { return data; }
 };
+using ConcreteColumnPtr = ConcreteColumn::Ptr;
+using ConcreteColumnMutablePtr = ConcreteColumn::MutablePtr;
+
+class ConcreteColumn2 final : public COWHelper<ColumnFactory<IColumn, ConcreteColumn2>, ConcreteColumn2> {
+
+  private:
+    friend class COWHelper<ColumnFactory<IColumn, ConcreteColumn2>, ConcreteColumn2>;
+    using ConcreteColumnWrappedPtr = ConcreteColumn::WrappedPtr;
+
+    int data;
+    explicit ConcreteColumn2(int data_) : data(data_) {
+        std::cerr << "ConcreteColumn constructor" << std::endl;
+    }
+
+    ConcreteColumn2(const ConcreteColumn2 & col) {
+        std::cerr << "ConcreteColumn copy constructor" << std::endl;
+        this->data = col.data;
+    }
+
+  public:
+    int get() const override { return data; }
+    void set(int value) override { data = value; }
+
+    // not override
+    void set_value(int val) { data = val; }
+    int get_value() { return data; }
+};
+
+namespace cow {
+
+template <typename Tp> Tp::Ptr static_pointer_cast(const ColumnPtr &ptr) {
+    return Tp::cast_to(ptr);
+}
+
+template <typename Tp> Tp::MutablePtr static_pointer_cast(const MutableColumnPtr &ptr) {
+    return Tp::cast_to(ptr);
+}
+} // namespace cow
 
 template <typename ColPtr>
 void TRACE_COW(const std::string &msg, const ColumnPtr &x, const ColPtr &y) {
@@ -115,9 +168,39 @@ void TRACE_COW(const std::string &msg, const ColumnPtr &x, const ColPtr &y, cons
     std::cerr << "addresses: " << address_func(x) << ", " << address_func(y) << ", " << address_func(mut) << "\n";
 }
 
+TEST_F(ColumnTest, TestColumnConvert) {
+    ColumnPtr x = ConcreteColumn::create(1);
+    // how to convert ColumnPtr to ConcreateColumnPtr
+    // ConcreteColumnPtr x1 = std::static_pointer_cast<ConcreteColumn>(x);
+    // ConcreteColumnPtr x1 = x->get_ptr();
+
+    {
+        std::cerr << "x: " << x->get() << std::endl;
+        ConcreteColumnPtr x1 = ConcreteColumn::create(x);
+        TRACE_COW("x, x1", x, x1);
+    }
+
+    {
+
+        std::cerr << "x: " << x->get() << std::endl;
+        ConcreteColumnPtr x1 = ConcreteColumn::cast_to(x);
+        TRACE_COW("x, x1", x, x1);
+        MutableColumnPtr mutable_col = x->assume_mutable();
+        mutable_col->set(2);
+        TRACE_COW("x, x1", x, x1);
+    }
+    std::cout << "final" << std::endl;
+    TRACE_COW("x, x", x, x);
+}
+
+
+TEST_F(ColumnTest, TestBasic) {
+}
+
 TEST_F(ColumnTest, TestCast) {
     ColumnPtr x = ConcreteColumn::create(1);
-    x->set(2);
+    ConcreteColumnPtr x1 = cow::static_pointer_cast<ConcreteColumn>(x);
+    TRACE_COW("x, x1", x, x1);
 }
 
 TEST_F(ColumnTest, TestClone) {
@@ -135,13 +218,12 @@ TEST_F(ColumnTest, TestCloneShared) {
     // cannot set value of cloned, because it is shared
     auto cloned = x->clone_shared();
     //cloned->set(2); !!! compile error
-    ASSERT_TRUE(x->get() == 1 && cloned->get() == 1);
+    ASSERT_TRUE(x->get() == 2 && cloned->get() == 1);
 }
+
 
 TEST_F(ColumnTest, TestCOW1) {
     ColumnPtr x = ConcreteColumn::create(1);
-    // how to convert ColumnPtr to ConcreateColumnPtr
-    // ConcreteColumn::Ptr x1 = std::dynamic_pointer_cast<ConcreteColumn>(x);
 
     // y1 is shadow copy of x, y1 and x are shared and have the same value
     auto y1 = IColumn::cow(x);
