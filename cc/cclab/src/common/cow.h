@@ -431,6 +431,7 @@ public:
 
   using Ptr = typename Base::template immutable_ptr<Derived>;
   using MutablePtr = typename Base::template mutable_ptr<Derived>;
+  using DerivedWrappedPtr = typename Base::template chameleon_ptr<Derived>;
 
   template <typename... Args> static MutablePtr create(Args &&...args) {
       std::cout << "COWHelper create" << std::endl;
@@ -445,11 +446,11 @@ public:
         return typename Base::Ptr(new Derived(static_cast<const Derived&>(*this)));
     }
 
-    static MutablePtr cast_to(const BaseMutablePtr& ptr) {
+    static MutablePtr static_pointer_cast(const BaseMutablePtr& ptr) {
         return MutablePtr(static_cast<Derived *>(ptr.get()));
     }
 
-    static Ptr cast_to(const BasePtr& ptr) {
+    static Ptr static_pointer_cast(const BasePtr& ptr) {
         assert(ptr.get() != nullptr);
         assert(static_cast<const Derived *>(ptr.get()) != nullptr);
         return Ptr(static_cast<const Derived *>(ptr.get()));

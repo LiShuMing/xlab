@@ -53,6 +53,17 @@ class IColumn : public COW<IColumn> {
 
 using ColumnPtr = IColumn::Ptr;
 using MutableColumnPtr = IColumn::MutablePtr;
+namespace cow {
+
+template <typename Tp> Tp::Ptr static_pointer_cast(const ColumnPtr &ptr) {
+    return Tp::static_pointer_cast(ptr);
+}
+
+template <typename Tp> Tp::MutablePtr static_pointer_cast(const MutableColumnPtr &ptr) {
+    return Tp::static_pointer_cast(ptr);
+}
+} // namespace cow
+
 
 template <typename Base, typename Derived, typename AncestorBase = Base>
 class ColumnFactory : public Base {
@@ -113,6 +124,7 @@ class ConcreteColumn final : public COWHelper<ColumnFactory<IColumn, ConcreteCol
 };
 using ConcreteColumnPtr = ConcreteColumn::Ptr;
 using ConcreteColumnMutablePtr = ConcreteColumn::MutablePtr;
+using ConcreteColumnWrappedPtr = ConcreteColumn::DerivedWrappedPtr;
 
 class ConcreteColumn2 final : public COWHelper<ColumnFactory<IColumn, ConcreteColumn2>, ConcreteColumn2> {
 
@@ -120,35 +132,33 @@ class ConcreteColumn2 final : public COWHelper<ColumnFactory<IColumn, ConcreteCo
     friend class COWHelper<ColumnFactory<IColumn, ConcreteColumn2>, ConcreteColumn2>;
     using ConcreteColumnWrappedPtr = ConcreteColumn::WrappedPtr;
 
-    int data;
-    explicit ConcreteColumn2(int data_) : data(data_) {
-        std::cerr << "ConcreteColumn constructor" << std::endl;
+    ConcreteColumn2(ColumnPtr&& ptr) {
+        std::cerr << "ConcreteColumn2 constructor" << std::endl;
+        _inner = ConcreteColumn::static_pointer_cast(std::move(ptr));
     }
 
-    ConcreteColumn2(const ConcreteColumn2 & col) {
-        std::cerr << "ConcreteColumn copy constructor" << std::endl;
-        this->data = col.data;
+    ConcreteColumn2(const ColumnPtr& ptr) {
+        std::cerr << "ConcreteColumn2 copy constructor" << std::endl;
+        _inner = ConcreteColumn::static_pointer_cast(ptr);
     }
+
+    // explicit ConcreteColumn2(const ConcreteColumnPtr &ptr) {
+    //     std::cerr << "ConcreteColumn2 copy constructor" << std::endl;
+    //     _inner = ptr;
+    // }
 
   public:
-    int get() const override { return data; }
-    void set(int value) override { data = value; }
+    int get() const override { return _inner->get(); }
+    void set(int value) override { _inner->set(value); }
 
-    // not override
-    void set_value(int val) { data = val; }
-    int get_value() { return data; }
+    // // not override
+    // void set_value(int val) { _inner->set_value(val); }
+    // int get_value() { return _inner->get_value(); }
+
+  private:
+    ConcreteColumnWrappedPtr _inner;
 };
 
-namespace cow {
-
-template <typename Tp> Tp::Ptr static_pointer_cast(const ColumnPtr &ptr) {
-    return Tp::cast_to(ptr);
-}
-
-template <typename Tp> Tp::MutablePtr static_pointer_cast(const MutableColumnPtr &ptr) {
-    return Tp::cast_to(ptr);
-}
-} // namespace cow
 
 template <typename ColPtr>
 void TRACE_COW(const std::string &msg, const ColumnPtr &x, const ColPtr &y) {
@@ -183,7 +193,7 @@ TEST_F(ColumnTest, TestColumnConvert) {
     {
 
         std::cerr << "x: " << x->get() << std::endl;
-        ConcreteColumnPtr x1 = ConcreteColumn::cast_to(x);
+        ConcreteColumnPtr x1 = ConcreteColumn::static_pointer_cast(x);
         TRACE_COW("x, x1", x, x1);
         MutableColumnPtr mutable_col = x->assume_mutable();
         mutable_col->set(2);
@@ -194,7 +204,14 @@ TEST_F(ColumnTest, TestColumnConvert) {
 }
 
 
-TEST_F(ColumnTest, TestBasic) {
+TEST_F(ColumnTest, TestConcreteColumn2) {
+    {
+        ColumnPtr x = ConcreteColumn::create(1);
+        ColumnPtr y = ConcreteColumn2::create(x);
+    }
+    {
+        ColumnPtr y = ConcreteColumn2::create(ConcreteColumn::create(1));
+    }
 }
 
 TEST_F(ColumnTest, TestCast) {
