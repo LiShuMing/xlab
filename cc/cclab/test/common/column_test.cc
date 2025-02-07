@@ -132,15 +132,20 @@ class ConcreteColumn2 final : public COWHelper<ColumnFactory<IColumn, ConcreteCo
     friend class COWHelper<ColumnFactory<IColumn, ConcreteColumn2>, ConcreteColumn2>;
     using ConcreteColumnWrappedPtr = ConcreteColumn::WrappedPtr;
 
-    ConcreteColumn2(ColumnPtr&& ptr) {
+    ConcreteColumn2(MutableColumnPtr&& ptr) {
         std::cerr << "ConcreteColumn2 constructor" << std::endl;
         _inner = ConcreteColumn::static_pointer_cast(std::move(ptr));
     }
 
-    ConcreteColumn2(const ColumnPtr& ptr) {
-        std::cerr << "ConcreteColumn2 copy constructor" << std::endl;
-        _inner = ConcreteColumn::static_pointer_cast(ptr);
-    }
+    // ConcreteColumn2(ColumnPtr&& ptr) {
+    //     std::cerr << "ConcreteColumn2 constructor" << std::endl;
+    //     _inner = ConcreteColumn::static_pointer_cast(std::move(ptr));
+    // }
+
+    // ConcreteColumn2(const ColumnPtr& ptr) {
+    //     std::cerr << "ConcreteColumn2 copy constructor" << std::endl;
+    //     _inner = ConcreteColumn::static_pointer_cast(ptr);
+    // }
 
     // explicit ConcreteColumn2(const ConcreteColumnPtr &ptr) {
     //     std::cerr << "ConcreteColumn2 copy constructor" << std::endl;
@@ -207,10 +212,26 @@ TEST_F(ColumnTest, TestColumnConvert) {
 TEST_F(ColumnTest, TestConcreteColumn2) {
     {
         ColumnPtr x = ConcreteColumn::create(1);
-        ColumnPtr y = ConcreteColumn2::create(x);
+        ColumnPtr y = ConcreteColumn2::create(x->assume_mutable());
     }
     {
         ColumnPtr y = ConcreteColumn2::create(ConcreteColumn::create(1));
+    }
+    {
+        auto x = ConcreteColumn::create(1);
+        ColumnPtr y = ConcreteColumn2::create(x->assume_mutable());
+    }
+    {
+        auto x = ConcreteColumn::create(1);
+        ColumnPtr y = ConcreteColumn2::create(std::move(x));
+    }
+    {
+        MutableColumnPtr x = ConcreteColumn::create(1);
+        ColumnPtr y = ConcreteColumn2::create(std::move(x));
+    }
+    {
+        auto x = ConcreteColumn::create(1);
+        ColumnPtr y = ConcreteColumn2::create(std::move(x));
     }
 }
 
