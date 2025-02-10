@@ -419,4 +419,31 @@ TEST_F(BasicTest, TestAllocator2) {
     }
 }
 
+
+class MyClass {
+public:
+    static int staticValue;  // 静态成员变量
+    int nonStaticValue;      // 非静态成员变量
+
+    // 静态成员函数
+    static void staticFunction() {
+        // 静态成员函数可以访问静态成员变量
+        cout << "Static value: " << staticValue << endl;
+
+        // 不能访问非静态成员变量，编译错误
+        // cout << "Non-static value: " << nonStaticValue << endl; // 错误
+
+        // 不能访问非静态成员函数，编译错误
+        // nonStaticFunction(); // 错误
+    }
+
+    // 非静态成员函数
+    void nonStaticFunction() {
+        // !!!
+        this->staticFunction();
+
+        cout << "Non-static function called" << endl;
+    }
+};
+
 } // namespace test

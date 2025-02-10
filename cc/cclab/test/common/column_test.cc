@@ -53,6 +53,10 @@ class IColumn : public COW<IColumn> {
 
 using ColumnPtr = IColumn::Ptr;
 using MutableColumnPtr = IColumn::MutablePtr;
+
+using Columns = std::vector<ColumnPtr>;
+using MutableColumns = std::vector<MutableColumnPtr>;
+
 namespace cow {
 
 template <typename Tp> Tp::Ptr static_pointer_cast(const ColumnPtr &ptr) {
@@ -152,6 +156,11 @@ class ConcreteColumn2 final : public COWHelper<ColumnFactory<IColumn, ConcreteCo
     //     _inner = ptr;
     // }
 
+    void _mock() {
+        ColumnPtr x = ConcreteColumn::create(1);
+        ColumnPtr y = this->create(x->assume_mutable());
+    }
+
   public:
     int get() const override { return _inner->get(); }
     void set(int value) override { _inner->set(value); }
@@ -181,6 +190,52 @@ void TRACE_COW(const std::string &msg, const ColumnPtr &x, const ColPtr &y, cons
     std::cerr << "refcounts: " << use_count_func(x) << ", " << use_count_func(y) << ", " << use_count_func(mut)
               << "\n";
     std::cerr << "addresses: " << address_func(x) << ", " << address_func(y) << ", " << address_func(mut) << "\n";
+}
+
+MutableColumnPtr test_move_col(MutableColumnPtr&& col) {
+    return std::move(col);
+}
+
+TEST_F(ColumnTest, TestColumnMoveFunc) {
+    MutableColumnPtr x = ConcreteColumn::create(1);
+    std::cout << "x:" << x->get() << std::endl;
+
+    MutableColumnPtr y = test_move_col(std::move(x));
+    std::cout << "y:" << y->get() << std::endl;
+
+    // UD
+    // std::cout << "x:" << x->get() << std::endl;
+}
+
+TEST_F(ColumnTest, TestColumnMove1) {
+    MutableColumns v1;
+    auto x = ConcreteColumn::create(1);
+    v1.emplace_back(std::move(x));
+    std::cout << "v1's size(before):" << v1.size() << std::endl;
+
+    auto v2 = std::move(v1);
+    std::cout << "v1's size(after):" << v1.size() << std::endl;
+    DCHECK(0 == v1.size());
+}
+
+TEST_F(ColumnTest, TestColumnMove2) {
+    MutableColumns v1;
+
+    for (int i = 0; i < 10; i++) {
+        auto x = ConcreteColumn::create(1);
+        v1.emplace_back(std::move(x));
+    }
+    std::cout << "v1's size(before):" << v1.size() << std::endl;
+
+    MutableColumns v2;
+    for (auto& x : v1) {
+        v2.emplace_back(std::move(x));
+    }
+    std::cout << "v1's size(after):" << v1.size() << std::endl;
+    std::cout << "v2's size(after):" << v2.size() << std::endl;
+    DCHECK(10 == v1.size());
+    DCHECK(10 == v2.size());
+
 }
 
 TEST_F(ColumnTest, TestColumnConvert) {
