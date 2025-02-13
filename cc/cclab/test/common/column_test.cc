@@ -192,15 +192,34 @@ void TRACE_COW(const std::string &msg, const ColumnPtr &x, const ColPtr &y, cons
     std::cerr << "addresses: " << address_func(x) << ", " << address_func(y) << ", " << address_func(mut) << "\n";
 }
 
-MutableColumnPtr test_move_col(MutableColumnPtr&& col) {
+MutableColumnPtr move_func1(MutableColumnPtr&& col) {
     return std::move(col);
+}
+
+Columns move_func2(Columns&& cols) {
+    return std::move(cols);
+}
+MutableColumns move_func2(MutableColumns&& cols) {
+    return std::move(cols);
+}
+
+TEST_F(ColumnTest, TestAssumeMutable) {
+    MutableColumnPtr y;
+    {
+        auto x = ConcreteColumn::create(1);
+        std::cout << "before assume mutable x:" << x->get() << std::endl;
+
+        y = x->assume_mutable();
+        std::cout << "after assume mutable x:" << x->get() << std::endl;
+    }
+    std::cout << "y:" << y->get() << std::endl;
 }
 
 TEST_F(ColumnTest, TestColumnMoveFunc) {
     MutableColumnPtr x = ConcreteColumn::create(1);
     std::cout << "x:" << x->get() << std::endl;
 
-    MutableColumnPtr y = test_move_col(std::move(x));
+    MutableColumnPtr y = move_func1(std::move(x));
     std::cout << "y:" << y->get() << std::endl;
 
     // UD
@@ -220,7 +239,6 @@ TEST_F(ColumnTest, TestColumnMove1) {
 
 TEST_F(ColumnTest, TestColumnMove2) {
     MutableColumns v1;
-
     for (int i = 0; i < 10; i++) {
         auto x = ConcreteColumn::create(1);
         v1.emplace_back(std::move(x));
@@ -235,7 +253,27 @@ TEST_F(ColumnTest, TestColumnMove2) {
     std::cout << "v2's size(after):" << v2.size() << std::endl;
     DCHECK(10 == v1.size());
     DCHECK(10 == v2.size());
+}
 
+TEST_F(ColumnTest, TestColumnMove3) {
+    MutableColumns v1;
+    for (int i = 0; i < 10; i++) {
+        auto x = ConcreteColumn::create(1);
+        v1.emplace_back(std::move(x));
+    }
+    std::cout << "v1's size(before):" << v1.size() << std::endl;
+
+    MutableColumns v2 = move_func2(std::move(v1));
+    std::cout << "v1's size(after):" << v1.size() << std::endl;
+    std::cout << "v2's size(after):" << v2.size() << std::endl;
+    DCHECK(0 == v1.size());
+    DCHECK(10 == v2.size());
+    for (auto& x : v2) {
+        std::cout << "x:" << x->get() << std::endl;
+    }
+    for (auto &x : v1) {
+        std::cout << "x:" << x->get() << std::endl;
+    }
 }
 
 TEST_F(ColumnTest, TestColumnConvert) {
