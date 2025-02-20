@@ -216,7 +216,7 @@ protected:
 
         operator T*() const { return t; }
 
-    private:
+    protected:
         T* t = nullptr;
     };
 
@@ -260,7 +260,6 @@ protected:
         friend class COWHelper;
 
         explicit immutable_ptr(const T* ptr) : Base(ptr) {}
-
     public:
         /// Copy from immutable ptr: ok.
         immutable_ptr(const immutable_ptr&) = default;
@@ -288,6 +287,15 @@ protected:
         immutable_ptr() = default;
 
         immutable_ptr(std::nullptr_t) {}
+
+        const T* get() const { return this->t; }
+        T* get() { return const_cast<T*>(this->t); }
+
+        const T* operator->() const { return get(); }
+        T* operator->() { return get(); }
+
+        const T& operator*() const { return *get(); }
+        T& operator*() { return *get(); }
     };
 
     /** Use this type in class members for compositions.

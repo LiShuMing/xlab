@@ -33,12 +33,8 @@ class IColumn : public COW<IColumn> {
     virtual MutablePtr deepMutate() const { return shallow_mutate(); }
 
   public:
-    IColumn() {
-        std::cerr << "IColumn constructor" << std::endl;
-    }
-    IColumn(const IColumn &) {
-        std::cerr << "IColumn copy constructor" << std::endl;
-    }
+    IColumn() { std::cerr << "IColumn constructor" << std::endl; }
+    IColumn(const IColumn &) { std::cerr << "IColumn copy constructor" << std::endl; }
     virtual ~IColumn() = default;
 
     virtual MutablePtr clone() const = 0;
@@ -48,7 +44,7 @@ class IColumn : public COW<IColumn> {
 
     // use reference to avoid copy
     static MutablePtr mutate(Ptr ptr) { return ptr->deepMutate(); }
-    static MutablePtr cow(const Ptr& ptr) { return ptr->deepMutate(); }
+    static MutablePtr cow(const Ptr &ptr) { return ptr->deepMutate(); }
 };
 
 using ColumnPtr = IColumn::Ptr;
@@ -68,18 +64,16 @@ template <typename Tp> Tp::MutablePtr static_pointer_cast(const MutableColumnPtr
 }
 } // namespace cow
 
-
 template <typename Base, typename Derived, typename AncestorBase = Base>
 class ColumnFactory : public Base {
-private:
-    Derived* mutable_derived() { return static_cast<Derived*>(this); }
-    const Derived* derived() const { return static_cast<const Derived*>(this); }
+  private:
+    Derived *mutable_derived() { return static_cast<Derived *>(this); }
+    const Derived *derived() const { return static_cast<const Derived *>(this); }
 
-public:
-    template <typename... Args>
-    ColumnFactory(Args&&... args) : Base(std::forward<Args>(args)...) {}
+  public:
+    template <typename... Args> ColumnFactory(Args &&...args) : Base(std::forward<Args>(args)...) {}
 
-     using AncestorBaseType = std::enable_if_t<std::is_base_of_v<AncestorBase, Base>, AncestorBase>;
+    using AncestorBaseType = std::enable_if_t<std::is_base_of_v<AncestorBase, Base>, AncestorBase>;
 };
 
 // class ConcreteColumn final : public COWHelper<IColumn, ConcreteColumn> {
@@ -95,9 +89,9 @@ public:
 //     void set(int value) override { data = value; }
 // };
 
-
 // use ColumnFactory to create ConcreteColumn
-class ConcreteColumn final : public COWHelper<ColumnFactory<IColumn, ConcreteColumn>, ConcreteColumn> {
+class ConcreteColumn final
+    : public COWHelper<ColumnFactory<IColumn, ConcreteColumn>, ConcreteColumn> {
 
   private:
     friend class COWHelper<ColumnFactory<IColumn, ConcreteColumn>, ConcreteColumn>;
@@ -108,15 +102,15 @@ class ConcreteColumn final : public COWHelper<ColumnFactory<IColumn, ConcreteCol
         std::cerr << "ConcreteColumn constructor:" << data << std::endl;
     }
 
-    ConcreteColumn(const ConcreteColumn & col) {
+    ConcreteColumn(const ConcreteColumn &col) {
         std::cerr << "ConcreteColumn copy constructor" << std::endl;
         this->data = col.data;
     }
 
-    //ConcreteColumn(const ConcreteColumn & col) = delete;
-    ConcreteColumn& operator=(const ConcreteColumn&) = delete;
-    ConcreteColumn(ConcreteColumn && col) = delete;
-    ConcreteColumn& operator=(ConcreteColumn&&) = delete;
+    // ConcreteColumn(const ConcreteColumn & col) = delete;
+    ConcreteColumn &operator=(const ConcreteColumn &) = delete;
+    ConcreteColumn(ConcreteColumn &&col) = delete;
+    ConcreteColumn &operator=(ConcreteColumn &&) = delete;
 
   public:
     int get() const override { return data; }
@@ -130,13 +124,14 @@ using ConcreteColumnPtr = ConcreteColumn::Ptr;
 using ConcreteColumnMutablePtr = ConcreteColumn::MutablePtr;
 using ConcreteColumnWrappedPtr = ConcreteColumn::DerivedWrappedPtr;
 
-class ConcreteColumn2 final : public COWHelper<ColumnFactory<IColumn, ConcreteColumn2>, ConcreteColumn2> {
+class ConcreteColumn2 final
+    : public COWHelper<ColumnFactory<IColumn, ConcreteColumn2>, ConcreteColumn2> {
 
   private:
     friend class COWHelper<ColumnFactory<IColumn, ConcreteColumn2>, ConcreteColumn2>;
     using ConcreteColumnWrappedPtr = ConcreteColumn::WrappedPtr;
 
-    ConcreteColumn2(MutableColumnPtr&& ptr) {
+    ConcreteColumn2(MutableColumnPtr &&ptr) {
         std::cerr << "ConcreteColumn2 constructor" << std::endl;
         _inner = ConcreteColumn::static_pointer_cast(std::move(ptr));
     }
@@ -173,34 +168,35 @@ class ConcreteColumn2 final : public COWHelper<ColumnFactory<IColumn, ConcreteCo
     ConcreteColumnWrappedPtr _inner;
 };
 
-
 template <typename ColPtr>
 void TRACE_COW(const std::string &msg, const ColumnPtr &x, const ColPtr &y) {
     TRACE_COW(msg, x, y, nullptr);
 }
 
 template <typename ColPtr>
-void TRACE_COW(const std::string &msg, const ColumnPtr &x, const ColPtr &y, const MutableColumnPtr &mut) {
+void TRACE_COW(const std::string &msg, const ColumnPtr &x, const ColPtr &y,
+               const MutableColumnPtr &mut) {
     auto get_func = [](const auto &ptr) -> int { return ptr ? ptr->get() : -1; };
     auto use_count_func = [](const auto &ptr) -> int { return ptr ? ptr->use_count() : -1; };
     auto address_func = [](const auto &ptr) -> const void * { return ptr ? ptr.get() : nullptr; };
 
     std::cerr << "[" << msg << "]" << "\n";
-    std::cerr << "values:    " << get_func(x) << ", " << get_func(y) << ", " << get_func(mut) << "\n";
-    std::cerr << "refcounts: " << use_count_func(x) << ", " << use_count_func(y) << ", " << use_count_func(mut)
+    std::cerr << "values:    " << get_func(x) << ", " << get_func(y) << ", " << get_func(mut)
               << "\n";
-    std::cerr << "addresses: " << address_func(x) << ", " << address_func(y) << ", " << address_func(mut) << "\n";
+    std::cerr << "refcounts: " << use_count_func(x) << ", " << use_count_func(y) << ", "
+              << use_count_func(mut) << "\n";
+    std::cerr << "addresses: " << address_func(x) << ", " << address_func(y) << ", "
+              << address_func(mut) << "\n";
 }
 
-MutableColumnPtr move_func1(MutableColumnPtr&& col) {
-    return std::move(col);
-}
+MutableColumnPtr move_func1(MutableColumnPtr &&col) { return std::move(col); }
 
-Columns move_func2(Columns&& cols) {
-    return std::move(cols);
-}
-MutableColumns move_func2(MutableColumns&& cols) {
-    return std::move(cols);
+Columns move_func2(Columns &&cols) { return std::move(cols); }
+MutableColumns move_func2(MutableColumns &&cols) { return std::move(cols); }
+
+TEST_F(ColumnTest, TestImmutablePtr) {
+    ConcreteColumnPtr x = ConcreteColumn::create(1);
+    x->set(2);
 }
 
 TEST_F(ColumnTest, TestAssumeMutable) {
@@ -246,7 +242,7 @@ TEST_F(ColumnTest, TestColumnMove2) {
     std::cout << "v1's size(before):" << v1.size() << std::endl;
 
     MutableColumns v2;
-    for (auto& x : v1) {
+    for (auto &x : v1) {
         v2.emplace_back(std::move(x));
     }
     std::cout << "v1's size(after):" << v1.size() << std::endl;
@@ -268,7 +264,7 @@ TEST_F(ColumnTest, TestColumnMove3) {
     std::cout << "v2's size(after):" << v2.size() << std::endl;
     DCHECK(0 == v1.size());
     DCHECK(10 == v2.size());
-    for (auto& x : v2) {
+    for (auto &x : v2) {
         std::cout << "x:" << x->get() << std::endl;
     }
     for (auto &x : v1) {
@@ -300,7 +296,6 @@ TEST_F(ColumnTest, TestColumnConvert) {
     std::cout << "final" << std::endl;
     TRACE_COW("x, x", x, x);
 }
-
 
 TEST_F(ColumnTest, TestConcreteColumn2) {
     {
@@ -340,7 +335,7 @@ TEST_F(ColumnTest, TestClone) {
     auto cloned = x->clone();
     // cloned is a deep copy of x, which its type is IColum, is not ConcreteColumn
     cloned->set(2);
-    (static_cast<ConcreteColumn*>(cloned.get()))->set_value(3);
+    (static_cast<ConcreteColumn *>(cloned.get()))->set_value(3);
     ASSERT_TRUE(x->get() == 1 && cloned->get() == 3);
 }
 
@@ -348,10 +343,9 @@ TEST_F(ColumnTest, TestCloneShared) {
     ColumnPtr x = ConcreteColumn::create(1);
     // cannot set value of cloned, because it is shared
     auto cloned = x->clone_shared();
-    //cloned->set(2); !!! compile error
+    // cloned->set(2); !!! compile error
     ASSERT_TRUE(x->get() == 2 && cloned->get() == 1);
 }
-
 
 TEST_F(ColumnTest, TestCOW1) {
     ColumnPtr x = ConcreteColumn::create(1);
@@ -463,6 +457,148 @@ TEST_F(ColumnTest, TestCOW2) {
     ASSERT_TRUE(x->use_count() == 1 && y->use_count() == 1);
     ASSERT_TRUE(x.get() != y.get());
     ASSERT_TRUE(y_ptr != y.get());
+}
+
+class TestClass1 {
+  public:
+    TestClass1(std::shared_ptr<int> data, std::vector<string> names) : _data(data), _names(names) {}
+
+    std::shared_ptr<int> get_data() const { return _data; }
+    std::vector<string> get_names() const { return _names; }
+
+  private:
+    std::shared_ptr<int> _data;
+    std::vector<string> _names;
+};
+class TestClass2 {
+  public:
+    TestClass2(std::shared_ptr<int> data, std::vector<string> names)
+        : _data(std::move(data)), _names(std::move(names)) {}
+
+    std::shared_ptr<int> get_data() const { return _data; }
+    std::vector<string> get_names() const { return _names; }
+
+  private:
+    std::shared_ptr<int> _data;
+    std::vector<string> _names;
+};
+
+class TestClass3 {
+  public:
+    TestClass3(std::shared_ptr<int> &&data, std::vector<string> &&names)
+        : _data(std::move(data)), _names(std::move(names)) {}
+
+    std::shared_ptr<int> get_data() const { return _data; }
+    std::vector<string> get_names() const { return _names; }
+
+  private:
+    std::shared_ptr<int> _data;
+    std::vector<string> _names;
+};
+
+class TestClass4 {
+  public:
+  // why const std::vector<string> &names can compile ok even by using std::move(names)
+  // const std::vector<string> &names is a const reference, so it cannot be moved, original names is still valid
+    TestClass4(std::shared_ptr<int> &data, std::vector<string> &names)
+        : _data(std::move(data)), _names(std::move(names)) {}
+
+    std::shared_ptr<int> get_data() const { return _data; }
+    std::vector<string> get_names() const { return _names; }
+
+  private:
+    std::shared_ptr<int> _data;
+    std::vector<string> _names;
+};
+void print_data_names(const std::shared_ptr<int> &data, const std::vector<string> &names) {
+    std::cout << "START" << std::endl;
+    if (data) {
+        std::cout << "data:" << *data;
+    } else {
+        std::cout << "data: nullptr";
+    }
+    for (const auto &name : names) {
+        std::cout << ", name:" << name;
+    }
+    std::cout << std::endl << std::endl;
+}
+
+TestClass2 create_test_class2() {
+    std::shared_ptr<int> data = std::make_shared<int>(1);
+    std::vector<string> names = {"a", "b", "c"};
+    return TestClass2(std::move(data), std::move(names));
+}
+
+TestClass3 create_test_class3() {
+    std::shared_ptr<int> data = std::make_shared<int>(1);
+    std::vector<string> names = {"a", "b", "c"};
+    return TestClass3(std::move(data), std::move(names));
+}
+TestClass4 create_test_class4() {
+    std::shared_ptr<int> data = std::make_shared<int>(1);
+    std::vector<string> names = {"a", "b", "c"};
+    return TestClass4(std::move(data), std::move(names));
+}
+
+TEST_F(ColumnTest, TestClass2) {
+    {
+        TestClass2 test1 = create_test_class2();
+        print_data_names(test1.get_data(), test1.get_names());
+    }
+    {
+        TestClass3 test1 = create_test_class3();
+        print_data_names(test1.get_data(), test1.get_names());
+    }
+    {
+        TestClass4 test1 = create_test_class4();
+        print_data_names(test1.get_data(), test1.get_names());
+    }
+}
+TEST_F(ColumnTest, TestClass1) {
+    {
+        // test TestClass1
+        std::shared_ptr<int> data = std::make_shared<int>(1);
+        std::vector<string> names = {"a", "b", "c"};
+        print_data_names(data, names);
+        TestClass1 test1(data, names);
+
+        print_data_names(test1.get_data(), test1.get_names());
+        print_data_names(data, names);
+    }
+
+    {
+        // test TestClass2
+        std::shared_ptr<int> data = std::make_shared<int>(1);
+        std::vector<string> names = {"a", "b", "c"};
+        print_data_names(data, names);
+        TestClass2 test1(data, names);
+
+        print_data_names(test1.get_data(), test1.get_names());
+        print_data_names(data, names);
+    }
+
+    {
+        // test TestClass3
+        std::shared_ptr<int> data = std::make_shared<int>(1);
+        std::vector<string> names = {"a", "b", "c"};
+        print_data_names(data, names);
+
+        // this will fail in compile
+        // TestClass3 test1(data, names);
+        TestClass3 test1(std::move(data), std::move(names));
+
+        print_data_names(test1.get_data(), test1.get_names());
+        print_data_names(data, names);
+    }
+    {
+        // test TestClass4
+        std::shared_ptr<int> data = std::make_shared<int>(1);
+        std::vector<string> names = {"a", "b", "c"};
+        print_data_names(data, names);
+        TestClass4 test1(data, names);
+        print_data_names(test1.get_data(), test1.get_names());
+        print_data_names(data, names);
+    }
 }
 
 } // namespace test
