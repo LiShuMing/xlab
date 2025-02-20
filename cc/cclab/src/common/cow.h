@@ -219,7 +219,7 @@ template <typename Derived> class COW {
         template <typename> friend class COW;
         template <typename, typename, typename> friend class COWHelper;
 
-        explicit mutable_ptr(T *ptr) : Base(ptr) {}
+        explicit mutable_ptr(T *ptr, bool add_ref = true) : Base(ptr, add_ref) {}
 
       public:
         /// Copy: not possible.
@@ -244,7 +244,7 @@ template <typename Derived> class COW {
         template <typename> friend class COW;
         template <typename, typename, typename> friend class COWHelper;
 
-        explicit immutable_ptr(const T *ptr) : Base(ptr) {}
+        explicit immutable_ptr(const T *ptr, bool add_ref = true) : Base(ptr, add_ref) {}
 
       public:
         /// Copy from immutable ptr: ok.
@@ -434,20 +434,25 @@ public:
     }
 
     // Static pointer cast
-    template <typename PtrType>
-    static auto static_pointer_cast(PtrType&& ptr) 
-        -> std::enable_if_t<std::is_const_v<std::remove_reference_t<PtrType>>, Ptr> {
+    static Ptr static_pointer_cast(const BasePtr& ptr)  {
         DCHECK(ptr.get() != nullptr);
         DCHECK(static_cast<const Derived*>(ptr.get()) != nullptr);
-        return Ptr(static_cast<const Derived*>(std::forward<PtrType>(ptr).get()));
+        std::cout<<"static_pointer_cast:1"<<std::endl;
+        return Ptr(static_cast<const Derived*>(ptr.get()));
     }
 
-    template <typename PtrType>
-    static auto static_pointer_cast(PtrType&& ptr) 
-        -> std::enable_if_t<!std::is_const_v<std::remove_reference_t<PtrType>>, MutablePtr> {
+    static Ptr static_pointer_cast(BasePtr&& ptr) {
+        DCHECK(ptr.get() != nullptr);
+        DCHECK(static_cast<const Derived*>(ptr.get()) != nullptr);
+        std::cout << "static_pointer_cast:2" << std::endl;
+        return Ptr(static_cast<const Derived*>(std::move(ptr).detach()), false);
+    }
+
+    static MutablePtr static_pointer_cast(BaseMutablePtr &&ptr) {
         DCHECK(ptr.get() != nullptr);
         DCHECK(static_cast<Derived*>(ptr.get()) != nullptr);
-        return MutablePtr(static_cast<Derived*>(std::forward<PtrType>(ptr).get()));
+        std::cout << "static_pointer_cast:3" << std::endl;
+        return MutablePtr(static_cast<Derived *>(std::move(ptr).detach()), false);
     }
 
     // Dynamic pointer cast

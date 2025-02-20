@@ -292,8 +292,16 @@ TEST_F(ColumnTest, TestColumnConvert) {
         mutable_col->set(2);
         TRACE_COW("x, x1", x, x1);
     }
+
     std::cout << "final" << std::endl;
     TRACE_COW("x, x", x, x);
+    {
+
+        std::cerr << "x: " << x->get() << std::endl;
+        ConcreteColumnPtr x1 = ConcreteColumn::static_pointer_cast(std::move(x));
+        TRACE_COW("x, x1", x, x1);
+        ASSERT_TRUE(x.get() == nullptr);
+    }
 }
 
 TEST_F(ColumnTest, TestConcreteColumn2) {

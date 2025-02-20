@@ -63,4 +63,30 @@ TEST_F(AtomicTest, Basic2){
     }
 }
 
+class Base {
+  public:
+    virtual ~Base() = default;
+    virtual void foo() { std::cout << "Base foo\n"; }
+};
+
+class Derived : public Base {
+  public:
+    void foo() override { std::cout << "Derived foo\n"; }
+};
+
+TEST_F(AtomicTest, TestStaticPointerCast) {
+    std::shared_ptr<Base> basePtr = std::make_shared<Derived>();
+    ASSERT_EQ(basePtr.use_count(), 1);
+    {
+        std::shared_ptr<Derived> derivedPtr = std::static_pointer_cast<Derived>(basePtr);
+        ASSERT_EQ(basePtr.use_count(), 2);
+        ASSERT_EQ(derivedPtr.use_count(), 2);
+    }
+    {
+        std::shared_ptr<Derived> derivedPtr = std::static_pointer_cast<Derived>(std::move(basePtr));
+        ASSERT_EQ(basePtr.use_count(), 0);
+        ASSERT_EQ(derivedPtr.use_count(), 1);
+    }
+}
+
 } // namespace test
