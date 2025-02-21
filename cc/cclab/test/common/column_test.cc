@@ -44,6 +44,20 @@ class IColumn : public COW<IColumn> {
     // use reference to avoid copy
     static MutablePtr mutate(Ptr ptr) { return ptr->deepMutate(); }
     static MutablePtr cow(const Ptr &ptr) { return ptr->deepMutate(); }
+
+      /// If the column contains subcolumns (such as Array, Nullable, etc), do callback on them.
+    /// Shallow: doesn't do recursive calls; don't do call for itself.
+    using ColumnCallback = std::function<void(WrappedPtr&)>;
+    virtual void for_each_subcolumn(ColumnCallback) {}
+
+    [[nodiscard]] static MutablePtr mutate2(Ptr ptr) {
+        MutablePtr res = ptr->shallow_mutate(); /// Now use_count is 2.
+        ptr.reset();                           /// Reset use_count to 1.
+        res->for_each_subcolumn([](WrappedPtr &subcolumn) {
+            subcolumn = IColumn::mutate2(std::move(subcolumn).detach());
+        });
+        return res;
+    }
 };
 
 using ColumnPtr = IColumn::Ptr;
@@ -155,6 +169,10 @@ class ConcreteColumn2 final
         ColumnPtr y = this->create(x->assume_mutable());
     }
 
+    void for_each_subcolumn(ColumnCallback callback) override {
+        callback(_inner);
+    }
+
   public:
     int get() const override { return _inner->get(); }
     void set(int value) override { _inner->set(value); }
@@ -192,6 +210,32 @@ MutableColumnPtr move_func1(MutableColumnPtr &&col) { return std::move(col); }
 
 Columns move_func2(Columns &&cols) { return std::move(cols); }
 MutableColumns move_func2(MutableColumns &&cols) { return std::move(cols); }
+
+
+TEST_F(ColumnTest, TestMutate2) {
+    ColumnPtr x = ConcreteColumn::create(1);
+    {
+        ColumnPtr y = ConcreteColumn::mutate2(x);
+        TRACE_COW("x, y", x, y);
+    }
+    {
+        ColumnPtr y = ConcreteColumn::mutate2(std::move(x));
+        TRACE_COW("x, y", x, y);
+    }
+
+}
+
+TEST_F(ColumnTest, TestMutate3) {
+    ColumnPtr x = ConcreteColumn2::create(ConcreteColumn::create(1));
+    {
+        ColumnPtr y = IColumn::mutate2(x);
+        TRACE_COW("x, y", x, y);
+    }
+    {
+        ColumnPtr y = IColumn::mutate2(std::move(x));
+        TRACE_COW("x, y", x, y);
+    }
+}
 
 TEST_F(ColumnTest, TestImmutablePtr) {
     ConcreteColumnPtr x = ConcreteColumn::create(1);

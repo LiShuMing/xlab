@@ -322,6 +322,9 @@ template <typename Derived> class COW {
         operator const immutable_ptr<T> &() const { return value; }
         operator immutable_ptr<T> &() { return value; }
 
+        /// Get internal immutable ptr. Does not change internal use counter.
+        immutable_ptr<T> detach() && { return std::move(value); }
+
         operator bool() const { return value != nullptr; }
         bool operator!() const { return value == nullptr; }
 
