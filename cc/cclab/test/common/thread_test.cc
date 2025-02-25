@@ -9,8 +9,14 @@
 #include <vector>
 
 // Thread Test
+using CpuIds = std::vector<int>;
+struct WorkGroup {
+    int id;
+};
+
 class ThreadTest : public testing::Test {
 public:
+    static constexpr WorkGroup* COMMON_WORKGROUP = nullptr;
     void f() {
         for (int n = 0; n < 1000; ++n) {
             cnt.fetch_add(1, std::memory_order_relaxed);
@@ -35,7 +41,18 @@ public:
 
     void thread2() { std::cout << "a=" << a << " b=" << b << " c=" << c << std::endl; }
 
+
+    const CpuIds &get_cpuids_of_workgroup(WorkGroup *wg) const {
+        static const CpuIds empty_cpuids;
+        const auto it = _wg_to_cpuids.find(wg);
+        if (it == _wg_to_cpuids.end()) {
+            return empty_cpuids;
+        }
+        return it->second;
+    }
+
 protected:
+    std::unordered_map<WorkGroup *, CpuIds> _wg_to_cpuids;
     std::atomic<int> cnt = {0};
     std::atomic<bool> ready{false};
     int data = 0;
@@ -99,4 +116,24 @@ TEST_F(ThreadTest, TestThreadLocal) {
     });
     t1.join();
     std::cout << "tls_i in main: " << tls_i << std::endl;
+}
+
+TEST_F(ThreadTest, TestAsanBug) {
+    {
+        _wg_to_cpuids[COMMON_WORKGROUP] = {1, 2, 3, 4, 5};
+    }
+    WorkGroup* wg = new WorkGroup{1};
+    _wg_to_cpuids[wg] = {1, 2, 3, 4, 5};
+
+    const auto& cpuids = get_cpuids_of_workgroup(wg);
+    if (cpuids.empty()) {
+        return;
+    }
+
+    // std::ranges::copy(cpuids, std::back_inserter(_wg_to_cpuids[COMMON_WORKGROUP]));
+    // _wg_to_cpuids.erase(wg);
+
+    // for (auto cpuid : cpuids) {
+    //     std::cout << cpuid << std::endl;
+    // }
 }

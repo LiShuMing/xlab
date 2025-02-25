@@ -38,8 +38,8 @@ class IColumn : public COW<IColumn> {
     virtual ~IColumn() = default;
 
     virtual MutablePtr clone() const = 0;
-    virtual int get() const = 0;
-    virtual void set(int value) = 0;
+    virtual int get() const { return 0; };
+    virtual void set(int value) {};
 
     // use reference to avoid copy
     static MutablePtr mutate(Ptr ptr) { return ptr->deepMutate(); }
@@ -65,17 +65,6 @@ using MutableColumnPtr = IColumn::MutablePtr;
 
 using Columns = std::vector<ColumnPtr>;
 using MutableColumns = std::vector<MutableColumnPtr>;
-
-namespace cow {
-
-template <typename Tp> Tp::Ptr static_pointer_cast(const ColumnPtr &ptr) {
-    return Tp::static_pointer_cast(ptr);
-}
-
-template <typename Tp> Tp::MutablePtr static_pointer_cast(const MutableColumnPtr &ptr) {
-    return Tp::static_pointer_cast(ptr);
-}
-} // namespace cow
 
 template <typename Base, typename Derived, typename AncestorBase = Base>
 class ColumnFactory : public Base {
@@ -137,6 +126,26 @@ using ConcreteColumnPtr = ConcreteColumn::Ptr;
 using ConcreteColumnMutablePtr = ConcreteColumn::MutablePtr;
 using ConcreteColumnWrappedPtr = ConcreteColumn::DerivedWrappedPtr;
 
+template <typename T>
+class MFixedLengthColumnBase : public IColumn {
+public:
+    using ValueType = T;
+};
+
+template <typename T>
+class MFixedLengthColumn final
+    : public COWHelper<ColumnFactory<MFixedLengthColumnBase<T>, MFixedLengthColumn<T>>,
+                       MFixedLengthColumn<T>, IColumn> {
+    friend class COWHelper<ColumnFactory<MFixedLengthColumnBase<T>, MFixedLengthColumn<T>>, MFixedLengthColumn<T>, IColumn>;
+
+public:
+    using ValueType = T;
+    using SuperClass = COWHelper<ColumnFactory<MFixedLengthColumnBase<T>, MFixedLengthColumn<T>>,
+                                 MFixedLengthColumn<T>, IColumn>;
+    MFixedLengthColumn() = default;
+};
+using MNullColumn = MFixedLengthColumn<uint8_t>;
+
 class ConcreteColumn2 final
     : public COWHelper<ColumnFactory<IColumn, ConcreteColumn2>, ConcreteColumn2> {
 
@@ -171,6 +180,7 @@ class ConcreteColumn2 final
 
     void for_each_subcolumn(ColumnCallback callback) override {
         callback(_inner);
+        callback(_null_column);
     }
 
   public:
@@ -183,6 +193,7 @@ class ConcreteColumn2 final
 
   private:
     ConcreteColumnWrappedPtr _inner;
+    MNullColumn::DerivedWrappedPtr _null_column;
 };
 
 template <typename ColPtr>
@@ -372,12 +383,6 @@ TEST_F(ColumnTest, TestConcreteColumn2) {
         auto x = ConcreteColumn::create(1);
         ColumnPtr y = ConcreteColumn2::create(std::move(x));
     }
-}
-
-TEST_F(ColumnTest, TestCast) {
-    ColumnPtr x = ConcreteColumn::create(1);
-    ConcreteColumnPtr x1 = cow::static_pointer_cast<ConcreteColumn>(x);
-    TRACE_COW("x, x1", x, x1);
 }
 
 TEST_F(ColumnTest, TestClone) {

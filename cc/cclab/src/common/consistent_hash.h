@@ -4,6 +4,7 @@
 #include <set>
 #include <string>
 #include <map>
+#include <cstdint>
 
 class ConsistentHash {
 private:
