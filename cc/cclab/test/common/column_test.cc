@@ -27,9 +27,18 @@ class ColumnTest : public testing::Test {};
 
 using namespace std;
 
-class IColumn : public COW<IColumn> {
+#define DCHECK(condition)                                                                          \
+    do {                                                                                           \
+        if (!(condition)) {                                                                        \
+            std::cerr << "DCHECK failed: " #condition " in " << __FILE__ << " at " << __LINE__     \
+                      << std::endl;                                                                \
+            std::abort();                                                                          \
+        }                                                                                          \
+    } while (0) // 在调试模式下执行检查
+
+class IColumn : public Cow<IColumn> {
   private:
-    friend class COW<IColumn>;
+    friend class Cow<IColumn>;
 
   public:
     IColumn() { std::cerr << "IColumn constructor" << std::endl; }
@@ -45,22 +54,22 @@ class IColumn : public COW<IColumn> {
 
     /// If the column contains subcolumns (such as Array, Nullable, etc), do callback on them.
     /// Shallow: doesn't do recursive calls; don't do call for itself.
-    using ColumnCallback = std::function<void(WrappedPtr&)>;
+    using ColumnCallback = std::function<void(Ptr&)>;
     virtual void for_each_subcolumn(ColumnCallback) {}
 
     MutablePtr mutate() const&& {
         MutablePtr res = shallow_mutate();
-        // res->for_each_subcolumn(
-        //         [](WrappedPtr& subcolumn) { subcolumn = std::move(*subcolumn).mutate(); });
+        res->for_each_subcolumn(
+                [](Ptr& subcolumn) { subcolumn = std::move(*subcolumn).mutate(); });
         return res;
     }
 
     [[nodiscard]] static MutablePtr mutate(Ptr ptr) {
         MutablePtr res = ptr->shallow_mutate(); /// Now use_count is 2.
         ptr.reset();                           /// Reset use_count to 1.
-        // res->for_each_subcolumn([](WrappedPtr &subcolumn) {
-        //     subcolumn = IColumn::mutate(std::move(subcolumn).detach());
-        // });
+        res->for_each_subcolumn([](Ptr &subcolumn) {
+            subcolumn = IColumn::mutate(std::move(subcolumn));
+        });
         return res;
     }
 };
@@ -85,10 +94,10 @@ class ColumnFactory : public Base {
 
 // use ColumnFactory to create ConcreteColumn
 class ConcreteColumn final
-    : public COWHelper<ColumnFactory<IColumn, ConcreteColumn>, ConcreteColumn> {
+    : public CowFactory<ColumnFactory<IColumn, ConcreteColumn>, ConcreteColumn> {
 
   private:
-    friend class COWHelper<ColumnFactory<IColumn, ConcreteColumn>, ConcreteColumn>;
+    friend class CowFactory<ColumnFactory<IColumn, ConcreteColumn>, ConcreteColumn>;
 
     int data;
 
@@ -116,12 +125,11 @@ class ConcreteColumn final
 };
 using ConcreteColumnPtr = ConcreteColumn::Ptr;
 using ConcreteColumnMutablePtr = ConcreteColumn::MutablePtr;
-using ConcreteColumnWrappedPtr = ConcreteColumn::DerivedWrappedPtr;
 
 template <typename T>
 class MFixedLengthColumnBase
-    : public COWHelper<ColumnFactory<IColumn, MFixedLengthColumnBase<T>>, MFixedLengthColumnBase<T>> {
-    friend class COWHelper<ColumnFactory<IColumn, MFixedLengthColumnBase<T>>,
+    : public CowFactory<ColumnFactory<IColumn, MFixedLengthColumnBase<T>>, MFixedLengthColumnBase<T>> {
+    friend class CowFactory<ColumnFactory<IColumn, MFixedLengthColumnBase<T>>,
                            MFixedLengthColumnBase<T>>;
   public:
     using ValueType = T;
@@ -129,24 +137,24 @@ class MFixedLengthColumnBase
 
 template <typename T>
 class MFixedLengthColumn final
-    : public COWHelper<ColumnFactory<MFixedLengthColumnBase<T>, MFixedLengthColumn<T>>,
+    : public CowFactory<ColumnFactory<MFixedLengthColumnBase<T>, MFixedLengthColumn<T>>,
                        MFixedLengthColumn<T>, IColumn> {
-    friend class COWHelper<ColumnFactory<MFixedLengthColumnBase<T>, MFixedLengthColumn<T>>, MFixedLengthColumn<T>, IColumn>;
+    friend class CowFactory<ColumnFactory<MFixedLengthColumnBase<T>, MFixedLengthColumn<T>>, MFixedLengthColumn<T>, IColumn>;
 
 public:
     using ValueType = T;
-    using SuperClass = COWHelper<ColumnFactory<MFixedLengthColumnBase<T>, MFixedLengthColumn<T>>,
+    using SuperClass = CowFactory<ColumnFactory<MFixedLengthColumnBase<T>, MFixedLengthColumn<T>>,
                                  MFixedLengthColumn<T>, IColumn>;
     MFixedLengthColumn() = default;
 };
 using MNullColumn = MFixedLengthColumn<uint8_t>;
 
 class ConcreteColumn2 final
-    : public COWHelper<ColumnFactory<IColumn, ConcreteColumn2>, ConcreteColumn2> {
+    : public CowFactory<ColumnFactory<IColumn, ConcreteColumn2>, ConcreteColumn2> {
 
   private:
-    friend class COWHelper<ColumnFactory<IColumn, ConcreteColumn2>, ConcreteColumn2>;
-    using ConcreteColumnWrappedPtr = ConcreteColumn::WrappedPtr;
+    friend class CowFactory<ColumnFactory<IColumn, ConcreteColumn2>, ConcreteColumn2>;
+    using ConcreteColumnPtr = ConcreteColumn::Ptr;
 
     ConcreteColumn2(MutableColumnPtr &&ptr) {
         std::cerr << "ConcreteColumn2 constructor" << std::endl;
@@ -155,23 +163,24 @@ class ConcreteColumn2 final
 
     void _mock() {
         ColumnPtr x = ConcreteColumn::create(1);
-        ColumnPtr y = this->create(x->assume_mutable());
+        ColumnPtr y = this->create(x->as_mutable_ptr());
     }
 
     void for_each_subcolumn(ColumnCallback callback) override {
         callback(_inner);
-        // callback(_null_column);
-        MNullColumn::WrappedPtr null_column = MNullColumn::static_pointer_cast(std::move(_null_column).detach());
-        callback(null_column);
-        _null_column = MNullColumn::static_pointer_cast(std::move(null_column));
+        callback(_null_column);
+        // // callback(_null_column);
+        // MNullColumn::Ptr null_column = MNullColumn::static_pointer_cast(std::move(_null_column).detach());
+        // callback(null_column);
+        // _null_column = MNullColumn::static_pointer_cast(std::move(null_column));
     }
 
   public:
     int get() const override { return _inner->get(); }
     void set(int value) override { _inner->set(value); }
   private:
-    ConcreteColumnWrappedPtr _inner;
-    MNullColumn::DerivedWrappedPtr _null_column;
+    ConcreteColumnPtr _inner;
+    MNullColumn::Ptr _null_column;
 };
 
 template <typename ColPtr>
@@ -287,7 +296,7 @@ TEST_F(ColumnTest, TestAssumeMutable) {
         auto x = ConcreteColumn::create(1);
         std::cout << "before assume mutable x:" << x->get() << std::endl;
 
-        y = x->assume_mutable();
+        y = x->as_mutable_ptr();
         std::cout << "after assume mutable x:" << x->get() << std::endl;
     }
     std::cout << "y:" << y->get() << std::endl;
@@ -371,7 +380,7 @@ TEST_F(ColumnTest, TestColumnConvert) {
         std::cerr << "x: " << x->get() << std::endl;
         ConcreteColumnPtr x1 = ConcreteColumn::static_pointer_cast(x);
         TRACE_COW("x, x1", x, x1);
-        MutableColumnPtr mutable_col = x->assume_mutable();
+        MutableColumnPtr mutable_col = x->as_mutable_ptr();
         mutable_col->set(2);
         TRACE_COW("x, x1", x, x1);
     }
@@ -390,14 +399,14 @@ TEST_F(ColumnTest, TestColumnConvert) {
 TEST_F(ColumnTest, TestConcreteColumn2) {
     {
         ColumnPtr x = ConcreteColumn::create(1);
-        ColumnPtr y = ConcreteColumn2::create(x->assume_mutable());
+        ColumnPtr y = ConcreteColumn2::create(x->as_mutable_ptr());
     }
     {
         ColumnPtr y = ConcreteColumn2::create(ConcreteColumn::create(1));
     }
     {
         auto x = ConcreteColumn::create(1);
-        ColumnPtr y = ConcreteColumn2::create(x->assume_mutable());
+        ColumnPtr y = ConcreteColumn2::create(x->as_mutable_ptr());
     }
     {
         auto x = ConcreteColumn::create(1);
@@ -423,7 +432,7 @@ TEST_F(ColumnTest, TestClone) {
     ASSERT_TRUE(x->get() == 1 && cloned->get() == 3);
 }
 
-TEST_F(ColumnTest, TestCOW1) {
+TEST_F(ColumnTest, TestCow1) {
     ColumnPtr x = ConcreteColumn::create(1);
 
     // y1 is shadow copy of x, y1 and x are shared and have the same value
@@ -443,7 +452,7 @@ TEST_F(ColumnTest, TestCOW1) {
     ASSERT_TRUE(x.get() != y2.get());
 }
 
-TEST_F(ColumnTest, TestCOW2) {
+TEST_F(ColumnTest, TestCow2) {
     using IColumnPtr = const IColumn *;
     IColumnPtr x_ptr;
     IColumnPtr y_ptr;
