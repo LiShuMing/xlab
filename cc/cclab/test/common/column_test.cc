@@ -47,19 +47,20 @@ class IColumn : public COW<IColumn> {
     /// Shallow: doesn't do recursive calls; don't do call for itself.
     using ColumnCallback = std::function<void(WrappedPtr&)>;
     virtual void for_each_subcolumn(ColumnCallback) {}
+
     MutablePtr mutate() const&& {
         MutablePtr res = shallow_mutate();
-        res->for_each_subcolumn(
-                [](WrappedPtr& subcolumn) { subcolumn = std::move(*subcolumn).mutate(); });
+        // res->for_each_subcolumn(
+        //         [](WrappedPtr& subcolumn) { subcolumn = std::move(*subcolumn).mutate(); });
         return res;
     }
 
     [[nodiscard]] static MutablePtr mutate(Ptr ptr) {
         MutablePtr res = ptr->shallow_mutate(); /// Now use_count is 2.
         ptr.reset();                           /// Reset use_count to 1.
-        res->for_each_subcolumn([](WrappedPtr &subcolumn) {
-            subcolumn = IColumn::mutate(std::move(subcolumn).detach());
-        });
+        // res->for_each_subcolumn([](WrappedPtr &subcolumn) {
+        //     subcolumn = IColumn::mutate(std::move(subcolumn).detach());
+        // });
         return res;
     }
 };
@@ -81,19 +82,6 @@ class ColumnFactory : public Base {
 
     using AncestorBaseType = std::enable_if_t<std::is_base_of_v<AncestorBase, Base>, AncestorBase>;
 };
-
-// class ConcreteColumn final : public COWHelper<IColumn, ConcreteColumn> {
-//   private:
-//     friend class COWHelper<IColumn, ConcreteColumn>;
-
-//     int data;
-//     explicit ConcreteColumn(int data_) : data(data_) {}
-//     ConcreteColumn(const ConcreteColumn &) = default;
-
-//   public:
-//     int get() const override { return data; }
-//     void set(int value) override { data = value; }
-// };
 
 // use ColumnFactory to create ConcreteColumn
 class ConcreteColumn final
@@ -237,6 +225,56 @@ TEST_F(ColumnTest, TestMutate3) {
         TRACE_COW("x, y", x, y);
     }
 }
+
+TEST_F(ColumnTest, TestMutate4) {
+    ConcreteColumn::Ptr x = ConcreteColumn::create(1);
+    {
+        auto y = (std::move(*x)).mutate();
+        y->set(2);
+        std::cout << "x:" << x->get() << ", use_count:" << x->use_count() << std::endl;
+        std::cout << "y:" << y->get() << ", use_count:" << y->use_count() << std::endl;
+
+        auto z = (std::move(*x)).mutate();
+        z->set(3);
+        std::cout << "x:" << x->get() << ", use_count:" << x->use_count() << std::endl;
+        std::cout << "y:" << y->get() << ", use_count:" << y->use_count() << std::endl;
+        std::cout << "z:" << z->get() << ", use_count:" << z->use_count() << std::endl;
+    }
+}
+
+TEST_F(ColumnTest, TestMutate5) {
+    ConcreteColumn::MutablePtr x = ConcreteColumn::create(1);
+    {
+        auto y = (*std::move(x)).mutate();
+        y->set(2);
+        std::cout << "x:" << x->get() << ", use_count:" << x->use_count() << std::endl;
+        std::cout << "y:" << y->get() << ", use_count:" << y->use_count() << std::endl;
+
+        auto z = (*std::move(x)).mutate();
+        z->set(3);
+        std::cout << "x:" << x->get() << ", use_count:" << x->use_count() << std::endl;
+        std::cout << "y:" << y->get() << ", use_count:" << y->use_count() << std::endl;
+        std::cout << "z:" << z->get() << ", use_count:" << z->use_count() << std::endl;
+    }
+}
+
+
+TEST_F(ColumnTest, TestMutate6) {
+    const ConcreteColumn::Ptr x = ConcreteColumn::create(1);
+    {
+        auto y = (std::move(*x)).mutate();
+        y->set(2);
+        std::cout << "x:" << x->get() << ", use_count:" << x->use_count() << std::endl;
+        std::cout << "y:" << y->get() << ", use_count:" << y->use_count() << std::endl;
+
+        auto z = (std::move(*x)).mutate();
+        z->set(3);
+        std::cout << "x:" << x->get() << ", use_count:" << x->use_count() << std::endl;
+        std::cout << "y:" << y->get() << ", use_count:" << y->use_count() << std::endl;
+        std::cout << "z:" << z->get() << ", use_count:" << z->use_count() << std::endl;
+    }
+}
+
 
 TEST_F(ColumnTest, TestImmutablePtr) {
     ConcreteColumnPtr x = ConcreteColumn::create(1);

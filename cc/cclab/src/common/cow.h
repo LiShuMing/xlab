@@ -340,8 +340,10 @@ template <typename Derived> class COW {
   protected:
     MutablePtr shallow_mutate() const {
         if (this->use_count() > 1) {
+            std::cout << "[COW] trigger COW: " << this << ", use_count=" << this->use_count() << ", try to deep clone" << std::endl;
             return derived()->clone();
         } else {
+            std::cout << "[COW] trigger COW: " << this << ", use_count=" << this->use_count() << ", try to shadow clone" << std::endl;
             return assume_mutable();
         }
     }
