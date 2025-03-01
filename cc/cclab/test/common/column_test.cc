@@ -34,8 +34,7 @@ using namespace std;
                       << std::endl;                                                                \
             std::abort();                                                                          \
         }                                                                                          \
-    } while (0) // 在调试模式下执行检查
-
+    } while (0) 
 class IColumn : public Cow<IColumn> {
   private:
     friend class Cow<IColumn>;
@@ -50,7 +49,7 @@ class IColumn : public Cow<IColumn> {
     virtual void set(int value) {};
 
     // use reference to avoid copy
-    static MutablePtr cow(const Ptr &ptr) { return ptr->shallow_mutate(); }
+    static MutablePtr cow(const Ptr &ptr) { return ptr->try_mutate(); }
 
     /// If the column contains subcolumns (such as Array, Nullable, etc), do callback on them.
     /// Shallow: doesn't do recursive calls; don't do call for itself.
@@ -58,14 +57,14 @@ class IColumn : public Cow<IColumn> {
     virtual void for_each_subcolumn(ColumnCallback) {}
 
     MutablePtr mutate() const&& {
-        MutablePtr res = shallow_mutate();
+        MutablePtr res = try_mutate();
         res->for_each_subcolumn(
                 [](Ptr& subcolumn) { subcolumn = std::move(*subcolumn).mutate(); });
         return res;
     }
 
     [[nodiscard]] static MutablePtr mutate(Ptr ptr) {
-        MutablePtr res = ptr->shallow_mutate(); /// Now use_count is 2.
+        MutablePtr res = ptr->try_mutate(); /// Now use_count is 2.
         ptr.reset();                           /// Reset use_count to 1.
         res->for_each_subcolumn([](Ptr &subcolumn) {
             subcolumn = IColumn::mutate(std::move(subcolumn));
@@ -157,22 +156,19 @@ class ConcreteColumn2 final
     using ConcreteColumnPtr = ConcreteColumn::Ptr;
 
     ConcreteColumn2(MutableColumnPtr &&ptr) {
-        std::cerr << "ConcreteColumn2 constructor" << std::endl;
+        std::cerr << "ConcreteColumn2 move constructor" << std::endl;
         _inner = ConcreteColumn::static_pointer_cast(std::move(ptr));
     }
 
-    void _mock() {
-        ColumnPtr x = ConcreteColumn::create(1);
-        ColumnPtr y = this->create(x->as_mutable_ptr());
-    }
 
     void for_each_subcolumn(ColumnCallback callback) override {
-        callback(_inner);
-        callback(_null_column);
-        // // callback(_null_column);
-        // MNullColumn::Ptr null_column = MNullColumn::static_pointer_cast(std::move(_null_column).detach());
-        // callback(null_column);
-        // _null_column = MNullColumn::static_pointer_cast(std::move(null_column));
+        ColumnPtr inner_column;;
+        callback(inner_column);
+        _inner = ConcreteColumn::static_pointer_cast(std::move(inner_column));
+
+        ColumnPtr null_column;
+        callback(null_column);
+        _null_column = MNullColumn::static_pointer_cast(std::move(null_column));
     }
 
   public:
