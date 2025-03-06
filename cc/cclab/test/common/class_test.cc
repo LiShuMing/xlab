@@ -167,4 +167,41 @@ TEST_F(ClassTest, TestClass1) {
         print_data_names(data, names);
     }
 }
+
+class Base {
+    public:
+        Base() { std::cout << "Base constructor" << std::endl; }
+        virtual ~Base() { std::cout << "Base destructor" << std::endl; }
+        void print() { std::cout << "Base print" << std::endl; }
+};
+class Derived : public Base {
+    public:
+        Derived() { std::cout << "Derived constructor" << std::endl; }
+        ~Derived() { std::cout << "Derived destructor" << std::endl; }
+};
+
+// cannot use &, but can use
+// using Callback = std::function<void(std::shared_ptr<Base>&)>;
+using Callback = std::function<void(std::shared_ptr<Base>)>;
+
+class A {
+    public:
+        A() : _b(std::make_shared<Base>()), _d(std::make_shared<Derived>()) {}
+        void for_each_subcolumn(Callback callback) {
+            callback(_b);
+            callback(_d);
+        }
+    
+    private:
+        std::shared_ptr<Base> _b;
+        std::shared_ptr<Derived> _d;
+
+};
+TEST_F(ClassTest, TestBaseDerived) {
+    auto a = std::make_shared<A>();
+    a->for_each_subcolumn([](std::shared_ptr<Base> b) {
+        b->print();
+    });
+}
+
 } // namespace test
