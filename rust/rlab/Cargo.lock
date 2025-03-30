@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "my-first-lib"
+name = "rlab"
 version = "0.1.0"

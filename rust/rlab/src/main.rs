@@ -1,4 +1,6 @@
-use my_first_lib::add;
+mod common;
+
+use common::lib::add;
 use std::borrow::Cow;
 
 const THRESHOLD: i32 = 100;
