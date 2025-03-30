@@ -197,11 +197,60 @@ class A {
         std::shared_ptr<Derived> _d;
 
 };
+
 TEST_F(ClassTest, TestBaseDerived) {
     auto a = std::make_shared<A>();
     a->for_each_subcolumn([](std::shared_ptr<Base> b) {
         b->print();
     });
+}
+
+using VDataPtr = std::shared_ptr<std::vector<int>>;
+void test_func1(VDataPtr&& data, size_t size) {
+    // fix
+    std::cout << "size:" << size << ", data size:" << data->size() << std::endl;
+}
+
+class TestClass5 {
+    public:
+        TestClass5(VDataPtr&& data) : _data(std::move(data)) {}
+        void print() const&& {
+            std::cout << "TestClass5 print" << std::endl;
+        }
+
+        const VDataPtr& get_data() const {
+            return _data;
+        }
+
+        VDataPtr mutate() const&& {
+            return std::make_shared<vector<int>>(std::move(*_data));
+        }
+    private:
+        VDataPtr _data;
+};
+
+TEST_F(ClassTest, TestSharedPtrMove1) {
+    std::vector<int> data = {1, 2, 3};
+    test_func1(std::make_shared<std::vector<int>>(std::move(data)), data.size());
+} 
+
+TEST_F(ClassTest, TestSharedPtrMove2) {
+    VDataPtr data = std::make_shared<std::vector<int>>(std::vector<int>{1, 2, 3});
+    // VDataPtr data = std::make_shared<std::vector<int>>({1, 2, 3});
+    std::shared_ptr<TestClass5> test1 = std::make_shared<TestClass5>(std::move(data));
+    auto data2 = (std::move(*test1)).mutate();
+
+    // data
+    auto v1 = *(test1->get_data());
+    for (const auto &v : v1) {
+        std::cout << v << std::endl;
+    }
+
+    // data2
+    auto v2 = *data2;
+    for (const auto &v : v2) {
+        std::cout << v << std::endl;
+    }
 }
 
 } // namespace test

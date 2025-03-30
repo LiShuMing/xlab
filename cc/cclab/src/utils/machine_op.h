@@ -28,7 +28,6 @@ class MachineOp {
     };
     static bool obtain_mem_info(mem_info *mi);
 
-    // 获取所有网卡名称
     static bool net_interfaces(std::set<std::string> *ifs);
 
     /**

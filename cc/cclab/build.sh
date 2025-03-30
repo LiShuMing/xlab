@@ -24,6 +24,11 @@ else
     exit 1
 fi
 
+echo "Compiler: $CC"
+echo "C++ Compiler: $CXX"
+echo "GCC_HOME: $GCC_HOME"
+echo "GCC_VERSION: $GCC_VERSION"
+
 BUILD_THREAD=12
 BUILD_TYPE=ASAN
 # BUILD_TYPE=RELEASE
