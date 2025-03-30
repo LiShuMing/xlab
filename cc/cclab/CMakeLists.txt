@@ -136,7 +136,7 @@ set(CMAKE_BUILD_TYPE RELEASE)
 # thirdparty
 add_subdirectory(../thirdparty/glog glog)
 add_subdirectory(../thirdparty/googletest googletest)
-add_subdirectory(../thirdparty/robin-hood-hashing robin-hood-hashing)
+# add_subdirectory(../thirdparty/robin-hood-hashing robin-hood-hashing)
 add_subdirectory(../thirdparty/abseil-cpp abseil-cpp)
 #add_subdirectory(../thirdparty/brpc brpc)
 #add_subdirectory(thirdparty/gperftools)

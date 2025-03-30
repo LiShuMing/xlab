@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Hash.h"
-#include "common/hash/robin_hood.h"
+#include "common/map/robin_hood_map.h"
 
 static const char* MapName = "robin_hood::unordered_flat_map";
 

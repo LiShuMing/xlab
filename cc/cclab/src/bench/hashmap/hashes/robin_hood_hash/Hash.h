@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/hash/robin_hood.h"
+#include "common/map/robin_hood_map.h"
 
 static const char* HashName = "robin_hood::hash";
 
