@@ -147,9 +147,3 @@ set(CMAKE_BUILD_TYPE ${PARENT_BUILD_TYPE})
 
 add_subdirectory(src)
 add_subdirectory(test)
-
-# only build benchmark in release mode
-if (${CMAKE_BUILD_TYPE} STREQUAL "RELEASE")
-    add_subdirectory(../thirdparty/benchmark benchmark)
-    add_subdirectory(bench)
-endif()
