@@ -190,3 +190,6 @@
 [submodule "cc/thirdparty/Clickhouse"]
 	path = cc/thirdparty/Clickhouse
 	url = git@github.com:ClickHouse/ClickHouse.git
+[submodule "cc/thirdparty/btop"]
+	path = cc/thirdparty/btop
+	url = git@github.com:aristocratos/btop.git

@@ -81,11 +81,13 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     # Use additional command line flag `-ftime-trace` then building your code with Clang 9+. Compiler will produce `.json` files next to object files. 
     # set(CXX_COMMON_FLAGS "${CXX_COMMON_FLAGS} -ftime-trace")
 endif()
+
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     add_compile_options (-fdiagnostics-color=always)
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     add_compile_options (-fcolor-diagnostics)
 endif ()
+# add_compile_options (-fmodules-ts)
 
 #SET(CXX_FLAGS_UBSAN "${CXX_FLAGS_UBSAN} -fno-sanitize=alignment,function,vptr,float-divide-by-zero,float-cast-overflow")
 string(TOUPPER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE)

@@ -5,7 +5,6 @@
 
 int main(int argc, char* argv[]) {
     pthread_t thread = pthread_self();
-
     for (int cpu_id = 0; cpu_id < CPU_SETSIZE; cpu_id++) {
         cpu_set_t cpuset;
         CPU_ZERO(&cpuset);
@@ -25,19 +24,23 @@ int main(int argc, char* argv[]) {
         }
 
         std::cout << "Testing cpu(" << cpu_id << ")" << std::endl;
-
+        // volatile int64_t cnt = 0;
         int64_t cnt = 0;
         auto start = std::chrono::steady_clock::now();
 
         /*
          * !!! Please use `-O0` to compile this source file, otherwise the following loop maybe optimized out !!!
          */
+        // while (cnt <= 1_000_000_000L) {
         while (cnt <= 1000000000L) {
+            __asm__ volatile("" : "+r"(cnt));  // 空汇编指令，阻止优化
             cnt++;
         }
         auto end = std::chrono::steady_clock::now();
 
-        std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+        std::cout << "cost:"
+                  << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
+                  << "(ms), result:" << cnt << std::endl;
     }
 
     return 0;
