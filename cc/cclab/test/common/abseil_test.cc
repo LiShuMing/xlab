@@ -14,6 +14,7 @@
 #include "absl/container/flat_hash_set.h"
 #include "absl/container/flat_hash_map.h"
 #include "absl/container/node_hash_map.h"
+#include "absl/strings/str_join.h"
 
 using namespace std;
 
@@ -22,7 +23,7 @@ namespace test {
 // Basic Test
 class AbseilTest : public testing::Test {};
 
-TEST_F(AbseilTest, assertion) {
+TEST_F(AbseilTest, FlatHashMap1) {
     absl::flat_hash_set<std::string> set1;
     set1.insert("a");
     set1.insert("a");
@@ -36,6 +37,12 @@ TEST_F(AbseilTest, assertion) {
     ASSERT_EQ(iter->second, "a");
 }
 
+TEST_F(AbseilTest, String) {
+    auto strs = {"a", "b", "c"};
+    auto result = absl::StrJoin(strs, ",");
+    ASSERT_EQ(result, "a,b,c");
+    // LOG(INFO) << "result: " << result;
+}
 } // namespace test
 
 int main(int argc, char** argv) {

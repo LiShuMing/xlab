@@ -1,27 +1,32 @@
 #!/usr/bin/env bash
 if [ ! $GCC_HOME ];then
     echo "Not Found GCC_HOME using default GCC"
+    if command -v clang-19 >/dev/null 2>&1; then
+        CC="clang-19"
+        CXX="clang++-19"
+        echo "Using clang for compilation."
+    elif command -v clang >/dev/null 2>&1; then
+        CC="clang"
+        CXX="clang++"
+        echo "Using clang for compilation."
+    elif command -v gcc >/dev/null 2>&1; then
+        CC="gcc"
+        CXX="g++"
+        echo "Clang not found. Using gcc instead."
+        GCC_VERSION=$(gcc --version | grep -oP '\d+\.\d+\.\d+')
+        GCC_HOME=$(dirname $(dirname $(which gcc)))
+        echo "GCC_HOME: $GCC_HOME"
+        echo "GCC_VERSION: $GCC_VERSION"
+        echo "Using GCC_HOME: $GCC_HOME"
+    else
+        echo "Error: Neither clang nor gcc is available on this system."
+        exit 1
+    fi
 else
     export CC=$GCC_HOME/bin/gcc
     export CXX=$GCC_HOME/bin/g++
     export PATH=$GCC_HOME/bin:$PATH
-fi
-
-if command -v clang-19 >/dev/null 2>&1; then
-    CC="clang-19"
-    CXX="clang++-19"
-    echo "Using clang for compilation."
-elif command -v clang >/dev/null 2>&1; then
-    CC="clang"
-    CXX="clang++"
-    echo "Using clang for compilation."
-elif command -v gcc >/dev/null 2>&1; then
-    CC="gcc"
-    CXX="g++"
-    echo "Clang not found. Using gcc instead."
-else
-    echo "Error: Neither clang nor gcc is available on this system."
-    exit 1
+    GCC_VERSION=$(cc --version | grep -oP '\d+\.\d+\.\d+')
 fi
 
 echo "Compiler: $CC"

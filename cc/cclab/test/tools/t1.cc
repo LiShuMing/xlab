@@ -3,21 +3,16 @@
 #include <functional>
 #include <iostream>
 #include <type_traits>
-
-
 template <typename T, template <typename...> class Z>
 struct is_specialization_of : std::false_type {};
-
 template <typename... Args, template <typename...> class Z>
 struct is_specialization_of<Z<Args...>, Z> : std::true_type {};
 
 template <typename T, template <typename...> class Z>
 concept specialization_of = is_specialization_of<T, Z>::value;
-
 template <typename T> struct chain {
     T wrapped_value;
 };
-
 template <typename L, typename R, typename Op> class binary_expr {
     L lhs;
     R rhs;

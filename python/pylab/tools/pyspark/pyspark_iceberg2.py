@@ -14,7 +14,7 @@ from pyspark.sql.types import *
 
 catalog_name = "local"
 warehouse_path = f"./tmp/iceberg"
-target_iceberg_table = f"{catalog_name}.sql_test_db.iceberg_lineitem_utc_1000"
+target_iceberg_table = f"{catalog_name}.sql_test_db.test_datetime_partitioned_table_with_null"
 
 def get_spark_session():
     spark = SparkSession.builder \
@@ -143,10 +143,109 @@ def create_table_and_generate_data(spark: SparkSession, year: int, is_drop_table
     GROUP BY date_trunc('year', l_shipdate)
     """).show()
 
-if __name__ == "__main__":
+def generate_1000_partition_tables():
     # create spark session
     spark = get_spark_session()
     for year in [2021, 2022, 2023]:
         is_drop_table = (year == 2021)
         create_table_and_generate_data(spark, year, is_drop_table)
     spark.stop()
+
+def generate_data_with_null(year: int):
+    start_date = datetime(year, 1, 1)  # 数据起始日期
+    end_date = datetime(year, 12, 31)  # 数据结束日期
+    add_days = 10
+    data = []
+    # for i in range(0, add_days):  
+    #     ship_date = None
+    #     commit_date = start_date + timedelta(days=i) + timedelta(days=random.randint(1, 10))
+    #     receipt_date = commit_date + timedelta(days=random.randint(1, 5))
+    #     data.append((
+    #         random.randint(1, 1000000),   # l_orderkey
+    #         random.randint(1, 100000),    # l_partkey
+    #         random.randint(1, 50000),     # l_suppkey
+    #         random.randint(1, 10),        # l_linenumber
+    #         Decimal(round(random.uniform(1, 100), 2)),  # l_quantity
+    #         Decimal(round(random.uniform(10, 1000), 2)),  # l_extendedprice
+    #         Decimal(round(random.uniform(0, 0.1), 2)),   # l_discount
+    #         Decimal(round(random.uniform(0, 0.2), 2)),   # l_tax
+    #         random.choice(['A', 'B', 'C']),     # l_returnflag
+    #         random.choice(['O', 'F']),          # l_linestatus
+    #         None,                          # l_shipdate
+    #         commit_date,                        # l_commitdate
+    #         receipt_date,                       # l_receiptdate
+    #         random.choice(['DELIVER IN PERSON', 'COLLECT FROM STORE']),  # l_shipinstruct
+    #         random.choice(['AIR', 'RAIL', 'TRUCK']),                    # l_shipmode
+    #         "Generated comment {}".format(i)    # l_comment
+    #     ))
+    for i in range(0, add_days):  
+        ship_date = start_date + timedelta(days=i)
+        if ship_date > end_date:
+            break
+        commit_date = ship_date + timedelta(days=random.randint(1, 10))
+        receipt_date = commit_date + timedelta(days=random.randint(1, 5))
+        data.append((
+            random.randint(1, 1000000),   # l_orderkey
+            random.randint(1, 100000),    # l_partkey
+            random.randint(1, 50000),     # l_suppkey
+            random.randint(1, 10),        # l_linenumber
+            Decimal(round(random.uniform(1, 100), 2)),  # l_quantity
+            Decimal(round(random.uniform(10, 1000), 2)),  # l_extendedprice
+            Decimal(round(random.uniform(0, 0.1), 2)),   # l_discount
+            Decimal(round(random.uniform(0, 0.2), 2)),   # l_tax
+            random.choice(['A', 'B', 'C']),     # l_returnflag
+            random.choice(['O', 'F']),          # l_linestatus
+            ship_date,                          # l_shipdate
+            commit_date,                        # l_commitdate
+            receipt_date,                       # l_receiptdate
+            random.choice(['DELIVER IN PERSON', 'COLLECT FROM STORE']),  # l_shipinstruct
+            random.choice(['AIR', 'RAIL', 'TRUCK']),                    # l_shipmode
+            "Generated comment {}".format(i)    # l_comment
+        ))
+    return data
+
+def create_and_generate_partition_tables_with_null(spark: SparkSession, year: int, is_drop_table: bool = True):
+    # create table
+    if is_drop_table:
+        spark.sql(f"DROP TABLE IF EXISTS {target_iceberg_table}")
+    create_table(spark, target_iceberg_table)
+
+    # generate data
+    schema = StructType([
+        StructField("l_orderkey", LongType(), False),
+        StructField("l_partkey", IntegerType(), False),
+        StructField("l_suppkey", IntegerType(), False),
+        StructField("l_linenumber", IntegerType(), False),
+        StructField("l_quantity", DecimalType(15, 2), False),
+        StructField("l_extendedprice", DecimalType(15, 2), False),
+        StructField("l_discount", DecimalType(15, 2), False),
+        StructField("l_tax", DecimalType(15, 2), False),
+        StructField("l_returnflag", StringType(), False),
+        StructField("l_linestatus", StringType(), False),
+        StructField("l_shipdate", TimestampType(), False),
+        StructField("l_commitdate", TimestampType(), False),
+        StructField("l_receiptdate", TimestampType(), False),
+        StructField("l_shipinstruct", StringType(), False),
+        StructField("l_shipmode", StringType(), False),
+        StructField("l_comment", StringType(), False)
+    ])
+
+    data = generate_data_with_null(year)
+    # write table into iceberg
+    write_data(spark, data, schema, target_iceberg_table)
+
+    spark.sql(f"""
+    SELECT date_trunc('year', l_shipdate), COUNT(*) AS count FROM {target_iceberg_table} 
+    GROUP BY date_trunc('year', l_shipdate)
+    """).show()
+
+def generate_partition_tables_with_null():
+    # create spark session
+    spark = get_spark_session()
+    create_and_generate_partition_tables_with_null(spark, 2000, True)
+    spark.stop() 
+
+if __name__ == "__main__":
+    # create spark session
+    # generate_1000_partition_tables()
+    generate_partition_tables_with_null()
