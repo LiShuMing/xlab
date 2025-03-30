@@ -1,6 +1,5 @@
 mod common;
 
-use common::lib::add;
 use std::borrow::Cow;
 
 const THRESHOLD: i32 = 100;
@@ -40,8 +39,6 @@ fn main() {
     println!("add_one(1):{}", add_one(1));
     // Call a function from the library
     println!("Going to call libary function");
-    let result = add(1, 2);
-    println!("result:{}", result);
 
     // No clone occurs because `input` doesn't need to be mutated.
     let slice = [0, 1, 2];
