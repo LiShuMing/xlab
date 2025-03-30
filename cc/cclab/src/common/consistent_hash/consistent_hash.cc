@@ -1,4 +1,4 @@
-#include "common/consistent_hash.h"
+#include "common/consistent_hash/consistent_hash.h"
 
 #include <iostream>
 #include <map>

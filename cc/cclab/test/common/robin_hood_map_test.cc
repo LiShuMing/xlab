@@ -13,7 +13,7 @@
 
 #include "utils/foo.h"
 
-#include "common/robin_hood_map.h"
+#include "common/map/robin_hood_map.h"
 
 using namespace std;
 

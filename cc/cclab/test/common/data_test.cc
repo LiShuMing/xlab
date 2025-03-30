@@ -1,3 +1,7 @@
+#include <gtest/gtest.h>
+
+#include <iostream>
+#include <chrono>
 #include <atomic>
 #include <chrono>
 #include <condition_variable>
@@ -13,7 +17,13 @@
 #include <immintrin.h>
 #include <x86intrin.h>
 
+
+namespace test {
+
 using namespace std;
+using namespace std::chrono;
+
+class DataTest : public testing::Test {};
 
 #define N_THREAD 1000
 
@@ -111,24 +121,24 @@ inline void print_mm256(__m256i& v) {
 }
 
 void test3() {
-	// __m256i t = _mm256_set_epi64x(1, 2, 3, 4);
-	// print_mm256<long>(t);
-	// //auto t1 = _mm256_set1_epi64x(0xBF);
-	// auto t1 = _mm256_set1_epi8(0xBF);
-	// print_mm256<long>(t1);
+	__m256i t = _mm256_set_epi64x(1, 2, 3, 4);
+	print_mm256<long>(t);
+	//auto t1 = _mm256_set1_epi64x(0xBF);
+	auto t1 = _mm256_set1_epi8(0xBF);
+	print_mm256<long>(t1);
 
-	// vector<int> v1{1, 2, 3};
-	// vector<int> v2{1, 2, 3};
-	// vector<int> v3{1, 3, 2};
-	// cout <<"v1 ==v2:"<< (v1 == v2)<<std::endl;
-	// cout <<"v1 ==v3:"<< (v1 == v3)<<std::endl;
+	vector<int> v1{1, 2, 3};
+	vector<int> v2{1, 2, 3};
+	vector<int> v3{1, 3, 2};
+	cout <<"v1 ==v2:"<< (v1 == v2)<<std::endl;
+	cout <<"v1 ==v3:"<< (v1 == v3)<<std::endl;
 }
 
 void test4() {
 	uint8_t* a = new uint8_t[10];
-	uint8_t* b = a + 0;
-	uint8_t* c = a + 3;
-	uint8_t* d = a + 9;
+	// uint8_t* b = a + 0;
+	// uint8_t* c = a + 3;
+	// uint8_t* d = a + 9;
 	// delete b;
 	// delete c;
 	// delete d;
@@ -187,7 +197,6 @@ struct D {
 
 };
 	
-
 template <typename T>
 struct D1: public D<T>, public Base<T, D1<T>> {
 	void func() {
@@ -207,43 +216,72 @@ void func(std::vector<int> a, int c) {
 	std::cout << "aa's size:" << aa.size() << ", c:" << c << std::endl;
 }
 
-//int main() {
-//	//test4();
-//	//test5();
-//	//AA<int> aa1;
-//	//std::cout<<"aa1:" << aa1.func_a()<<std::endl;
-//
-//	//D1<int> d;
-//	//d.drived_func();
-//	//DD1<int> dd;
-//	//dd.drived_func();
-//	//
-//	std::vector<int> a{1, 2, 3};
-//	func(a, 1);
-//	func(a, 1);
-//	func(a, 1);
-//	func(a, 1);
-//	func(std::move(a), 1);
-//	func(std::move(a), 1);
-//
-//	std::shared_ptr<int> sa = nullptr;
-//	std::cout<< "is null:"  << int(sa != nullptr);
-//	std::cout<< "is null:"  << int(sa == nullptr);
-//
-//	sa = std::make_shared<int>(1);
-//	std::cout<< "is null:"  << int(sa != nullptr) << std::endl;;
-//	sa.reset();
-//	std::cout<< "is null:"  << int(sa != nullptr) << std::endl;;
-//	std::cout<< "is null:"  << int(!sa) << std::endl;;
-//
-//	static auto ssa = std::make_shared<int>(1);
-//	auto ssa1 = std::move(ssa);
-//	std::cout<< "ssa is null:"  << int(ssa != nullptr) << std::endl;;
-//	auto ssa2 = std::move(ssa);
-//	std::cout<< "ssa is null:"  << int(ssa != nullptr) << std::endl;;
-//	ssa2.reset();
-//	std::cout<< "ssa is null:"  << int(ssa != nullptr) << std::endl;;
-//
-//	test2();
-//}
+// 使用volatile指针防止编译器的优化
+milliseconds test_duration(volatile int *ptr) {
+    auto start = steady_clock::now();
+    for (unsigned i = 0; i < 100'000'000; ++i) {
+        ++(*ptr);
+    }
+    auto end = steady_clock::now();
+    return duration_cast<milliseconds>(end - start);
+}
 
+TEST_F(DataTest, TestBasic1) {
+    int raw[2] = {0, 0};
+    {
+        int *ptr = raw;
+
+        cout << "address of aligned pointer: " << (void *)ptr << endl;
+        cout << "aligned access: " << test_duration(ptr).count() << "ms" << endl;
+        *ptr = 0;
+    }
+    {
+        int *ptr = (int *)(((char *)raw) + 1);
+        cout << "address of unaligned pointer: " << (void *)ptr << endl;
+        cout << "unaligned access: " << test_duration(ptr).count() << "ms" << endl;
+        *ptr = 0;
+    }
+    cin.get();
+}
+
+TEST_F(DataTest, TestBasic2) {
+	//test4();
+	//test5();
+	//AA<int> aa1;
+	//std::cout<<"aa1:" << aa1.func_a()<<std::endl;
+
+	//D1<int> d;
+	//d.drived_func();
+	//DD1<int> dd;
+	//dd.drived_func();
+	//
+	std::vector<int> a{1, 2, 3};
+	func(a, 1);
+	func(a, 1);
+	func(a, 1);
+	func(a, 1);
+	func(std::move(a), 1);
+	func(std::move(a), 1);
+
+	std::shared_ptr<int> sa = nullptr;
+	std::cout<< "is null:"  << int(sa != nullptr);
+	std::cout<< "is null:"  << int(sa == nullptr);
+
+	sa = std::make_shared<int>(1);
+	std::cout<< "is null:"  << int(sa != nullptr) << std::endl;;
+	sa.reset();
+	std::cout<< "is null:"  << int(sa != nullptr) << std::endl;;
+	std::cout<< "is null:"  << int(!sa) << std::endl;;
+
+	static auto ssa = std::make_shared<int>(1);
+	auto ssa1 = std::move(ssa);
+	std::cout<< "ssa is null:"  << int(ssa != nullptr) << std::endl;;
+	auto ssa2 = std::move(ssa);
+	std::cout<< "ssa is null:"  << int(ssa != nullptr) << std::endl;;
+	ssa2.reset();
+	std::cout<< "ssa is null:"  << int(ssa != nullptr) << std::endl;;
+
+	test2();
+}
+
+} // namespace test

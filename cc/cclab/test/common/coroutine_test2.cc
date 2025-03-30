@@ -11,7 +11,6 @@
 #include <iostream>
 #include <coroutine>
 
-
 struct Task {
     struct promise_type {
         Task get_return_object() {

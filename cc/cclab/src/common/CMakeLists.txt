@@ -1,7 +1,7 @@
 message(STATUS "link_libs=${link_libs}")
 
 add_library(common
-   consistent_hash.cc
+   consistent_hash/consistent_hash.cc
    skiplist/SkipList.cc
    btree/bplustree.cc
 )

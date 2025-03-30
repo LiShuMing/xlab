@@ -1,6 +1,6 @@
 
 #include <gtest/gtest.h>
-#include "common/consistent_hash.h"
+#include "common/consistent_hash/consistent_hash.h"
 
 #include <array>
 #include <chrono>
