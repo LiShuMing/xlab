@@ -193,3 +193,6 @@
 [submodule "cc/thirdparty/btop"]
 	path = cc/thirdparty/btop
 	url = git@github.com:aristocratos/btop.git
+[submodule "cc/thirdparty/leveldb"]
+	path = cc/thirdparty/leveldb
+	url = git@github.com:google/leveldb.git

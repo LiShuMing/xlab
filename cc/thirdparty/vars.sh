@@ -1,6 +1,4 @@
 #!/bin/bash
-# shellcheck disable=2034
-
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -20,8 +18,19 @@
 
 ############################################################
 # You may have to set variables bellow,
-# which are used for compiling thirdparties and palo itself.
+# which are used for compiling thirdparties and starrocks itself.
 ############################################################
+
+# --job param for *make*
+# support macos
+if [[ $(uname) == "Darwin" ]]; then
+    default_parallel=$[$(sysctl -n hw.physicalcpu)/4+1]
+else
+    default_parallel=$[$(nproc)/4+1]
+fi
+
+# use the value if $PARALEL is already set, otherwise use $default_parallel
+PARALLEL=${PARALLEL:-$default_parallel}
 
 ###################################################
 # DO NOT change variables bellow unless you known
@@ -29,55 +38,75 @@
 ###################################################
 
 # thirdparties will be downloaded and unpacked here
-export TP_SOURCE_DIR="${TP_DIR:-.}/src"
+export TP_SOURCE_DIR=$TP_DIR/src
 
 # thirdparties will be installed to here
-export TP_INSTALL_DIR="${TP_DIR:-.}/installed"
+export TP_INSTALL_DIR=$TP_DIR/installed
 
 # patches for all thirdparties
-export TP_PATCH_DIR="${TP_DIR:-.}/patches"
+export TP_PATCH_DIR=$TP_DIR/patches
 
 # header files of all thirdparties will be intalled to here
-export TP_INCLUDE_DIR="${TP_INSTALL_DIR}/include"
+export TP_INCLUDE_DIR=$TP_INSTALL_DIR/include
 
 # libraries of all thirdparties will be intalled to here
-export TP_LIB_DIR="${TP_INSTALL_DIR}/lib"
+export TP_LIB_DIR=$TP_INSTALL_DIR/lib
 
 # all java libraries will be unpacked to here
-export TP_JAR_DIR="${TP_INSTALL_DIR}/lib/jar"
-
-# source of all dependencies, default unuse it
-# export REPOSITORY_URL=
+export TP_JAR_DIR=$TP_INSTALL_DIR/lib/jar
 
 #####################################################
-# Download url, filename and unpaced filename
+# Download url, filename and unpacked filename
 # of all thirdparties
 #####################################################
 
+# Definitions for architecture-related thirdparty
+MACHINE_TYPE=$(uname -m)
+# handle mac m1 platform, change arm64 to aarch64
+if [[ "${MACHINE_TYPE}" == "arm64" ]]; then
+    MACHINE_TYPE="aarch64"
+fi
+
+# VARS_TARGET=vars-${MACHINE_TYPE}.sh
+
+# if [ ! -f ${TP_DIR}/${VARS_TARGET} ]; then
+#     echo "${VARS_TARGET} is missing".
+#     exit 1
+# fi
+# . ${TP_DIR}/${VARS_TARGET}
+
+# if [ -f /etc/lsb-release ]; then
+#     source /etc/lsb-release
+#     if [[ $DISTRIB_ID = "Ubuntu" && $DISTRIB_RELEASE =~ 22.* && -f ${TP_DIR}/vars-ubuntu22-${MACHINE_TYPE}.sh ]]; then
+#         . ${TP_DIR}/vars-ubuntu22-${MACHINE_TYPE}.sh
+#     fi
+# fi
+
 # libevent
-LIBEVENT_DOWNLOAD="https://github.com/libevent/libevent/archive/release-2.1.12-stable.tar.gz"
-LIBEVENT_NAME=libevent-release-2.1.12-stable.tar.gz
-LIBEVENT_SOURCE=libevent-release-2.1.12-stable
-LIBEVENT_MD5SUM="0d5a27436bf7ff8253420c8cf09f47ca"
+# the last release version of libevent is 2.1.8, which was released on 26 Jan 2017, that is too old.
+# so we use the master version of libevent, which is downloaded on 22 Jun 2018, with commit 24236aed01798303745470e6c498bf606e88724a
+LIBEVENT_DOWNLOAD="https://github.com/libevent/libevent/archive/24236ae.zip"
+LIBEVENT_NAME=libevent-24236aed01798303745470e6c498bf606e88724a.zip
+LIBEVENT_SOURCE=libevent-24236aed01798303745470e6c498bf606e88724a
+LIBEVENT_MD5SUM="c6c4e7614f03754b8c67a17f68177649"
 
 # openssl
-OPENSSL_DOWNLOAD="https://github.com/openssl/openssl/archive/OpenSSL_1_1_1s.tar.gz"
-OPENSSL_NAME=openssl-OpenSSL_1_1_1s.tar.gz
-OPENSSL_SOURCE=openssl-OpenSSL_1_1_1s
-OPENSSL_MD5SUM="7e79a7560dee77c0758baa33c61af4b4"
+OPENSSL_DOWNLOAD="https://github.com/openssl/openssl/archive/OpenSSL_1_1_1m.tar.gz"
+OPENSSL_NAME=openssl-OpenSSL_1_1_1m.tar.gz
+OPENSSL_SOURCE=openssl-OpenSSL_1_1_1m
+OPENSSL_MD5SUM="710c2368d28f1a25ab92e25b5b9b11ec"
 
 # thrift
-THRIFT_DOWNLOAD="http://archive.apache.org/dist/thrift/0.16.0/thrift-0.16.0.tar.gz"
-THRIFT_NAME=thrift-0.16.0.tar.gz
-THRIFT_SOURCE=thrift-0.16.0
-THRIFT_MD5SUM="44cf1b54b4ec1890576c85804acfa637"
+THRIFT_DOWNLOAD="http://archive.apache.org/dist/thrift/0.20.0/thrift-0.20.0.tar.gz"
+THRIFT_NAME=thrift-0.20.0.tar.gz
+THRIFT_SOURCE=thrift-0.20.0
+THRIFT_MD5SUM="aadebde599e1f5235acd3c730721b873"
 
 # protobuf
-# brpc is not yet compatible with protobuf >= 22
-PROTOBUF_DOWNLOAD="https://github.com/protocolbuffers/protobuf/releases/download/v21.11/protobuf-all-21.11.tar.gz"
-PROTOBUF_NAME="protobuf-all-21.11.tar.gz"
-PROTOBUF_SOURCE=protobuf-21.11
-PROTOBUF_MD5SUM="b3b104f0374802e1add5d5d7a5a845ac"
+PROTOBUF_DOWNLOAD="https://github.com/google/protobuf/archive/v3.14.0.tar.gz"
+PROTOBUF_NAME=protobuf-3.14.0.tar.gz
+PROTOBUF_SOURCE=protobuf-3.14.0
+PROTOBUF_MD5SUM="0c9d2a96f3656ba7ef3b23b533fb6170"
 
 # gflags
 GFLAGS_DOWNLOAD="https://github.com/gflags/gflags/archive/v2.2.2.tar.gz"
@@ -86,16 +115,16 @@ GFLAGS_SOURCE=gflags-2.2.2
 GFLAGS_MD5SUM="1a865b93bacfa963201af3f75b7bd64c"
 
 # glog
-GLOG_DOWNLOAD="https://github.com/google/glog/archive/refs/tags/v0.6.0.tar.gz"
-GLOG_NAME="glog-v0.6.0.tar.gz"
-GLOG_SOURCE=glog-0.6.0
-GLOG_MD5SUM="c98a6068bc9b8ad9cebaca625ca73aa2"
+GLOG_DOWNLOAD="https://github.com/google/glog/archive/v0.7.1.tar.gz"
+GLOG_NAME=glog-0.7.1.tar.gz
+GLOG_SOURCE=glog-0.7.1
+GLOG_MD5SUM="128e2995cc33d794ff24f785a3060346"
 
 # gtest
-GTEST_DOWNLOAD="https://github.com/google/googletest/archive/release-1.11.0.tar.gz"
-GTEST_NAME=googletest-release-1.11.0.tar.gz
-GTEST_SOURCE=googletest-release-1.11.0
-GTEST_MD5SUM="e8a8df240b6938bb6384155d4c37d937"
+GTEST_DOWNLOAD="https://github.com/google/googletest/archive/release-1.10.0.tar.gz"
+GTEST_NAME=googletest-release-1.10.0.tar.gz
+GTEST_SOURCE=googletest-release-1.10.0
+GTEST_MD5SUM="ecd1fa65e7de707cd5c00bdac56022cd"
 
 # snappy
 SNAPPY_DOWNLOAD="https://github.com/google/snappy/archive/1.1.8.tar.gz"
@@ -104,16 +133,16 @@ SNAPPY_SOURCE=snappy-1.1.8
 SNAPPY_MD5SUM="70e48cba7fecf289153d009791c9977f"
 
 # gperftools
-GPERFTOOLS_DOWNLOAD="https://github.com/gperftools/gperftools/releases/download/gperftools-2.10/gperftools-2.10.tar.gz"
-GPERFTOOLS_NAME=gperftools-2.10.tar.gz
-GPERFTOOLS_SOURCE=gperftools-2.10
-GPERFTOOLS_MD5SUM="62bf6c76ba855ed580de5e139bd2a483"
+GPERFTOOLS_DOWNLOAD="https://github.com/gperftools/gperftools/archive/gperftools-2.7.tar.gz"
+GPERFTOOLS_NAME=gperftools-2.7.tar.gz
+GPERFTOOLS_SOURCE=gperftools-gperftools-2.7
+GPERFTOOLS_MD5SUM="797e7b7f6663288e2b90ab664861c61a"
 
 # zlib
-ZLIB_DOWNLOAD="https://sourceforge.net/projects/libpng/files/zlib/1.2.11/zlib-1.2.11.tar.gz"
+ZLIB_DOWNLOAD="https://github.com/madler/zlib/archive/refs/tags/v1.2.11.tar.gz"
 ZLIB_NAME=zlib-1.2.11.tar.gz
 ZLIB_SOURCE=zlib-1.2.11
-ZLIB_MD5SUM="1c9f62f0778697a09d36121ead88e08e"
+ZLIB_MD5SUM="0095d2d2d1f3442ce1318336637b695f"
 
 # lz4
 LZ4_DOWNLOAD="https://github.com/lz4/lz4/archive/v1.9.4.tar.gz"
@@ -127,105 +156,83 @@ BZIP_NAME=bzip2-1.0.8.tar.gz
 BZIP_SOURCE=bzip2-1.0.8
 BZIP_MD5SUM="67e051268d0c475ea773822f7500d0e5"
 
-# lzo2
-LZO2_DOWNLOAD="https://fossies.org/linux/misc/lzo-2.10.tar.gz"
-LZO2_NAME=lzo-2.10.tar.gz
-LZO2_SOURCE=lzo-2.10
-LZO2_MD5SUM="39d3f3f9c55c87b1e5d6888e1420f4b5"
-
 # rapidjson
-RAPIDJSON_DOWNLOAD="https://github.com/Tencent/rapidjson/archive/1a803826f1197b5e30703afe4b9c0e7dd48074f5.zip"
-RAPIDJSON_NAME=rapidjson-1a803826f1197b5e30703afe4b9c0e7dd48074f5.zip
-RAPIDJSON_SOURCE=rapidjson-1a803826f1197b5e30703afe4b9c0e7dd48074f5
-RAPIDJSON_MD5SUM="f2212a77e055a15501477f1e390007ea"
+RAPIDJSON_DOWNLOAD="https://github.com/miloyip/rapidjson/archive/v1.1.0.tar.gz"
+RAPIDJSON_NAME=rapidjson-1.1.0.tar.gz
+RAPIDJSON_SOURCE=rapidjson-1.1.0
+RAPIDJSON_MD5SUM="badd12c511e081fec6c89c43a7027bce"
+
+# simdjson
+SIMDJSON_DOWNLOAD="https://github.com/simdjson/simdjson/archive/refs/tags/v3.9.4.tar.gz"
+SIMDJSON_NAME=simdjson-v3.9.4.tar.gz
+SIMDJSON_SOURCE=simdjson-3.9.4
+SIMDJSON_MD5SUM="bdc1dfcb2a89dc0c09e8370808a946f5"
 
 # curl
-CURL_DOWNLOAD="https://curl.se/download/curl-8.2.1.tar.gz"
-CURL_NAME="curl-8.2.1.tar.gz"
-CURL_SOURCE=curl-8.2.1
-CURL_MD5SUM="b25588a43556068be05e1624e0e74d41"
+CURL_DOWNLOAD="https://curl.se/download/curl-8.4.0.tar.gz"
+CURL_NAME=curl-8.4.0.tar.gz
+CURL_SOURCE=curl-8.4.0
+CURL_MD5SUM="533e8a3b1228d5945a6a512537bea4c7"
 
 # RE2
-RE2_DOWNLOAD="https://github.com/google/re2/archive/2021-02-02.tar.gz"
-RE2_NAME=re2-2021-02-02.tar.gz
-RE2_SOURCE=re2-2021-02-02
-RE2_MD5SUM="48bc665463a86f68243c5af1bac75cd0"
-
-# hyperscan
-HYPERSCAN_DOWNLOAD="https://github.com/intel/hyperscan/archive/refs/tags/v5.4.2.tar.gz"
-HYPERSCAN_NAME=hyperscan-5.4.2.tar.gz
-HYPERSCAN_SOURCE=hyperscan-5.4.2
-HYPERSCAN_MD5SUM="202f4b42f5dd4a7bb2506445e51a33b9"
-
-# vectorscan (support arm for hyperscan)
-MACHINE_TYPE=$(uname -m)
-if [[ "${MACHINE_TYPE}" == "aarch64" || "${MACHINE_TYPE}" == 'arm64' ]]; then
-    echo "use vectorscan instead of hyperscan on aarch64"
-    HYPERSCAN_DOWNLOAD="https://github.com/VectorCamp/vectorscan/archive/refs/tags/vectorscan/5.4.11.tar.gz"
-    HYPERSCAN_NAME=vectorscan-5.4.11.tar.gz
-    HYPERSCAN_SOURCE=vectorscan-vectorscan-5.4.11
-    HYPERSCAN_MD5SUM="e67b70403cba6c1654a9fef4fd15a2f2"
-fi
-
-# ragel (dependency for hyperscan)
-RAGEL_DOWNLOAD="http://www.colm.net/files/ragel/ragel-6.10.tar.gz"
-RAGEL_NAME=ragel-6.10.tar.gz
-RAGEL_SOURCE=ragel-6.10
-RAGEL_MD5SUM="748cae8b50cffe9efcaa5acebc6abf0d"
+RE2_DOWNLOAD="https://github.com/google/re2/archive/refs/tags/2022-12-01.tar.gz"
+RE2_NAME=re2-2022-12-01.tar.gz
+RE2_SOURCE=re2-2022-12-01
+RE2_MD5SUM="f25d7b06a3e7747ecbb2f12d48be61cd"
 
 # boost
-BOOST_DOWNLOAD="https://archives.boost.io/release/1.81.0/source/boost_1_81_0.tar.gz"
-BOOST_NAME=boost_1_81_0.tar.gz
-BOOST_SOURCE=boost_1_81_0
-BOOST_MD5SUM="4bf02e84afb56dfdccd1e6aec9911f4b"
-
-# mysql
-MYSQL_DOWNLOAD="https://github.com/mysql/mysql-server/archive/mysql-5.7.18.tar.gz"
-MYSQL_NAME=mysql-5.7.18.tar.gz
-MYSQL_SOURCE=mysql-server-mysql-5.7.18
-MYSQL_MD5SUM="58598b10dce180e4d1fbdd7cf5fa68d6"
-
-# unix odbc
-ODBC_DOWNLOAD="http://www.unixodbc.org/unixODBC-2.3.7.tar.gz"
-ODBC_NAME=unixODBC-2.3.7.tar.gz
-ODBC_SOURCE=unixODBC-2.3.7
-ODBC_MD5SUM="274a711b0c77394e052db6493840c6f9"
+BOOST_DOWNLOAD="https://archives.boost.io/release/1.80.0/source/boost_1_80_0.tar.gz"
+BOOST_NAME=boost_1_80_0.tar.gz
+BOOST_SOURCE=boost_1_80_0
+BOOST_MD5SUM="077f074743ea7b0cb49c6ed43953ae95"
 
 # leveldb
-LEVELDB_DOWNLOAD="https://github.com/google/leveldb/archive/refs/tags/1.23.tar.gz"
-LEVELDB_NAME=leveldb-1.23.tar.gz
-LEVELDB_SOURCE=leveldb-1.23
-LEVELDB_MD5SUM="afbde776fb8760312009963f09a586c7"
+LEVELDB_DOWNLOAD="https://github.com/google/leveldb/archive/v1.20.tar.gz"
+LEVELDB_NAME=leveldb-1.20.tar.gz
+LEVELDB_SOURCE=leveldb-1.20
+LEVELDB_MD5SUM="298b5bddf12c675d6345784261302252"
 
 # brpc
-BRPC_DOWNLOAD="https://github.com/apache/brpc/archive/refs/tags/1.4.0.tar.gz"
-BRPC_NAME="brpc-1.4.0.tar.gz"
-BRPC_SOURCE="brpc-1.4.0"
-BRPC_MD5SUM="6af9d50822c33a3abc56a1ec0af0e0bc"
+BRPC_DOWNLOAD="https://github.com/apache/brpc/archive/refs/tags/1.9.0.tar.gz"
+BRPC_NAME=brpc-1.9.0.tar.gz
+BRPC_SOURCE=brpc-1.9.0
+BRPC_MD5SUM="a2b626d96a5b017f2a6701ffa594530c"
 
 # rocksdb
-ROCKSDB_DOWNLOAD="https://github.com/facebook/rocksdb/archive/v5.14.2.tar.gz"
-ROCKSDB_NAME=rocksdb-5.14.2.tar.gz
-ROCKSDB_SOURCE=rocksdb-5.14.2
-ROCKSDB_MD5SUM="b72720ea3b1e9ca9e4ed0febfef65b14"
+ROCKSDB_DOWNLOAD="https://github.com/facebook/rocksdb/archive/refs/tags/v6.22.1.zip"
+ROCKSDB_NAME=rocksdb-6.22.1.zip
+ROCKSDB_SOURCE=rocksdb-6.22.1
+ROCKSDB_MD5SUM="02727e52cdb94fa6a9dbbd68d157e619"
 
-# cyrus-sasl
-CYRUS_SASL_DOWNLOAD="https://github.com/cyrusimap/cyrus-sasl/releases/download/cyrus-sasl-2.1.27/cyrus-sasl-2.1.27.tar.gz"
-CYRUS_SASL_NAME=cyrus-sasl-2.1.27.tar.gz
-CYRUS_SASL_SOURCE=cyrus-sasl-2.1.27
-CYRUS_SASL_MD5SUM="a33820c66e0622222c5aefafa1581083"
+# libsasl
+SASL_DOWNLOAD="https://github.com/cyrusimap/cyrus-sasl/archive/refs/tags/cyrus-sasl-2.1.28.tar.gz"
+SASL_NAME=cyrus-sasl-2.1.28.tar.gz
+SASL_SOURCE=cyrus-sasl-2.1.28
+SASL_MD5SUM="7dcf3919b3085a1d09576438171bda91"
 
-# librdkafka-1.9.2
-LIBRDKAFKA_DOWNLOAD="https://github.com/edenhill/librdkafka/archive/v1.9.2.tar.gz"
-LIBRDKAFKA_NAME=librdkafka-1.9.2.tar.gz
-LIBRDKAFKA_SOURCE=librdkafka-1.9.2
-LIBRDKAFKA_MD5SUM="fe9624e905abbf8324b0f6be520d9c24"
+# kerberos MIT
+KRB5_DOWNLOAD="https://kerberos.org/dist/krb5/1.19/krb5-1.19.4.tar.gz"
+KRB5_NAME=krb5-1.19.4.tar.gz
+KRB5_SOURCE=krb5-1.19.4
+KRB5_MD5SUM="ef76083e58f8c49066180642d7c2814a"
+
+# librdkafka
+LIBRDKAFKA_DOWNLOAD="https://github.com/confluentinc/librdkafka/archive/refs/tags/v2.0.2.tar.gz"
+LIBRDKAFKA_NAME=librdkafka-2.0.2.tar.gz
+LIBRDKAFKA_SOURCE=librdkafka-2.0.2
+LIBRDKAFKA_MD5SUM="c0120dc32acc129bfb4656fe17568da1"
+
+# pulsar
+PULSAR_DOWNLOAD="https://github.com/apache/pulsar-client-cpp/archive/refs/tags/v3.3.0.tar.gz"
+PULSAR_NAME=pulsar-client-3.3.0.tar.gz
+PULSAR_SOURCE=pulsar-client-cpp-3.3.0
+PULSAR_MD5SUM="348b7e5ec39e50547668520d13a417a1"
 
 # zstd
-ZSTD_DOWNLOAD="https://github.com/facebook/zstd/releases/download/v1.5.5/zstd-1.5.5.tar.gz"
-ZSTD_NAME=zstd-1.5.5.tar.gz
-ZSTD_SOURCE=zstd-1.5.5
-ZSTD_MD5SUM="63251602329a106220e0a5ad26ba656f"
+ZSTD_DOWNLOAD="https://github.com/facebook/zstd/archive/v1.5.0.tar.gz"
+ZSTD_NAME=zstd-1.5.0.tar.gz
+ZSTD_SOURCE=zstd-1.5.0
+ZSTD_MD5SUM="d5ac89d5df9e81243ce40d0c6a66691d"
 
 # brotli
 BROTLI_DOWNLOAD="https://github.com/google/brotli/archive/v1.0.9.tar.gz"
@@ -234,391 +241,220 @@ BROTLI_SOURCE="brotli-1.0.9"
 BROTLI_MD5SUM="c2274f0c7af8470ad514637c35bcee7d"
 
 # flatbuffers
-FLATBUFFERS_DOWNLOAD="https://github.com/google/flatbuffers/archive/v2.0.0.tar.gz"
-FLATBUFFERS_NAME=flatbuffers-2.0.0.tar.gz
-FLATBUFFERS_SOURCE=flatbuffers-2.0.0
-FLATBUFFERS_MD5SUM="a27992324c3cbf86dd888268a23d17bd"
-
-# c-ares
-CARES_DOWNLOAD="https://github.com/c-ares/c-ares/releases/download/cares-1_19_1/c-ares-1.19.1.tar.gz"
-CARES_NAME="c-ares-1.19.1.tar.gz"
-CARES_SOURCE=c-ares-1.19.1
-CARES_MD5SUM="dafc5825a92dc907e144570e4e75a908"
-
-# grpc
-# grpc v1.55 and above require protobuf >= 22
-GRPC_DOWNLOAD="https://github.com/grpc/grpc/archive/refs/tags/v1.54.3.tar.gz"
-GRPC_NAME="grpc-v1.54.3.tar.gz"
-GRPC_SOURCE=grpc-1.54.3
-GRPC_MD5SUM="af00a2edeae0f02bb25917cc3473b7de"
+FLATBUFFERS_DOWNLOAD="https://github.com/google/flatbuffers/archive/v1.10.0.tar.gz"
+FLATBUFFERS_NAME=flatbuffers-v1.10.0.tar.gz
+FLATBUFFERS_SOURCE=flatbuffers-1.10.0
+FLATBUFFERS_MD5SUM="f7d19a3f021d93422b0bc287d7148cd2"
 
 # arrow
-ARROW_DOWNLOAD="https://github.com/apache/arrow/archive/refs/tags/apache-arrow-17.0.0.tar.gz"
-ARROW_NAME="apache-arrow-17.0.0.tar.gz"
-ARROW_SOURCE="arrow-apache-arrow-17.0.0"
-ARROW_MD5SUM="ba18bf83e2164abd34b9ac4cb164f0f0"
-
-# Abseil
-ABSEIL_DOWNLOAD="https://github.com/abseil/abseil-cpp/archive/refs/tags/20230125.3.tar.gz"
-ABSEIL_NAME="abseil-cpp-20230125.3.tar.gz"
-ABSEIL_SOURCE=abseil-cpp-20230125.3
-ABSEIL_MD5SUM="9b6dae642c4bd92f007ab2c148bc0498"
+ARROW_DOWNLOAD="https://github.com/apache/arrow/archive/refs/tags/apache-arrow-16.1.0.tar.gz"
+ARROW_NAME="arrow-apache-arrow-16.1.0.tar.gz"
+ARROW_SOURCE="arrow-apache-arrow-16.1.0"
+ARROW_MD5SUM="d9d019aaef586bd1a7493416d78954b9"
 
 # S2
-S2_DOWNLOAD="https://github.com/google/s2geometry/archive/refs/tags/v0.10.0.tar.gz"
-S2_NAME=s2geometry-0.10.0.tar.gz
-S2_SOURCE=s2geometry-0.10.0
-S2_MD5SUM="c68f3c5d326dde9255681b9201393a9f"
+S2_DOWNLOAD="https://github.com/google/s2geometry/archive/v0.9.0.tar.gz"
+S2_NAME=s2geometry-0.9.0.tar.gz
+S2_SOURCE=s2geometry-0.9.0
+S2_MD5SUM="293552c7646193b8b4a01556808fe155"
 
-# bitshuffle
+# BITSHUFFLE
 BITSHUFFLE_DOWNLOAD="https://github.com/kiyo-masui/bitshuffle/archive/0.5.1.tar.gz"
 BITSHUFFLE_NAME=bitshuffle-0.5.1.tar.gz
 BITSHUFFLE_SOURCE=bitshuffle-0.5.1
 BITSHUFFLE_MD5SUM="b3bf6a9838927f7eb62214981c138e2f"
 
-# croaringbitmap
-CROARINGBITMAP_DOWNLOAD="https://github.com/RoaringBitmap/CRoaring/archive/refs/tags/v2.1.2.tar.gz"
-CROARINGBITMAP_NAME=CRoaring-2.1.2.tar.gz
-CROARINGBITMAP_SOURCE=CRoaring-2.1.2
-CROARINGBITMAP_MD5SUM="419bfbafdf93e9a7e6cdc234454908fc"
+# CROARINGBITMAP
+CROARINGBITMAP_DOWNLOAD="https://github.com/RoaringBitmap/CRoaring/archive/refs/tags/v4.2.1.tar.gz"
+CROARINGBITMAP_NAME=CRoaring-4.2.1.tar.gz
+CROARINGBITMAP_SOURCE=CRoaring-4.2.1
+CROARINGBITMAP_MD5SUM="00667266a60709978368cf867fb3a3aa"
 
-# fmt
-FMT_DOWNLOAD="https://github.com/fmtlib/fmt/archive/7.1.3.tar.gz"
-FMT_NAME="fmt-7.1.3.tar.gz"
-FMT_SOURCE="fmt-7.1.3"
-FMT_MD5SUM="2522ec65070c0bda0ca288677ded2831"
+# jemalloc
+JEMALLOC_DOWNLOAD="https://github.com/jemalloc/jemalloc/releases/download/5.3.0/jemalloc-5.3.0.tar.bz2"
+JEMALLOC_NAME="jemalloc-5.3.0.tar.bz2"
+JEMALLOC_SOURCE="jemalloc-5.3.0"
+JEMALLOC_MD5SUM="09a8328574dab22a7df848eae6dbbf53"
 
-# parallel-hashmap
-PARALLEL_HASHMAP_DOWNLOAD="https://github.com/greg7mdp/parallel-hashmap/archive/refs/tags/v1.3.8.tar.gz"
-PARALLEL_HASHMAP_NAME="parallel-hashmap-1.3.8.tar.gz"
-PARALLEL_HASHMAP_SOURCE="parallel-hashmap-1.3.8"
-PARALLEL_HASHMAP_MD5SUM="1b8130d0b4f656257ef654699bfbf941"
-
-# orc
-ORC_DOWNLOAD="https://archive.apache.org/dist/orc/orc-1.9.0/orc-1.9.0.tar.gz"
-ORC_NAME="orc-1.9.0.tar.gz"
-ORC_SOURCE=orc-1.9.0
-ORC_MD5SUM="5dc1c91c4867e4519aab531ffc30fab7"
-
-# jemalloc for arrow
-JEMALLOC_ARROW_DOWNLOAD="https://github.com/jemalloc/jemalloc/releases/download/5.3.0/jemalloc-5.3.0.tar.bz2"
-JEMALLOC_ARROW_NAME="jemalloc-5.3.0.tar.bz2"
-JEMALLOC_ARROW_SOURCE="jemalloc-5.3.0"
-JEMALLOC_ARROW_MD5SUM="09a8328574dab22a7df848eae6dbbf53"
-
-# jemalloc for doris
-JEMALLOC_DORIS_DOWNLOAD="https://github.com/jemalloc/jemalloc/releases/download/5.3.0/jemalloc-5.3.0.tar.bz2"
-JEMALLOC_DORIS_NAME="jemalloc-5.3.0.tar.bz2"
-JEMALLOC_DORIS_SOURCE="jemalloc-5.3.0"
-JEMALLOC_DORIS_MD5SUM="09a8328574dab22a7df848eae6dbbf53"
-
-# libunwind
-LIBUNWIND_DOWNLOAD="https://github.com/libunwind/libunwind/releases/download/v1.6.2/libunwind-1.6.2.tar.gz"
-LIBUNWIND_NAME="libunwind-1.6.2.tar.gz"
-LIBUNWIND_SOURCE="libunwind-1.6.2"
-LIBUNWIND_MD5SUM="f625b6a98ac1976116c71708a73dc44a"
-
-# cctz
+# CCTZ
 CCTZ_DOWNLOAD="https://github.com/google/cctz/archive/v2.3.tar.gz"
 CCTZ_NAME="cctz-2.3.tar.gz"
 CCTZ_SOURCE="cctz-2.3"
 CCTZ_MD5SUM="209348e50b24dbbdec6d961059c2fc92"
 
-# datatables, bootstrap 3 and jQuery 3
-# The origin download url is always changing: https://datatables.net/download/builder?bs-3.3.7/jq-3.3.1/dt-1.10.25
-# So we put it in our own http server.
-# If someone can offer an official url for DataTables, please update this.
-DATATABLES_DOWNLOAD="https://github.com/apache/doris-thirdparty/releases/download/datatables-1.12.1/DataTables.zip"
-DATATABLES_NAME="DataTables.zip"
-DATATABLES_SOURCE="DataTables-1.12.1"
-DATATABLES_MD5SUM="a3dd92a2a8b7254443e102a43036d743"
+# FMT
+FMT_DOWNLOAD="https://github.com/fmtlib/fmt/releases/download/8.1.1/fmt-8.1.1.zip"
+FMT_NAME="fmt-8.1.1.zip"
+FMT_SOURCE="fmt-8.1.1"
+FMT_MD5SUM="16dcd48ecc166f10162450bb28aabc87"
 
-# bootstrap table js
-BOOTSTRAP_TABLE_JS_DOWNLOAD="https://unpkg.com/bootstrap-table@1.17.1/dist/bootstrap-table.min.js"
-BOOTSTRAP_TABLE_JS_NAME="bootstrap-table.min.js"
-BOOTSTRAP_TABLE_JS_FILE="bootstrap-table.min.js"
-BOOTSTRAP_TABLE_JS_MD5SUM="6cc9c41eaf7e81e54e220061cc9c0432"
+# RYU
+RYU_DOWNLOAD="https://github.com/ulfjack/ryu/archive/aa31ca9361d21b1a00ee054aac49c87d07e74abc.zip"
+RYU_NAME="ryu-aa31ca9361d21b1a00ee054aac49c87d07e74abc.zip"
+RYU_SOURCE="ryu-aa31ca9361d21b1a00ee054aac49c87d07e74abc"
+RYU_MD5SUM="cb82b6da904d919470fe3f5a01ca30ff"
 
-# bootstrap table css
-BOOTSTRAP_TABLE_CSS_DOWNLOAD="https://unpkg.com/bootstrap-table@1.17.1/dist/bootstrap-table.min.css"
-BOOTSTRAP_TABLE_CSS_NAME="bootstrap-table.min.css"
-BOOTSTRAP_TABLE_CSS_FILE="bootstrap-table.min.css"
-BOOTSTRAP_TABLE_CSS_MD5SUM="23389d4456da412e36bae30c469a766a"
+# breakpad
+BREAK_PAD_DOWNLOAD="https://github.com/google/breakpad/archive/refs/tags/v2022.07.12.tar.gz"
+BREAK_PAD_NAME="breakpad-2022.07.12.tar.gz"
+BREAK_PAD_SOURCE="breakpad-2022.07.12"
+BREAK_PAD_MD5SUM="d5bcfd3f7b361ef5bda96123c3abdd0a"
 
-# aws sdk
-AWS_SDK_DOWNLOAD="https://github.com/aws/aws-sdk-cpp/archive/refs/tags/1.11.119.tar.gz"
-AWS_SDK_NAME="aws-sdk-cpp-1.11.119.tar.gz"
-AWS_SDK_SOURCE="aws-sdk-cpp-1.11.119"
-AWS_SDK_MD5SUM="3cd8bd51d39dc207a243a2074d11f439"
+# RAGEL
+# ragel-6.9+ is used by hyperscan, so we build it first
+RAGEL_DOWNLOAD="https://www.colm.net/files/ragel/ragel-6.10.tar.gz"
+RAGEL_NAME="ragel-6.10.tar.gz"
+RAGEL_SOURCE="ragel-6.10"
+RAGEL_MD5SUM="748cae8b50cffe9efcaa5acebc6abf0d"
 
-# tsan_header
-TSAN_HEADER_DOWNLOAD="https://gcc.gnu.org/git/?p=gcc.git;a=blob_plain;f=libsanitizer/include/sanitizer/tsan_interface_atomic.h;hb=refs/heads/releases/gcc-7"
-TSAN_HEADER_NAME="tsan_interface_atomic.h"
-TSAN_HEADER_FILE="tsan_interface_atomic.h"
-TSAN_HEADER_MD5SUM="d72679bea167d6a513d959f5abd149dc"
+# mariadb-connector-c
+MARIADB_DOWNLOAD="https://github.com/mariadb-corporation/mariadb-connector-c/archive/refs/tags/v3.1.14.tar.gz"
+MARIADB_NAME="mariadb-connector-c-3.1.14.tar.gz"
+MARIADB_SOURCE="mariadb-connector-c-3.1.14"
+MARIADB_MD5SUM="86c4052adeb8447900bf33b4e2ddd1f9"
 
-# lzma
-LZMA_DOWNLOAD="https://github.com/kobolabs/liblzma/archive/refs/heads/master.zip"
-LZMA_NAME="liblzma-master.zip"
-LZMA_SOURCE="liblzma-master"
-LZMA_MD5SUM="ef11f2fbbfa6893b629f207a32bf730e"
+# Google Cloud Storage, gcs-connector
+GCS_CONNECTOR_DOWNLOAD="https://cdn-thirdparty.starrocks.com/gcs-connector-hadoop3-2.2.11-shaded.zip"
+GCS_CONNECTOR_NAME="gcs-connector-hadoop3-2.2.11-shaded.zip"
+GCS_CONNECTOR_SOURCE="gcs-connector-hadoop3-2.2.11-shaded"
+GCS_CONNECTOR_MD5SUM="51fd0eb5cb913a84e4ad8a5ed2069e21"
 
-# xml2
-XML2_DOWNLOAD="https://gitlab.gnome.org/GNOME/libxml2/-/archive/v2.9.10/libxml2-v2.9.10.tar.gz"
-XML2_NAME="libxml2-v2.9.10.tar.gz"
-XML2_SOURCE="libxml2-v2.9.10"
-XML2_MD5SUM="b18faee9173c3378c910f6d7d1493115"
+# aws-sdk-cpp
+AWS_SDK_CPP_DOWNLOAD="https://github.com/aws/aws-sdk-cpp/archive/refs/tags/1.11.267.tar.gz"
+AWS_SDK_CPP_NAME="aws-sdk-cpp-1.11.267.tar.gz"
+AWS_SDK_CPP_SOURCE="aws-sdk-cpp-1.11.267"
+AWS_SDK_CPP_MD5SUM="fdf43e7262f9d08968eb34f9ad18b8e7"
 
-# idn
-IDN_DOWNLOAD="https://ftpmirror.gnu.org/libidn/libidn-1.38.tar.gz"
-IDN_NAME="libidn-1.38.tar.gz"
-IDN_SOURCE="libidn-1.38"
-IDN_MD5SUM="718ff3700dd71f830c592ebe97249193"
+# poco
+POCO_DOWNLOAD="https://github.com/pocoproject/poco/archive/refs/tags/poco-1.12.5-release.tar.gz"
+POCO_NAME="poco-1.12.5-release.tar.gz"
+POCO_SOURCE="poco-1.12.5-release"
+POCO_MD5SUM="282e54a68911f516b15d07136c78592b"
 
-# gsasl
-GSASL_DOWNLOAD="https://ftpmirror.gnu.org/gsasl/libgsasl-1.8.0.tar.gz"
-GSASL_NAME="libgsasl-1.8.0.tar.gz"
-GSASL_SOURCE="libgsasl-1.8.0"
-GSASL_MD5SUM="5dbdf859f6e60e05813370e2b193b92b"
+# velocypack: A fast and compact format for serialization and storage
+VPACK_DOWNLOAD="https://github.com/arangodb/velocypack/archive/refs/tags/XYZ1.0.tar.gz"
+VPACK_NAME="velocypack-XYZ1.0.tar.gz"
+VPACK_SOURCE="velocypack-XYZ1.0"
+VPACK_MD5SUM="161cbf4c347f6daadacfb749c31842f8"
 
-# krb5
-KRB5_DOWNLOAD="https://kerberos.org/dist/krb5/1.19/krb5-1.19.tar.gz"
-KRB5_NAME="krb5-1.19.tar.gz"
-KRB5_SOURCE="krb5-1.19"
-KRB5_MD5SUM="aaf18447a5a014aa3b7e81814923f4c9"
-
-# hdfs3
-HDFS3_DOWNLOAD="https://github.com/apache/doris-thirdparty/archive/refs/tags/libhdfs3-v2.3.9.tar.gz"
-HDFS3_NAME="doris-thirdparty-libhdfs3-v2.3.9.tar.gz"
-HDFS3_SOURCE="doris-thirdparty-libhdfs3-v2.3.9"
-HDFS3_MD5SUM="b3eaa03e5b184521e5ad5bf6cabea97e"
-
-#libdivide
-LIBDIVIDE_DOWNLOAD="https://github.com/ridiculousfish/libdivide/archive/5.0.tar.gz"
-LIBDIVIDE_NAME="libdivide-5.0.tar.gz"
-LIBDIVIDE_SOURCE="libdivide-5.0"
-LIBDIVIDE_MD5SUM="7fd16b0bb4ab6812b2e2fdc7bfb81641"
-
-#pdqsort
-PDQSORT_DOWNLOAD="https://raw.githubusercontent.com/orlp/pdqsort/b1ef26a55cdb60d236a5cb199c4234c704f46726/pdqsort.h"
-PDQSORT_NAME="pdqsort.h"
-PDQSORT_FILE="pdqsort.h"
-PDQSORT_MD5SUM="af28f79d5d7d7a5486f54d9f1244c2b5"
+# open-telemetry
+OPENTELEMETRY_DOWNLOAD="https://github.com/open-telemetry/opentelemetry-cpp/archive/refs/tags/v1.2.0.tar.gz"
+OPENTELEMETRY_NAME=opentelemetry-cpp-v1.2.0.tar.gz
+OPENTELEMETRY_SOURCE=opentelemetry-cpp-1.2.0
+OPENTELEMETRY_MD5SUM="c084abc742c6b3cd4c9c3684e559d4e1"
 
 # benchmark
-BENCHMARK_DOWNLOAD="https://github.com/google/benchmark/archive/refs/tags/v1.8.0.tar.gz"
-BENCHMARK_NAME=benchmark-v1.8.0.tar.gz
-BENCHMARK_SOURCE=benchmark-1.8.0
-BENCHMARK_MD5SUM="8ddf8571d3f6198d37852bcbd964f817"
+BENCHMARK_DOWNLOAD="https://github.com/google/benchmark/archive/refs/tags/v1.5.5.tar.gz"
+BENCHMARK_NAME=google_benchmark-1.5.5.tar.gz
+BENCHMARK_SOURCE=benchmark-1.5.5
+BENCHMARK_MD5SUM="6f852815d48db788f5bb87e2e561dc5e"
 
-# xsimd
-# for arrow-17.0.0, if arrow upgrade, this version may also need to be changed
-XSIMD_DOWNLOAD="https://github.com/xtensor-stack/xsimd/archive/refs/tags/13.0.0.tar.gz"
-XSIMD_NAME="13.0.0.tar.gz"
-XSIMD_SOURCE=xsimd-13.0.0
-XSIMD_MD5SUM="c661deb91836e82d3070f81032014fe6"
-
-# simdjson
-SIMDJSON_DOWNLOAD="https://github.com/simdjson/simdjson/archive/refs/tags/v3.0.1.tar.gz"
-SIMDJSON_NAME=simdjson-3.0.1.tar.gz
-SIMDJSON_SOURCE=simdjson-3.0.1
-SIMDJSON_MD5SUM="993576b47249f2bade2bfb2552b2896a"
-
-# nlohmann_json
-NLOHMANN_JSON_DOWNLOAD="https://github.com/nlohmann/json/archive/refs/tags/v3.10.1.tar.gz"
-NLOHMANN_JSON_NAME=json-3.10.1.tar.gz
-NLOHMANN_JSON_SOURCE=json-3.10.1
-NLOHMANN_JSON_MD5SUM="7b369d567afc0dffdcf5800fd9abb836"
-
-# libbacktrace
-LIBBACKTRACE_DOWNLOAD="https://codeload.github.com/ianlancetaylor/libbacktrace/zip/2446c66076480ce07a6bd868badcbceb3eeecc2e"
-LIBBACKTRACE_NAME=libbacktrace-2446c66076480ce07a6bd868badcbceb3eeecc2e.zip
-LIBBACKTRACE_SOURCE=libbacktrace-2446c66076480ce07a6bd868badcbceb3eeecc2e
-LIBBACKTRACE_MD5SUM="6c79a8012870a24610c0d9c3621b23fe"
-
-# sse2noen
-SSE2NEON_DOWNLOAD="https://github.com/DLTcollab/sse2neon/archive/refs/tags/v1.6.0.tar.gz"
-SSE2NEON_NAME=sse2neon-1.6.0.tar.gz
-SSE2NEON_SOURCE=sse2neon-1.6.0
-SSE2NEON_MD5SUM="dce28eb6a78f45bf98740d5fad73febb"
-
-# xxhash
-XXHASH_DOWNLOAD="https://github.com/Cyan4973/xxHash/archive/refs/tags/v0.8.1.tar.gz"
-XXHASH_NAME=xxHash-0.8.1.tar.gz
-XXHASH_SOURCE=xxHash-0.8.1
-XXHASH_MD5SUM="b67c587f5ff4894253da0095ba7ea393"
-
-# concurrentqueue
-CONCURRENTQUEUE_DOWNLOAD="https://github.com/cameron314/concurrentqueue/archive/refs/tags/v1.0.3.tar.gz"
-CONCURRENTQUEUE_NAME=concurrentqueue-1.0.3.tar.gz
-CONCURRENTQUEUE_SOURCE=concurrentqueue-1.0.3
-CONCURRENTQUEUE_MD5SUM="118e5bb661b567634647312991e10222"
-
-# fast_float
-FAST_FLOAT_DOWNLOAD="https://github.com/fastfloat/fast_float/archive/refs/tags/v3.9.0.tar.gz"
-FAST_FLOAT_NAME=fast_float-3.9.0.tar.gz
-FAST_FLOAT_SOURCE=fast_float-3.9.0
-FAST_FLOAT_MD5SUM="5656b0d8b150a3b157cfb092d214f6ea"
-
-# libhdfs
-HADOOP_LIBS_DOWNLOAD="https://github.com/apache/doris-thirdparty/archive/refs/tags/hadoop-3.3.6.5-for-doris.tar.gz"
-HADOOP_LIBS_NAME="hadoop-3.3.6.5-for-doris.tar.gz"
-HADOOP_LIBS_SOURCE="doris-thirdparty-hadoop-3.3.6.5-for-doris"
-HADOOP_LIBS_MD5SUM="c13f90ceb5ef9460b7d736c49d9b79fd"
-
-# AvxToNeon
-AVX2NEON_DOWNLOAD="https://github.com/kunpengcompute/AvxToNeon/archive/refs/tags/v1.0.0.tar.gz"
-AVX2NEON_NAME=v1.0.0.tar.gz
-AVX2NEON_SOURCE=AvxToNeon-1.0.0
-AVX2NEON_MD5SUM="692d0e0f8b885a86ebc5172a9d8ee8db"
-
-# libdeflate
-LIBDEFLATE_DOWNLOAD="https://github.com/ebiggers/libdeflate/archive/refs/tags/v1.19.tar.gz"
-LIBDEFLATE_NAME=libdeflate-1.19.tar.gz
-LIBDEFLATE_SOURCE=libdeflate-1.19
-LIBDEFLATE_MD5SUM="c69e9193d2975a729068ffa862c81fb6"
+# fast-float
+FAST_FLOAT_DOWNLOAD="https://github.com/fastfloat/fast_float/archive/refs/tags/v3.5.1.tar.gz"
+FAST_FLOAT_NAME="fast-float-3.5.1.tar.gz"
+FAST_FLOAT_SOURCE="fast-float-3.5.1"
+FAST_FLOAT_MD5SUM="adb3789b99f47e0cd971b4d90727d4d0"
 
 # streamvbyte
-STREAMVBYTE_DOWNLOAD="https://github.com/lemire/streamvbyte/archive/refs/tags/v1.0.0.tar.gz"
-STREAMVBYTE_NAME=streamvbyte-1.0.0.tar.gz
-STREAMVBYTE_SOURCE=streamvbyte-1.0.0
-STREAMVBYTE_MD5SUM="f334219db5a832b6dae3589a56a29563"
+STREAMVBYTE_DOWNLOAD="https://github.com/lemire/streamvbyte/archive/refs/tags/v0.5.1.tar.gz"
+STREAMVBYTE_NAME="streamvbyte-0.5.1.tar.gz"
+STREAMVBYTE_SOURCE="streamvbyte-0.5.1"
+STREAMVBYTE_MD5SUM="251d9200d27dda9120653b4928a23a86"
 
-# jsoncpp
-JSONCPP_DOWNLOAD="https://github.com/open-source-parsers/jsoncpp/archive/refs/tags/1.9.5.tar.gz"
-JSONCPP_NAME="1.9.5.tar.gz"
-JSONCPP_SOURCE="jsoncpp-1.9.5"
-JSONCPP_MD5SUM="d6c8c609f2162eff373db62b90a051c7"
+# jansson
+JANSSON_DOWNLOAD="https://github.com/akheron/jansson/releases/download/v2.14/jansson-2.14.tar.gz"
+JANSSON_NAME="jansson-2.14.tar.gz"
+JANSSON_SOURCE="jansson-2.14"
+JANSSON_MD5SUM="6cbfc54c2ab3b4d7284e188e185c2b0b"
 
-# libuuid
-LIBUUID_DOWNLOAD="https://nchc.dl.sourceforge.net/project/libuuid/libuuid-1.0.3.tar.gz"
-LIBUUID_NAME="libuuid-1.0.3.tar.gz"
-LIBUUID_SOURCE="libuuid-1.0.3"
-LIBUUID_MD5SUM="d44d866d06286c08ba0846aba1086d68"
+# avro
+AVRO_DOWNLOAD="https://github.com/apache/avro/archive/refs/tags/release-1.10.2.tar.gz"
+AVRO_NAME="avro-release-1.10.2.tar.gz"
+AVRO_SOURCE="avro-release-1.10.2"
+AVRO_MD5SUM="55b9c200976366fd62f1201231f3a5eb"
 
-# ali
-ALI_SDK_DOWNLOAD="https://github.com/aliyun/aliyun-openapi-cpp-sdk/archive/refs/tags/1.36.1586.tar.gz"
-ALI_SDK_NAME="1.36.1586.tar.gz"
-ALI_SDK_SOURCE="aliyun-openapi-cpp-sdk-1.36.1586"
-ALI_SDK_MD5SUM="14623ee8e87c89615477d9bf8cb30bea"
+# serdes
+SERDES_DOWNLOAD="https://github.com/confluentinc/libserdes/archive/refs/tags/v7.3.1.tar.gz"
+SERDES_NAME="libserdes-7.3.1.tar.gz"
+SERDES_SOURCE="libserdes-7.3.1"
+SERDES_MD5SUM="61012487a8845f37540710ac4ac2f7ab"
 
-# base64
-BASE64_DOWNLOAD="https://github.com/aklomp/base64/archive/refs/tags/v0.5.2.tar.gz"
-BASE64_NAME="v0.5.2.tar.gz"
-BASE64_SOURCE="base64-0.5.2"
-BASE64_MD5SUM="49e5a6c98bd0192aedd16c16eec39974"
+# lzo
+LZO2_DOWNLOAD="http://www.oberhumer.com/opensource/lzo/download/lzo-2.10.tar.gz"
+LZO2_NAME=lzo-2.10.tar.gz
+LZO2_SOURCE=lzo-2.10
+LZO2_MD5SUM="39d3f3f9c55c87b1e5d6888e1420f4b5"
 
-# azure blob
-AZURE_DOWNLOAD="https://github.com/Azure/azure-sdk-for-cpp/archive/azure-core_1.10.3.tar.gz"
-AZURE_NAME="azure-core_1.10.3.tar.gz"
-AZURE_SOURCE="azure-sdk-for-cpp-azure-core_1.10.3"
-AZURE_MD5SUM="aa470cfdba93dd69a6f3112a6958c13c"
+# datasketches-cpp
+DATASKETCHES_DOWNLOAD="https://github.com/apache/datasketches-cpp/archive/refs/tags/4.0.0.tar.gz"
+DATASKETCHES_NAME="datasketches-cpp-4.0.0.tar.gz"
+DATASKETCHES_SOURCE="datasketches-cpp-4.0.0"
+DATASKETCHES_MD5SUM="724cd1df9735de2b8939d298f0d95ea2"
 
-# libdragonbox for faster double/float to string
-DRAGONBOX_DOWNLOAD="https://github.com/jk-jeon/dragonbox/archive/refs/tags/1.1.3.tar.gz"
-DRAGONBOX_NAME=dragonbox-1.1.3.tar.gz
-DRAGONBOX_SOURCE=dragonbox-1.1.3
-DRAGONBOX_MD5SUM="889dc00db9612c6949a4ccf8115e0e6a"
+# libfiu
+FIU_DOWNLOAD="https://blitiri.com.ar/p/libfiu/files/1.1/libfiu-1.1.tar.gz"
+FIU_NAME="libfiu-1.1.tar.gz"
+FIU_SOURCE="libfiu-1.1"
+FIU_MD5SUM="51092dcb7801efb511b7b962388d9ff4"
+
+# libdeflate
+LIBDEFLATE_DOWNLOAD="https://github.com/ebiggers/libdeflate/archive/refs/tags/v1.18.zip"
+LIBDEFLATE_NAME="libdeflate-1.18.zip"
+LIBDEFLATE_SOURCE="libdeflate-1.18"
+LIBDEFLATE_MD5SUM="1ec42dfe7d777929ade295281560d750"
+
+# llvm
+LLVM_DOWNLOAD="https://github.com/llvm/llvm-project/releases/download/llvmorg-16.0.6/llvm-project-16.0.6.src.tar.xz"
+LLVM_NAME="llvm-project-16.0.6.src.tar.xz"
+LLVM_SOURCE="llvm-project-16.0.6.src"
+LLVM_MD5SUM="dc13938a604f70379d3b38d09031de98"
+
+#clucene
+# CLUCENE_DOWNLOAD="https://github.com/StarRocks/clucene/archive/refs/tags/starrocks-2024.06.03.tar.gz"
+# CLUCENE_NAME="starrocks-clucene-2024.06.03.tar.gz"
+# CLUCENE_SOURCE="starrocks-clucene-2024.06.03"
+# CLUCENE_MD5SUM="c218eb0fbbfe7f295e81ab1c8a9317cb"
+
+
+#absl
+ABSL_DOWNLOAD="https://github.com/abseil/abseil-cpp/archive/refs/tags/20220623.0.tar.gz"
+ABSL_NAME="abseil-cpp-20220623.0.tar.gz"
+ABSL_SOURCE="abseil-cpp-20220623.0"
+ABSL_MD5SUM="955b6faedf32ec2ce1b7725561d15618"
+
+# cares - grpc dependency
+CARES_DOWNLOAD="https://github.com/c-ares/c-ares/archive/tags/cares-1_19_1.tar.gz"
+CARES_NAME=cares-1_19_1.tar.gz
+CARES_SOURCE=cares-1_19_1
+CARES_MD5SUM="ae2177836c9dbbacb8f303d167fe700f"
+
+# grpc
+GRPC_DOWNLOAD="https://github.com/grpc/grpc/archive/refs/tags/v1.43.0.tar.gz"
+GRPC_NAME="grpc-1.43.0.tar.gz"
+GRPC_SOURCE="grpc-1.43.0"
+GRPC_MD5SUM="92559743e7b5d3f67486c4c0de2f5cbe"
+
+# simdutf
+SIMDUTF_DOWNLOAD="https://github.com/simdutf/simdutf/archive/refs/tags/v5.2.8.tar.gz"
+SIMDUTF_NAME="simdutf-5.2.8.tar.gz"
+SIMDUTF_SOURCE="simdutf-5.2.8"
+SIMDUTF_MD5SUM="731c78ab5a10c6073942dc93d5c4b04c"
+
+# tenann
+TENANN_DOWNLOAD="https://github.com/StarRocks/tenann/releases/download/v0.4.2-RELEASE/tenann-v0.4.2-RELEASE.tar.gz"
+TENANN_NAME="tenann-v0.4.2-RELEASE.tar.gz"
+TENANN_SOURCE="tenann-v0.4.2-RELEASE"
+TENANN_MD5SUM="40a00643d953982845901ae60766aad4"
 
 # icu
-ICU_DOWNLOAD="https://github.com/unicode-org/icu/archive/refs/tags/release-69-1.tar.gz"
-ICU_NAME=release-69-1.tar.gz
-ICU_SOURCE=icu-release-69-1
-ICU_MD5SUM="135125f633864285d637db5c01e0388b"
+ICU_DOWNLOAD="https://github.com/unicode-org/icu/releases/download/release-76-1/icu4c-76_1-src.zip"
+ICU_NAME="icu4c-76_1-src.zip"
+ICU_SOURCE="icu"
+ICU_MD5SUM="f5f5c827d94af8445766c7023aca7f6b"
 
 # all thirdparties which need to be downloaded is set in array TP_ARCHIVES
-export TP_ARCHIVES=(
-    'LIBEVENT'
-    'OPENSSL'
-    'THRIFT'
-    'PROTOBUF'
-    'GFLAGS'
-    'GLOG'
-    'GTEST'
-    'RAPIDJSON'
-    'SNAPPY'
-    'GPERFTOOLS'
-    'ZLIB'
-    'LZ4'
-    'BZIP'
-    'LZO2'
-    'CURL'
-    'RE2'
-    'HYPERSCAN'
-    'RAGEL'
-    'BOOST'
-    'MYSQL'
-    'ODBC'
-    'LEVELDB'
-    'BRPC'
-    'ROCKSDB'
-    'CYRUS_SASL'
-    'LIBRDKAFKA'
-    'FLATBUFFERS'
-    'ARROW'
-    'BROTLI'
-    'ZSTD'
-    'ABSEIL'
-    'S2'
-    'BITSHUFFLE'
-    'CROARINGBITMAP'
-    'FMT'
-    'PARALLEL_HASHMAP'
-    'ORC'
-    'CARES'
-    'GRPC'
-    'JEMALLOC_ARROW'
-    'JEMALLOC_DORIS'
-    'LIBUNWIND'
-    'CCTZ'
-    'DATATABLES'
-    'BOOTSTRAP_TABLE_JS'
-    'BOOTSTRAP_TABLE_CSS'
-    'TSAN_HEADER'
-    'AWS_SDK'
-    'LZMA'
-    'XML2'
-    'IDN'
-    'GSASL'
-    'KRB5'
-    'HDFS3'
-    'LIBDIVIDE'
-    'PDQSORT'
-    'BENCHMARK'
-    'XSIMD'
-    'SIMDJSON'
-    'NLOHMANN_JSON'
-    'LIBBACKTRACE'
-    'SSE2NEON'
-    'XXHASH'
-    'CONCURRENTQUEUE'
-    'FAST_FLOAT'
-    'HADOOP_LIBS'
-    'AVX2NEON'
-    'LIBDEFLATE'
-    'STREAMVBYTE'
-    'JSONCPP'
-    'LIBUUID'
-    'ALI_SDK'
-    'BASE64'
-    'AZURE'
-    'DRAGONBOX'
-    'ICU'
-)
-
-if [[ "$(uname -s)" == 'Darwin' ]]; then
-    #binutils
-    BINUTILS_DOWNLOAD='https://ftpmirror.gnu.org/gnu/binutils/binutils-2.39.tar.gz'
-    BINUTILS_NAME=binutils-2.39.tar.gz
-    BINUTILS_SOURCE=binutils-2.39
-    BINUTILS_MD5SUM='ab6825df57514ec172331e988f55fc10'
-
-    #gettext
-    GETTEXT_DOWNLOAD='https://ftpmirror.gnu.org/gettext/gettext-0.21.tar.gz'
-    GETTEXT_NAME='gettext-0.21.tar.gz'
-    GETTEXT_SOURCE='gettext-0.21'
-    GETTEXT_MD5SUM='28b1cd4c94a74428723ed966c38cf479'
-
-    read -r -a TP_ARCHIVES <<<"${TP_ARCHIVES[*]} BINUTILS GETTEXT"
-    export TP_ARCHIVES
-fi
+TP_ARCHIVES="LIBEVENT OPENSSL THRIFT PROTOBUF GFLAGS GLOG GTEST RAPIDJSON SIMDJSON SNAPPY GPERFTOOLS ZLIB LZ4 BZIP CURL \
+            RE2 BOOST LEVELDB BRPC ROCKSDB KRB5 SASL LIBRDKAFKA PULSAR FLATBUFFERS ARROW BROTLI ZSTD S2 BITSHUFFLE CROARINGBITMAP \
+            JEMALLOC CCTZ FMT RYU BREAK_PAD HADOOP JDK RAGEL HYPERSCAN MARIADB JINDOSDK AWS_SDK_CPP VPACK OPENTELEMETRY \
+            BENCHMARK FAST_FLOAT STARCACHE STREAMVBYTE JANSSON AVRO SERDES GCS_CONNECTOR LZO2 DATASKETCHES \
+            ASYNC_PROFILER FIU LIBDEFLATE LLVM ABSL CARES GRPC SIMDUTF TENANN POCO ICU"
