@@ -1,20 +1,20 @@
-#![feature(lang_items)]
-#![no_std]
+// #![feature(lang_items)]
+// #![no_std]
 
-#[no_mangle]
-pub extern "C" fn rust_main() {}
+// #[no_mangle]
+// pub extern "C" fn rust_main() {}
 
-#[cfg(not(test))]
-#[lang = "eh_personality"]
-#[no_mangle]
-pub extern "C" fn eh_personality() {}
+// #[cfg(not(test))]
+// #[lang = "eh_personality"]
+// #[no_mangle]
+// pub extern "C" fn eh_personality() {}
 
-#[cfg(not(test))]
-#[lang = "panic_fmt"]
-#[no_mangle]
-pub extern "C" fn panic_fmt() -> ! {
-    loop {}
-}
+// #[cfg(not(test))]
+// #[lang = "panic_fmt"]
+// #[no_mangle]
+// pub extern "C" fn panic_fmt() -> ! {
+//     loop {}
+// }
 
 pub fn add(left: usize, right: usize) -> usize {
     left + right

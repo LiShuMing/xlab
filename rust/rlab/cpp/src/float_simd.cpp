@@ -1,7 +1,8 @@
-// #define WIN32_LEAN_AND_MEAN
-// #include "windows.h"
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
+#include <cmath>
+#include <chrono>
 
 #define ALWAYS_INLINE __attribute__((__always_inline__,__nodebug__))
 //#define ALWAYS_INLINE 
@@ -236,11 +237,9 @@ int main()
 	double mean = 0.0, m2 = 0.0;
 	double min = 1;
 	double max = 0;
-	LARGE_INTEGER freq, start, end;
-	QueryPerformanceFrequency(&freq);
 	
 	for (int iter = 0; iter < kNumIterations; iter++) {
-		QueryPerformanceCounter(&start);
+		auto start = std::chrono::high_resolution_clock::now();
 
 		for (int p = 0; p < kNumParticles; p++) {
 			float3 vel = particleVel[p];
@@ -256,7 +255,7 @@ int main()
 				float squared = dx * dx + dy * dy + dz * dz;
 				float f = centerMass[c] / squared;
 
-				float distance = sqrtf(squared);
+				float distance = std::sqrt(squared);
 				if (distance < 10)
 					distance = 10;
 
@@ -277,7 +276,7 @@ int main()
 				float squared = dx * dx + dy * dy + dz * dz;
 				float f = centerMass[c] / squared;
 
-				float distance = sqrtf(squared);
+				float distance = std::sqrt(squared);
 				if (distance < 10)
 					distance = 10;
 
@@ -292,7 +291,7 @@ int main()
 				float squared = dx * dx + dy * dy + dz * dz;
 				float f = centerMass[c] / squared;
 
-				float distance = sqrtf(squared);
+				float distance = std::sqrt(squared);
 				if (distance < 10)
 					distance = 10;
 
@@ -313,7 +312,7 @@ int main()
 				float squared = dx * dx + dy * dy + dz * dz;
 				float f = centerMass[c] / squared;
 
-				float distance = sqrtf(squared);
+				float distance = std::sqrt(squared);
 				if (distance < 10)
 					distance = 10;
 
@@ -324,10 +323,9 @@ int main()
 			particleVel[p] = vel;
 		}
 
-		QueryPerformanceCounter(&end);
-
+		auto end = std::chrono::high_resolution_clock::now();
+		double elapsed = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
 		// in microseconds
-		double elapsed = (double)(end.QuadPart - start.QuadPart) / freq.QuadPart * 1000 * 1000;
 		double delta = elapsed - mean;
 		mean += delta / (iter + 1);
 		m2 += delta * (elapsed - mean);
@@ -338,7 +336,7 @@ int main()
 			min = elapsed;
 	}
 	double variance = m2 / kNumIterations;
-	double stddev = sqrt(variance);
+	double stddev = std::sqrt(variance);
 
 	printf("Mean: %fmus\n", mean);
 	printf("Stddev: %fmus\n", stddev);

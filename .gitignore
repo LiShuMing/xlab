@@ -60,3 +60,5 @@ spark-warehouse/
 .secrect_key
 master.log
 cc/cclab/bplusplus.out.boot
+*.log
+*.csv

@@ -196,3 +196,6 @@
 [submodule "cc/thirdparty/leveldb"]
 	path = cc/thirdparty/leveldb
 	url = git@github.com:google/leveldb.git
+[submodule "rust/thirdparty/tantivy"]
+	path = rust/thirdparty/tantivy
+	url = git@github.com:quickwit-oss/tantivy.git

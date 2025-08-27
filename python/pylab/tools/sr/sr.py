@@ -1,24 +1,40 @@
 sqls = """
-SELECT distinct prcdate FROM mv_iceberg_${uuid0}.sql_test_db.test_iceberg_with_month order by prcdate;
-SELECT distinct prcdate FROM mv_iceberg_${uuid0}.sql_test_db.test_iceberg_with_month where prcdate < '2025-01-03' order by prcdate;
-SELECT distinct prcdate FROM mv_iceberg_${uuid0}.sql_test_db.test_iceberg_with_month where prcdate > '2025-01-03' order by prcdate;
-"""
-
-values = """(1,"2020-06-15"),(2,"2020-06-18"),(3,"2020-06-21"),(4,"2020-06-24"),
-  (1,"2020-07-02"),(2,"2020-07-05"),(3,"2020-07-08"),(4,"2020-07-11"),
-  (1,"2020-07-16"),(2,"2020-07-19"),(3,"2020-07-22"),(4,"2020-07-25"),
-  (2,"2020-06-15"),(3,"2020-06-18"),(4,"2020-06-21"),(5,"2020-06-24"),
-  (2,"2020-07-02"),(3,"2020-07-05"),(4,"2020-07-08"),(5,"2020-07-11");
+select count(*) from t1 where last_day(dt) = '2025-01-01';
+SELECT count(*) FROM t1 WHERE last_day(dt) = '2025-01-31';
+SELECT count(*) FROM t1 WHERE last_day(dt) = '2025-02-28';
+SELECT count(*) FROM t1 WHERE last_day(dt) = '2025-03-31';
+SELECT count(*) FROM t1 WHERE last_day(dt) = '2025-04-30';
+SELECT count(*) FROM t1 WHERE last_day(dt) = '2025-05-31';
+SELECT count(*) FROM t1 WHERE last_day(dt) = '2025-06-30';
+SELECT count(*) FROM t1 WHERE last_day(dt) = '2025-07-31';
+SELECT count(*) FROM t1 WHERE last_day(dt) = '2025-08-31';
+SELECT count(*) FROM t1 WHERE last_day(dt) = '2025-09-30';
+SELECT count(*) FROM t1 WHERE last_day(dt) = '2025-10-31';
+SELECT count(*) FROM t1 WHERE last_day(dt) = '2025-11-30';
+SELECT count(*) FROM t1 WHERE last_day(dt) = '2025-12-31';
+SELECT count(*) FROM t1 WHERE last_day(dt) is NULL;
+SELECT count(*) FROM t1 WHERE last_day(dt) BETWEEN '2025-01-01' AND '2025-01-31';
+SELECT count(*) FROM t1 WHERE last_day(dt) BETWEEN '2025-01-01' AND '2025-02-28';
+SELECT count(*) FROM t1 WHERE last_day(dt) BETWEEN '2025-01-01' AND '2025-09-28';
+SELECT count(*) FROM t1 WHERE last_day(dt) BETWEEN '2025-01-01' AND '2025-12-28';
+SELECT count(*) FROM t1 WHERE last_day(dt) BETWEEN '2025-01-01' AND '2025-12-31';
+SELECT count(*) FROM t1 WHERE last_day(dt) BETWEEN '2025-01-01' AND '2025-12-31' or last_day(dt) is NULL;
+SELECT count(*) FROM t1 WHERE last_day(dt) = date_trunc('day', dt);
+SELECT count(*) FROM t1 WHERE last_day(dt) = date_trunc('month', dt);
+SELECT count(*) FROM t1 WHERE last_day(dt) = date_trunc('year', dt);
+SELECT count(*) FROM t1 WHERE  date_trunc('day', dt) < '2025-05-30' - INTERVAL 2 MONTH AND last_day(date_trunc('day', dt)) != date_trunc('day', dt);
+SELECT count(*) FROM t1 WHERE  date_trunc('day', dt) < '2025-12-30' - INTERVAL 2 MONTH AND last_day(date_trunc('day', dt)) != date_trunc('day', dt);
 """
 def func1():
     for sql in sqls.split("\n"):
         if sql.strip() == "":
             continue
         # print("function: check_hit_materialized_view(\"" + sql + "\", \"mv0\", \"UNION\")")
-        print("function: print_hit_materialized_view(\"" + sql + "\", \"test_mv1\")")
+        # print("function: print_hit_materialized_view(\"" + sql + "\", \"test_mv1\")")
         # print("function: print_hit_materialized_views(\"" + sql + "\")")
         # print("function: check_no_hit_materialized_view(\"" + sql + "\", \"test_mv1\")")
         #print(sql[:-1] + " order by dt;")
+        print("function: print_plan_partition_selected_num(\"" + sql + "\", \"t1\")")
 
 def func2():
     for v in values.split("\n"):

@@ -132,6 +132,8 @@ for TP_ARCH in ${TP_ARCHIVES[*]}
 do
     NAME=$TP_ARCH"_NAME"
     MD5SUM=$TP_ARCH"_MD5SUM"
+
+    echo "Downloading ${!NAME}..."
     if test "x$REPOSITORY_URL" = x; then
         URL=$TP_ARCH"_DOWNLOAD"
         download_func ${!NAME} ${!URL} $TP_SOURCE_DIR ${!MD5SUM}
@@ -394,205 +396,205 @@ fi
 cd -
 echo "Finished patching $CROARINGBITMAP_SOURCE"
 
-# patch pulsar
-cd $TP_SOURCE_DIR/$PULSAR_SOURCE
-if [ ! -f $PATCHED_MARK ] && [ $PULSAR_SOURCE = "pulsar-client-cpp-3.3.0" ]; then
-    patch -p1 < $TP_PATCH_DIR/pulsar.patch
-    touch $PATCHED_MARK
-fi
-cd -
-echo "Finished patching $PULSAR_SOURCE"
+# # patch pulsar
+# cd $TP_SOURCE_DIR/$PULSAR_SOURCE
+# if [ ! -f $PATCHED_MARK ] && [ $PULSAR_SOURCE = "pulsar-client-cpp-3.3.0" ]; then
+#     patch -p1 < $TP_PATCH_DIR/pulsar.patch
+#     touch $PATCHED_MARK
+# fi
+# cd -
+# echo "Finished patching $PULSAR_SOURCE"
 
-# patch mariadb-connector-c-3.2.5
-cd $TP_SOURCE_DIR/$MARIADB_SOURCE
-if [ ! -f $PATCHED_MARK ] && [ $MARIADB_SOURCE = "mariadb-connector-c-3.2.5" ]; then
-    patch -p0 < $TP_PATCH_DIR/mariadb-connector-c-3.2.5-for-starrocks-static-link.patch
-    touch $PATCHED_MARK
-    echo "Finished patching $MARIADB_SOURCE"
-fi
-if [ ! -f $PATCHED_MARK ] && [ $MARIADB_SOURCE = "mariadb-connector-c-3.1.14" ]; then
-    patch -p1 < $TP_PATCH_DIR/mariadb-connector-c-3.1.14-gcc14.patch
-    touch $PATCHED_MARK
-    echo "Finished patching $MARIADB_SOURCE"
-fi
+# # patch mariadb-connector-c-3.2.5
+# cd $TP_SOURCE_DIR/$MARIADB_SOURCE
+# if [ ! -f $PATCHED_MARK ] && [ $MARIADB_SOURCE = "mariadb-connector-c-3.2.5" ]; then
+#     patch -p0 < $TP_PATCH_DIR/mariadb-connector-c-3.2.5-for-starrocks-static-link.patch
+#     touch $PATCHED_MARK
+#     echo "Finished patching $MARIADB_SOURCE"
+# fi
+# if [ ! -f $PATCHED_MARK ] && [ $MARIADB_SOURCE = "mariadb-connector-c-3.1.14" ]; then
+#     patch -p1 < $TP_PATCH_DIR/mariadb-connector-c-3.1.14-gcc14.patch
+#     touch $PATCHED_MARK
+#     echo "Finished patching $MARIADB_SOURCE"
+# fi
 
-# patch aws-sdk-cpp
-cd $TP_SOURCE_DIR/$AWS_SDK_CPP_SOURCE
-if [ $AWS_SDK_CPP_SOURCE = "aws-sdk-cpp-1.11.267" ]; then
-    if [ ! -f prefetch_crt_dep_ok ]; then
-        bash ./prefetch_crt_dependency.sh
-        touch prefetch_crt_dep_ok
-    fi
-    if [ ! -f $PATCHED_MARK ]; then
-        patch -p1  < $TP_PATCH_DIR/aws-cpp-sdk-1.11.267-disable-chunked-upload.patch
-        touch $PATCHED_MARK
-    fi
-fi
-cd -
-echo "Finished patching $AWS_SDK_CPP_SOURCE"
+# # patch aws-sdk-cpp
+# cd $TP_SOURCE_DIR/$AWS_SDK_CPP_SOURCE
+# if [ $AWS_SDK_CPP_SOURCE = "aws-sdk-cpp-1.11.267" ]; then
+#     if [ ! -f prefetch_crt_dep_ok ]; then
+#         bash ./prefetch_crt_dependency.sh
+#         touch prefetch_crt_dep_ok
+#     fi
+#     if [ ! -f $PATCHED_MARK ]; then
+#         patch -p1  < $TP_PATCH_DIR/aws-cpp-sdk-1.11.267-disable-chunked-upload.patch
+#         touch $PATCHED_MARK
+#     fi
+# fi
+# cd -
+# echo "Finished patching $AWS_SDK_CPP_SOURCE"
 
-# patch jemalloc_hook
-cd $TP_SOURCE_DIR/$JEMALLOC_SOURCE
-if [ ! -f $PATCHED_MARK ] && [ $JEMALLOC_SOURCE = "jemalloc-5.3.0" ]; then
-    patch -p0 < $TP_PATCH_DIR/jemalloc_hook.patch
-    patch -p0 < $TP_PATCH_DIR/jemalloc_nallocx.patch
-    patch -p0 < $TP_PATCH_DIR/jemalloc_nodump.patch
-    touch $PATCHED_MARK
-fi
-cd -
-echo "Finished patching $JEMALLOC_SOURCE"
+# # patch jemalloc_hook
+# cd $TP_SOURCE_DIR/$JEMALLOC_SOURCE
+# if [ ! -f $PATCHED_MARK ] && [ $JEMALLOC_SOURCE = "jemalloc-5.3.0" ]; then
+#     patch -p0 < $TP_PATCH_DIR/jemalloc_hook.patch
+#     patch -p0 < $TP_PATCH_DIR/jemalloc_nallocx.patch
+#     patch -p0 < $TP_PATCH_DIR/jemalloc_nodump.patch
+#     touch $PATCHED_MARK
+# fi
+# cd -
+# echo "Finished patching $JEMALLOC_SOURCE"
 
-# patch streamvbyte
-cd $TP_SOURCE_DIR/$STREAMVBYTE_SOURCE
-if [ ! -f $PATCHED_MARK ] && [ $STREAMVBYTE_SOURCE = "streamvbyte-0.5.1" ]; then
-    patch -p1 < $TP_PATCH_DIR/streamvbyte.patch
-    touch $PATCHED_MARK
-fi
-cd -
-echo "Finished patching $STREAMVBYTE_SOURCE"
+# # patch streamvbyte
+# cd $TP_SOURCE_DIR/$STREAMVBYTE_SOURCE
+# if [ ! -f $PATCHED_MARK ] && [ $STREAMVBYTE_SOURCE = "streamvbyte-0.5.1" ]; then
+#     patch -p1 < $TP_PATCH_DIR/streamvbyte.patch
+#     touch $PATCHED_MARK
+# fi
+# cd -
+# echo "Finished patching $STREAMVBYTE_SOURCE"
 
-# patch hyperscan
-cd $TP_SOURCE_DIR/$HYPERSCAN_SOURCE
-if [ ! -f $PATCHED_MARK ] && [ $HYPERSCAN_SOURCE = "hyperscan-5.4.0" ]; then
-    patch -p1 < $TP_PATCH_DIR/hyperscan-5.4.0.patch
-    touch $PATCHED_MARK
-fi
-cd -
-echo "Finished patching $HYPERSCAN_SOURCE"
+# # patch hyperscan
+# cd $TP_SOURCE_DIR/$HYPERSCAN_SOURCE
+# if [ ! -f $PATCHED_MARK ] && [ $HYPERSCAN_SOURCE = "hyperscan-5.4.0" ]; then
+#     patch -p1 < $TP_PATCH_DIR/hyperscan-5.4.0.patch
+#     touch $PATCHED_MARK
+# fi
+# cd -
+# echo "Finished patching $HYPERSCAN_SOURCE"
 
-# patch vpack
-cd $TP_SOURCE_DIR/$VPACK_SOURCE
-if [ ! -f $PATCHED_MARK ] && [ $VPACK_SOURCE = "velocypack-XYZ1.0" ]; then
-    patch -p1 < $TP_PATCH_DIR/velocypack-XYZ1.0.patch
-    touch $PATCHED_MARK
-fi
-cd -
-echo "Finished patching $VPACK_SOURCE"
+# # patch vpack
+# cd $TP_SOURCE_DIR/$VPACK_SOURCE
+# if [ ! -f $PATCHED_MARK ] && [ $VPACK_SOURCE = "velocypack-XYZ1.0" ]; then
+#     patch -p1 < $TP_PATCH_DIR/velocypack-XYZ1.0.patch
+#     touch $PATCHED_MARK
+# fi
+# cd -
+# echo "Finished patching $VPACK_SOURCE"
 
-# patch avro-c
-cd $TP_SOURCE_DIR/$AVRO_SOURCE
-if [ ! -f $PATCHED_MARK ] && [ $AVRO_SOURCE = "avro-release-1.10.2" ]; then
-    cd $TP_SOURCE_DIR/$AVRO_SOURCE/lang/c
-    patch -p0 < $TP_PATCH_DIR/avro-1.10.2.c.patch
-    cd $TP_SOURCE_DIR/$AVRO_SOURCE
-    cp $TP_PATCH_DIR/avro-1.10.2.c.findjansson.patch $TP_SOURCE_DIR/$AVRO_SOURCE/lang/c/Findjansson.cmake
-    patch -p1 < $TP_PATCH_DIR/avro-1.10.2.c.gcc14.patch
-    touch $PATCHED_MARK
-fi
-cd -
-echo "Finished patching $AVRO_SOURCE-c"
+# # patch avro-c
+# cd $TP_SOURCE_DIR/$AVRO_SOURCE
+# if [ ! -f $PATCHED_MARK ] && [ $AVRO_SOURCE = "avro-release-1.10.2" ]; then
+#     cd $TP_SOURCE_DIR/$AVRO_SOURCE/lang/c
+#     patch -p0 < $TP_PATCH_DIR/avro-1.10.2.c.patch
+#     cd $TP_SOURCE_DIR/$AVRO_SOURCE
+#     cp $TP_PATCH_DIR/avro-1.10.2.c.findjansson.patch $TP_SOURCE_DIR/$AVRO_SOURCE/lang/c/Findjansson.cmake
+#     patch -p1 < $TP_PATCH_DIR/avro-1.10.2.c.gcc14.patch
+#     touch $PATCHED_MARK
+# fi
+# cd -
+# echo "Finished patching $AVRO_SOURCE-c"
 
-# patch serdes
-cd $TP_SOURCE_DIR/$SERDES_SOURCE
-if [ ! -f $PATCHED_MARK ] && [ $SERDES_SOURCE = "libserdes-7.3.1" ]; then
-    patch -p0 < $TP_PATCH_DIR/libserdes-7.3.1.patch
-    touch $PATCHED_MARK
-fi
-echo "Finished patching $SERDES_SOURCE"
-cd -
+# # patch serdes
+# cd $TP_SOURCE_DIR/$SERDES_SOURCE
+# if [ ! -f $PATCHED_MARK ] && [ $SERDES_SOURCE = "libserdes-7.3.1" ]; then
+#     patch -p0 < $TP_PATCH_DIR/libserdes-7.3.1.patch
+#     touch $PATCHED_MARK
+# fi
+# echo "Finished patching $SERDES_SOURCE"
+# cd -
 
-# patch sasl2
-cd $TP_SOURCE_DIR/$SASL_SOURCE
-if [ ! -f $PATCHED_MARK ] && [ $SASL_SOURCE = "cyrus-sasl-2.1.28" ]; then
-    patch -p1 < $TP_PATCH_DIR/sasl2-add-k5support-link.patch
-    patch -p1 < $TP_PATCH_DIR/sasl2-gcc14.patch
-    touch $PATCHED_MARK
-fi
-echo "Finished patching $SASL_SOURCE"
-cd -
+# # patch sasl2
+# cd $TP_SOURCE_DIR/$SASL_SOURCE
+# if [ ! -f $PATCHED_MARK ] && [ $SASL_SOURCE = "cyrus-sasl-2.1.28" ]; then
+#     patch -p1 < $TP_PATCH_DIR/sasl2-add-k5support-link.patch
+#     patch -p1 < $TP_PATCH_DIR/sasl2-gcc14.patch
+#     touch $PATCHED_MARK
+# fi
+# echo "Finished patching $SASL_SOURCE"
+# cd -
 
-cd $TP_SOURCE_DIR/$RAPIDJSON_SOURCE
-if [ ! -f $PATCHED_MARK ] && [ $RAPIDJSON_SOURCE = "rapidjson-1.1.0" ]; then
-    patch -p1 < $TP_PATCH_DIR/rapidjson-gcc14.patch
-    touch $PATCHED_MARK
-fi
-echo "Finished patching $RAPIDJSON_SOURCE"
-cd -
+# cd $TP_SOURCE_DIR/$RAPIDJSON_SOURCE
+# if [ ! -f $PATCHED_MARK ] && [ $RAPIDJSON_SOURCE = "rapidjson-1.1.0" ]; then
+#     patch -p1 < $TP_PATCH_DIR/rapidjson-gcc14.patch
+#     touch $PATCHED_MARK
+# fi
+# echo "Finished patching $RAPIDJSON_SOURCE"
+# cd -
 
-# patch arrow
-if [[ -d $TP_SOURCE_DIR/$ARROW_SOURCE ]] ; then
-    cd $TP_SOURCE_DIR/$ARROW_SOURCE
-    if [ ! -f $PATCHED_MARK ] && [ $ARROW_SOURCE = "arrow-apache-arrow-5.0.0" ] ; then
-        # use our built jemalloc
-        patch -p1 < $TP_PATCH_DIR/arrow-5.0.0-force-use-external-jemalloc.patch
-        # fix exception handling
-        patch -p1 < $TP_PATCH_DIR/arrow-5.0.0-fix-exception-handling.patch
-        patch -p1 < $TP_PATCH_DIR/arrow-5.0.0-parquet-map-key.patch
-        touch $PATCHED_MARK
-    fi
-    if [ ! -f $PATCHED_MARK ] && [ $ARROW_SOURCE = "arrow-apache-arrow-16.1.0" ] ; then
-        patch -p1 < $TP_PATCH_DIR/arrow-16.1.0-parquet-map-key.patch
-        patch -p1 < $TP_PATCH_DIR/arrow-16.1.0-use-zstd-1.5.0.patch
-        touch $PATCHED_MARK
-    fi
-    cd -
-    echo "Finished patching $ARROW_SOURCE"
-fi
+# # patch arrow
+# if [[ -d $TP_SOURCE_DIR/$ARROW_SOURCE ]] ; then
+#     cd $TP_SOURCE_DIR/$ARROW_SOURCE
+#     if [ ! -f $PATCHED_MARK ] && [ $ARROW_SOURCE = "arrow-apache-arrow-5.0.0" ] ; then
+#         # use our built jemalloc
+#         patch -p1 < $TP_PATCH_DIR/arrow-5.0.0-force-use-external-jemalloc.patch
+#         # fix exception handling
+#         patch -p1 < $TP_PATCH_DIR/arrow-5.0.0-fix-exception-handling.patch
+#         patch -p1 < $TP_PATCH_DIR/arrow-5.0.0-parquet-map-key.patch
+#         touch $PATCHED_MARK
+#     fi
+#     if [ ! -f $PATCHED_MARK ] && [ $ARROW_SOURCE = "arrow-apache-arrow-16.1.0" ] ; then
+#         patch -p1 < $TP_PATCH_DIR/arrow-16.1.0-parquet-map-key.patch
+#         patch -p1 < $TP_PATCH_DIR/arrow-16.1.0-use-zstd-1.5.0.patch
+#         touch $PATCHED_MARK
+#     fi
+#     cd -
+#     echo "Finished patching $ARROW_SOURCE"
+# fi
 
-# patch bzip
-if [[ -d $TP_SOURCE_DIR/$BZIP_SOURCE ]] ; then
-    cd $TP_SOURCE_DIR/$BZIP_SOURCE
-    if [ ! -f "$PATCHED_MARK" ] && [[ $BZIP_SOURCE == "bzip2-1.0.8" ]] ; then
-        patch -p1 < "$TP_PATCH_DIR/bzip2-1.0.8.patch"
-        touch "$PATCHED_MARK"
-    fi
-    cd -
-    echo "Finished patching $BZIP_SOURCE"
-fi
+# # patch bzip
+# if [[ -d $TP_SOURCE_DIR/$BZIP_SOURCE ]] ; then
+#     cd $TP_SOURCE_DIR/$BZIP_SOURCE
+#     if [ ! -f "$PATCHED_MARK" ] && [[ $BZIP_SOURCE == "bzip2-1.0.8" ]] ; then
+#         patch -p1 < "$TP_PATCH_DIR/bzip2-1.0.8.patch"
+#         touch "$PATCHED_MARK"
+#     fi
+#     cd -
+#     echo "Finished patching $BZIP_SOURCE"
+# fi
 
-# patch bitshuffle
-if [[ -d $TP_SOURCE_DIR/$BITSHUFFLE_SOURCE ]] ; then
-    cd $TP_SOURCE_DIR/$BITSHUFFLE_SOURCE
-    if [ ! -f "$PATCHED_MARK" ] && [[ $BITSHUFFLE_SOURCE == "bitshuffle-0.5.1" ]] ; then
-        patch -p1 < "$TP_PATCH_DIR/bitshuffle-0.5.1.patch"
-        touch "$PATCHED_MARK"
-    fi
-    cd -
-    echo "Finished patching $BITSHUFFLE_SOURCE"
-fi
+# # patch bitshuffle
+# if [[ -d $TP_SOURCE_DIR/$BITSHUFFLE_SOURCE ]] ; then
+#     cd $TP_SOURCE_DIR/$BITSHUFFLE_SOURCE
+#     if [ ! -f "$PATCHED_MARK" ] && [[ $BITSHUFFLE_SOURCE == "bitshuffle-0.5.1" ]] ; then
+#         patch -p1 < "$TP_PATCH_DIR/bitshuffle-0.5.1.patch"
+#         touch "$PATCHED_MARK"
+#     fi
+#     cd -
+#     echo "Finished patching $BITSHUFFLE_SOURCE"
+# fi
 
-# patch flatbuffers
-if [[ -d $TP_SOURCE_DIR/$FLATBUFFERS_SOURCE ]] ; then
-    cd $TP_SOURCE_DIR/$FLATBUFFERS_SOURCE
-    if [ ! -f "$PATCHED_MARK" ] && [[ $FLATBUFFERS_SOURCE == "flatbuffers-1.10.0" ]] ; then
-        patch -p1 < "$TP_PATCH_DIR/flat-buffers-1.10.0-no-stringop-overread.patch"
-        touch "$PATCHED_MARK"
-    fi
-    cd -
-    echo "Finished patching $FLATBUFFERS_SOURCE"
-fi
+# # patch flatbuffers
+# if [[ -d $TP_SOURCE_DIR/$FLATBUFFERS_SOURCE ]] ; then
+#     cd $TP_SOURCE_DIR/$FLATBUFFERS_SOURCE
+#     if [ ! -f "$PATCHED_MARK" ] && [[ $FLATBUFFERS_SOURCE == "flatbuffers-1.10.0" ]] ; then
+#         patch -p1 < "$TP_PATCH_DIR/flat-buffers-1.10.0-no-stringop-overread.patch"
+#         touch "$PATCHED_MARK"
+#     fi
+#     cd -
+#     echo "Finished patching $FLATBUFFERS_SOURCE"
+# fi
 
-#patch clucene
-if [[ -d $TP_SOURCE_DIR/$CLUCENE_SOURCE ]] ; then
-    cd $TP_SOURCE_DIR/$CLUCENE_SOURCE
-    if [ ! -f "$PATCHED_MARK" ] ; then
-        patch -p1 < "$TP_PATCH_DIR/clucene-gcc14.patch"
-        touch "$PATCHED_MARK"
-    fi
-    cd -
-    echo "Finished patching $CLUCENE_SOURCE"
-fi
+# #patch clucene
+# if [[ -d $TP_SOURCE_DIR/$CLUCENE_SOURCE ]] ; then
+#     cd $TP_SOURCE_DIR/$CLUCENE_SOURCE
+#     if [ ! -f "$PATCHED_MARK" ] ; then
+#         patch -p1 < "$TP_PATCH_DIR/clucene-gcc14.patch"
+#         touch "$PATCHED_MARK"
+#     fi
+#     cd -
+#     echo "Finished patching $CLUCENE_SOURCE"
+# fi
 
-#patch poco
-if [[ -d $TP_SOURCE_DIR/$POCO_SOURCE ]] ; then
-    cd $TP_SOURCE_DIR/$POCO_SOURCE
-    if [ ! -f "$PATCHED_MARK" ] && [[ $POCO_SOURCE == "poco-1.12.5-release" ]] ; then
-        patch -p1 < "$TP_PATCH_DIR/poco-1.12.5-ca.patch"
-        patch -p1 < "$TP_PATCH_DIR/poco-1.12.5-zero-copy.patch"
-        patch -p1 < "$TP_PATCH_DIR/poco-1.12.5-keep-alive.patch"
-        touch "$PATCHED_MARK"
-    fi
-    cd -
-    echo "Finished patching $POCO_SOURCE"
-fi
+# #patch poco
+# if [[ -d $TP_SOURCE_DIR/$POCO_SOURCE ]] ; then
+#     cd $TP_SOURCE_DIR/$POCO_SOURCE
+#     if [ ! -f "$PATCHED_MARK" ] && [[ $POCO_SOURCE == "poco-1.12.5-release" ]] ; then
+#         patch -p1 < "$TP_PATCH_DIR/poco-1.12.5-ca.patch"
+#         patch -p1 < "$TP_PATCH_DIR/poco-1.12.5-zero-copy.patch"
+#         patch -p1 < "$TP_PATCH_DIR/poco-1.12.5-keep-alive.patch"
+#         touch "$PATCHED_MARK"
+#     fi
+#     cd -
+#     echo "Finished patching $POCO_SOURCE"
+# fi
 
-# patch breakpad
-if [[ -d $TP_SOURCE_DIR/$BREAK_PAD_SOURCE ]] ; then
-    cd $TP_SOURCE_DIR/$BREAK_PAD_SOURCE
-    if [ ! -f "$PATCHED_MARK" ] && [[ $BREAK_PAD_SOURCE == "breakpad-2022.07.12" ]] ; then
-        patch -p1 < "$TP_PATCH_DIR/breakpad-2022.07.12.patch"
-        touch "$PATCHED_MARK"
-    fi
-    cd -
-    echo "Finished patching $BREAK_PAD_SOURCE"
-fi
+# # patch breakpad
+# if [[ -d $TP_SOURCE_DIR/$BREAK_PAD_SOURCE ]] ; then
+#     cd $TP_SOURCE_DIR/$BREAK_PAD_SOURCE
+#     if [ ! -f "$PATCHED_MARK" ] && [[ $BREAK_PAD_SOURCE == "breakpad-2022.07.12" ]] ; then
+#         patch -p1 < "$TP_PATCH_DIR/breakpad-2022.07.12.patch"
+#         touch "$PATCHED_MARK"
+#     fi
+#     cd -
+#     echo "Finished patching $BREAK_PAD_SOURCE"
+# fi

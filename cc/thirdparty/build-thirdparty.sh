@@ -34,6 +34,9 @@ curdir=`cd "$curdir"; pwd`
 export XLAB_HOME=${XLAB_HOME:-$curdir/..}
 export TP_DIR=$curdir
 
+echo XLAB_HOME: ${XLAB_HOME}
+echo TP_DIR: ${TP_DIR}
+
 # include custom environment variables
 if [[ -f ${XLAB_HOME}/env.sh ]]; then
     . ${XLAB_HOME}/env.sh
@@ -53,7 +56,9 @@ fi
 cd $TP_DIR
 
 # Download thirdparties.
+echo "===== Download thirdparty ====="
 ${TP_DIR}/download-thirdparty.sh
+echo "===== Download thirdparty done ====="
 
 # set COMPILER
 if [[ ! -z ${XLAB_GCC_HOME} ]]; then
@@ -65,6 +70,7 @@ else
     echo "XLAB_GCC_HOME environment variable is not set"
     exit 1
 fi
+echo "XLAB_GCC_HOME: ${XLAB_GCC_HOME}"
 
 # prepare installed prefix
 mkdir -p ${TP_DIR}/installed
@@ -382,7 +388,7 @@ build_gtest() {
     mkdir -p $BUILD_DIR
     cd $BUILD_DIR
     rm -rf CMakeCache.txt CMakeFiles/
-    $CMAKE_CMD -G "${CMAKE_GENERATOR}" -DCMAKE_INSTALL_PREFIX=$TP_INSTALL_DIR -DCMAKE_INSTALL_LIBDIR=lib \
+    $CMAKE_CMD -G "${CMAKE_GENERATOR}" -DCMAKE_INSTALL_PREFIX=$TP_INSTALL_DIR -DCMAKE_INSTALL_LIBDIR=lib64 \
     -DCMAKE_POSITION_INDEPENDENT_CODE=On ../
     ${BUILD_SYSTEM} -j$PARALLEL
     ${BUILD_SYSTEM} install
@@ -624,7 +630,7 @@ build_librdkafka() {
     $CMAKE_CMD -DCMAKE_LIBRARY_PATH="$TP_INSTALL_DIR/lib;$TP_INSTALL_DIR/lib64" \
         -DCMAKE_INCLUDE_PATH="$TP_INSTALL_DIR/include;$TP_INSTALL_DIR/include/zstd;$TP_INSTALL_DIR/include/lz4" \
         -DBUILD_SHARED_LIBS=0 -DCMAKE_INSTALL_PREFIX=$TP_INSTALL_DIR -DRDKAFKA_BUILD_STATIC=ON -DWITH_SASL=ON -DWITH_SASL_SCRAM=ON \
-        -DRDKAFKA_BUILD_EXAMPLES=OFF -DRDKAFKA_BUILD_TESTS=OFF -DWITH_SSL=ON -DWITH_ZSTD=ON -DCMAKE_INSTALL_LIBDIR=lib ..
+        -DRDKAFKA_BUILD_EXAMPLES=OFF -DRDKAFKA_BUILD_TESTS=OFF -DWITH_SSL=ON -DWITH_ZSTD=ON -DCMAKE_INSTALL_LIBDIR=lib64 ..
 
     ${BUILD_SYSTEM} -j$PARALLEL
     ${BUILD_SYSTEM} install
@@ -848,7 +854,7 @@ build_croaringbitmap() {
     -DROARING_DISABLE_NATIVE=ON \
     -DFORCE_AVX=$FORCE_AVX \
     -DROARING_DISABLE_AVX512=ON \
-    -DCMAKE_INSTALL_LIBDIR=lib \
+    -DCMAKE_INSTALL_LIBDIR=lib64 \
     -DCMAKE_LIBRARY_PATH="$TP_INSTALL_DIR/lib;$TP_INSTALL_DIR/lib64" ..
     ${BUILD_SYSTEM} -j$PARALLEL
     ${BUILD_SYSTEM} install
@@ -955,7 +961,7 @@ build_hyperscan() {
     cd $TP_SOURCE_DIR/$HYPERSCAN_SOURCE
     export PATH=$TP_INSTALL_DIR/bin:$PATH
     $CMAKE_CMD -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${TP_INSTALL_DIR} -DBOOST_ROOT=$XLAB_THIRDPARTY/installed/include \
-          -DCMAKE_CXX_COMPILER=$XLAB_GCC_HOME/bin/g++ -DCMAKE_C_COMPILER=$XLAB_GCC_HOME/bin/gcc  -DCMAKE_INSTALL_LIBDIR=lib \
+          -DCMAKE_CXX_COMPILER=$XLAB_GCC_HOME/bin/g++ -DCMAKE_C_COMPILER=$XLAB_GCC_HOME/bin/gcc  -DCMAKE_INSTALL_LIBDIR=lib64 \
           -DBUILD_EXAMPLES=OFF -DBUILD_UNIT=OFF
     ${BUILD_SYSTEM} -j$PARALLEL
     ${BUILD_SYSTEM} install
@@ -1273,7 +1279,7 @@ build_absl() {
     cd "$TP_SOURCE_DIR/${ABSL_SOURCE}"
 
     ${CMAKE_CMD} -G "${CMAKE_GENERATOR}" \
-        -DCMAKE_INSTALL_LIBDIR=lib \
+        -DCMAKE_INSTALL_LIBDIR=lib64 \
         -DCMAKE_INSTALL_PREFIX="$TP_INSTALL_DIR" \
         -DCMAKE_CXX_STANDARD=17
     
@@ -1327,7 +1333,7 @@ build_simdutf() {
     cd "$TP_SOURCE_DIR/${SIMDUTF_SOURCE}"
 
     ${CMAKE_CMD} -G "${CMAKE_GENERATOR}" \
-        -DCMAKE_INSTALL_LIBDIR=lib \
+        -DCMAKE_INSTALL_LIBDIR=lib64 \
         -DCMAKE_INSTALL_PREFIX="$TP_INSTALL_DIR"    \
         -DSIMDUTF_TESTS=OFF \
         -DSIMDUTF_TOOLS=OFF \
@@ -1397,26 +1403,29 @@ export CPPFLAGS=$GLOBAL_CPPFLAGS
 export CXXFLAGS=$GLOBAL_CXXFLAGS
 export CFLAGS=$GLOBAL_CFLAGS
 
-build_libevent
-build_zlib
-build_lz4
-build_lzo2
-build_bzip
-build_openssl
-build_boost # must before thrift
-build_protobuf
-build_gflags
-build_gtest
-build_glog
-build_rapidjson
-build_simdjson
-build_snappy
-build_gperftools
-build_curl
-build_re2
+# build_libevent
+# build_zlib
+# build_lz4
+# build_lzo2
+# build_bzip
+# build_openssl
+# build_boost # must before thrift
+# build_protobuf
+# build_gflags
+# build_gtest
+# build_glog
+# build_rapidjson
+# build_simdjson
+# build_snappy
+# build_gperftools
+
+# build_curl
+# build_re2
+
 build_thrift
 build_leveldb
 build_brpc
+
 # build_rocksdb
 # build_kerberos
 # # must build before arrow
