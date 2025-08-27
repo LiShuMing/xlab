@@ -14,6 +14,12 @@ class MVConcurrentRefreshBenchWithTPCH : MVSuite()  {
     }
 
     @Test
+    fun createTPCH1GTables() {
+        useTpch1g(true, true)
+        sql("show tables")
+    }
+
+    @Test
     fun updateBaseTables() {
         while (true) {
             val sql = """
@@ -28,10 +34,7 @@ INSERT INTO ${suiteDbName}.lineitem (L_ORDERKEY, L_PARTKEY, L_SUPPKEY, L_LINENUM
     }
 
     @Test
-    fun createDefaultDbMVsWithOtherDB() {
-        // create database
-        useTpch1g(true, true)
-        sql("show tables")
+    fun createTPCH1GRelatedMVs() {
         // load data
         for (i in 0..1) {
             val createTableSql = Util.readContentFromResource("tpch_1g/create_all_tpch_mvs_async.sql")
@@ -40,6 +43,16 @@ INSERT INTO ${suiteDbName}.lineitem (L_ORDERKEY, L_PARTKEY, L_SUPPKEY, L_LINENUM
             val sql = createTableSql.replace("<DB>", suiteDbName)
             sql(sql)
         }
+    }
+
+    @Test
+    fun createTPCH100GRelatedMVs() {
+        useDB("tpch_100g")
+        val createTableSql = Util.readContentFromResource("tpch_1g/create_all_tpch_mvs_async.sql")
+        val db = "test_tpch_100g_mv"
+        mustCreateAndUseDB(db)
+        val sql = createTableSql.replace("<DB>", "tpch_100g")
+        sql(sql)
     }
 
     @Test

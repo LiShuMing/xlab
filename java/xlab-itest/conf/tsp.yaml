@@ -1,5 +1,5 @@
 mysql-client:
-  host: 172.26.80.111
+  host: 172.26.80.52
   port: 9030
   user: root
   password:

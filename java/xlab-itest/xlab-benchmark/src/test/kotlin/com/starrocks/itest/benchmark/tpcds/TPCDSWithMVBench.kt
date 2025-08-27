@@ -1,8 +1,8 @@
 package com.starrocks.itest.benchmark.tpcds
 
 import com.starrocks.itest.framework.MVSuite
+import com.starrocks.itest.framework.utils.TPCQuerySet
 import com.starrocks.itest.framework.utils.Util
-import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import kotlin.test.Test
 
@@ -10,13 +10,46 @@ class TPCDSWithMVBench : MVSuite()  {
     @BeforeAll
     override fun before() {
         super.before()
+    }
+
+    @Test
+    fun createTPCDSTables() {
         val createTableSql = Util.readContentFromResource("tpcds/create_table.sql")
         sql(createTableSql)
     }
 
-    @AfterAll
-    override fun after() {
-//        super.after()
+    @Test
+    fun testTPCDSQueries() {
+        val queries = TPCQuerySet.tpcdsQueries()
+        var start = 0
+        for (i in 0 until 100) {
+            for ((n, sql) in queries) {
+                println(sql)
+                sql(sql)
+                start += 1
+                if (start > 1000) {
+                    break
+                }
+                val mvName = "test_mv${start}"
+                sql.split(";").stream().map(String::trim).filter { it.isNotEmpty() }.findAny()
+                    .map { createMV(it, mvName) }
+
+            }
+        }
+    }
+
+    fun createMV(query: String, mvName: String) {
+        val mvSQL = "CREATE MATERIALIZED VIEW  if not exists $mvName \n" +
+                "DISTRIBUTED BY RANDOM \n" +
+                "PROPERTIES (  " +
+                "\"replication_num\"=\"1\"" +
+                ") AS \n $query;";
+        println(mvSQL)
+        try {
+            sql(mvSQL)
+        } catch (e: Exception) {
+            println(e)
+        }
     }
 
     @Test

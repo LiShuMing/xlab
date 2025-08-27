@@ -6,7 +6,7 @@ import java.sql.DriverManager
 
 object MySQLUtil {
     fun newMySQLConnectionPool(hostPort: String, user: String, size: Int): ConnectionPool<MySQLConnection> {
-        val cxnString = "jdbc:mysql://$hostPort/?user=$user&zeroDateTimeBehavior=convertToNull&connectTimeout=6000&socketTimeout=300000"
+        val cxnString = "jdbc:mysql://$hostPort/?user=$user&zeroDateTimeBehavior=convertToNull&connectTimeout=600000&socketTimeout=300000"
         return newMySQLConnectionPool(cxnString, size)
     }
 
