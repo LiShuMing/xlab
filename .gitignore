@@ -62,3 +62,5 @@ master.log
 cc/cclab/bplusplus.out.boot
 *.log
 *.csv
+rust/rdb/data
+.venv

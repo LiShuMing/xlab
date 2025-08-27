@@ -152,7 +152,6 @@ open class MVSuite: Suite() {
                     "DISTRIBUTED BY RANDOM \n" +
                     "REFRESH DEFERRED MANUAL\n" +
                     "PROPERTIES (  " +
-                    "\"force_external_table_query_rewrite\"=\"true\"," +
                     "\"replication_num\"=\"1\"" +
                     ") AS \n $query;";
         } else {
@@ -161,7 +160,6 @@ open class MVSuite: Suite() {
                     "DISTRIBUTED BY RANDOM \n" +
                     "REFRESH DEFERRED MANUAL\n" +
                     "PROPERTIES (  " +
-                    "\"force_external_table_query_rewrite\"=\"true\"," +
                     "\"replication_num\"=\"1\"" +
                     ") AS \n $query;";
         }
@@ -175,7 +173,6 @@ open class MVSuite: Suite() {
                 "DISTRIBUTED BY hash($distBy) BUCKETS 8\n" +
                 "REFRESH DEFERRED MANUAL\n" +
                 "PROPERTIES (  " +
-                "\"force_external_table_query_rewrite\"=\"true\"," +
                 "\"replication_num\"=\"1\"" +
                 ") AS \n $query;";
         mustExec(sql)
