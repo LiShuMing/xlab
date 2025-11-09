@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.16)
 
 project(srlab
     VERSION 0.1.0
@@ -37,12 +37,18 @@ find_package(fmt QUIET)
 if(fmt_FOUND)
     target_link_libraries(srlab_app PRIVATE fmt::fmt)
     target_compile_definitions(srlab_app PRIVATE SRLAB_USE_FMT=1)
+else()
+    message(WARNING "fmt not found, using default string concatenation")
+    return()
 endif()
 
 find_package(absl QUIET COMPONENTS strings)
 if(absl_FOUND)
     target_link_libraries(srlab_app PRIVATE absl::strings)
     target_compile_definitions(srlab_app PRIVATE SRLAB_USE_ABSL_STRINGS=1)
+else()
+    message(WARNING "absl not found, using default string concatenation")
+    return()
 endif()
 
 include(GNUInstallDirs)
