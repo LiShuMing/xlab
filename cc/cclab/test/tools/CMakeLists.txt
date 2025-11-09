@@ -2,8 +2,15 @@ message(STATUS "link_libs=${link_libs}")
 
 # include_directories(/usr/include)
 # link_directories(/usr/lib)
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(LIBUNWIND REQUIRED libunwind)
+find_package(PkgConfig)
+if (PkgConfig_FOUND)
+    pkg_check_modules(LIBUNWIND libunwind)
+endif()
+
+if (NOT LIBUNWIND_FOUND)
+    message(WARNING "libunwind not found. Skipping tools test targets.")
+    return()
+endif()
 
 function(add_directory_for_tools dir)
     file(GLOB TEST_SOURCES "${dir}/*.cc")
