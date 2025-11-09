@@ -15,7 +15,7 @@ The project includes Arrow-based tests using GoogleTest:
 
 ```bash
 ./build.sh
-ctest --test-dir build --output-on-failure
+ctest --test-dir tests --output-on-failure
 ```
 
 Or run the test executable directly:

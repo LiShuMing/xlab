@@ -45,6 +45,17 @@ if(absl_FOUND)
     target_compile_definitions(srlab_app PRIVATE SRLAB_USE_ABSL_STRINGS=1)
 endif()
 
+set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_STATIC_RUNTIME ON)
+set(Boost_NO_WARN_NEW_VERSIONS ON)
+set(Boost_DIR "${THIRDPARTY_ROOT}/installed/lib/cmake/Boost-1.80.0")
+find_package(Boost 1.80 QUIET COMPONENTS system filesystem)
+if(Boost_FOUND)
+    target_link_libraries(srlab_app PRIVATE Boost::system Boost::filesystem)
+    target_compile_definitions(srlab_app PRIVATE SRLAB_USE_BOOST=1)
+    message(STATUS "Boost found: ${Boost_VERSION}")
+endif()
+
 enable_testing()
 add_subdirectory(tests)
 
