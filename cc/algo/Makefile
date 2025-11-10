@@ -14,5 +14,8 @@ leetcode_3607: src/leetcode/leetcode_3607.cc
 leetcode_1611: src/leetcode/leetcode_1611.cc
 	$(CXX) $(CXXFLAGS) -o $(BIN_DIR)/leetcode_1611 src/leetcode/leetcode_1611.cc
 
+leetcode_2169: src/leetcode/leetcode_2169.cc
+	$(CXX) $(CXXFLAGS) -o $(BIN_DIR)/leetcode_2169 src/leetcode/leetcode_2169.cc
+
 clean:
 	rm -f $(BIN_DIR)/*
