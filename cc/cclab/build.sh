@@ -41,6 +41,49 @@ fi
 echo "BUILD_TYPE: $BUILD_TYPE"
 # BUILD_TYPE=RELEASE
 BUILD_DIR=build_$BUILD_TYPE
+
+REQUIRED_CMAKE_VERSION="3.22.0"
+version_ge() {
+    [ "$(printf '%s\n%s\n' "$2" "$1" | sort -V | head -n1)" = "$2" ]
+}
+
+resolve_cmake() {
+    local candidate=$1
+    if [ -x "$candidate" ]; then
+        echo "$candidate"
+        return 0
+    fi
+    if command -v "$candidate" >/dev/null 2>&1; then
+        command -v "$candidate"
+        return 0
+    fi
+    return 1
+}
+
+CMAKE_BIN=${CMAKE_BIN:-cmake}
+if ! CMAKE_BIN=$(resolve_cmake "$CMAKE_BIN"); then
+    echo "Error: cmake executable not found (looked for '${CMAKE_BIN}')." >&2
+    exit 1
+fi
+
+CURRENT_CMAKE_VERSION=$($CMAKE_BIN --version | head -n1 | awk '{print $3}')
+if ! version_ge "$CURRENT_CMAKE_VERSION" "$REQUIRED_CMAKE_VERSION"; then
+    if [ "$CMAKE_BIN" != "/usr/bin/cmake" ] && [ -x /usr/bin/cmake ]; then
+        ALT_CMAKE_VERSION=$(/usr/bin/cmake --version | head -n1 | awk '{print $3}')
+        if version_ge "$ALT_CMAKE_VERSION" "$REQUIRED_CMAKE_VERSION"; then
+            CMAKE_BIN="/usr/bin/cmake"
+            CURRENT_CMAKE_VERSION="$ALT_CMAKE_VERSION"
+        fi
+    fi
+fi
+
+if ! version_ge "$CURRENT_CMAKE_VERSION" "$REQUIRED_CMAKE_VERSION"; then
+    echo "Error: CMake >= ${REQUIRED_CMAKE_VERSION} is required but found ${CURRENT_CMAKE_VERSION} at ${CMAKE_BIN}." >&2
+    echo "Please install a newer CMake or set CMAKE_BIN to the appropriate executable." >&2
+    exit 1
+fi
+
+echo "CMake: $CMAKE_BIN (version $CURRENT_CMAKE_VERSION)"
 DIR=$(cd $(dirname $0) && pwd )
 
 # export CMAKE_GENERATOR="Ninja"
@@ -50,7 +93,7 @@ DIR=$(cd $(dirname $0) && pwd )
 # rm -rf $BUILD_DIR
 mkdir -p $BUILD_DIR
 cd $BUILD_DIR &&
-    cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+    "$CMAKE_BIN" -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
         -DCMAKE_C_COMPILER=${CC} \
         -DCMAKE_CXX_COMPILER=${CXX} \
         -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
@@ -60,4 +103,4 @@ cd $BUILD_DIR &&
         -Dgperftools_build_benchmark=OFF \
         -DFMT_INSTALL=ON \
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-        .. && cmake --build . --parallel $BUILD_THREAD
+        .. && "$CMAKE_BIN" --build . --parallel $BUILD_THREAD

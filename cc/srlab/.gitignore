@@ -1,0 +1,51 @@
+cmake-build-*/
+.clion.source.upload.marker
+.idea/
+target/
+*.out
+*.iml
+*.swp
+.gdb_history
+build_Release/
+.vscode/
+speed_avx512bw_g++
+verify_avx512bw_g++
+# Prerequisites
+*.d
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+# Precompiled Headers
+*.gch
+*.pch
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+# Fortran module files
+*.mod
+*.smod
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+# Executables
+*.exe
+*.out
+*.app
+# ide
+.vscode
+# generated files
+*.json
+*.html
+tags
+.DS_Store
+logs
+.pyc
+__pycache__
+build_*
+build/
+Testing/
