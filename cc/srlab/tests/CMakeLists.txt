@@ -75,6 +75,27 @@ if(GTest_FOUND)
         else()
             message(STATUS "Boost not found; skipping Boost tests.")
         endif()
+        
+        if(TARGET folly)
+            add_executable(use_folly_tests test_folly.cpp)
+            set_target_properties(use_folly_tests PROPERTIES
+                CXX_STANDARD 17
+                CXX_STANDARD_REQUIRED ON
+                CXX_EXTENSIONS OFF)
+            
+            target_link_libraries(use_folly_tests PRIVATE
+                ${_srlab_gtest_target}
+                folly)
+            
+            if(_srlab_require_custom_main)
+                target_compile_definitions(use_folly_tests PRIVATE SRLAB_NEEDS_GTEST_MAIN=1)
+            endif()
+            
+            add_test(NAME use_folly COMMAND use_folly_tests)
+            message(STATUS "Added test: use_folly")
+        else()
+            message(STATUS "Folly not found; skipping Folly tests.")
+        endif()
     else()
         message(WARNING "GTest package found but exposes no gtest/gmock target; skipping tests.")
     endif()

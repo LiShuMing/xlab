@@ -15,6 +15,11 @@
 #include <boost/algorithm/string/join.hpp>
 #endif
 
+#ifdef SRLAB_USE_FOLLY
+#include <folly/FBString.h>
+#include <folly/String.h>
+#endif
+
 int main()
 {
     std::vector<std::string> words{"Hello", "from", "SR", "Lab"};
@@ -41,6 +46,11 @@ int main()
     
 #ifdef SRLAB_USE_BOOST
     std::cout << "Current path: " << boost::filesystem::current_path() << std::endl;
+#endif
+
+#ifdef SRLAB_USE_FOLLY
+    folly::fbstring fb_message = folly::join(" ", words);
+    std::cout << "Folly message: " << fb_message << std::endl;
 #endif
     
     return 0;

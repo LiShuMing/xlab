@@ -23,6 +23,36 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 include(ThirdpartyConfig)
 
+set(Boost_USE_STATIC_LIBS ON CACHE BOOL "Use static Boost libraries")
+set(Boost_USE_STATIC_RUNTIME ON CACHE BOOL "Use static runtime")
+set(Boost_NO_WARN_NEW_VERSIONS ON)
+set(Boost_DIR "${THIRDPARTY_ROOT}/installed/lib/cmake/Boost-1.80.0")
+set(BOOST_LINK_STATIC ON CACHE STRING "Link Boost statically for Folly")
+
+option(SRLAB_BUILD_FOLLY "Build Folly from source (requires all dependencies)" OFF)
+set(FOLLY_SOURCE_DIR "/home/disk1/lishuming/work/xlab/cc/thirdparty/folly" CACHE PATH "Folly source directory")
+
+if(SRLAB_BUILD_FOLLY AND EXISTS "${FOLLY_SOURCE_DIR}/CMakeLists.txt")
+    message(STATUS "Adding Folly from source: ${FOLLY_SOURCE_DIR}")
+    message(STATUS "Note: Folly requires many dependencies (double-conversion, glog, gflags, etc.)")
+    
+    # Set hints for Folly dependencies
+    set(GFLAGS_INCLUDE_DIR "${THIRDPARTY_ROOT}/installed/include")
+    set(GFLAGS_LIBRARY "${THIRDPARTY_ROOT}/installed/lib/libgflags.a")
+    set(GLOG_INCLUDE_DIR "${THIRDPARTY_ROOT}/installed/include")
+    set(GLOG_LIBRARY "${THIRDPARTY_ROOT}/installed/lib/libglog.a")
+    
+    # Use Arrow's vendored double-conversion
+    set(DOUBLE_CONVERSION_INCLUDE_DIR "${THIRDPARTY_ROOT}/installed/include/arrow/vendored/double-conversion")
+    set(DOUBLE_CONVERSION_LIBRARY "")  # Header-only from Arrow's vendored version
+    
+    add_subdirectory("${FOLLY_SOURCE_DIR}" "${CMAKE_BINARY_DIR}/folly" EXCLUDE_FROM_ALL)
+elseif(SRLAB_BUILD_FOLLY)
+    message(WARNING "Folly source directory not found: ${FOLLY_SOURCE_DIR}")
+else()
+    message(STATUS "Folly build disabled. Set SRLAB_BUILD_FOLLY=ON to enable.")
+endif()
+
 add_executable(srlab_app src/main.cpp)
 
 set_target_properties(srlab_app PROPERTIES
@@ -45,15 +75,17 @@ if(absl_FOUND)
     target_compile_definitions(srlab_app PRIVATE SRLAB_USE_ABSL_STRINGS=1)
 endif()
 
-set(Boost_USE_STATIC_LIBS ON)
-set(Boost_USE_STATIC_RUNTIME ON)
-set(Boost_NO_WARN_NEW_VERSIONS ON)
-set(Boost_DIR "${THIRDPARTY_ROOT}/installed/lib/cmake/Boost-1.80.0")
 find_package(Boost 1.80 QUIET COMPONENTS system filesystem)
 if(Boost_FOUND)
     target_link_libraries(srlab_app PRIVATE Boost::system Boost::filesystem)
     target_compile_definitions(srlab_app PRIVATE SRLAB_USE_BOOST=1)
-    message(STATUS "Boost found: ${Boost_VERSION}")
+    message(STATUS "Boost found for srlab_app: ${Boost_VERSION}")
+endif()
+
+if(TARGET folly)
+    target_link_libraries(srlab_app PRIVATE folly)
+    target_compile_definitions(srlab_app PRIVATE SRLAB_USE_FOLLY=1)
+    message(STATUS "Folly target available")
 endif()
 
 enable_testing()

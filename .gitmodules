@@ -199,3 +199,9 @@
 [submodule "rust/thirdparty/tantivy"]
 	path = rust/thirdparty/tantivy
 	url = git@github.com:quickwit-oss/tantivy.git
+[submodule "cc/thirdparty/fastgrind"]
+	path = cc/thirdparty/fastgrind
+	url = git@github.com:adny-code/fastgrind.git
+[submodule "cc/thirdparty/folly"]
+	path = cc/thirdparty/folly
+	url = git@github.com:facebook/folly.git
