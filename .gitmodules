@@ -205,3 +205,6 @@
 [submodule "cc/thirdparty/folly"]
 	path = cc/thirdparty/folly
 	url = git@github.com:facebook/folly.git
+[submodule "cc/thirdparty/fast_float"]
+	path = cc/thirdparty/fast_float
+	url = git@github.com:fastfloat/fast_float.git
