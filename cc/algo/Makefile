@@ -1,37 +1,62 @@
 CXX = g++
 # CXXFLAGS = -std=c++17 -O0 -fno-omit-frame-pointer -g
 CXXFLAGS = -std=c++17 -O2
-BIN_DIR = bin
 
-leetcode_3318: src/leetcode/leetcode_3318.cc
-	$(CXX) $(CXXFLAGS) -o $(BIN_DIR)/leetcode_3318 src/leetcode/leetcode_3318.cc
+# Get the directory where this Makefile is located
+# This allows the Makefile to work when called with -f from subdirectories
+MAKEFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
+MAKEFILE_DIR := $(dir $(MAKEFILE_PATH))
 
-leetcode_3321: src/leetcode/leetcode_3321.cc
-	$(CXX) $(CXXFLAGS) -o $(BIN_DIR)/leetcode_3321 src/leetcode/leetcode_3321.cc
+# Determine if we're running from the Makefile's directory or from a subdirectory
+# If Makefile is in current directory, use simple relative paths
+# Otherwise, use paths relative to the Makefile location
+CURRENT_DIR := $(abspath .)
+ifeq ($(MAKEFILE_DIR),$(CURRENT_DIR)/)
+    # Running from Makefile's directory
+    BIN_DIR = bin
+    SRC_LEETCODE_DIR = src/leetcode
+    SRC_ALGO_DIR = src/algo
+    SRC_LCR_DIR = src/lcr
+else
+    # Running from subdirectory with -f flag, use paths relative to Makefile
+    BIN_DIR = $(MAKEFILE_DIR)bin
+    SRC_LEETCODE_DIR = $(MAKEFILE_DIR)src/leetcode
+    SRC_ALGO_DIR = $(MAKEFILE_DIR)src/algo
+    SRC_LCR_DIR = $(MAKEFILE_DIR)src/lcr
+endif
 
-leetcode_3607: src/leetcode/leetcode_3607.cc
-	$(CXX) $(CXXFLAGS) -o $(BIN_DIR)/leetcode_3607 src/leetcode/leetcode_3607.cc
+# Pattern rule for leetcode files - automatically builds any leetcode_*.cc file
+leetcode_%: $(SRC_LEETCODE_DIR)/leetcode_%.cc
+	@mkdir -p $(BIN_DIR)
+	$(CXX) $(CXXFLAGS) -o $(BIN_DIR)/$@ $<
 
-leetcode_1611: src/leetcode/leetcode_1611.cc
-	$(CXX) $(CXXFLAGS) -o $(BIN_DIR)/leetcode_1611 src/leetcode/leetcode_1611.cc
+# Pattern rule for LCR files
+lcr_%: $(SRC_LCR_DIR)/lcr_%.cc
+	@mkdir -p $(BIN_DIR)
+	$(CXX) $(CXXFLAGS) -o $(BIN_DIR)/$@ $<
 
-leetcode_2169: src/leetcode/leetcode_2169.cc
-	$(CXX) $(CXXFLAGS) -o $(BIN_DIR)/leetcode_2169 src/leetcode/leetcode_2169.cc
+# Automatically generate a binary for each .cc file in src/algo directory
+ALGO_SRCS := $(wildcard $(SRC_ALGO_DIR)/*.cc)
+ALGO_BINS := $(patsubst $(SRC_ALGO_DIR)/%.cc, $(BIN_DIR)/%, $(ALGO_SRCS))
 
-leetcode_3541: src/leetcode/leetcode_3541.cc
-	$(CXX) $(CXXFLAGS) -o $(BIN_DIR)/leetcode_3541 src/leetcode/leetcode_3541.cc
+algo_all: $(ALGO_BINS)
 
-leetcode_3228: src/leetcode/leetcode_3228.cc
-	$(CXX) $(CXXFLAGS) -o $(BIN_DIR)/leetcode_3228 src/leetcode/leetcode_3228.cc
+$(BIN_DIR)/%: $(SRC_ALGO_DIR)/%.cc
+	@mkdir -p $(BIN_DIR)
+	$(CXX) $(CXXFLAGS) -o $@ $<
 
-leetcode_2536: src/leetcode/leetcode_2536.cc
-	$(CXX) $(CXXFLAGS) -o $(BIN_DIR)/leetcode_2536 src/leetcode/leetcode_2536.cc
-
-leetcode_3234: src/leetcode/leetcode_3234.cc
-	$(CXX) $(CXXFLAGS) -o $(BIN_DIR)/leetcode_3234 src/leetcode/leetcode_3234.cc
-
-leetcode_1513: src/leetcode/leetcode_1513.cc
-	$(CXX) $(CXXFLAGS) -o $(BIN_DIR)/leetcode_1513 src/leetcode/leetcode_1513.cc
 
 clean:
 	rm -f $(BIN_DIR)/*
+
+# Help target
+help:
+	@echo "Available targets:"
+	@echo "  leetcode_<number>  - Build a leetcode solution (e.g., make leetcode_1102)"
+	@echo "  lcr_<number>       - Build an LCR solution (e.g., make lcr_159)"
+	@echo "  topo_sort          - Build topological sort example"
+	@echo "  clean              - Remove all binaries"
+	@echo ""
+	@echo "Usage:"
+	@echo "  From algo directory:  make leetcode_1102"
+	@echo "  From subdirectories:  make -f ../../Makefile leetcode_1102"
