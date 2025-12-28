@@ -107,8 +107,6 @@ public:
         }
         return -1;
     }
-
-
 };
 
 class UnionFind {
@@ -143,6 +141,12 @@ public:
     }
 };
 
+/**
+ * @brief Kruskal's algorithm is a minimum spanning tree algorithm that uses a union-find data structure to detect cycles.
+ * @param n The number of nodes in the graph
+ * @param adj The adjacency list of the graph
+ * @return The minimum spanning tree of the graph
+ */
 vector<pair<pair<int, int>, int>> kruskal(int n, vector<vector<pair<int, int>>>& adj) {
     UnionFind uf(n);
     priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, greater<>> pq;
@@ -161,6 +165,41 @@ vector<pair<pair<int, int>, int>> kruskal(int n, vector<vector<pair<int, int>>>&
             uf.unite(u, v);
             cout << "Edge: " << u << " - " << v << " with weight " << weight << endl;
             mst.push_back({{u, v}, weight});
+        }
+    }
+    return mst;
+}
+
+/**
+ * @brief Prim's algorithm is a minimum spanning tree algorithm that uses a priority queue to find the minimum spanning tree.
+ * @param n The number of nodes in the graph
+ * @param adj The adjacency list of the graph
+ * @return The minimum spanning tree of the graph
+ */
+vector<pair<pair<int, int>, int>> prim(int n, vector<vector<pair<int, int>>>& adj) {
+    vector<bool> visited(n, false);
+    vector<int> dist(n, INT_MAX);
+    vector<int> parent(n, -1);
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
+    pq.push({0, 0});
+    dist[0] = 0;
+    vector<pair<pair<int, int>, int>> mst;
+    while (!pq.empty()) {
+        auto [weight, node] = pq.top();
+        pq.pop();
+        if (visited[node]) continue;
+        visited[node] = true;
+        for (const auto& edge : adj[node]) {
+            int neighbor = edge.first;
+            int weight = edge.second;
+            if (!visited[neighbor] && weight < dist[neighbor]) {
+                dist[neighbor] = weight;
+                parent[neighbor] = node;
+                pq.push({weight, neighbor});
+            }
+        }
+        if (parent[node] != -1) {
+            mst.push_back({{parent[node], node}, dist[node]});
         }
     }
     return mst;
@@ -254,10 +293,33 @@ void test_kruskal() {
     }
 }
 
+void test_prim_and_kruskal() {
+    int n = 6;
+    vector<vector<pair<int, int>>> adj(n);
+    adj[0].push_back(make_pair(1, 1));
+    adj[0].push_back(make_pair(2, 2));
+    adj[1].push_back(make_pair(2, 3));
+    adj[1].push_back(make_pair(3, 4));
+    adj[1].push_back(make_pair(5, 5));
+    vector<pair<pair<int, int>, int>> mst = prim(n, adj);
+    cout << "MST:" << endl;
+    for (const auto& edge : mst) {
+        cout << edge.first.first << " - " << edge.first.second << " with weight " << edge.second << endl;
+    }
+    cout << endl;
+
+    vector<pair<pair<int, int>, int>> mst2 = kruskal(n, adj);
+    cout << "MST:" << endl;
+    for (const auto& edge : mst2) {
+        cout << edge.first.first << " - " << edge.first.second << " with weight " << edge.second << endl;
+    }
+    cout << endl;
+}
 
 int main() {
     test_graph();
     test_union_find();
     test_kruskal();
+    test_prim_and_kruskal();
     return 0;
 }

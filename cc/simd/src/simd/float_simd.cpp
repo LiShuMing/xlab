@@ -230,7 +230,7 @@ int main()
 	float3* particleVel = (float3*)malloc(sizeof(float3) * kNumParticles);
 	memset(particleVel, 0, sizeof(float3) * kNumParticles);
 
-	constexpr static int kNumIterations = 500;
+	constexpr static int kNumIterations = 50;
 
 	getchar();
 

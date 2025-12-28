@@ -1,6 +1,6 @@
 CXX = g++
-# CXXFLAGS = -std=c++17 -O0 -fno-omit-frame-pointer -g
-CXXFLAGS = -std=c++17 -O2
+CXXFLAGS = -std=c++17 -O0 -fno-omit-frame-pointer -g
+# CXXFLAGS = -std=c++17 -O2
 
 # Get the directory where this Makefile is located
 # This allows the Makefile to work when called with -f from subdirectories
