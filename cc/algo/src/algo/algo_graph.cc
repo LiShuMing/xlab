@@ -133,9 +133,17 @@ public:
             count--;
         }
     }
+
+    bool connected(int i, int j) {
+        return find(i) == find(j);
+    }
+
+    int get_count() {
+        return count;
+    }
 };
 
-void kruskal(int n, vector<vector<pair<int, int>>>& adj) {
+vector<pair<pair<int, int>, int>> kruskal(int n, vector<vector<pair<int, int>>>& adj) {
     UnionFind uf(n);
     priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, greater<>> pq;
     for (int i = 0; i < n; i++) {
@@ -143,19 +151,22 @@ void kruskal(int n, vector<vector<pair<int, int>>>& adj) {
             pq.push({edge.second, {i, edge.first}});
         }
     }
+    vector<pair<pair<int, int>, int>> mst;
     while (!pq.empty()) {
         auto [weight, edge] = pq.top();
         pq.pop();
         int u = edge.first;
         int v = edge.second;
-        if (uf.find(u) != uf.find(v)) {
+        if (!uf.connected(u, v)) {
             uf.unite(u, v);
             cout << "Edge: " << u << " - " << v << " with weight " << weight << endl;
+            mst.push_back({{u, v}, weight});
         }
     }
+    return mst;
 }
 
-int main() {
+void test_graph() {
     AlgoGraph graph;
 
     // Construct weighted graph: vector<vector<pair<int, int>>>
@@ -207,6 +218,46 @@ int main() {
     } else {
         cout << "Shortest distance from " << start << " to " << end << " is " << dist << endl;
     }
+}
+void test_union_find() {
+    int n = 6;
+    UnionFind uf(n);
+    uf.unite(0, 1);
+    uf.unite(1, 2);
+    uf.unite(2, 3);
+    uf.unite(3, 4);
+    uf.unite(4, 5);
+    cout << "Number of connected components: " << uf.count << endl;
+    cout << "Is 0 and 5 connected? " << (uf.connected(0, 5) ? "Yes" : "No") << endl;
+    cout << "Is 0 and 4 connected? " << (uf.connected(0, 4) ? "Yes" : "No") << endl;
+    cout << "Is 1 and 3 connected? " << (uf.connected(1, 3) ? "Yes" : "No") << endl;
+    cout << "Is 2 and 5 connected? " << (uf.connected(2, 5) ? "Yes" : "No") << endl;
+    cout << "Is 3 and 4 connected? " << (uf.connected(3, 4) ? "Yes" : "No") << endl;
+    cout << "Is 0 and 3 connected? " << (uf.connected(0, 3) ? "Yes" : "No") << endl;
+    cout << "Is 1 and 4 connected? " << (uf.connected(1, 4) ? "Yes" : "No") << endl;
+    cout << "Is 2 and 5 connected? " << (uf.connected(2, 5) ? "Yes" : "No") << endl;
+}
 
+
+void test_kruskal() {
+    int n = 6;
+    vector<vector<pair<int, int>>> adj(n);
+    adj[0].push_back(make_pair(1, 1));
+    adj[0].push_back(make_pair(2, 2));
+    adj[1].push_back(make_pair(2, 3));
+    adj[1].push_back(make_pair(3, 4));
+    adj[1].push_back(make_pair(5, 5));
+    vector<pair<pair<int, int>, int>> mst = kruskal(n, adj);
+    cout << "MST:" << endl;
+    for (const auto& edge : mst) {
+        cout << edge.first.first << " - " << edge.first.second << " with weight " << edge.second << endl;
+    }
+}
+
+
+int main() {
+    test_graph();
+    test_union_find();
+    test_kruskal();
     return 0;
 }

@@ -15,12 +15,14 @@ ifeq ($(MAKEFILE_DIR),$(CURRENT_DIR)/)
     # Running from Makefile's directory
     BIN_DIR = bin
     SRC_LEETCODE_DIR = src/leetcode
+	SRC_HACKERRANK_DIR = src/hackerrank
     SRC_ALGO_DIR = src/algo
     SRC_LCR_DIR = src/lcr
 else
     # Running from subdirectory with -f flag, use paths relative to Makefile
     BIN_DIR = $(MAKEFILE_DIR)bin
     SRC_LEETCODE_DIR = $(MAKEFILE_DIR)src/leetcode
+    SRC_HACKERRANK_DIR = $(MAKEFILE_DIR)src/hackerrank
     SRC_ALGO_DIR = $(MAKEFILE_DIR)src/algo
     SRC_LCR_DIR = $(MAKEFILE_DIR)src/lcr
 endif
@@ -35,11 +37,17 @@ lcr_%: $(SRC_LCR_DIR)/lcr_%.cc
 	@mkdir -p $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) -o $(BIN_DIR)/$@ $<
 
-# Automatically generate a binary for each .cc file in src/algo directory
-ALGO_SRCS := $(wildcard $(SRC_ALGO_DIR)/*.cc)
-ALGO_BINS := $(patsubst $(SRC_ALGO_DIR)/%.cc, $(BIN_DIR)/%, $(ALGO_SRCS))
+hackerrank_%: $(SRC_HACKERRANK_DIR)/hackerrank_%.cc
+	@mkdir -p $(BIN_DIR)
+	$(CXX) $(CXXFLAGS) -o $(BIN_DIR)/$@ $<
 
-algo_all: $(ALGO_BINS)
+# Pattern rule for algo files - only build specified file if needed
+algo_%: $(SRC_ALGO_DIR)/algo_%.cc
+	@mkdir -p $(BIN_DIR)
+	$(CXX) $(CXXFLAGS) -o $(BIN_DIR)/$@ $<
+
+# Convenience target to build all algorithms
+algo_all: $(patsubst $(SRC_ALGO_DIR)/algo_%.cc,algo_%, $(wildcard $(SRC_ALGO_DIR)/algo_*.cc))
 
 $(BIN_DIR)/%: $(SRC_ALGO_DIR)/%.cc
 	@mkdir -p $(BIN_DIR)

@@ -24,6 +24,7 @@
 #include <atomic>
 #include <memory>
 #include <limits>
+#include <sstream>
 using namespace std;
 
 struct ListNode {
@@ -33,6 +34,37 @@ struct ListNode {
     ListNode(int x) : val(x), next(nullptr) {}
     ListNode(int x, ListNode *next) : val(x), next(next) {}
 };
+
+struct TreeNode {
+    int val;
+    TreeNode *left;
+    TreeNode *right;
+    TreeNode() : val(0), left(nullptr), right(nullptr) {}
+    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+    TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+};
+
+struct NaryTreeNode {
+    int val;
+    vector<NaryTreeNode*> children;
+    NaryTreeNode() : val(0), children(vector<NaryTreeNode*>()) {}
+    NaryTreeNode(int x) : val(x), children(vector<NaryTreeNode*>()) {}
+    NaryTreeNode(int x, vector<NaryTreeNode*> children) : val(x), children(children) {}
+};
+
+template <typename T>
+string strJoin(const vector<T>& v, const string& delimiter) {
+    stringstream ss;
+    ss.precision(10);
+    ss.setf(ios::fixed, ios::floatfield);
+    for (int i = 0; i < v.size(); i++) {
+        if (i != 0) {
+            ss << delimiter;
+        }
+        ss << v[i];
+    }
+    return ss.str();
+} 
 
 template <typename T>
 void printVector(const vector<T>& v) {
