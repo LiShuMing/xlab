@@ -35,8 +35,8 @@ public:
                     string temp = strs[i];
                     strs[i] = strs[j];
                     strs[j] = temp;
-                }
-            }
+        }
+    }
         }
         
         // Concatenate all strings

@@ -70,24 +70,24 @@ public:
         return topo_order;
     }
 
-    struct State {
+    struct Node {
         int node, dist;
-        bool operator>(const State& other) const { return dist > other.dist; }
+        bool operator>(const Node& other) const { return dist > other.dist; }
     };
 
     // Dijkstra's algorithm - uses edge weights
     int dijkstra(int start, int end, int n, const vector<vector<pair<int, int>>>& adj) {
         vector<int> dist(n, INT_MAX);
-        priority_queue<State, vector<State>, greater<State>> pq;
+        priority_queue<Node, vector<Node>, greater<Node>> pq;
 
         dist[start] = 0;
-        State start_state;
+        Node start_state;
         start_state.node = start;
         start_state.dist = 0;
         pq.push(start_state);
 
         while (!pq.empty()) {
-            State curr = pq.top();
+            Node curr = pq.top();
             pq.pop();
 
             if (curr.dist > dist[curr.node]) continue;
@@ -98,14 +98,14 @@ public:
                 int weight = edge.second;
                 if (dist[curr.node] + weight < dist[nextNode]) {
                     dist[nextNode] = dist[curr.node] + weight;
-                    State next_state;
+                    Node next_state;
                     next_state.node = nextNode;
                     next_state.dist = dist[nextNode];
-                    pq.push(next_state);
+                    pq.push(next_node);
                 }
             }
         }
-        return -1;
+        return -1;    
     }
 };
 

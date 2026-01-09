@@ -25,7 +25,7 @@ public:
             return (power(3, quotient - 1, MOD) * 4) % MOD;
         } else {
             return (power(3, quotient, MOD) * 2) % MOD;
-        }
+            }
     }
 };
 int main() {

@@ -15,18 +15,26 @@
  * The diameter of the tree is 3, which is the length of the path [4,2,1,3] or [5,2,1,3].
  */
  class Solution {
+    private:
+    int maxDiameter;
+    
+    int dfs(TreeNode* node) {
+        if (!node) {
+            return 0;
+        }
+        int leftDepth = dfs(node->left);
+        int rightDepth = dfs(node->right);
+        // Update the maximum diameter (path through this node)
+        maxDiameter = max(maxDiameter, leftDepth + rightDepth);
+        // Return the depth of this subtree
+        return max(leftDepth, rightDepth) + 1;
+    }
+    
     public:
     int diameterOfBinaryTree(TreeNode* root) {
-        return dfs(root, 0);
-    }
-
-    int dfs(TreeNode* node, int depth) {
-        if (!node) {
-            return depth;
-        }
-        int leftDepth = dfs(node->left, depth + 1);
-        int rightDepth = dfs(node->right, depth + 1);
-        return max(leftDepth, rightDepth);
+        maxDiameter = 0;
+        dfs(root);
+        return maxDiameter;
     }
  };
  int main() {

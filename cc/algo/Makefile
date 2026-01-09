@@ -18,6 +18,8 @@ ifeq ($(MAKEFILE_DIR),$(CURRENT_DIR)/)
 	SRC_HACKERRANK_DIR = src/hackerrank
     SRC_ALGO_DIR = src/algo
     SRC_LCR_DIR = src/lcr
+    SRC_DAILYPROGRAMMER_DIR = src/dailyprogrammer
+    SRC_MSJD_DIR = src/msjd
 else
     # Running from subdirectory with -f flag, use paths relative to Makefile
     BIN_DIR = $(MAKEFILE_DIR)bin
@@ -25,6 +27,8 @@ else
     SRC_HACKERRANK_DIR = $(MAKEFILE_DIR)src/hackerrank
     SRC_ALGO_DIR = $(MAKEFILE_DIR)src/algo
     SRC_LCR_DIR = $(MAKEFILE_DIR)src/lcr
+    SRC_DAILYPROGRAMMER_DIR = $(MAKEFILE_DIR)src/dailyprogrammer
+    SRC_MSJD_DIR = $(MAKEFILE_DIR)src/msjd
 endif
 
 # Pattern rule for leetcode files - automatically builds any leetcode_*.cc file
@@ -46,13 +50,24 @@ algo_%: $(SRC_ALGO_DIR)/algo_%.cc
 	@mkdir -p $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) -o $(BIN_DIR)/$@ $<
 
+concurrent_%: $(SRC_ALGO_DIR)/concurrent/concurrent_%.cc
+	@mkdir -p $(BIN_DIR)
+	$(CXX) $(CXXFLAGS) -o $(BIN_DIR)/$@ $<
+
+dp_%: $(SRC_DAILYPROGRAMMER_DIR)/dp_%.cc
+	@mkdir -p $(BIN_DIR)
+	$(CXX) $(CXXFLAGS) -o $(BIN_DIR)/$@ $<
+
+jd_%: $(SRC_MSJD_DIR)/jd_%.cc
+	@mkdir -p $(BIN_DIR)
+	$(CXX) $(CXXFLAGS) -o $(BIN_DIR)/$@ $<
+
 # Convenience target to build all algorithms
 algo_all: $(patsubst $(SRC_ALGO_DIR)/algo_%.cc,algo_%, $(wildcard $(SRC_ALGO_DIR)/algo_*.cc))
 
 $(BIN_DIR)/%: $(SRC_ALGO_DIR)/%.cc
 	@mkdir -p $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) -o $@ $<
-
 
 clean:
 	rm -f $(BIN_DIR)/*

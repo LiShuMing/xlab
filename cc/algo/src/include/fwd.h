@@ -28,6 +28,7 @@
 #include <sstream>
 using namespace std;
 
+// single linked list
 struct ListNode {
     int val;
     ListNode *next;
@@ -36,6 +37,7 @@ struct ListNode {
     ListNode(int x, ListNode *next) : val(x), next(next) {}
 };
 
+// binary tree
 struct TreeNode {
     int val;
     TreeNode *left;
@@ -45,6 +47,7 @@ struct TreeNode {
     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
 };
 
+// n-ary tree
 struct NaryTreeNode {
     int val;
     vector<NaryTreeNode*> children;

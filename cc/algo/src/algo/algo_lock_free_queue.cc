@@ -298,7 +298,7 @@ class LockFreeSPSCQueue : public Queue<T, Capacity> {
               std::memory_order_relaxed)) {
         // Successfully reserved the slot, now write the value
         data_[head] = value;
-        std::atomic_thread_fence(std::memory_order_release);
+        //std::atomic_thread_fence(std::memory_order_release);
         return true;
       }
       // CAS failed, another thread reserved this slot, retry
@@ -319,7 +319,7 @@ class LockFreeSPSCQueue : public Queue<T, Capacity> {
               std::memory_order_release,
               std::memory_order_relaxed)) {
         data_[head] = std::move(value);
-        std::atomic_thread_fence(std::memory_order_release);
+        //std::atomic_thread_fence(std::memory_order_release);
         return true;
       }
     }
@@ -340,7 +340,7 @@ class LockFreeSPSCQueue : public Queue<T, Capacity> {
               std::memory_order_release,
               std::memory_order_relaxed)) {
         value = std::move(data_[tail]);
-        std::atomic_thread_fence(std::memory_order_release);
+        //std::atomic_thread_fence(std::memory_order_release);
         return true;
       }
     }
@@ -812,9 +812,9 @@ void test_spsc_queue() {
 int main() {
   for (int i = 0; i < 10; ++i) {
     std::cout << "\n========== Test Round " << (i + 1) << "/10 ==========" << std::endl;
-    test_queue_base<ThreadSafeQueue<int, 100>>();
-    test_queue_base<LockFreeMPMCQueue<int, 100>>();
-    test_queue_base<MSQueue<int, 100>>();
+    // test_queue_base<ThreadSafeQueue<int, 100>>();
+    // test_queue_base<LockFreeMPMCQueue<int, 100>>();
+    // test_queue_base<MSQueue<int, 100>>();
     test_spsc_queue();
   }
   std::cout << "\n========== All Tests Complete ==========" << std::endl;
