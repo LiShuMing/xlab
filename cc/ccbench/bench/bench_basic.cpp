@@ -8,7 +8,6 @@ static void BM_StringCreation(benchmark::State& state) {
     }
     // Prevent unused variable warning
     if (cnt == 0) {
-        // ...
         state.SetBytesProcessed(cnt);
     } else {
         state.SetBytesProcessed(cnt);

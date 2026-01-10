@@ -7,13 +7,10 @@
 constexpr size_t CACHE_LINESIZE = 64;
 
 // 32 KB
-// 32,768 bytes
 constexpr size_t LEVEL1_DCACHE_SIZE = 32768;
-// 1 MB
-// 1,048,576 bytes
-constexpr size_t LEVEL2_CACHE_SIZE = 1048576;
+// 4 MB
+constexpr size_t LEVEL2_CACHE_SIZE = 4 * 1048576;
 // 36 MB
-// 37,486,592 bytes
 constexpr size_t LEVEL3_CACHE_SIZE = 37486592;
 
 // Suppose that 90% of capacity of cache is used by this program
@@ -30,7 +27,6 @@ constexpr const size_t ITERATOR_TIMES =
 // Size of Item equals to CACHE_LINESIZE
 struct Item {
     int value;
-
 private:
     int pad[CACHE_LINESIZE / 4 - 1];
 };
