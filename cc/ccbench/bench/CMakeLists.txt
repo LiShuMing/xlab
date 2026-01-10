@@ -7,7 +7,8 @@ add_library(bench_lib
 set(BENCHMARKS
     bench_allocator.cpp
     bench_basic.cpp
-    bench_memory_cache.cpp
+    bench_memory_cache1.cpp
+    bench_memory_cache2.cpp
     bench_cpu_performance.cpp
 )
 
