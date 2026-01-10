@@ -1,0 +1,25 @@
+#pragma once
+#include <vector>
+#include <string>
+#include <atomic>
+#include <thread>
+#include <chrono>
+#include <iostream>
+#include <functional>
+#include <mutex>
+#include <condition_variable>
+#include <future>
+#include <queue>
+#include <stack>
+#include <set>
+#include <map>
+#include <unordered_map>
+#include <unordered_set>
+#include <list>
+#include <deque>
+#include <forward_list>
+#include <array>
+#include <tuple>
+#include <bitset>
+
+#include "benchmark/benchmark.h"
