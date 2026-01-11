@@ -1,6 +1,9 @@
-mkdir -p build
-cd build
+#!/bin/bash
+
 BUILD_TYPE=Release
+BUILD_DIR=build_$BUILD_TYPE
+mkdir -p $BUILD_DIR
+cd $BUILD_DIR
 cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
     -DCMAKE_C_COMPILER=clang \
     -DCMAKE_CXX_COMPILER=clang++ \

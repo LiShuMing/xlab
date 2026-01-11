@@ -1,46 +1,97 @@
+# Auto-detect and build NASM tutorial files
+# Supports: Linux (nasm), macOS (clang), and Windows (nasm)
+# Usage: make [target] | make all | make clean
+
 UNAME := $(shell uname)
-
 TUTORIAL_DIR := src/tutorial
-# Detect OS and set appropriate flags
-ifeq ($(UNAME),Darwin)
-    # macOS: Use clang with assembly + C wrapper
-    CC := clang
-    ASMSRC := $(TUTORIAL_DIR)/t1_macos.asm
-    CSRC := $(TUTORIAL_DIR)/t1_main.c
-    SUFFIX := _macos
-else
-    # Linux: Use nasm + ld (x86_64)
-    CC := nasm
-    ASMSRC := $(TUTORIAL_DIR)/t1_linux.asm
-    LDFLAGS := -o
-    SUFFIX := _linux
-endif
+BUILD_DIR := $(TUTORIAL_DIR)
 
-all: t1 t2 t3
+# Auto-detect tutorial targets
+TUTORIAL_ASM := $(wildcard $(TUTORIAL_DIR)/*.asm)
+TUTORIAL_C := $(wildcard $(TUTORIAL_DIR)/*.c)
 
-t1:
-	@echo "Building for $(UNAME)..."
-ifeq ($(UNAME),Darwin)
-	$(CC) -o t1 $(ASMSRC) $(CSRC) && ./t1 || true
-else
-	nasm -f elf64 -o t1.o $(ASMSRC) && ld $(LDFLAGS) t1 t1.o && ./t1 || true
-endif
+# Extract base names and get unique targets
+TUTORIAL_BASES := $(sort $(foreach f,$(TUTORIAL_ASM),\
+    $(basename $(notdir $(f)))))
 
-t2:
-ifeq ($(UNAME),Darwin)
-	$(CC) -o t2 $(TUTORIAL_DIR)/t2.asm && ./t2 || true
-else
-	nasm -f elf64 -o t2.o $(TUTORIAL_DIR)/t2.asm && ld -o t2 t2.o && ./t2 || true
-endif
+UNIQUE_TARGETS := $(sort $(foreach t,$(TUTORIAL_BASES),\
+    $(patsubst %_linux,%,$(patsubst %_macos,%,$(patsubst %_mac,%,$(t))))))
 
-t3:
-ifeq ($(UNAME),Darwin)
-	$(CC) -o t3 $(TUTORIAL_DIR)/t3.asm && ./t3 || true
-else
-	nasm -f elf64 -o t3.o $(TUTORIAL_DIR)/t3.asm && ld -o t3 t3.o && ./t3 || true
-endif
+FILTERED_TARGETS := $(filter-out t5 t6,$(UNIQUE_TARGETS))
+TARGETS_BIN := $(FILTERED_TARGETS)
 
+.PHONY: all list help clean $(TARGETS_BIN)
+
+# Default target: build all
+all: $(TARGETS_BIN)
+
+# List available tutorials
+list:
+	@echo "Available tutorials:"
+	@for t in $(FILTERED_TARGETS); do \
+		echo "  - $$t"; \
+	done
+
+# Help target
+help:
+	@echo "NASM Tutorial Build System"
+	@echo ""
+	@echo "Usage: make [target]"
+	@echo ""
+	@echo "Targets:"
+	@echo "  all     - Build all tutorials"
+	@echo "  list    - List available tutorials"
+	@echo "  help    - Show this help"
+	@echo "  clean   - Remove build artifacts"
+	@echo "  <name>  - Build specific tutorial"
+	@echo ""
+	@echo "Available tutorials:"
+	@for t in $(FILTERED_TARGETS); do \
+		echo "  - $$t"; \
+	done
+
+# Build rules for each target
+define BUILD_template
+$(1):
+	@echo "Building target: $(1) for $(UNAME)"
+	@if [ "$(UNAME)" = "Darwin" ]; then \
+		echo "  Compiling for macOS (ARM64)..."; \
+		if [ -f "$(TUTORIAL_DIR)/$(1)_macos.asm" ]; then \
+			echo "  Using: $(TUTORIAL_DIR)/$(1)_macos.asm"; \
+			if [ -f "$(TUTORIAL_DIR)/$(1)_main.c" ]; then \
+				echo "  With C wrapper: $(TUTORIAL_DIR)/$(1)_main.c"; \
+				clang -o $(1) $(TUTORIAL_DIR)/$(1)_macos.asm $(TUTORIAL_DIR)/$(1)_main.c; \
+			else \
+				clang -o $(1) $(TUTORIAL_DIR)/$(1)_macos.asm; \
+			fi; \
+		elif [ -f "$(TUTORIAL_DIR)/$(1).asm" ]; then \
+			echo "  Using: $(TUTORIAL_DIR)/$(1).asm"; \
+			clang -o $(1) $(TUTORIAL_DIR)/$(1).asm; \
+		else \
+			echo "  ERROR: No source file found"; \
+			exit 1; \
+		fi; \
+	else \
+		echo "  Compiling for Linux (x86_64)..."; \
+		if [ -f "$(TUTORIAL_DIR)/$(1)_linux.asm" ]; then \
+			echo "  Using: $(TUTORIAL_DIR)/$(1)_linux.asm"; \
+			nasm -f elf64 -o $(BUILD_DIR)/$(1).o $(TUTORIAL_DIR)/$(1)_linux.asm && \
+			ld -o $(1) $(BUILD_DIR)/$(1).o; \
+		elif [ -f "$(TUTORIAL_DIR)/$(1).asm" ]; then \
+			echo "  Using: $(TUTORIAL_DIR)/$(1).asm"; \
+			nasm -f elf64 -o $(BUILD_DIR)/$(1).o $(TUTORIAL_DIR)/$(1).asm && \
+			ld -o $(1) $(BUILD_DIR)/$(1).o; \
+		else \
+			echo "  ERROR: No source file found"; \
+			exit 1; \
+		fi; \
+	fi
+	@./$(1) || true
+endef
+
+$(foreach t,$(FILTERED_TARGETS),$(eval $(call BUILD_template,$(t))))
+
+# Clean target
 clean:
-	rm -f $(TUTORIAL_DIR)/*.o t1 t2 t3
-
-.PHONY: all t1 t2 t3 clean
+	rm -f $(patsubst %,$(BUILD_DIR)/%.o,$(FILTERED_TARGETS)) $(FILTERED_TARGETS)
+	@echo "Cleaned build artifacts"

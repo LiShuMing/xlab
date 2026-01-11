@@ -1,6 +1,7 @@
 #include <Python.h>
 #include <iostream>
 
+// use python to calculate the square root of 9.0
 int main() {
     Py_Initialize();
 
@@ -11,8 +12,11 @@ int main() {
 
     PyRun_SimpleString("print('Hello from Python!')");
 
-    PyObject* pModule = PyImport_ImportModule("math"); // 导入 math 模块
-    PyObject* pFunc = PyObject_GetAttrString(pModule, "sqrt"); // 获取 sqrt 函数
+    // import math module
+    PyObject* pModule = PyImport_ImportModule("math"); 
+    // get sqrt function
+    PyObject* pFunc = PyObject_GetAttrString(pModule, "sqrt"); 
+    // call sqrt(9.0)
     PyObject* pValue = PyObject_CallFunction(pFunc, "(d)", 9.0); // 调用 sqrt(9.0)
 
     double result = PyFloat_AsDouble(pValue);
