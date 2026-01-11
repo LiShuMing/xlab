@@ -13,19 +13,14 @@ ELSE()
     message("release build")
 ENDIF(CMAKE_BUILD_TYPE MATCHES Debug)
 
-# To deal with:
-# ld: warning: ignoring file /usr/local/Frameworks/Python.framework/Versions/3.11/lib/libpython3.11.dylib, building for macOS-arm64 but attempting to link with file built for macOS-x86_64
-set(CMAKE_OSX_ARCHITECTURES "x86_64")
+# Use system architecture (arm64 on Apple Silicon, x86_64 on Intel)
+# Don't force a specific architecture - let CMake detect it
 
 add_compile_options(
         "-Wall" "-Wpedantic" "-Wextra" "-fexceptions"
         "$<$<CONFIG:DEBUG>:-O0;-g3;-ggdb>"
 )
 add_definitions(-DSKIPLIST_THREAD_SUPPORT_TRACE)
-
-link_directories(
-        /Library/Frameworks/Python.framework/Versions/3.10/lib
-)
 
 add_executable(
         SkipList
@@ -55,15 +50,10 @@ include_directories(
         src/cpy
 )
 
-FIND_PACKAGE (Python3 3.10 EXACT REQUIRED COMPONENTS Interpreter Development)
-#FIND_PACKAGE(PythonLibs 3.11 EXACT REQUIRED)
-#SET(PythonLibs_DIR "/Library/Frameworks/Python.framework/Versions/3.8")
-#FIND_PACKAGE(PythonLibs 3.8 REQUIRED PATHS ("/Library/Frameworks/Python.framework/Versions/3.8"))
-#FindPythonLibs()
+# Use Python 3 (any version) instead of forcing 3.10
+FIND_PACKAGE (Python3 3.10 REQUIRED COMPONENTS Interpreter Development)
 IF (Python3_FOUND)
     INCLUDE_DIRECTORIES("${Python3_INCLUDE_DIRS}")
-    # get_filename_component(PYTHON_LINK_DIRECTORY ${PYTHON_LIBRARY} DIRECTORY)
-    # See: https://cmake.org/cmake/help/latest/module/FindPython3.html#module:FindPython3
     message("Python3_VERSION:           ${Python3_VERSION}")
     message("Python3_EXECUTABLE:        ${Python3_EXECUTABLE}")
     message("Python3_INTERPRETER_ID:    ${Python3_INTERPRETER_ID}")

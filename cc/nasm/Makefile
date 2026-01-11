@@ -1,5 +1,5 @@
 # Auto-detect and build NASM tutorial files
-# Supports: Linux (nasm), macOS (clang), and Windows (nasm)
+# Supports: Linux (nasm), macOS (clang ARM64), and Windows (nasm)
 # Usage: make [target] | make all | make clean
 
 UNAME := $(shell uname)
@@ -17,7 +17,19 @@ TUTORIAL_BASES := $(sort $(foreach f,$(TUTORIAL_ASM),\
 UNIQUE_TARGETS := $(sort $(foreach t,$(TUTORIAL_BASES),\
     $(patsubst %_linux,%,$(patsubst %_macos,%,$(patsubst %_mac,%,$(t))))))
 
-FILTERED_TARGETS := $(filter-out t5 t6,$(UNIQUE_TARGETS))
+# Tutorials that only work on Linux (x86_64 syscalls)
+LINUX_ONLY := t2 t3 t5 t6 average fib mywrite power square
+
+# Available on macOS (with ARM64 port)
+MACOS_AVAILABLE := t1
+
+# Filter out Linux-only tutorials on macOS
+ifeq ($(UNAME),Darwin)
+    FILTERED_TARGETS := $(filter-out $(LINUX_ONLY),$(UNIQUE_TARGETS))
+else
+    FILTERED_TARGETS := $(filter-out t5 t6,$(UNIQUE_TARGETS))
+endif
+
 TARGETS_BIN := $(FILTERED_TARGETS)
 
 .PHONY: all list help clean $(TARGETS_BIN)
@@ -31,6 +43,13 @@ list:
 	@for t in $(FILTERED_TARGETS); do \
 		echo "  - $$t"; \
 	done
+	@if [ "$(UNAME)" = "Darwin" ]; then \
+		echo ""; \
+		echo "Linux-only tutorials (not available on macOS):"; \
+		for t in $(LINUX_ONLY); do \
+			echo "  - $$t (requires Linux)"; \
+		done; \
+	fi
 
 # Help target
 help:
@@ -49,6 +68,13 @@ help:
 	@for t in $(FILTERED_TARGETS); do \
 		echo "  - $$t"; \
 	done
+	@if [ "$(UNAME)" = "Darwin" ]; then \
+		echo ""; \
+		echo "Linux-only tutorials (not available on macOS):"; \
+		for t in $(LINUX_ONLY); do \
+			echo "  - $$t"; \
+		done; \
+	fi
 
 # Build rules for each target
 define BUILD_template
@@ -68,7 +94,7 @@ $(1):
 			echo "  Using: $(TUTORIAL_DIR)/$(1).asm"; \
 			clang -o $(1) $(TUTORIAL_DIR)/$(1).asm; \
 		else \
-			echo "  ERROR: No source file found"; \
+			echo "  ERROR: No source file found for '$(1)'"; \
 			exit 1; \
 		fi; \
 	else \
@@ -82,7 +108,7 @@ $(1):
 			nasm -f elf64 -o $(BUILD_DIR)/$(1).o $(TUTORIAL_DIR)/$(1).asm && \
 			ld -o $(1) $(BUILD_DIR)/$(1).o; \
 		else \
-			echo "  ERROR: No source file found"; \
+			echo "  ERROR: No source file found for '$(1)'"; \
 			exit 1; \
 		fi; \
 	fi

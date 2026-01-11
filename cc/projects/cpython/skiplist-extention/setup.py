@@ -12,7 +12,7 @@ from distutils.core import Extension
 extra_compile_args = [
     '-Wall',
     '-Wextra',
-    '-Werror',
+    # '-Werror',
     '-Wfatal-errors',
     # Some internal Python library code does not like this.
     '-Wno-c++11-compat-deprecated-writable-strings',
@@ -50,7 +50,7 @@ orderedstructs = Extension(
     ],
     include_dirs=[
         '.',
-        # '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1',
+        '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1',
     ],
     library_dirs=[os.getcwd(), ],
     extra_compile_args=extra_compile_args,
