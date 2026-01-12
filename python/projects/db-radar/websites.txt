@@ -1,0 +1,35 @@
+# Daily DB Radar - Data Sources
+# Format: "Product | url1 | url2 | ..."
+# Or: "Product url1 url2 ..."
+# Lines starting with # are comments
+
+# DuckDB
+DuckDB | https://duckdb.org/news/ | https://github.com/duckdb/duckdb/releases
+
+# ClickHouse
+ClickHouse | https://clickhouse.com/blog/ | https://github.com/ClickHouse/ClickHouse/releases
+
+# Trino
+Trino | https://trino.io/blog/ | https://github.com/trinodb/trino/releases
+
+# Apache Iceberg
+Iceberg | https://github.com/apache/iceberg/releases
+
+# Materialized View systems
+MaterializedViews | https://clickhouse.com/docs/en/sql-reference/statements/create/view/#materialized-view | https://docs.oracle.com/database/121/DWHSG/basicmv.htm#DWHSG8218 | https://cloud.google.com/bigquery/docs/materialized-views-intro
+
+# Streaming Systems
+ReadySet | https://github.com/readysettech/readyset
+Timeplus | https://www.timeplus.com/blog
+
+# General DB/OLAP blogs
+DanielLemire | https://lemire.me/blog
+PerformanceMatters | https://travisdowns.github.io/
+
+# C++ and Systems
+MaskRay | https://maskray.me/blog/
+AgnerFog | https://www.agner.org/
+
+# Engineering Blogs
+DanielLemire | https://lemire.me/blog
+Orczhou | https://www.orczhou.com/

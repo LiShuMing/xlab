@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dbradar"
+version = "0.1.0"
+description = "Daily DB Radar - Collect and summarize DB/OLAP industry updates"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [
+    {name = "DB Radar", email = "dev@example.com"}
+]
+dependencies = [
+    "anthropic>=0.34.0",
+    "httpx>=0.27.0",
+    "beautifulsoup4>=4.12.0",
+    "lxml>=5.0.0",
+    "readability-lxml>=0.8.1",
+    "feedparser>=6.0.11",
+    "click>=8.1.0",
+    "python-dateutil>=2.8.2",
+    "tqdm>=4.66.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+]
+
+[project.scripts]
+dbradar = "dbradar.cli:cli"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["dbradar*"]
+
+[tool.black]
+line-length = 100
+target-version = ['py311', 'py312', 'py313']
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

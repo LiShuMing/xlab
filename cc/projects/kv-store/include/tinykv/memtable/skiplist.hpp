@@ -2,7 +2,6 @@
 #define TINYKV_MEMTABLE_SKIPLIST_HPP_
 
 #include <cmath>
-#include <iostream>
 #include <new>
 #include <random>
 
