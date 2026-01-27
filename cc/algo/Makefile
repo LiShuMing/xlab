@@ -20,6 +20,7 @@ ifeq ($(MAKEFILE_DIR),$(CURRENT_DIR)/)
     SRC_LCR_DIR = src/lcr
     SRC_DAILYPROGRAMMER_DIR = src/dailyprogrammer
     SRC_MSJD_DIR = src/msjd
+    SRC_LINUX_DIR = src/linux
 else
     # Running from subdirectory with -f flag, use paths relative to Makefile
     BIN_DIR = $(MAKEFILE_DIR)bin
@@ -29,6 +30,7 @@ else
     SRC_LCR_DIR = $(MAKEFILE_DIR)src/lcr
     SRC_DAILYPROGRAMMER_DIR = $(MAKEFILE_DIR)src/dailyprogrammer
     SRC_MSJD_DIR = $(MAKEFILE_DIR)src/msjd
+    SRC_LINUX_DIR = $(MAKEFILE_DIR)src/linux
 endif
 
 # Pattern rule for leetcode files - automatically builds any leetcode_*.cc file
@@ -59,6 +61,10 @@ dp_%: $(SRC_DAILYPROGRAMMER_DIR)/dp_%.cc
 	$(CXX) $(CXXFLAGS) -o $(BIN_DIR)/$@ $<
 
 jd_%: $(SRC_MSJD_DIR)/jd_%.cc
+	@mkdir -p $(BIN_DIR)
+	$(CXX) $(CXXFLAGS) -o $(BIN_DIR)/$@ $<
+
+l_%: $(SRC_LINUX_DIR)/l_%.cc
 	@mkdir -p $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) -o $(BIN_DIR)/$@ $<
 

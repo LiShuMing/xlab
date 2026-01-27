@@ -1,2 +1,4 @@
 build/
 LLVMJitExprFusion
+build_*
+thirdparty/
