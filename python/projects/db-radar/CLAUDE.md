@@ -98,6 +98,6 @@ Start now:
 - Do not ask me questions; make reasonable assumptions and document them.
 
 ## Environment Constraints
-- All Python commands must be executed within the pyenv environment.
+- All Python commands must be executed within the pyenv environment: /Users/lishuming/work/xlab/python/pyenv-3.13.5
 - Always prefix python commands with `pyenv exec` or ensure the virtualenv is active.
 - Before running scripts, verify the environment using `python --version`.

@@ -8,6 +8,7 @@ class Solution {
             vector<long long> price_sum(n + 1, 0);
             for (int i = 0; i < n; i++) {
                 profit_sum[i + 1] = profit_sum[i] + prices[i] * strategy[i];
+                price_sum[i + 1] = price_sum[i] + prices[i];
             }
             long long ans = profit_sum[n];
             for (int i = k - 1; i < n; i++) {
