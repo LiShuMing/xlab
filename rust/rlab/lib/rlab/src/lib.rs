@@ -1,12 +1,11 @@
-//! rlab - Rust Learning and Algorithms Benchmark
+//! rlab - Rust Learning and Algorithms Library
 //!
-//! A collection of algorithms, data structures, and examples for learning Rust.
+//! A collection of algorithms, data structures, and utilities for learning Rust.
 //!
 //! # Modules
 //!
 //! - [`common`] - Common utilities and algorithms
-//! - [`addr2line`] - DWARF-based address-to-line resolution
-//! - [`examples`] - Basic Rust learning examples
+//! - [`sort`] - Sorting algorithms collection
 //!
 //! # Examples
 //!
@@ -19,9 +18,10 @@
 #![warn(missing_docs)]
 #![warn(rust_2018_idioms)]
 
-pub mod addr2line;
 pub mod common;
-pub mod examples;
+
+/// Re-export sort module for convenience
+pub use common::sort;
 
 /// Adds two unsigned integers together.
 ///

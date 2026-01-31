@@ -3,7 +3,7 @@
 //! These tests verify the correctness of sorting implementations
 //! and demonstrate how to use them as a library.
 
-use rlab::common::sort::{is_sorted, quick_sort};
+use rlab::sort::{is_sorted, quick_sort};
 
 #[test]
 fn test_quick_sort_basic() {

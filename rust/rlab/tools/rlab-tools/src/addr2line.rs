@@ -2,18 +2,6 @@
 //!
 //! This module provides functionality to map addresses in compiled binaries
 //! to source file locations using DWARF debug information.
-//!
-//! # Example
-//!
-//! ```no_run
-//! use rlab::addr2line::Addr2Line;
-//!
-//! let resolver = Addr2Line::new("./my_program")?;
-//! if let Some(location) = resolver.resolve(0x401234)? {
-//!     println!("Found at {}:{}", location.file, location.line);
-//! }
-//! # Ok::<(), Box<dyn std::error::Error>>(())
-//! ```
 
 use memmap2::Mmap;
 use object::{Object, ObjectSymbol};

@@ -1,137 +1,172 @@
-# rlab - Rust Learning and Algorithms Benchmark
+# rlab - Rust Learning and Algorithms Library
 
-This is a Rust project for learning and experimenting with algorithms, data structures, and systems programming concepts.
+This is a Rust workspace containing a library of algorithms/data structures and CLI tools.
 
-## Project Structure
+## Workspace Structure
 
 ```
 rlab/
-├── Cargo.toml          # Project configuration
-├── Cargo.lock          # Dependency lock file
-├── src/
-│   ├── lib.rs          # Library root with basic math functions
-│   ├── main.rs         # Binary entry point with CLI
-│   ├── addr2line.rs    # DWARF debug info parsing (address to line resolution)
-│   ├── examples.rs     # Basic Rust learning examples
-│   └── common/
-│       ├── mod.rs      # Common utilities module
-│       └── sort/
-│           ├── mod.rs  # Sorting algorithms module
-│           └── quick_sort.rs  # Quick sort implementation
-├── tests/
-│   ├── test_basic.rs       # Basic Rust concepts (ownership, borrowing)
-│   ├── test_traits.rs      # Trait system demonstrations
-│   ├── test_concurrency.rs # Thread and channel tests
-│   ├── test_async.rs       # Async/await with Tokio
-│   ├── test_sort.rs        # Sorting algorithm integration tests
-│   └── test_examples.rs    # Examples module integration tests
+├── Cargo.toml              # Workspace root
+├── Cargo.lock              # Workspace lock file
+├── lib/
+│   └── rlab/               # Core library crate
+│       ├── Cargo.toml
+│       └── src/
+│           ├── lib.rs      # Library root
+│           └── common/
+│               ├── mod.rs
+│               └── sort/   # Sorting algorithms
+│                   ├── mod.rs
+│                   ├── benchmark.rs
+│                   ├── simple.rs       # O(n²) sorts
+│                   ├── efficient.rs    # O(n log n) sorts
+│                   ├── integer.rs      # O(n) sorts
+│                   └── quick_sort.rs
+│               └── (more modules...)
+│       └── tests/          # Integration tests
+├── tools/
+│   └── rlab-tools/         # CLI tools binary
+│       ├── Cargo.toml
+│       └── src/
+│           ├── main.rs     # CLI entry point
+│           └── addr2line.rs # DWARF address resolution
+└── benches/                # Criterion benchmarks (placeholder)
 ```
+
+## Crates
+
+### `lib/rlab` - Core Library
+
+The library crate provides:
+
+- **Sorting Algorithms** (`rlab::sort`):
+  - Simple: Bubble, Selection, Insertion, Shell, Gnome, Comb
+  - Efficient: Quick, Merge, Heap, Tim, Intro
+  - Integer: Counting, Radix (LSD/MSD), Bucket, Flash
+  - Benchmarking utilities
+
+- **Math Utilities** (`rlab`):
+  - `add()` - Simple addition
+  - `factorial()` - Factorial calculation
+  - `gcd()` - Greatest common divisor
+
+### `tools/rlab-tools` - CLI Tools
+
+Command-line utilities:
+
+1. **Sorting Benchmarks** (`--sort-bench`):
+   ```bash
+   rlab --sort-bench
+   rlab --sort-bench --sizes 1000,10000 --algorithms quick,merge,heap
+   ```
+
+2. **Addr2line** - Address to source location:
+   ```bash
+   rlab /path/to/binary 0x401234
+   ```
 
 ## Building
 
 ```bash
-# Build the library and binary
+# Build entire workspace
 cargo build
 
 # Build in release mode
 cargo build --release
+
+# Build specific crate
+cargo build -p rlab
+cargo build -p rlab-tools
 ```
 
-## Running Tests
+## Testing
 
 ```bash
 # Run all tests
 cargo test
 
-# Run tests with output visible
+# Run tests for specific crate
+cargo test -p rlab
+cargo test -p rlab-tools
+
+# Run with output visible
 cargo test -- --nocapture
-
-# Run specific test file
-cargo test --test test_sort
-
-# Run doc tests
-cargo test --doc
 ```
 
-## Running the Binary
+## Running Tools
 
 ```bash
-# Run learning examples
-cargo run -- --examples
+# Run sorting benchmarks
+cargo run --release -- --sort-bench
 
-# Resolve address in binary (addr2line functionality)
-cargo run -- ./path/to/binary 0x401234
+# Run with custom options
+cargo run --release -- --sort-bench \
+  --sizes 1000,10000,100000 \
+  --algorithms quick,merge,heap,radix-lsd \
+  --distributions random,sorted,reverse
+
+# Run addr2line
+cargo run --release -- /usr/bin/ls 0x401000
 ```
 
-## Key Modules
+## Adding New Code
 
-### `addr2line`
-DWARF-based address-to-line resolution. Uses `gimli`, `object`, and `memmap2` crates.
+### Adding a sorting algorithm
 
-**Note**: The full DWARF line number parsing is complex. Currently uses symbol table as fallback.
+1. Add implementation to appropriate file:
+   - `lib/rlab/src/common/sort/simple.rs` - O(n²) algorithms
+   - `lib/rlab/src/common/sort/efficient.rs` - O(n log n) algorithms  
+   - `lib/rlab/src/common/sort/integer.rs` - O(n) integer algorithms
 
-### `examples`
-Basic Rust learning demonstrations:
-- Constants and functions
-- Closures and higher-order functions
-- `Cow` (Clone on Write) for efficient conditional mutation
+2. Export in `lib/rlab/src/common/sort/mod.rs`:
+   ```rust
+   pub use your_file::your_sort;
+   ```
 
-### `common::sort`
-Sorting algorithms:
-- `quick_sort` - Standard quicksort with last-element pivot
-- `quick_sort_random` - Randomized pivot variant (better for sorted input)
-- `is_sorted` - Verify if a slice is sorted
+3. Add to `SortAlgorithm` enum for benchmark support
 
-## Code Style
+4. Add unit tests in the same file
 
-- Use `///` for public API documentation (doc comments)
-- Use `//!` for module-level documentation
-- Include doc tests in examples when possible
-- Follow Rust naming conventions (`snake_case` for functions/variables, `CamelCase` for types)
-- Use `#[allow(dead_code)]` for intentionally unused but exported items
+5. Add integration tests in `lib/rlab/tests/test_sort.rs`
+
+### Adding a new tool
+
+1. Add module to `tools/rlab-tools/src/`
+2. Import and use in `tools/rlab-tools/src/main.rs`
+3. Add CLI argument parsing
+
+### Adding a new data structure
+
+1. Create module in `lib/rlab/src/`
+2. Export in `lib/rlab/src/lib.rs`
+3. Add unit tests
+4. Add integration tests in `lib/rlab/tests/`
 
 ## Dependencies
 
-- `tokio` - Async runtime
+### Library (`lib/rlab`)
+- `fastrand` - Fast random number generation
+
+### Tools (`tools/rlab-tools`)
+- `rlab` - The library crate
 - `gimli` - DWARF parsing
 - `object` - Object file parsing
 - `memmap2` - Memory-mapped files
 - `anyhow` - Error handling
-- `fastrand` - Fast random number generation (for randomized quicksort)
 
-## Common Tasks
+## Algorithm Complexity Summary
 
-### Adding a new algorithm
-1. Create a new file in `src/common/` or appropriate subdirectory
-2. Add module declaration in parent `mod.rs`
-3. Write comprehensive doc comments with examples
-4. Add unit tests in the same file
-5. Add integration tests in `tests/` if needed
-
-### Adding a new example
-1. Add to `src/examples.rs` or create new module
-2. Export function in module
-3. Add to `run_examples()` if it should be shown in `--examples`
-4. Write integration tests in `tests/test_examples.rs`
-
-### Fixing build warnings
-```bash
-# Check for issues
-cargo clippy
-
-# Fix automatically where possible
-cargo fix
-```
-
-## Known Issues
-
-1. **addr2line DWARF parsing**: Full line number resolution is incomplete due to complex gimli API. Symbol table fallback works.
-
-2. **quick_sort bug fixed**: The original implementation had a bug where `_quick_sort` recursively called `partition` instead of itself. This has been fixed.
-
-## Architecture Decisions
-
-- **No unsafe code**: Removed `unsafe` transmute for lifetime extension; use proper lifetime management instead
-- **Modular design**: Split main.rs into `addr2line.rs` and `examples.rs` modules
-- **Trait-based APIs**: Use generics with trait bounds for flexibility
-- **Error types**: Custom error types for each module rather than generic `anyhow` in library code
+| Algorithm | Time (avg) | Space | Stable | Category |
+|-----------|------------|-------|--------|----------|
+| Bubble | O(n²) | O(1) | Yes | Simple |
+| Selection | O(n²) | O(1) | No | Simple |
+| Insertion | O(n²) | O(1) | Yes | Simple |
+| Shell | O(n^1.3) | O(1) | No | Simple |
+| Quick | O(n log n) | O(log n) | No | Efficient |
+| Merge | O(n log n) | O(n) | Yes | Efficient |
+| Heap | O(n log n) | O(1) | No | Efficient |
+| Tim | O(n log n) | O(n) | Yes | Hybrid |
+| Intro | O(n log n) | O(log n) | No | Hybrid |
+| Counting | O(n+k) | O(n+k) | Yes | Integer |
+| Radix | O(d(n+b)) | O(n+b) | Yes | Integer |
+| Bucket | O(n+k) | O(n+k) | Yes | Integer |

@@ -1,42 +1,18 @@
-[package]
-name = "rlab"
+[workspace]
+members = [
+    "lib/rlab",
+    "tools/rlab-tools",
+]
+resolver = "2"
+
+[workspace.package]
 version = "0.1.0"
 edition = "2021"
 authors = ["Your Name <you@example.com>"]
-description = "Rust Learning and Algorithms Benchmark"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/yourusername/rlab"
 
-[lib]
-crate-type = ["rlib", "staticlib"]
-
-[[bin]]
-name = "rlab"
-path = "src/main.rs"
-
-[dependencies]
-# Async runtime
-tokio = { version = "1", features = ["full"] }
-
-# DWARF debug info parsing
-gimli = { version = "0.29.0", features = ["read"] }
-object = "0.36.0"
-memmap2 = "0.9.4"
-
-# Error handling
-anyhow = "1.0"
-
-# Random number generation for randomized algorithms
+[workspace.dependencies]
+# Common dependencies that might be shared
 fastrand = "2.0"
-
-[dev-dependencies]
-# Additional test dependencies can be added here
-
-[profile.release]
-opt-level = 3
-lto = true
-codegen-units = 1
-
-[profile.dev]
-opt-level = 0
-debug = true
+anyhow = "1.0"
