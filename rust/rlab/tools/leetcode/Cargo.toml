@@ -7,7 +7,7 @@ description = "LeetCode problem solutions in Rust"
 license = "Apache-2.0"
 
 [dependencies]
-rlab = { path = "../lib/rlab" }
+rlab = { path = "../../lib/rlab" }
 reqwest = "0.9.8"
 serde = "1.0"
 serde_json = "1.0"
