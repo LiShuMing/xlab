@@ -15,6 +15,12 @@
 #![warn(missing_docs)]
 #![allow(dead_code)]
 
+#[macro_use]
+pub mod util;
+
+pub mod problem;
+pub mod solution;
+
 pub mod array;
 pub mod dp;
 pub mod linked_list;
@@ -27,7 +33,11 @@ pub mod tree;
 pub mod utils {
     /// Helper to assert two vectors are equal (ignoring order if needed)
     pub fn assert_vec_eq<T: PartialEq + std::fmt::Debug>(a: &[T], b: &[T]) {
-        assert_eq!(a, b, "Vectors are not equal:\n  left: {:?}\n right: {:?}", a, b);
+        assert_eq!(
+            a, b,
+            "Vectors are not equal:\n  left: {:?}\n right: {:?}",
+            a, b
+        );
     }
 
     /// Helper to assert two 2D vectors are equal
@@ -45,7 +55,7 @@ pub mod utils {
         // Sort outer vectors
         a.sort_by(|x, y| format!("{:?}", x).cmp(&format!("{:?}", y)));
         b.sort_by(|x, y| format!("{:?}", x).cmp(&format!("{:?}", y)));
-        
+
         assert_eq!(a, b);
     }
 }
