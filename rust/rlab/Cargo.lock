@@ -303,12 +303,34 @@ dependencies = [
 ]
 
 [[package]]
+name = "crossbeam"
+version = "0.8.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1137cd7e7fc0fb5d3c5a8678be38ec56e819125d8d7907411fe24ccb943faca8"
+dependencies = [
+ "crossbeam-channel 0.5.15",
+ "crossbeam-deque 0.8.6",
+ "crossbeam-epoch 0.9.18",
+ "crossbeam-queue 0.3.12",
+ "crossbeam-utils 0.8.21",
+]
+
+[[package]]
 name = "crossbeam-channel"
 version = "0.3.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c8ec7fcd21571dc78f96cc96243cab8d8f035247c3efd16c687be154c3fa9efa"
 dependencies = [
  "crossbeam-utils 0.6.6",
+]
+
+[[package]]
+name = "crossbeam-channel"
+version = "0.5.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "82b8f8f868b36967f9606790d1903570de9ceaf870a7bf9fbbd3016d636a2cb2"
+dependencies = [
+ "crossbeam-utils 0.8.21",
 ]
 
 [[package]]
@@ -365,6 +387,15 @@ dependencies = [
  "cfg-if 0.1.10",
  "crossbeam-utils 0.7.2",
  "maybe-uninit",
+]
+
+[[package]]
+name = "crossbeam-queue"
+version = "0.3.12"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0f58bbc28f91df819d0aa2a2c00cd19754769c2fad90579b3592b1c9ba7a3115"
+dependencies = [
+ "crossbeam-utils 0.8.21",
 ]
 
 [[package]]
@@ -1076,7 +1107,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "17b77027f12e53ae59a379f7074259d32eb10867e6183388020e922832d9c3fb"
 dependencies = [
  "bytes 0.4.12",
- "crossbeam-channel",
+ "crossbeam-channel 0.3.9",
  "crossbeam-utils 0.6.6",
  "curl",
  "curl-sys",
@@ -2166,6 +2197,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "thread-pool"
+version = "0.1.0"
+dependencies = [
+ "criterion",
+ "crossbeam",
+ "num_cpus",
+]
+
+[[package]]
 name = "time"
 version = "0.1.45"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2350,7 +2390,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "df720b6581784c118f0eb4310796b12b1d242a7eb95f716a8367855325c25f89"
 dependencies = [
  "crossbeam-deque 0.7.4",
- "crossbeam-queue",
+ "crossbeam-queue 0.2.3",
  "crossbeam-utils 0.7.2",
  "futures 0.1.31",
  "lazy_static",
