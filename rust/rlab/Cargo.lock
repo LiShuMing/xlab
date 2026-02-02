@@ -1241,6 +1241,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "lockfree-queue"
+version = "0.1.0"
+dependencies = [
+ "criterion",
+ "crossbeam-utils 0.8.21",
+]
+
+[[package]]
 name = "log"
 version = "0.4.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"

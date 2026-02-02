@@ -3,6 +3,7 @@ members = [
     "lib/rlab",
     "tools/rlab-tools",
     "tools/thread-pool",
+    "tools/lockfree-queue",
     "tools/leetcode",
 ]
 resolver = "2"
