@@ -57,7 +57,7 @@ public:
 
     double findMedian() {
         if (lq.size() == rq.size()) {
-            return (*lq.begin() + *rq.begin()) / 2.0;
+            return (static_cast<long long>(*lq.begin()) + *rq.begin()) / 2.0;
         } else {
             return *lq.begin();
         }
