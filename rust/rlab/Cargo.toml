@@ -4,6 +4,7 @@ members = [
     "tools/rlab-tools",
     "tools/thread-pool",
     "tools/lockfree-queue",
+    "tools/bloom_filter",
     "tools/leetcode",
 ]
 resolver = "2"

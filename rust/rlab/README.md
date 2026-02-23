@@ -20,6 +20,21 @@ A Rust workspace containing a library of algorithms, data structures, and CLI to
 - **Sorting Benchmark** - Compare algorithm performance on various data distributions
 - **Addr2line** - Resolve addresses to source locations in binaries
 
+### Bloom Filter Implementations
+
+Three probabilistic data structures for membership testing:
+
+| Filter | Memory | Lookup Speed | Construction | FP Rate |
+|--------|--------|--------------|--------------|---------|
+| Classic | 9.6 bits/item | 30 ns/op | Incremental | ~1% |
+| Split Block | 9.6 bits/item | 40 ns/op | Incremental | ~1.5% |
+| XOR Filter | 9.8 bits/item | 7 ns/op | Bulk only | ~0.4% |
+
+```bash
+# Run performance comparison
+cargo run --release -p bloom_filter
+```
+
 ### LeetCode Solutions
 
 - 30+ classic LeetCode problems solved in Rust
@@ -83,7 +98,14 @@ rlab/
 │   ├── src/common/sort/   # Sorting algorithms
 │   ├── tests/             # Integration tests
 │   └── benches/           # Criterion benchmarks
-├── tools/rlab-tools/   # CLI tools binary
+├── tools/
+│   ├── rlab-tools/        # CLI tools binary
+│   ├── bloom_filter/      # Bloom Filter implementations
+│   │   ├── classic.rs     # Standard Bloom Filter
+│   │   ├── split_block.rs # Split Block Bloom Filter (SBBF)
+│   │   ├── xor_filter.rs  # XOR Filter
+│   │   └── benches/       # Performance benchmarks
+│   └── ...
 ├── leetcode/           # LeetCode solutions
 │   ├── src/
 │   │   ├── array/         # Array problems
