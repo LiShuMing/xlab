@@ -1,0 +1,56 @@
+[package]
+name = "fragment-tutor"
+version = "0.1.0"
+description = "A macOS app for fragmented time learning"
+authors = ["you@example.com"]
+edition = "2021"
+rust-version = "1.70"
+
+[lib]
+name = "fragment_tutor"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.0.0", features = [] }
+
+[dependencies]
+tauri = { version = "2.0.0", features = [] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+reqwest = { version = "0.11", features = ["json", "blocking"] }
+scraper = "0.25"
+sqlx = { version = "0.7", features = ["sqlite", "runtime-tokio", "chrono"] }
+tokio = { version = "1.35", features = ["full"] }
+chrono = { version = "0.4", features = ["serde"] }
+anyhow = "1.0"
+thiserror = "2.0"
+url = "2.5"
+uuid = { version = "1.6", features = ["v4", "serde"] }
+html2text = "0.2"
+regex = "1.10"
+dirs = "5.0"
+lazy_static = "1.4"
+
+[features]
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+opt-level = "z"
+strip = true
+
+[package.metadata.bundle]
+name = "FragmentTutor"
+identifier = "com.fragmenttutor.app"
+version = "0.1.0"
+short_description = "碎片时间学习助手"
+authors = ["you@example.com"]
+icon = [
+    "icons/32x32.png",
+    "icons/128x128.png",
+    "icons/128x128@2x.png",
+    "icons/icon.icns",
+]

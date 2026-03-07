@@ -1,0 +1,5 @@
+builds/
+.vscode/
+node_modules/
+tags.*
+*.swp

@@ -1,0 +1,29 @@
+cabal-version:      3.0
+name:               dsl-transform
+version:            0.1.0.0
+license:            MIT
+build-type:         Simple
+tested-with:        GHC == 9.6.7
+
+executable dsl-transform
+  main-is:             Main.hs
+  other-modules:       Syntax, Eval
+  build-depends:       base >= 4.14 && < 5.0,
+                       mtl >= 2.2,
+                       containers >= 0.6
+  hs-source-dirs:      src
+  default-language:    Haskell2010
+  ghc-options:         -Wall -Wextra
+
+test-suite dsl-transform-test
+  type:                exitcode-stdio-1.0
+  main-is:             Spec.hs
+  other-modules:       Syntax, Eval
+  build-depends:       base >= 4.14 && < 5.0,
+                       mtl >= 2.2,
+                       containers >= 0.6,
+                       HUnit >= 1.6,
+                       QuickCheck >= 2.14
+  hs-source-dirs:      src, test
+  default-language:    Haskell2010
+  ghc-options:         -Wall -Wextra -threaded -rtsopts -with-rtsopts=-N
