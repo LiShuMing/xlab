@@ -13,13 +13,13 @@ No code changes needed! The new module provides backward-compatible functions:
 # from request_llms.bridge_all import predict
 
 # New import (same interface)
-from request_llms_new import predict, predict_no_ui_long_connection
+from request_llms import predict, predict_no_ui_long_connection
 ```
 
 ### Option 2: Modern API (Recommended for New Code)
 
 ```python
-from request_llms_new import LLMFactory, Message, ChatConfig
+from request_llms import LLMFactory, Message, ChatConfig
 
 # Create provider
 llm = LLMFactory.create("gpt-4o")
@@ -58,7 +58,7 @@ def my_plugin(txt, llm_kwargs, plugin_kwargs, chatbot, history, system_prompt, u
 
 ```python
 from toolbox import CatchException, update_ui
-from request_llms_new import predict_no_ui_long_connection  # Same function!
+from request_llms import predict_no_ui_long_connection  # Same function!
 
 @CatchException
 def my_plugin(txt, llm_kwargs, plugin_kwargs, chatbot, history, system_prompt, user_request):
@@ -91,7 +91,7 @@ response = fn(inputs, llm_kwargs, history, sys_prompt)
 #### After (Modern)
 
 ```python
-from request_llms_new import LLMFactory
+from request_llms import LLMFactory
 import asyncio
 
 async def get_response():
@@ -167,7 +167,7 @@ If you need a removed model, you can:
 Make sure the model is registered:
 
 ```python
-from request_llms_new import LLMFactory
+from request_llms import LLMFactory
 
 # Check available models
 print(LLMFactory.list_supported_models())
@@ -203,7 +203,7 @@ async for chunk in provider.chat_stream(messages, config):
 1. **Basic Chat Test**:
 ```bash
 python -c "
-from request_llms_new import LLMFactory
+from request_llms import LLMFactory
 llm = LLMFactory.create('gpt-4o-mini')
 import asyncio
 async def test():
@@ -216,7 +216,7 @@ asyncio.run(test())
 2. **Compatibility Test**:
 ```bash
 python -c "
-from request_llms_new import predict_no_ui_long_connection
+from request_llms import predict_no_ui_long_connection
 # Should work without errors
 "
 ```
@@ -229,5 +229,5 @@ python main.py
 ## Getting Help
 
 - Check `ARCHITECTURE.md` for detailed design
-- Review `request_llms_new/` source code
+- Review `request_llms/` source code
 - Open an issue with the `migration` label

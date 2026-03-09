@@ -192,7 +192,7 @@ def create_gradio_interface(args: argparse.Namespace):
     """Create and configure the Gradio interface."""
     import gradio as gr
     
-    from request_llms_new import LLMFactory, list_models_by_provider
+    from request_llms import LLMFactory, list_models_by_provider
     from shared_utils.colorful import log亮绿
     
     # Get available models
@@ -275,7 +275,7 @@ def create_gradio_interface(args: argparse.Namespace):
             
             # Call the model
             try:
-                from request_llms_new import predict_no_ui_long_connection
+                from request_llms import predict_no_ui_long_connection
                 
                 # Get conversation history (excluding current message)
                 chat_history = []

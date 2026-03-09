@@ -22,7 +22,7 @@ def test_imports():
     print("Testing imports...")
     
     try:
-        from request_llms_new import (
+        from request_llms import (
             LLMFactory,
             LLMProvider,
             Message,
@@ -46,7 +46,7 @@ def test_model_registration():
     """Test that models are properly registered."""
     print("Testing model registration...")
     
-    from request_llms_new import LLMFactory, list_models_by_provider
+    from request_llms import LLMFactory, list_models_by_provider
     
     models = LLMFactory.list_supported_models()
     by_provider = list_models_by_provider()
@@ -70,7 +70,7 @@ def test_message_creation():
     """Test Message dataclass."""
     print("Testing Message creation...")
     
-    from request_llms_new import Message, Role
+    from request_llms import Message, Role
     
     # Test factory methods
     system_msg = Message.system("You are helpful.")
@@ -90,7 +90,7 @@ def test_config_validation():
     """Test ChatConfig validation."""
     print("Testing ChatConfig validation...")
     
-    from request_llms_new import ChatConfig
+    from request_llms import ChatConfig
     
     # Valid config
     config = ChatConfig(temperature=0.5, max_tokens=1000)
@@ -112,7 +112,7 @@ def test_provider_info():
     """Test provider metadata."""
     print("Testing provider metadata...")
     
-    from request_llms_new.providers import (
+    from request_llms.providers import (
         OpenAIProvider,
         AnthropicProvider,
         QwenProvider,
@@ -137,7 +137,7 @@ def test_model_info():
     """Test model information utility."""
     print("Testing model info...")
     
-    from request_llms_new import get_model_info
+    from request_llms import get_model_info
     
     info = get_model_info("gpt-4o")
     print(f"  gpt-4o info: {info}")
@@ -152,7 +152,7 @@ def test_factory_creation():
     """Test factory creation (without API calls)."""
     print("Testing factory creation...")
     
-    from request_llms_new import LLMFactory
+    from request_llms import LLMFactory
     
     # This should fail without API key
     try:
@@ -171,7 +171,7 @@ async def test_async_operations():
     print("Testing async operations...")
     
     import os
-    from request_llms_new import LLMFactory, Message
+    from request_llms import LLMFactory, Message
     
     # Check for API keys
     api_key = os.getenv("OPENAI_API_KEY") or os.getenv("QWEN_API_KEY")

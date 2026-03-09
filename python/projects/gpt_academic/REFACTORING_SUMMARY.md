@@ -6,7 +6,7 @@ Successfully refactored GPT Academic with a modern Python architecture focused o
 
 ## ✅ Completed Tasks
 
-### 1. Modern Architecture (`request_llms_new/`)
+### 1. Modern Architecture (`request_llms/`)
 
 | Component | Description |
 |-----------|-------------|
@@ -113,7 +113,7 @@ python run_modern.py
 
 ```python
 import asyncio
-from request_llms_new import LLMFactory, Message
+from request_llms import LLMFactory, Message
 
 async def main():
     llm = LLMFactory.create("gpt-4o")
@@ -128,7 +128,7 @@ asyncio.run(main())
 
 ```
 gpt_academic/
-├── request_llms_new/           # ✅ New modern LLM system
+├── request_llms/               # ✅ New modern LLM system
 │   ├── __init__.py
 │   ├── core.py                 # Core abstractions
 │   ├── providers.py            # Provider implementations
@@ -148,7 +148,7 @@ gpt_academic/
 Adding a new provider is simple:
 
 ```python
-from request_llms_new.core import LLMProvider
+from request_llms.core import LLMProvider
 
 class MyProvider(LLMProvider):
     SUPPORTED_MODELS = ["my-model"]
@@ -178,7 +178,7 @@ The refactoring maintains full backward compatibility:
 
 ```python
 # Old code continues to work
-from request_llms_new import predict, predict_no_ui_long_connection
+from request_llms import predict, predict_no_ui_long_connection
 
 # Legacy config.py format is still supported
 # Environment variables work the same way

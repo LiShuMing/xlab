@@ -19,7 +19,7 @@ This document describes the modernized architecture of GPT Academic, focusing on
 │                                                     ▼                       │
 │                              ┌──────────────────────────────────────┐     │
 │                              │      LLM Provider System (New)       │     │
-│                              │  request_llms_new/                   │     │
+│                              │  request_llms/                   │     │
 │                              ├──────────────────────────────────────┤     │
 │                              │  • LLMFactory (Factory Pattern)      │     │
 │                              │  • LLMProvider (Abstract Base)       │     │
@@ -40,7 +40,7 @@ This document describes the modernized architecture of GPT Academic, focusing on
 
 ## Core Components
 
-### 1. LLM Provider System (`request_llms_new/`)
+### 1. LLM Provider System (`request_llms/`)
 
 #### Core Abstractions (`core.py`)
 
@@ -104,7 +104,7 @@ class AppConfig:
 ### 3. Migration Strategy
 
 #### Phase 1: Parallel Systems
-- New code uses `request_llms_new`
+- New code uses `request_llms`
 - Legacy code continues using `request_llms`
 - Backward compatibility layer handles both
 
@@ -122,7 +122,7 @@ class AppConfig:
 
 ```python
 import asyncio
-from request_llms_new import LLMFactory, Message
+from request_llms import LLMFactory, Message
 
 async def main():
     # Create provider
@@ -151,7 +151,7 @@ async for chunk in llm.chat_stream(messages):
 
 ```python
 # Old code continues to work
-from request_llms_new import predict, predict_no_ui_long_connection
+from request_llms import predict, predict_no_ui_long_connection
 
 # predict() for UI interactions
 yield from predict(inputs, llm_kwargs, chatbot, history, system_prompt)
@@ -163,7 +163,7 @@ response = predict_no_ui_long_connection(inputs, llm_kwargs, history, sys_prompt
 ### Custom Configuration
 
 ```python
-from request_llms_new import LLMFactory
+from request_llms import LLMFactory
 
 # With custom API key and base URL
 llm = LLMFactory.create(
@@ -178,7 +178,7 @@ llm = LLMFactory.create(
 1. **Create Provider Class**:
 
 ```python
-from request_llms_new.core import LLMProvider, Message, ChatConfig, ChatResponse
+from request_llms.core import LLMProvider, Message, ChatConfig, ChatResponse
 
 class MyProvider(LLMProvider):
     SUPPORTED_MODELS = ["my-model"]
@@ -202,7 +202,7 @@ class MyProvider(LLMProvider):
 2. **Register Models**:
 
 ```python
-from request_llms_new.core import LLMFactory
+from request_llms.core import LLMFactory
 
 LLMFactory.register_model("my-model", "myprovider")
 ```

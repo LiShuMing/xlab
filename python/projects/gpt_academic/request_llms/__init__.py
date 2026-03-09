@@ -5,16 +5,16 @@ A refactored, type-safe, and extensible LLM provider system.
 Supports: OpenAI, Anthropic (Claude), Qwen (Aliyun)
 
 Example:
-    >>> from request_llms_new import LLMFactory
+    >>> from request_llms import LLMFactory
     >>> llm = LLMFactory.create("gpt-4o")
     >>> response = await llm.chat([Message.user("Hello!")])
 
 Migration from legacy API:
     >>> # Old way (still works)
-    >>> from request_llms_new import predict, predict_no_ui_long_connection
+    >>> from request_llms import predict, predict_no_ui_long_connection
     >>> 
     >>> # New way (recommended)
-    >>> from request_llms_new import LLMFactory, Message
+    >>> from request_llms import LLMFactory, Message
     >>> provider = LLMFactory.create("gpt-4o")
     >>> response = await provider.chat([Message.user("Hello!")])
 """

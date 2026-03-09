@@ -62,7 +62,7 @@ Access the web UI at `http://localhost:12345` (or the port shown in console).
 
 ```python
 import asyncio
-from request_llms_new import LLMFactory, Message
+from request_llms import LLMFactory, Message
 
 async def chat():
     # Create provider
@@ -89,7 +89,7 @@ asyncio.run(chat())
 
 ```python
 # Old code continues to work
-from request_llms_new import predict, predict_no_ui_long_connection
+from request_llms import predict, predict_no_ui_long_connection
 
 # Use in plugins
 response = predict_no_ui_long_connection(
@@ -126,7 +126,7 @@ response = predict_no_ui_long_connection(
 
 ```
 gpt_academic/
-├── request_llms_new/          # New LLM provider system
+├── request_llms/              # New LLM provider system
 │   ├── __init__.py
 │   ├── core.py               # Core abstractions (LLMProvider, LLMFactory)
 │   ├── providers.py          # Provider implementations
@@ -141,7 +141,7 @@ gpt_academic/
 ## 🔌 Extending with Custom Providers
 
 ```python
-from request_llms_new.core import LLMProvider, LLMFactory, Message, ChatConfig, ChatResponse
+from request_llms.core import LLMProvider, LLMFactory, Message, ChatConfig, ChatResponse
 
 class MyProvider(LLMProvider):
     SUPPORTED_MODELS = ["my-model"]
@@ -211,7 +211,7 @@ pip install -r requirements-dev.txt
 pytest tests/
 
 # Type checking
-mypy request_llms_new/
+mypy request_llms/
 
 # Linting
 ruff check .
