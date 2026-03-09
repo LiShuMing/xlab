@@ -26,6 +26,9 @@ from .models import register_all_models, list_models_by_provider, get_model_info
 # Backward compatibility
 from .compat import predict, predict_no_ui_long_connection, get_available_models
 
+# Legacy bridge_all compatibility
+from .bridge_all import model_info, get_model_info as bridge_get_model_info, list_models
+
 # Auto-register models
 register_all_models()
 

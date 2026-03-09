@@ -64,3 +64,4 @@ cc/cclab/bplusplus.out.boot
 *.csv
 rust/rdb/data
 .venv
+.env

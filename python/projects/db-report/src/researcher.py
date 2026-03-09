@@ -13,7 +13,7 @@ from .exceptions import APIKeyMissingError, ResearcherError
 from .prompt_learner import load_prompts, scan_and_learn, summarize_prompts, PROMPTS_OUTPUT_PATH
 from .report_manager import save_report
 
-load_dotenv()
+load_dotenv(override=True)
 log = structlog.get_logger()
 
 DEFAULT_BASE_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1"
