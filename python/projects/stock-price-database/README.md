@@ -3,11 +3,13 @@
 Scrape historical stock prices, store them in SQLite, and query them offline.
 
 ## Setup
+
 ```
 pip install -r requirements.txt
 ```
 
 ## Commands
+
 ```
 python cli.py init-db [--db-path stock_prices.db]
 python cli.py fetch --symbol AAPL --start 2023-01-01 --end 2023-12-31
@@ -18,18 +20,21 @@ python cli.py remove-symbol --symbol AAPL
 ```
 
 Options:
-- `--db-path`: path to SQLite file (defaults to env `STOCK_DB_PATH` or `stock_prices.db`).
-- `--source`: data source name (default `stooq`, also supports `yahoo`).
-- `--force-refresh`: overwrite existing rows.
-- `--sleep`: seconds to pause between symbols in `update-all`.
-- `--stop-on-error`: stop batch on first error.
+
+- `--db-path`: path to SQLite file (defaults to env `STOCK_DB_PATH` or `stock_prices.db`)
+- `--source`: data source name (default `stooq`, also supports `yahoo`)
+- `--force-refresh`: overwrite existing rows
+- `--sleep`: seconds to pause between symbols in `update-all`
+- `--stop-on-error`: stop batch on first error
 
 ## Tests
+
 ```
 pytest
 ```
 
-## Web App (offline viewer)
+## Web App (Offline Viewer)
+
 ```
 python webapp.py
 # open http://localhost:19000

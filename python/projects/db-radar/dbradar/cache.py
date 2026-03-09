@@ -27,7 +27,6 @@ class Cache:
 
     def __init__(self, cache_dir: Path):
         self.cache_dir = cache_dir
-        self._index_file = cache_dir / "index.json"
 
     def _get_url_hash(self, url: str) -> str:
         """Generate a short hash for the URL to use as filename."""
@@ -36,19 +35,6 @@ class Cache:
     def _get_entry_path(self, url: str) -> Path:
         """Get the path for a cached entry."""
         return self.cache_dir / f"{self._get_url_hash(url)}.json"
-
-    def _load_index(self) -> dict:
-        """Load the cache index."""
-        if self._index_file.exists():
-            try:
-                return json.loads(self._index_file.read_text())
-            except (json.JSONDecodeError, IOError):
-                return {}
-        return {}
-
-    def _save_index(self, index: dict) -> None:
-        """Save the cache index."""
-        self._index_file.write_text(json.dumps(index, indent=2))
 
     def get(self, url: str) -> Optional[CacheEntry]:
         """
@@ -131,15 +117,6 @@ class Cache:
                 indent=2,
             )
         )
-
-        # Update index
-        index = self._load_index()
-        index[url] = {
-            "path": str(entry_path),
-            "fetched_at": entry.fetched_at,
-            "content_hash": content_hash,
-        }
-        self._save_index(index)
 
         return entry
 

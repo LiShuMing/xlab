@@ -11,7 +11,8 @@ Go language laboratory focusing on cloud-native, concurrency, and systems progra
 - **Dependency**: `go get` or `go mod tidy`
 
 ## Project Structure
-```
+
+```text
 go/
 ├── hello/           # Hello world / quick experiments
 ├── golab/           # Main Go lab

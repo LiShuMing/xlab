@@ -47,6 +47,7 @@ pip install -r requirements.txt
 ### Configuration
 
 Update the connection parameters in the UI or code:
+
 - Host: StarRocks host (default: 127.0.0.1)
 - Port: StarRocks port (default: 9131)
 - User: Database user (default: root)
@@ -78,7 +79,7 @@ class CustomMonitor(StarRocksBaseMonitor):
     def get_data(self, **kwargs) -> pd.DataFrame:
         query = "SELECT * FROM information_schema.custom_table"
         return self.execute_query(query)
-    
+
     def transform_data(self, df: pd.DataFrame) -> pd.DataFrame:
         # Transform the data as needed
         return df
@@ -96,6 +97,7 @@ with st.tabs(["Overview", "Materialized Views", "Refresh History", "Custom Tab"]
 ### Configuration Options
 
 The monitoring system can be extended with:
+
 - Different time ranges for analysis
 - Custom alert thresholds
 - Export options for different formats
@@ -104,12 +106,14 @@ The monitoring system can be extended with:
 ## Database Schema Access
 
 The application queries the following information_schema tables:
+
 - `information_schema.materialized_views` - MV definitions and status
 - `information_schema.task_runs` - Refresh operation history
 
 ## Contributing
 
 To extend the monitoring capabilities:
+
 1. Create new monitor classes by extending the base class
 2. Add new visualization in the Streamlit UI
 3. Update the main monitor class to include your new functionality
@@ -122,6 +126,7 @@ To extend the monitoring capabilities:
 - Check connection parameters in the UI
 
 For additional metrics and monitoring capabilities, refer to the StarRocks documentation:
-- https://docs.starrocks.io/docs/administration/management/monitoring/metrics-materialized_view/
-- https://docs.starrocks.io/docs/sql-reference/sql-statements/materialized_view/SHOW_MATERIALIZED_VIEW/
-- https://docs.starrocks.io/docs/sql-reference/information_schema/task_runs/
+
+- [Materialized View Metrics](https://docs.starrocks.io/docs/administration/management/monitoring/metrics-materialized_view/)
+- [SHOW MATERIALIZED VIEW](https://docs.starrocks.io/docs/sql-reference/sql-statements/materialized_view/SHOW_MATERIALIZED_VIEW/)
+- [Task Runs](https://docs.starrocks.io/docs/sql-reference/information_schema/task_runs/)

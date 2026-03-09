@@ -1,9 +1,11 @@
 # Rust Lab (rust)
 
 ## Overview
+
 Rust laboratory focusing on systems programming with memory safety, zero-cost abstractions, and fearless concurrency.
 
 ## Build System
+
 - **Build Tool**: Cargo
 - **Test Tool**: `cargo test`
 - **Benchmark Tool**: `cargo bench`
@@ -12,6 +14,7 @@ Rust laboratory focusing on systems programming with memory safety, zero-cost ab
 - **Dependency**: `cargo add` or edit `Cargo.toml`
 
 ## Project Structure
+
 ```
 rust/
 ├── rlab/            # Main Rust lab
@@ -21,6 +24,7 @@ rust/
 ```
 
 ## Key Concepts
+
 - **Ownership**: Memory safety without GC
 - **Borrowing**: References with lifetime rules
 - **Lifetime**: Compile-time memory management
@@ -29,6 +33,7 @@ rust/
 - **Concurrency**: Fearless parallelism (Send, Sync)
 
 ## Coding Conventions
+
 - `snake_case` for functions and variables
 - `PascalCase` for types and traits
 - `SCREAMING_SNAKE_CASE` for constants
@@ -39,6 +44,7 @@ rust/
 - Iterators over index-based loops
 
 ## AI Vibe Coding Tips
+
 - Start with the type signature, implement outwards
 - Use `cargo check` frequently for compile errors
 - `clippy` provides linting and suggestions

@@ -72,10 +72,10 @@ Ask: "What would this look like in a Miyazaki film?"
 
 ## Connection to Value Investing
 
-| Miyazaki | Graham/Buffett |
-|----------|---------------|
-| Acceptance of seasons | Margin of safety |
-| Anti-hustle | Long-term holding |
+| Miyazaki                      | Graham/Buffett                  |
+| ----------------------------- | ------------------------------- |
+| Acceptance of seasons         | Margin of safety                |
+| Anti-hustle                   | Long-term holding               |
 | Intrinsic worth of small things | Intrinsic value over market price |
-| Quiet work over spectacle | Boring businesses |
-| Nature's patience | Compounding |
+| Quiet work over spectacle     | Boring businesses               |
+| Nature's patience             | Compounding                     |

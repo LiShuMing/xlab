@@ -4,6 +4,7 @@ This is a Rust workspace containing a library of algorithms/data structures and 
 
 ## Workspace Structure
 
+
 ```
 rlab/
 ├── Cargo.toml              # Workspace root
@@ -170,3 +171,4 @@ cargo run --release -- /usr/bin/ls 0x401000
 | Counting | O(n+k) | O(n+k) | Yes | Integer |
 | Radix | O(d(n+b)) | O(n+b) | Yes | Integer |
 | Bucket | O(n+k) | O(n+k) | Yes | Integer |
+

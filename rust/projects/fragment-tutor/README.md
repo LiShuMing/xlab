@@ -5,23 +5,27 @@
 ## 功能特性
 
 ### 📥 采集 (Capture)
+
 - 捕获 URL：粘贴链接，自动提取正文并离线保存
 - 手动记录：快速记录想法和笔记
 - 离线阅读：所有内容保存在本地
 
 ### 🧠 分析 (Analyze)
+
 - AI 驱动的快速摘要 (Quick Digest)
 - 提取核心论点、第一性原理、对立观点
 - 关键词汇提取
 - 行动建议生成
 
 ### 🔄 复习 (Review)
+
 - 间隔重复 (Spaced Repetition)
 - 词汇卡片生成
 - 知识点卡片
 - 学习进度追踪
 
 ### 🤔 反省 (Reflect)
+
 - 60 秒快速反省卡片
 - 每日复盘提醒
 - 习惯追踪（深度工作、睡眠、家庭时间）
@@ -30,11 +34,13 @@
 ## 快速开始
 
 ### 环境要求
+
 - macOS 11.0+
 - Node.js 18+
 - Rust 1.70+
 
 ### 安装依赖
+
 
 ```bash
 # 安装前端依赖
@@ -46,11 +52,13 @@ cd src-tauri && cargo fetch && cd ..
 
 ### 配置 Anthropic API Key
 
+
 1. 打开 [Anthropic Console](https://console.anthropic.com/)
 2. 创建 API Key
 3. 在应用设置中填入 API Key
 
 ### 开发模式
+
 
 ```bash
 # 启动前端开发服务器
@@ -62,6 +70,7 @@ npm run tauri dev
 
 ### 构建发布版
 
+
 ```bash
 # 构建前端
 npm run build
@@ -71,6 +80,7 @@ npm run tauri build
 ```
 
 ## 项目结构
+
 
 ```
 fragment-tutor/
@@ -118,6 +128,7 @@ fragment-tutor/
 ## 技术栈
 
 ### 前端
+
 - React 18 + TypeScript
 - Vite 5
 - Tailwind CSS 3
@@ -125,12 +136,14 @@ fragment-tutor/
 - date-fns (日期处理)
 
 ### 后端
+
 - Tauri 2.0
 - Rust 1.70
 - SQLite + sqlx
 - reqwest (HTTP 客户端)
 
 ## 快捷键
+
 
 | 快捷键 | 功能 |
 |--------|------|
@@ -141,6 +154,7 @@ fragment-tutor/
 
 ## API 配置
 
+
 需要配置 Anthropic API Key 来启用 AI 分析功能：
 
 1. 在应用设置中填入 API Key
@@ -149,10 +163,12 @@ fragment-tutor/
 
 ## 隐私
 
+
 - 所有数据存储在本地
 - API Key 仅在本地使用，不会上传
 - 支持离线使用
 
 ## 许可证
+
 
 MIT License

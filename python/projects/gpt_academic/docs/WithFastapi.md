@@ -1,14 +1,14 @@
-# Running with fastapi
+# Running with FastAPI
 
-We currently support fastapi in order to solve sub-path deploy issue.
+We currently support FastAPI in order to solve sub-path deploy issue.
 
-1. change CUSTOM_PATH setting in `config.py`
+## 1. Change CUSTOM_PATH Setting in `config.py`
 
-```sh
+```bash
 nano config.py
 ```
 
-2. Edit main.py
+## 2. Edit main.py
 
 ```diff
     auto_opentab_delay()
@@ -35,8 +35,8 @@ if __name__ == "__main__":
     main()
 ```
 
-3. Go!
+## 3. Go!
 
-```sh
+```bash
 python main.py
 ```

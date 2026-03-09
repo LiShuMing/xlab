@@ -6,7 +6,8 @@
 **Investment**: Buy at 50% below intrinsic value
 **Life**: Build in buffer for uncertainty—time, energy, relationships
 
-**Writing application**: 
+**Writing application**:
+
 - "I'm learning to build margin of safety into my schedule..."
 - "The project took longer than expected, as they do. I'd left room."
 
@@ -15,6 +16,7 @@
 **Life**: Others' opinions, social media metrics, comparison culture
 
 **Writing application**:
+
 - "Mr. Market was offering me a promotion. I declined."
 - "The market price of my skills went up. My intrinsic value stayed the same."
 
@@ -23,6 +25,7 @@
 **Life**: Self-worth vs external validation (titles, salary, likes)
 
 **Writing application**:
+
 - "I was trading at a premium to my intrinsic value. It couldn't last."
 - "The re-rating was painful, but now I'm priced closer to reality."
 
@@ -31,6 +34,7 @@
 **Life**: Saying no to opportunities outside your strengths/values
 
 **Writing application**:
+
 - "Extending my circle of competence vs staying within it..."
 - "The temptation to be a generalist is strong. The rewards of depth are slow."
 
@@ -39,6 +43,7 @@
 **Life**: Skills, relationships, health as compound assets
 
 **Writing application**:
+
 - "This is a buy-and-hold life decision."
 - "The holding period is forever, or until the thesis changes."
 
@@ -62,17 +67,21 @@
 "If I projected out cash flows—time, energy, satisfaction—what discount rate should I use?"
 
 ### 2. Balance Sheet Approach to Self
-Assets: Skills, relationships, health
-Liabilities: Commitments, debts (financial and social)
-Book value vs market cap
+
+- **Assets**: Skills, relationships, health
+- **Liabilities**: Commitments, debts (financial and social)
+- **Book value vs market cap**
 
 ### 3. The Annual Report
+
 Writing one's own annual letter:
+
 - What went well (operating results)
 - Mistakes (impairment of capital)
 - Outlook (thesis unchanged, or changed)
 
 ### 4. Moats in Personal Development
+
 - What sustainable competitive advantage do I have?
 - What's my economic moat?
 - Is it widening or narrowing?

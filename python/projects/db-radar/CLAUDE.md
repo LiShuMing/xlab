@@ -1,103 +1,76 @@
-You are my senior engineer mentor and code partner.
+# CLAUDE.md
 
-We will build a learning project on macOS using Python:
-Project: Daily DB Radar
-Goal:
-- Learn agent development patterns (tools, memory, pipelines) using Anthropic + modern agent frameworks (LangChain optional).
-- Improve daily work efficiency by collecting and summarizing DB/OLAP industry updates from a curated website list.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-Inputs:
-- A file named website.txt in the project root.
-- website.txt contains lines describing competitor/product name and one or more URLs.
-  Example line formats (we must support multiple):
-  1) "DuckDB | https://duckdb.org/news/ | https://github.com/duckdb/duckdb/releases"
-  2) "ClickHouse https://clickhouse.com/blog/ https://github.com/ClickHouse/ClickHouse/releases"
-  3) "# comment" lines should be ignored
-  4) blank lines ignored
+## Setup & Running
 
-Output:
-- Each run generates one Markdown report in ./out/YYYY-MM-DD.md
-- Also generates ./out/YYYY-MM-DD.json containing structured items and metadata.
-- The report must cite sources as URLs and include brief extracted evidence (short snippets) per key claim.
+```bash
+# Install (editable)
+pip install -e .
 
-Non-negotiables constraints:
-1) Do not invent facts. Everything must be grounded in fetched content.
-2) Every item must include: product name, source URL, publish date if available, and a short snippet.
-3) If a page cannot be fetched or parsed, record it in the report under "Fetch Failures" with reason.
-4) Keep the system extensible: new sources and new output formats can be added later.
-5) Use English comments in code. Use clean, production-grade style. Avoid competitive-programming style.
+# Required env var
+export ANTHROPIC_API_KEY="..."
+export ANTHROPIC_BASE_URL="..."   # optional, for custom endpoints
 
-Tech constraints:
-- Python 3.11+
-- Use Anthropic SDK (official) with ANTHROPIC_API_KEY and optionally ANTHROPIC_BASE_URL.
-- Use requests/httpx + BeautifulSoup/readability-lxml for HTML extraction.
-- Use feedparser for RSS/Atom when applicable.
-- Use a simple local cache to avoid refetching unchanged pages:
-  - store fetched content hash and ETag/Last-Modified if available in ./cache/
-- Use a dedupe mechanism:
-  - exact URL dedupe + similarity dedupe based on normalized title + domain + date.
+# Full pipeline
+python -m dbradar run --days 7 --top-k 10
 
-Agent design requirements (important):
-- Use a deterministic pipeline: Fetch -> Extract -> Normalize -> Rank -> Summarize -> Write.
-- The LLM is used only for:
-  a) classifying relevance to DB/OLAP systems and
-  b) writing structured summaries and "why it matters".
-- The LLM must NOT be used for web search. Only summarize what we fetched from the given sources.
+# Fetch only (no LLM call)
+python -m dbradar fetch --days 7
 
-Daily report format (Markdown):
-1) Executive Summary (5 bullets max)
-2) Top Updates (5-10 items)
-   For each item:
-   - [Product] Title
-   - What changed (2-4 bullets)
-   - Why it matters for OLAP / query engines (2 bullets)
-   - Source(s): URLs
-   - Evidence: 1-2 short snippets (<= 40 words each)
-3) Release Notes Tracker (table by product)
-4) Themes & Trends (3-6 bullets)
-5) Action Items for Me (3-5 bullets; concrete follow-ups, e.g. "check feature X", "benchmark idea Y")
-6) Fetch Failures
+# Summarize previously fetched data
+python -m dbradar summarize --date YYYY-MM-DD
 
-Ranking rules:
-- Prefer official release notes, GitHub releases, engineering blogs, and docs updates.
-- Prefer items within last 7 days by default; configurable.
-- Prefer content about performance, execution engine, storage, query optimizer, governance, cost, serverless, lakehouse.
+# Common flags
+--no-cache        # bypass HTTP cache, refetch all
+--max-items 80    # cap items before ranking
+--websites-file   # override default websites.txt path
+```
 
-Configuration:
-- CLI: python -m dbradar run --days 7 --max-items 80 --top-k 10
-- Also support: python -m dbradar fetch --days 7
-- Also support: python -m dbradar summarize --date YYYY-MM-DD
+## Development
 
-Deliverables for the first iteration (30 minutes MVP):
-A) Project skeleton with modules:
-   dbradar/
-     __init__.py
-     cli.py
-     config.py
-     sources.py
-     fetcher.py
-     extractor.py
-     normalize.py
-     ranker.py
-     summarizer.py
-     writer.py
-     cache.py
-   tests/ (optional for MVP)
-B) A working run command that reads website.txt, fetches, extracts, calls Anthropic, writes Markdown.
-C) Minimal caching and failure logging.
+```bash
+# Lint
+ruff check dbradar/
+black --check dbradar/
 
-Implementation rules:
-- Keep it simple and runnable first.
-- Provide clear TODOs for later: vector memory, Slack/email delivery, trend comparisons, etc.
-- Every module must be small and focused.
+# Format
+black dbradar/
 
-Start now:
-- Propose the project skeleton, module responsibilities, and CLI.
-- Implement the MVP code in one pass, ensuring it runs on macOS.
-- Provide usage instructions and example website.txt format.
-- Do not ask me questions; make reasonable assumptions and document them.
+# Tests (if present)
+pytest tests/
+```
 
-## Environment Constraints
-- All Python commands must be executed within the pyenv environment: /Users/lishuming/work/xlab/python/pyenv-3.13.5
-- Always prefix python commands with `pyenv exec` or ensure the virtualenv is active.
-- Before running scripts, verify the environment using `python --version`.
+Line length: 100. Target: Python 3.11+.
+
+## Architecture
+
+Deterministic pipeline — each stage is a pure function with a convenience wrapper:
+
+```
+sources.py → fetcher.py → extractor.py → normalize.py → ranker.py → summarizer.py → writer.py
+```
+
+**Data flow types:**
+- `sources.py`: parses `websites.txt` → `List[Source]`
+- `fetcher.py`: `List[Source]` → `List[FetchResult]` (HTTP + cache)
+- `extractor.py`: `List[FetchResult]` → `List[ExtractedItem]` (HTML/RSS parsing)
+- `normalize.py`: `List[ExtractedItem]` → `List[NormalizedItem]` (dedupe, date parse)
+- `ranker.py`: `List[NormalizedItem]` → `List[RankedItem]` (score by recency + content type + keywords)
+- `summarizer.py`: `List[RankedItem]` → `SummaryResult` (Anthropic call, JSON response)
+- `writer.py`: `SummaryResult` + `List[RankedItem]` → `out/YYYY-MM-DD.{md,json}`
+
+**Config** (`config.py`): global singleton via `get_config()`/`set_config()`. Set by CLI before any module runs.
+
+**Cache** (`cache.py`): file-based, stored in `./cache/`. Keyed by URL hash. Respects ETag/Last-Modified.
+
+## LLM Usage
+
+The LLM (`claude-sonnet-4-20250514`) is called only in `summarizer.py`. It receives pre-ranked item snippets and returns a structured JSON object. It must never be used for fetching or searching — only classification and summarization of already-fetched content.
+
+## Key Conventions
+
+- Each module exposes a convenience function (e.g., `fetch_sources`, `extract_items`, `normalize_items`, `rank_items`, `summarize_items`, `write_reports`) in addition to its class.
+- `websites.txt` supports pipe-separated (`Product | url1 | url2`) and space-separated formats; lines starting with `#` and blank lines are ignored.
+- Fetch failures are collected and passed through the pipeline to appear in the report's "Fetch Failures" section — never silently dropped.
+- `out/fetched_items.json` is the intermediate artifact written by `dbradar fetch` and consumed by `dbradar summarize`.

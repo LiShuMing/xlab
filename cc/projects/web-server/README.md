@@ -1,7 +1,7 @@
 
 1) 第一性原理：为什么要做“双后端”？
-	•	io_uring 的价值在于：把 I/O 提交与完成用 共享内存 ring（SQ/CQ） 表达，减少 syscalls、减少 wakeups，并支持注册（fixed files / buffers）降低内核路径开销。
-	•	macOS 没有 io_uring；kqueue 更像 就绪通知（Reactor）。你仍然可以写高性能服务器，但模型不同。
+- io_uring 的价值在于：把 I/O 提交与完成用共享内存 ring（SQ/CQ）表达，减少 syscalls、减少 wakeups，并支持注册（fixed files / buffers）降低内核路径开销
+- macOS 没有 io_uring；kqueue 更像就绪通知（Reactor）。你仍然可以写高性能服务器，但模型不同
 
 所以工程目标不是“把 io_uring 代码移植到 macOS”，而是：
 
@@ -28,7 +28,7 @@ struct CompletionEvent {
   uint32_t flags;         // optional
 };
 
-2.2 统一后端接口：IoBackend
+### 2.2 统一后端接口：IoBackend
 
 class IoBackend {
  public:
@@ -46,33 +46,34 @@ class IoBackend {
   virtual Status Poll(std::vector<CompletionEvent>* out, int timeout_ms) = 0;
 };
 
-2.3 两种后端映射
-	•	Linux io_uring：天然 Proactor，CQE 就是 completion。
-	•	macOS kqueue：是 readiness → 你内部做一次 read/write，把结果包装成 CompletionEvent，对上层伪装成 completion。
+### 2.3 两种后端映射
+
+- **Linux io_uring**：天然 Proactor，CQE 就是 completion
+- **macOS kqueue**：是 readiness → 你内部做一次 read/write，把结果包装成 CompletionEvent，对上层伪装成 completion
 
 这样上层代码完全不关心 Reactor/Proactor 差异。
 
-⸻
+## 3. Connection 与 HTTP 层：独立于后端
 
-3) Connection 与 HTTP 层：独立于后端
+### 3.1 Connection 状态机（建议）
 
-3.1 Connection 状态机（建议）
-	•	ConnState::Accepting / Reading / Parsing / Writing / Closing
-	•	维护：
-	•	read buffer（ring buffer 或 linear buffer）
-	•	write buffer（small response + file response）
-	•	keep-alive 状态
-	•	request parser state
+- ConnState::Accepting / Reading / Parsing / Writing / Closing
+- 维护：
+    - read buffer（ring buffer 或 linear buffer）
+    - write buffer（small response + file response）
+    - keep-alive 状态
+    - request parser state
 
-3.2 HTTP/1.1 parser（Phase 2）
+### 3.2 HTTP/1.1 parser（Phase 2）
 
 写一个状态机解析器（不引入第三方库，练功）：
-	•	REQ_LINE → HEADERS → BODY (optional) → DONE
-	•	MVP 支持：
-	•	GET
-	•	keep-alive
-	•	Content-Length（可选）
-	•	只服务静态资源（Phase 3）
+
+- REQ_LINE → HEADERS → BODY (optional) → DONE
+- MVP 支持：
+    - GET
+    - keep-alive
+    - Content-Length（可选）
+    - 只服务静态资源（Phase 3）
 
 ⸻
 
@@ -93,26 +94,30 @@ Linux / macOS 支持差异：
 Phase 0（强烈建议加）：基础脚手架 + kqueue MVP
 
 原因：你现在在 macOS 开发，得先跑起来。
-	•	实现 KqueueBackend：支持 Accept/Read/Write（就绪 + 真实 syscall）
-	•	实现 Connection + 最小 HTTP 200 OK（固定字符串）
-	•	用 wrk 跑通
 
-Phase 1：Linux io_uring backend（liburing）
-	•	IoUringBackend：SQE/CQE 提交与收割
-	•	跑通 Accept/Read/Write
-	•	加入可选：fixed files / registered buffers（先留开关，不强上）
+- 实现 KqueueBackend：支持 Accept/Read/Write（就绪 + 真实 syscall）
+- 实现 Connection + 最小 HTTP 200 OK（固定字符串）
+- 用 wrk 跑通
 
-Phase 2：HTTP/1.1 parser
-	•	状态机 + keep-alive + path routing
-	•	处理：
-	•	半包/粘包（read buffer accumulation）
-	•	header 限制（防止 OOM）
-	•	400/404
+### Phase 1：Linux io_uring backend（liburing）
 
-Phase 3：静态资源 + sendfile
-	•	path → filesystem mapping
-	•	sendfile（Linux/macOS）
-	•	ETag/Last-Modified 可选
+- IoUringBackend：SQE/CQE 提交与收割
+- 跑通 Accept/Read/Write
+- 加入可选：fixed files / registered buffers（先留开关，不强上）
+
+### Phase 2：HTTP/1.1 parser
+
+- 状态机 + keep-alive + path routing
+- 处理：
+    - 半包/粘包（read buffer accumulation）
+    - header 限制（防止 OOM）
+    - 400/404
+
+### Phase 3：静态资源 + sendfile
+
+- path → filesystem mapping
+- sendfile（Linux/macOS）
+- ETag/Last-Modified 可选
 
 ⸻
 
@@ -141,9 +146,7 @@ Phase 3：静态资源 + sendfile
 	•	只换 I/O 后端
 	•	用同一套 wrk script 与同样的 payload
 
-⸻
-
-7) 项目目录结构（建议 Claude 生成的最终形态）
+## 7. 项目目录结构（建议 Claude 生成的最终形态）
 
 ringserver/
   CMakeLists.txt
@@ -181,9 +184,7 @@ ringserver/
     design.md
 
 
-⸻
-
-8) Claude Code Promoting（直接复制使用）
+## 8. Claude Code Promoting（直接复制使用）
 
 下面这份就是你要的 “claude promoting”。它会逼 Claude 输出：工程结构、CMake、跨平台抽象、每 phase 的可编译增量、以及性能对比方法。
 

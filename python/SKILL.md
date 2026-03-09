@@ -1,9 +1,11 @@
 # Python Lab (python/pylab)
 
 ## Overview
+
 Python laboratory for scripting, data processing, algorithms, and rapid prototyping. Uses pytest for testing with virtual environment isolation.
 
 ## Build System
+
 - **Environment**: Virtual environments (`pyenv`, `venv`)
 - **Dependencies**: `pip install -r requirements.txt`
 - **Test Tool**: pytest
@@ -11,7 +13,8 @@ Python laboratory for scripting, data processing, algorithms, and rapid prototyp
 - **Individual Tests**: `pytest -s test_file.py`
 
 ## Project Structure
-```
+
+```text
 python/
 ├── pylab/           # Main Python lab
 │   ├── src/         # Source modules
@@ -25,6 +28,7 @@ python/
 ```
 
 ## Key Concepts
+
 - **Duck Typing**: Object behavior over type checking
 - **Dynamic Typing**: Types checked at runtime
 - **Interpreted**: No compilation step
@@ -32,6 +36,7 @@ python/
 - **Type Hints**: Optional static typing (Python 3.5+)
 
 ## Coding Conventions
+
 - PEP 8 style guide (use `black`, `isort`)
 - Type hints for function signatures
 - Use `__main__` guard for CLI scripts
@@ -40,6 +45,7 @@ python/
 - Virtual environments for dependency isolation
 
 ## AI Vibe Coding Tips
+
 - Use `typing` module for complex type hints
 - Prefer `pathlib.Path` over `os.path`
 - Use `dataclasses` for structured data (Python 3.7+)

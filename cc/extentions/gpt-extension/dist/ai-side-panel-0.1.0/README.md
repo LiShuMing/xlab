@@ -1,6 +1,7 @@
-AI Side Panel (Chrome Extension)
+# AI Side Panel (Chrome Extension)
 
-Quick start
+## Quick Start
+
 - Load at chrome://extensions → Developer Mode → Load unpacked → select this folder.
 - Open via toolbar icon or shortcut: Ctrl+Shift+Y (Win/Linux) or Command+Shift+Y (macOS).
  - Choose ChatGPT, DeepSeek (chat.deepseek.com), Gemini (google), or Qwen in the panel. If the view is blank, click “Open in Tab”.
@@ -17,7 +18,7 @@ Notes
 - Some sites block iframes via X-Frame-Options or CSP. The extension includes DNR rules to remove common blocking headers for listed hosts, but this may not always work and may conflict with site policies.
 - Permissions are limited to the Side Panel API, storage, and the listed hosts for DNR.
 
-Build and package
+## Build and Package
 - Optional: add extra approved hosts for DNR in `build/hosts.json` (e.g., "example.com").
 - Optional: tweak icon colors in `build/branding.json`.
 - Run: `python3 tools/build.py`

@@ -11,8 +11,6 @@ Build a single-threaded in-memory KV store with correct semantics, serving as th
 5. gtest suite passes with 100% coverage of MemTable/SkipList APIs
 6. Benchmark shows Put/Get throughput within 2x of std::map
 
----
-
 ## 1. Module Structure
 
 ```
@@ -46,11 +44,9 @@ tinykv/
         └── memtable_bench.cpp
 ```
 
----
-
 ## 2. API Design
 
-### 2.1 Slice (Non-owning string view)
+### 2.1 Slice (Non-owning String View)
 
 ```cpp
 namespace tinykv {
@@ -91,7 +87,7 @@ private:
 - Null-safe: empty slice has `data_=""`, never nullptr
 - Used throughout API to avoid string copies
 
-### 2.2 Status (Error return type)
+### 2.2 Status (Error Return Type)
 
 ```cpp
 namespace tinykv {
@@ -124,7 +120,7 @@ private:
 - No exceptions - return by value
 - Consistent with RocksDB/Pebble API style
 
-### 2.3 Comparator (Key ordering)
+### 2.3 Comparator (Key Ordering)
 
 ```cpp
 namespace tinykv {
@@ -155,7 +151,7 @@ public:
 }  // namespace tinykv
 ```
 
-### 2.4 Arena (Memory pool for SkipList nodes)
+### 2.4 Arena (Memory Pool for SkipList Nodes)
 
 ```cpp
 namespace tinykv {
@@ -208,7 +204,7 @@ private:
 - Cache-friendly: allocations are sequential
 - Memory usage tracked for diagnostics
 
-### 2.5 SkipList (Ordered map)
+### 2.5 SkipList (Ordered Map)
 
 ```cpp
 namespace tinykv {
@@ -286,7 +282,7 @@ private:
 - Memory allocation failure: handled by Arena (throws bad_alloc)
 - Concurrent access: NOT thread-safe (MemTable wraps with mutex)
 
-### 2.6 MemTable (Public API wrapper)
+### 2.6 MemTable (Public API Wrapper)
 
 ```cpp
 namespace tinykv {
@@ -340,8 +336,6 @@ private:
 3. No sequence numbers yet - single version only
 4. Tombstone is just a Delete with empty value (compaction handles later)
 
----
-
 ## 3. Invariants
 
 ### SkipList Invariants
@@ -355,9 +349,7 @@ private:
 3. **Atomic visibility**: Get sees all previously completed Puts
 4. **Memory safety**: Arena owns all node memory
 
----
-
-## 4. File Format (Memory layout)
+## 4. File Format (Memory Layout)
 
 ### Arena Block Layout
 ```
@@ -385,8 +377,6 @@ private:
 | [0], [1], ..., [h-1] |
 +-------------------+
 ```
-
----
 
 ## 5. Test Plan
 
@@ -419,11 +409,9 @@ private:
 ### 5.3 Performance Tests
 See benchmark section below.
 
----
-
 ## 6. Benchmark Plan
 
-### 6.1 Microbenchmarks (google benchmark)
+### 6.1 Microbenchmarks (Google Benchmark)
 
 #### Put Throughput
 ```cpp
@@ -459,8 +447,6 @@ for (i = 0; i < N; i++) {
 | MemTable+SkipList | Baseline |
 | std::map | Within 2x of SkipList |
 | std::unordered_map | 2-5x faster (hashing vs sorting) |
-
----
 
 ## 7. Profiling Checklist
 
@@ -501,8 +487,6 @@ cg_annotate skiplist.cpp
 - L1 cache miss rate on traversal
 - Prefetch effectiveness
 
----
-
 ## 8. Common Pitfalls
 
 ### 8.1 Correctness Pitfalls
@@ -541,8 +525,6 @@ cg_annotate skiplist.cpp
    ./test_memtable --v=2
    ```
 
----
-
 ## 9. Implementation Steps
 
 ### Step 1: Setup
@@ -550,7 +532,7 @@ cg_annotate skiplist.cpp
 - [ ] Write CMakeLists.txt with gtest and google benchmark
 - [ ] Configure C++20 standard, warnings
 
-### Step 2: Common utilities
+### Step 2: Common Utilities
 - [ ] Implement `Slice` class
 - [ ] Implement `Status` class
 - [ ] Add comparator interface
@@ -577,7 +559,7 @@ cg_annotate skiplist.cpp
 - [ ] Add memory usage tracking
 - [ ] Write MemTable unit tests
 
-### Step 6: Integration tests
+### Step 6: Integration Tests
 - [ ] Random operation comparison with std::map
 - [ ] Stress test (large dataset)
 
@@ -591,8 +573,6 @@ cg_annotate skiplist.cpp
 - [ ] Run CPU profiling with perf
 - [ ] Run memory profiling with heaptrack
 - [ ] Document findings
-
----
 
 ## 10. Skills Learned
 
@@ -623,8 +603,6 @@ After completing Phase 1, you will have learned:
    - Memory layout for cache efficiency
    - Allocation patterns affecting performance
 
----
-
 ## 11. Next Optimization Candidates (Phase 2+)
 
 Based on Phase 1 implementation, candidates include:
@@ -644,8 +622,6 @@ Based on Phase 1 implementation, candidates include:
 4. **Concurrency** - Multi-threaded access
    - Fine-grained locking or lock-free SkipList
    - Read-write lock optimization
-
----
 
 ## 12. References
 

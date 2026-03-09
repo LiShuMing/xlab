@@ -1,6 +1,5 @@
 """Parse and manage source URLs from websites.txt."""
 
-import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional

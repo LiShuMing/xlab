@@ -80,7 +80,7 @@ stack test
 
 ### 模块结构
 
-```
+```text
 src/
 ├── AST.hs       # 抽象语法树定义
 ├── Parser.hs    # Megaparsec 解析器
@@ -89,7 +89,7 @@ src/
 
 ### 核心数据类型 (AST.hs)
 
-```
+```haskell
 Statement
   └── SelectStmt
         ├── SelectItem (NonEmpty)  -- 投影列表
@@ -128,7 +128,8 @@ parseSQL :: Text -> Either ParseError Statement
 optimize :: Statement -> Statement
 ```
 
-**优势**:
+**优势：**
+
 - 可引用透明性：相同输入总是产生相同输出
 - 可等式推理：便于形式化验证
 - 线程安全：无需同步机制
@@ -144,7 +145,8 @@ ssFrom :: Maybe FromClause
 ssWhere :: Maybe WhereClause
 ```
 
-**优势**:
+**优势：**
+
 - 编译时捕获错误
 - 减少运行时检查
 - 自文档化类型
@@ -184,7 +186,8 @@ optimizeExpr = \case
 (OpDiv, ELit (LitInt l), ELit (LitInt r)) | r /= 0 -> ELit (LitInt (l `div` r))
 ```
 
-**示例**:
+**示例：**
+
 ```sql
 -- 优化前
 SELECT * FROM t WHERE x = 1 + 2
@@ -211,7 +214,8 @@ SELECT * FROM t WHERE x = 3
 (OpOr, expr, ELit (LitBool False))  -> expr
 ```
 
-**示例**:
+**示例：**
+
 ```sql
 -- 优化前
 SELECT * FROM t WHERE TRUE AND x = 1
@@ -236,7 +240,7 @@ SELECT * FROM t WHERE x = 1
 
 ### 表达式解析层级
 
-```
+```text
 expr          → orExpr
 orExpr        → andExpr (`OR` andExpr)*
 andExpr       → comparisonExpr (`AND` comparisonExpr)*
@@ -358,15 +362,15 @@ stack test --test-arguments="--format=detailed"
 
 **Q: 解析器失败，错误信息不清晰**
 
-A: Megaparsec 提供详细错误，检查 `ParseErrorBundle` 的 `bundleErrors` 字段。
+A：Megaparsec 提供详细错误，检查 `ParseErrorBundle` 的 `bundleErrors` 字段。
 
 **Q: 优化器没有应用预期规则**
 
-A: 检查 AST 结构，确保模式匹配正确。使用 `:set -XViewPatterns` 调试。
+A：检查 AST 结构，确保模式匹配正确。使用 `:set -XViewPatterns` 调试。
 
 **Q: 构建失败，依赖冲突**
 
-A: 运行 `stack update` 更新包索引，然后 `stack build --upgrade-dependencies`。
+A：运行 `stack update` 更新包索引，然后 `stack build --upgrade-dependencies`。
 
 ## 参考资源
 

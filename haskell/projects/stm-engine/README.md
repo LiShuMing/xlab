@@ -125,7 +125,7 @@ transferValue fromKey toKey amount stateVar = do
     writeTVar stateVar newState
 ```
 
-**Key insight**: The Haskell version has no explicit locking, no deadlock risk, and composes naturally with other STM operations.
+**Key insight：** The Haskell version has no explicit locking, no deadlock risk, and composes naturally with other STM operations.
 
 ## Test Suite
 
@@ -182,11 +182,11 @@ stm-engine/
 ├── README.md              # This file
 ├── stm-engine.cabal       # Package configuration
 ├── app/
-│   └── Main.hs           # Benchmark and demo
+│   └── Main.hs            # Benchmark and demo
 ├── src/
-│   └── Engine.hs         # Core STM engine implementation
+│   └── Engine.hs          # Core STM engine implementation
 └── test/
-    └── EngineTest.hs     # Unit and concurrency tests
+    └── EngineTest.hs      # Unit and concurrency tests
 ```
 
 ## Key Takeaways

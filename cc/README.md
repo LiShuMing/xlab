@@ -22,10 +22,11 @@ The `thirdparty/` directory contains various third-party libraries and dependenc
 ## Reference Links
 
 ### Libraries
-- https://github.com/yhirose/cpp-httplib
-- https://github.com/taskflow/taskflow
-- https://github.com/greg7mdp/parallel-hashmap
-- https://github.com/q191201771/libchef
+
+- [cpp-httplib](https://github.com/yhirose/cpp-httplib)
+- [taskflow](https://github.com/taskflow/taskflow)
+- [parallel-hashmap](https://github.com/greg7mdp/parallel-hashmap)
+- [libchef](https://github.com/q191201771/libchef)
 
 ### External Repositories
 - git clone git@github.com:TheAlgorithms/C-Plus-Plus.git

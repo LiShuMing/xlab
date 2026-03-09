@@ -4,6 +4,7 @@
 
 ## 架构设计
 
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                      ThreadPool                              │
@@ -28,27 +29,32 @@
 ## 核心组件
 
 ### 1. ThreadPool (主池)
+
 - 管理线程池的生命周期
 - 提供任务提交接口 `execute()`
 - 协调优雅关闭
 
 ### 2. ThreadPoolBuilder (构建器)
+
 - 可配置线程数量
 - 可设置线程栈大小
 - 可自定义线程名称前缀
 
 ### 3. Worker (工作线程)
+
 - 从共享队列获取任务
 - 执行并完成任务
 - 响应终止信号
 
 ### 4. Message (消息类型)
+
 - `Work(Task)`: 执行任务
 - `Terminate`: 终止工作线程
 
 ## 线程池常见问题及解决方案
 
 ### 1. **任务分配策略**
+
 **问题**: 如何高效地将任务分配给工作线程？
 
 **本实现**: 使用简单的共享队列（mpsc channel）
@@ -63,6 +69,7 @@ let receiver = Arc::new(Mutex::new(receiver));
 - 减少锁竞争，提高吞吐量
 
 ### 2. **锁竞争**
+
 **问题**: 多个工作线程竞争同一个锁
 
 **本实现的权衡**:
@@ -81,6 +88,7 @@ task = local_queue.pop_back()  // 无锁
 ```
 
 ### 3. **优雅关闭**
+
 **问题**: 如何确保所有任务完成后才关闭线程池？
 
 **本实现方案**:
@@ -101,6 +109,7 @@ impl Drop for ThreadPool {
 ```
 
 ### 4. **线程数量选择**
+
 **问题**: 应该创建多少个工作线程？
 
 **默认策略**:
@@ -114,6 +123,7 @@ num_threads = num_cpus::get()  // 逻辑 CPU 数量
 - **混合型任务**: 需要实际测试调优
 
 ### 5. **任务粒度**
+
 **问题**: 多小的任务不适合线程池？
 
 **性能示例**:
@@ -132,6 +142,7 @@ for chunk in data.chunks(1000) {
 ## 性能对比
 
 ### CPU 密集型任务（斐波那契计算）
+
 ```
 System has 8 CPUs
 
@@ -144,6 +155,7 @@ Speedup: 4.4x
 ```
 
 ### 小任务开销问题
+
 ```
 Small tasks (sequential):  15μs
 Small tasks (thread pool): 2.3ms  ← 150x slower!
@@ -154,6 +166,7 @@ Small tasks (thread pool): 2.3ms  ← 150x slower!
 ## 使用方法
 
 ### 基础用法
+
 ```rust
 use thread_pool::ThreadPool;
 
@@ -169,6 +182,7 @@ fn main() {
 ```
 
 ### 使用 Builder 配置
+
 ```rust
 use thread_pool::ThreadPoolBuilder;
 
@@ -181,6 +195,7 @@ let pool = ThreadPoolBuilder::new()
 ```
 
 ### 运行示例
+
 ```bash
 # 基础示例
 cargo run --example basic
@@ -193,6 +208,7 @@ cargo bench
 ```
 
 ## 代码结构
+
 
 ```
 tools/thread-pool/
@@ -211,6 +227,7 @@ tools/thread-pool/
 
 ## 学习要点
 
+
 1. **线程安全**: `Send` + `Sync` trait 的理解
 2. **锁的使用**: 何时加锁、如何减少锁竞争
 3. **Channel 通信**: mpsc 模式在并发中的应用
@@ -218,6 +235,7 @@ tools/thread-pool/
 5. **性能权衡**: 简单实现 vs 高性能实现的取舍
 
 ## 与 Rayon 的区别
+
 
 | 特性 | 本实现 | Rayon |
 |------|--------|-------|
@@ -228,6 +246,7 @@ tools/thread-pool/
 | 适用场景 | 学习、简单任务 | 生产环境 |
 
 ## 参考资料
+
 
 - [Rayon 源码](https://github.com/rayon-rs/rayon)
 - [The Rust Programming Language - 并发](https://doc.rust-lang.org/book/ch16-00-concurrency.html)

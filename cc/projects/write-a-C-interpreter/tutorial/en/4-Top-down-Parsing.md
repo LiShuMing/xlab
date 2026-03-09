@@ -4,7 +4,7 @@ technique. This is the preparation before we start to implement the parser.
 I will introduce a small set of theories but will not gurantee to be absolutely
 correct, please consult your textbook if you have any confusion.
 
-## Top-down parsing
+## Top-down Parsing
 
 Traditionally, we have top-down parsing and bottom-up parsing. The top-down
 method will start with a non-terminator and recursively check the source code to

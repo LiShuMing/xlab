@@ -4,6 +4,7 @@
 
 ### CitySelector
 
+
 城市选择组件，显示所有可用的城市卡片。
 
 ```tsx
@@ -25,6 +26,7 @@ function App() {
 
 ### GameScreen
 
+
 游戏主界面，包含问题展示、路线选择和地图显示。
 
 ```tsx
@@ -41,7 +43,9 @@ import { GameScreen } from './components/GameScreen';
 
 ---
 
-### QuestionPanel
+### Question
+Panel
+
 
 ```tsx
 interface QuestionPanelProps {
@@ -57,7 +61,9 @@ interface QuestionPanelProps {
 
 ---
 
-### RouteOptions
+### Route
+Options
+
 
 ```tsx
 interface RouteOptionsProps {
@@ -76,6 +82,7 @@ interface RouteOptionsProps {
 ---
 
 ### SubwayMap
+
 
 ```tsx
 interface SubwayMapProps {
@@ -99,6 +106,7 @@ interface SubwayMapProps {
 
 ### useGameStore
 
+
 ```tsx
 import { useGameStore } from './stores/gameStore';
 
@@ -118,6 +126,7 @@ const {
 
 ### Actions
 
+
 | Action | Description | Parameters |
 |--------|-------------|------------|
 | `selectCity(cityId)` | 选择城市并加载地铁数据 | `cityId: string` |
@@ -131,6 +140,7 @@ const {
 ## 工具函数 API
 
 ### routeCalculator.ts
+
 
 ```tsx
 import { 
@@ -155,6 +165,7 @@ generateQuestionOptions(correctRoute, allStations, cityData): Route[]
 
 ### City
 
+
 ```ts
 interface City {
   id: string;           // 城市ID，如 'beijing'
@@ -173,6 +184,7 @@ interface City {
 
 ### Station
 
+
 ```ts
 interface Station {
   id: string;      // 站点ID
@@ -183,6 +195,7 @@ interface Station {
 ```
 
 ### Line
+
 
 ```ts
 interface Line {

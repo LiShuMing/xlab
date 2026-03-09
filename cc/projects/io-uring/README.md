@@ -47,12 +47,13 @@ make -j$(nproc)
 - liburing library (system package or built from source)
 - CMake 3.14+
 - C++20 compiler with coroutines support
-  - GCC 10+ with `-fcoroutines` flag
-  - Clang 14+ with coroutines support
+    - GCC 10+ with `-fcoroutines` flag
+    - Clang 14+ with coroutines support
 
 ### Installing liburing
 
 On Ubuntu/Debian:
+
 ```bash
 sudo apt-get install liburing-dev
 ```
@@ -99,6 +100,13 @@ Then in your C++ code:
 // Use io_uring with coroutines
 ```
 
+```cpp
+#include <liburing/io_service.hpp>
+#include <liburing/sqe_awaitable.hpp>
+
+// Use io_uring with coroutines
+```
+
 ## Features
 
 ### Coroutines Support
@@ -126,12 +134,15 @@ The library is designed as a header-only interface, making it easy to integrate.
 ## Examples
 
 ### Basic Test
+
 Demonstrates basic read/write operations with io_uring.
 
 ### Delay and Print
+
 Shows async delay operations using io_uring timers.
 
 ### Ping Pong
+
 Demonstrates bidirectional communication patterns.
 
 ## Notes

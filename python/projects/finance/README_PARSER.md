@@ -33,11 +33,13 @@ python parse_slow_lock_log_advanced.py --all-types [path_to_slow_lock.log]
 ## Output
 
 The scripts will output:
+
 - Line numbers where WRITE locks were found
 - Lock owners
 - Timestamps
 - Additional details about each lock
 
 The advanced parser also shows:
+
 - Top 10 lock owners
 - Statistics for all lock types when using `--all-types`

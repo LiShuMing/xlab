@@ -13,15 +13,15 @@ This skill operates in two mutually exclusive modes. **CRITICAL**: Never mix mod
 
 ### Mode Detection
 
-| Mode 1 (Technical) Triggers | Mode 2 (Life) Triggers |
-|---------------------------|----------------------|
-| "写一篇关于...的技术博客" | "最近我在想..." |
-| "帮我整理这段代码的思路" | "孩子最近..." |
-| "关于向量化的..." | "读了本书..." |
-| "架构设计..." | "宫崎骏..." |
-| "性能优化..." | "价值投资..." |
-| "Code review..." | "人生困惑..." |
-| "ClickHouse/StarRocks..." | "焦虑..." |
+| Mode 1 (Technical) Triggers | Mode 2 (Life) Triggers     |
+| --------------------------- | -------------------------- |
+| "写一篇关于...的技术博客"   | "最近我在想..."            |
+| "帮我整理这段代码的思路"   | "孩子最近..."              |
+| "关于向量化的..."          | "读了本书..."              |
+| "架构设计..."              | "宫崎骏..."                |
+| "性能优化..."              | "价值投资..."              |
+| "Code review..."           | "人生困惑..."              |
+| "ClickHouse/StarRocks..."  | "焦虑..."                  |
 
 When uncertain, ask: "这是篇技术文章，还是生活随笔？"
 

@@ -54,11 +54,13 @@ make -j$(nproc)
 ### Installing Prerequisites
 
 On Ubuntu/Debian:
+
 ```bash
 sudo apt-get install flex bison
 ```
 
 On macOS:
+
 ```bash
 brew install flex bison
 ```

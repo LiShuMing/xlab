@@ -23,7 +23,7 @@ npm run release        # Create release with release-it
 
 ## Architecture
 
-```
+```text
 src/
 ├── index.ts           # Entry point - initializes addon and globals
 ├── addon.ts           # Addon class with lifecycle and data
@@ -47,17 +47,22 @@ src/
 
 ## Key Patterns
 
-**Zotero lifecycle hooks** (`hooks.ts`):
+### Zotero Lifecycle Hooks (`hooks.ts`)
+
 ```typescript
 export const onStartup: typeof hooks.onStartup = async () => { ... };
 export const onMainWindowLoad: typeof hooks.onMainWindowLoad = async (win) => { ... };
 ```
 
-**UI creation**: Use `addon.data.ztoolkit.ui` methods
-**User feedback**: Use `ztoolkit.ProgressWindow` for notifications
-**Zotero APIs**: Access via global `Zotero` object (e.g., `Zotero.Items.get()`)
+### Common Patterns
 
-**MCP Server**: Local C++ server runs on `http://localhost:9080`
+- **UI creation**: Use `addon.data.ztoolkit.ui` methods
+- **User feedback**: Use `ztoolkit.ProgressWindow` for notifications
+- **Zotero APIs**: Access via global `Zotero` object (e.g., `Zotero.Items.get()`)
+
+### MCP Server
+
+Local C++ server runs on `http://localhost:9080`
 
 ## TypeScript Config
 

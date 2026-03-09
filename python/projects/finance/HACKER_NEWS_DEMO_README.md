@@ -1,6 +1,6 @@
 # Hacker News Summarizer with Qwen API
 
-This demo visits Hacker News (https://news.ycombinator.com/news), extracts the top 10 stories, and uses Qwen API to summarize and translate them to Chinese.
+This demo visits Hacker News ([https://news.ycombinator.com/news](https://news.ycombinator.com/news)), extracts the top 10 stories, and uses Qwen API to summarize and translate them to Chinese.
 
 ## Features
 
@@ -47,6 +47,7 @@ export MODEL_NAME='qwen-max'  # or 'qwen-plus', 'qwen-turbo', etc.
 ## Usage
 
 ### Quick Run
+
 Run the provided script to start the demo:
 
 ```bash
@@ -54,6 +55,7 @@ Run the provided script to start the demo:
 ```
 
 ### Direct Run
+
 Run the script directly:
 
 ```bash
@@ -72,7 +74,7 @@ python hacker_news_demo.py
 
 The script will output results in this format for each story:
 
-```
+```text
 1. Story:
 --------------------------------------------------
 Original Title: [Original English title]
@@ -87,7 +89,7 @@ Summary in English: [English summary here]
 
 ## Troubleshooting
 
-- If you get API errors, check your QWEN_API_KEY
+- If you get API errors, check your `QWEN_API_KEY`
 - If web scraping fails, make sure the target website is accessible
 - If you get rate limits from the API, consider reducing the number of stories processed
 - If no API key is found, the script will run in demo mode with sample outputs
@@ -95,6 +97,7 @@ Summary in English: [English summary here]
 ## Customization
 
 You can modify the script to:
+
 - Change the number of stories processed
 - Adjust the prompt for different summarization styles
 - Change the output format
@@ -103,6 +106,7 @@ You can modify the script to:
 ## API Configuration
 
 The script uses the OpenAI-compatible interface for Qwen APIs. Make sure you have:
+
 - Correct API key with sufficient quota
 - Appropriate permissions for the model you're using
 - Correct base URL for the Qwen API endpoint

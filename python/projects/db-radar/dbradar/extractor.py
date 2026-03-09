@@ -39,10 +39,10 @@ class Extractor:
         "announcing",
         "announcement",
         "version",
-        "v\d+\.",
         "changelog",
         "what's new",
     ]
+    RELEASE_VERSION_RE = re.compile(r"v\d+\.")
     ENGINE_KEYWORDS = [
         "query",
         "execution",
@@ -219,11 +219,10 @@ class Extractor:
 
     def extract(self, result: FetchResult) -> List[ExtractedItem]:
         """Extract items from a fetch result based on content type."""
-        if result.content_type == "rss" or result.content_type == "error":
-            # Still try to parse as HTML for error recovery
-            return self.extract_html_items(result)
+        if result.content_type == "error" or not result.content:
+            return []
 
-        if self._is_rss_content(result.content):
+        if result.content_type == "rss" or self._is_rss_content(result.content):
             return self.extract_rss_items(result)
 
         return self.extract_html_items(result)
@@ -255,27 +254,27 @@ class Extractor:
 
     def _extract_date(self, soup: BeautifulSoup) -> Optional[str]:
         """Extract publication date from HTML."""
-        # Try common patterns
-        date_selectors = [
-            ("time", {"datetime": True}),
-            ("meta", {"property": "article:published_time"}),
-            ("meta", {"name": "publication-date"}),
-            ("span", re.compile(r"date|time|published")),
-        ]
+        # <time datetime="...">
+        tag = soup.find("time", datetime=True)
+        if tag:
+            return tag["datetime"]
 
-        for selector, attrs in date_selectors:
-            if isinstance(selector, str) and selector == "meta":
-                tag = soup.find("meta", attrs=attrs)
-                if tag and tag.get("content"):
-                    return tag["content"]
-            else:
-                tag = soup.find(selector, attrs=attrs if isinstance(attrs, dict) else {"class": attrs})
-                if tag:
-                    if tag.name == "time" and tag.get("datetime"):
-                        return tag["datetime"]
-                    text = tag.get_text(strip=True)
-                    if text:
-                        return text
+        # <meta property="article:published_time" content="...">
+        for meta_attrs in [
+            {"property": "article:published_time"},
+            {"name": "publication-date"},
+            {"name": "date"},
+        ]:
+            tag = soup.find("meta", attrs=meta_attrs)
+            if tag and tag.get("content"):
+                return tag["content"]
+
+        # Fallback: span/div with date-like class
+        tag = soup.find(["span", "div", "p"], class_=re.compile(r"date|time|published", re.I))
+        if tag:
+            text = tag.get_text(strip=True)
+            if text:
+                return text
 
         return None
 
@@ -283,7 +282,7 @@ class Extractor:
         """Classify the type of content."""
         text = f"{title} {content}".lower()
 
-        if any(kw in text for kw in self.RELEASE_KEYWORDS):
+        if any(kw in text for kw in self.RELEASE_KEYWORDS) or self.RELEASE_VERSION_RE.search(text):
             return "release"
         elif any(kw in text for kw in self.ENGINE_KEYWORDS):
             return "engine"

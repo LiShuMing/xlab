@@ -12,6 +12,7 @@ Python-based Streamlit application for financial analysis with AI-powered tools.
 # From the finance directory
 cd ufinance
 ./run.sh  # Installs deps and runs streamlit
+
 # Or manually:
 source ../.venv/bin/activate
 pip install -r requirements.txt
@@ -28,18 +29,20 @@ Virtual environment is located at `python/finance/.venv` (parent directory).
 
 Supports two API providers (checked in order):
 
-1. **Anthropic** (preferred if `ANTHROPIC_API_KEY` is set):
-   - `ANTHROPIC_API_KEY` - API key
-   - `ANTHROPIC_BASE_URL` - Optional base URL (for custom endpoints)
+### 1. Anthropic (preferred if `ANTHROPIC_API_KEY` is set)
 
-2. **DashScope** (fallback):
-   - `DASHSCOPE_API_KEY` - Qwen API key
+- `ANTHROPIC_API_KEY` - API key
+- `ANTHROPIC_BASE_URL` - Optional base URL (for custom endpoints)
+
+### 2. DashScope (fallback)
+
+- `DASHSCOPE_API_KEY` - Qwen API key
 
 Can also be set via Streamlit sidebar input at runtime.
 
 ## Architecture
 
-```
+```text
 ufinance/
 ├── app.py              # Main entry, routing between tools
 ├── apps/               # Individual Streamlit apps (modular tools)

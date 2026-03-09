@@ -68,6 +68,35 @@ l_%: $(SRC_LINUX_DIR)/l_%.cc
 	@mkdir -p $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) -o $(BIN_DIR)/$@ $<
 
+# Run targets: build then execute (e.g. make run_leetcode_1102 [ARGS="..."])
+run_leetcode_%: leetcode_%
+	$(BIN_DIR)/leetcode_$* $(ARGS)
+
+run_lcr_%: lcr_%
+	$(BIN_DIR)/lcr_$* $(ARGS)
+
+run_hackerrank_%: hackerrank_%
+	$(BIN_DIR)/hackerrank_$* $(ARGS)
+
+run_algo_%: algo_%
+	$(BIN_DIR)/algo_$* $(ARGS)
+
+run_concurrent_%: concurrent_%
+	$(BIN_DIR)/concurrent_$* $(ARGS)
+
+run_dp_%: dp_%
+	$(BIN_DIR)/dp_$* $(ARGS)
+
+run_jd_%: jd_%
+	$(BIN_DIR)/jd_$* $(ARGS)
+
+run_l_%: l_%
+	$(BIN_DIR)/l_$* $(ARGS)
+
+# Test: build a few targets to verify toolchain and Makefile in this env
+test: leetcode_1102 lcr_161
+	@echo "test: build ok"
+
 # Convenience target to build all algorithms
 algo_all: $(patsubst $(SRC_ALGO_DIR)/algo_%.cc,algo_%, $(wildcard $(SRC_ALGO_DIR)/algo_*.cc))
 
@@ -81,11 +110,17 @@ clean:
 # Help target
 help:
 	@echo "Available targets:"
-	@echo "  leetcode_<number>  - Build a leetcode solution (e.g., make leetcode_1102)"
-	@echo "  lcr_<number>       - Build an LCR solution (e.g., make lcr_159)"
-	@echo "  topo_sort          - Build topological sort example"
+	@echo "  leetcode_<n>       - Build (e.g., make leetcode_1102)"
+	@echo "  lcr_<n>            - Build (e.g., make lcr_159)"
+	@echo "  run_leetcode_<n>   - Build and run (e.g., make run_leetcode_1102 [ARGS='...'])"
+	@echo "  run_lcr_<n>        - Build and run (e.g., make run_lcr_161)"
+	@echo "  run_algo_<name>    - Build and run algo (run_jd_*, run_dp_*, run_l_*, etc.)"
+	@echo "  test               - Build a few targets to verify env"
 	@echo "  clean              - Remove all binaries"
 	@echo ""
 	@echo "Usage:"
-	@echo "  From algo directory:  make leetcode_1102"
-	@echo "  From subdirectories:  make -f ../../Makefile leetcode_1102"
+	@echo "  make leetcode_1102"
+	@echo "  make run_leetcode_1102"
+	@echo "  make run_leetcode_1102 ARGS='arg1 arg2'"
+	@echo "  make test"
+	@echo "  make -f ../Makefile run_leetcode_1102   # from subdir"

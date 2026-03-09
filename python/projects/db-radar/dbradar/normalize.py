@@ -4,7 +4,7 @@ import re
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from difflib import SequenceMatcher
-from typing import List, Optional, Set
+from typing import List, Optional
 
 from dbradar.extractor import ExtractedItem
 
@@ -60,24 +60,28 @@ class Normalizer:
         if not date_str:
             return None
 
-        # Try common formats
-        formats = [
-            "%Y-%m-%dT%H:%M:%S%z",
-            "%Y-%m-%dT%H:%M:%SZ",
-            "%Y-%m-%dT%H:%M:%S",
+        # Normalize Z suffix for fromisoformat
+        normalized = date_str.strip()
+        if normalized.endswith("Z"):
+            normalized = normalized[:-1] + "+00:00"
+
+        # Try ISO format first (covers most RSS/API dates)
+        try:
+            return datetime.fromisoformat(normalized)
+        except (ValueError, AttributeError):
+            pass
+
+        # Try strptime for human-readable formats
+        strptime_formats = [
             "%Y-%m-%d %H:%M:%S",
-            "%Y-%m-%d",
             "%Y/%m/%d",
             "%B %d, %Y",
+            "%b %d, %Y",
+            "%d %B %Y",
         ]
-
-        for fmt in formats:
+        for fmt in strptime_formats:
             try:
-                # Handle Z suffix
-                if date_str.endswith("Z"):
-                    date_str = date_str[:-1] + "+00:00"
-                dt = datetime.fromisoformat(date_str)
-                return dt
+                return datetime.strptime(normalized, fmt).replace(tzinfo=timezone.utc)
             except (ValueError, AttributeError):
                 continue
 
@@ -144,7 +148,6 @@ class Normalizer:
             return []
 
         normalized: List[NormalizedItem] = []
-        seen_titles: Set[str] = set()
 
         for item in items:
             # Skip error items with zero confidence

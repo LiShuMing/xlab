@@ -1,3 +1,24 @@
+"""
+OpenAI-compatible model template — oai_std_model_template.py
+=============================================================
+Factory function ``get_predict_function`` generates a pair of
+(predict_no_ui_long_connection, predict) callables for any endpoint that
+follows the OpenAI streaming chat-completions API.
+
+Typical usage (in bridge_all.py):
+    noui_fn, ui_fn = get_predict_function(
+        api_key_conf_name="MY_API_KEY",
+        max_output_token=8192,
+        disable_proxy=False,
+    )
+    model_info["my-model"] = {
+        "fn_without_ui": noui_fn,
+        "fn_with_ui": ui_fn,
+        "endpoint": "https://api.example.com/v1/chat/completions",
+        ...
+    }
+"""
+
 import json
 import time
 import traceback
@@ -11,15 +32,13 @@ proxies, TIMEOUT_SECONDS, MAX_RETRY = get_conf(
 )
 
 timeout_bot_msg = (
-    "[Local Message] Request timeout. Network error. Please check proxy settings in config.py."
-    + "网络错误，检查代理服务器是否可用，以及代理设置的格式是否正确，格式须是[协议]://[地址]:[端口]，缺一不可。"
+    "[Local Message] Request timeout. Network error. "
+    "Please check proxy settings in config.py."
 )
 
 
 def get_full_error(chunk, stream_response):
-    """
-    尝试获取完整的错误信息
-    """
+    """Consume the rest of the stream to collect the full error payload."""
     while True:
         try:
             chunk += next(stream_response)
@@ -30,7 +49,10 @@ def get_full_error(chunk, stream_response):
 
 def decode_chunk(chunk):
     """
-    用于解读"content"和"finish_reason"的内容（如果支持思维链也会返回"reasoning_content"内容）
+    Parse a raw SSE chunk.
+
+    Returns (response_text, reasoning_content, finish_reason, raw_decoded).
+    Also extracts chain-of-thought 'reasoning_content' when supported.
     """
     chunk = chunk.decode()
     response = ""
@@ -77,9 +99,7 @@ def decode_chunk(chunk):
 
 
 def generate_message(input, model, key, history, max_output_token, system_prompt, temperature):
-    """
-    整合所有信息，选择LLM模型，生成http请求，为发送请求做准备
-    """
+    """Build HTTP headers and JSON payload for an OpenAI-compatible chat request."""
     api_key = f"Bearer {key}"
 
     headers = {"Content-Type": "application/json", "Authorization": api_key}
@@ -120,62 +140,59 @@ def generate_message(input, model, key, history, max_output_token, system_prompt
 
 
 def get_predict_function(
-        api_key_conf_name,
-        max_output_token,
-        disable_proxy = False,
-        model_remove_prefix = [],
-    ):
+    api_key_conf_name: str,
+    max_output_token: int,
+    disable_proxy: bool = False,
+    model_remove_prefix: list | None = None,
+):
     """
-    为openai格式的API生成响应函数，其中传入参数：
-    api_key_conf_name：
-        `config.py`中此模型的APIKEY的名字，例如"YIMODEL_API_KEY"
-    max_output_token：
-        每次请求的最大token数量，例如对于01万物的yi-34b-chat-200k，其最大请求数为4096
-        ⚠️请不要与模型的最大token数量相混淆。
-    disable_proxy：
-        是否使用代理，True为不使用，False为使用。
+    Factory: generate (predict_no_ui_long_connection, predict) for any
+    OpenAI-compatible API endpoint.
+
+    Parameters
+    ----------
+    api_key_conf_name : str
+        The config.py key name that holds the API key, e.g. "MY_API_KEY".
+    max_output_token : int
+        Maximum tokens per response (the 'max_tokens' field in the payload).
+        Note: this is NOT the model's context window size.
+    disable_proxy : bool
+        When True, bypass the global proxy setting for this provider.
+    model_remove_prefix : list | None
+        If set, strip these prefixes from the model name before sending
+        (e.g. ["volcengine-"] to strip routing prefixes).
     """
+    if model_remove_prefix is None:
+        model_remove_prefix = []
 
     APIKEY = get_conf(api_key_conf_name)
 
-    def remove_prefix(model_name):
-        # 去除模型名字的前缀，输入 volcengine-deepseek-r1-250120 会返回 deepseek-r1-250120
-        if not model_remove_prefix:
-            return model_name
-        model_without_prefix = model_name
+    def remove_prefix(model_name: str) -> str:
+        """Strip routing prefixes from the model name (e.g. 'volcengine-' -> '')."""
         for prefix in model_remove_prefix:
-            if model_without_prefix.startswith(prefix):
-                model_without_prefix = model_without_prefix[len(prefix):]
-        return model_without_prefix
+            if model_name.startswith(prefix):
+                return model_name[len(prefix):]
+        return model_name
 
     def predict_no_ui_long_connection(
-        inputs,
-        llm_kwargs,
-        history=[],
-        sys_prompt="",
-        observe_window=None,
-        console_silence=False,
-    ):
+        inputs: str,
+        llm_kwargs: dict,
+        history: list = [],
+        sys_prompt: str = "",
+        observe_window: list | None = None,
+        console_silence: bool = False,
+    ) -> str:
         """
-        发送至chatGPT，等待回复，一次性完成，不显示中间过程。但内部用stream的方法避免中途网线被掐。
-        inputs：
-            是本次问询的输入
-        sys_prompt:
-            系统静默prompt
-        llm_kwargs：
-            chatGPT的内部调优参数
-        history：
-            是之前的对话列表
-        observe_window = None：
-            用于负责跨越线程传递已经输出的部分，大部分时候仅仅为了fancy的视觉效果，留空即可。observe_window[0]：观测窗。observe_window[1]：看门狗
+        Send a request and return the complete response (multi-thread safe).
+        Uses streaming internally to avoid connection timeouts on long responses.
+        See bridge_all.py for full parameter documentation.
         """
         from .bridge_all import model_info
-        watch_dog_patience = 5  # 看门狗的耐心，设置5秒不准咬人 (咬的也不是人)
+        watch_dog_patience = 5  # watchdog timeout in seconds
         if len(APIKEY) == 0:
-            raise RuntimeError(f"APIKEY为空,请检查配置文件的{APIKEY}")
+            raise RuntimeError(f"API key is empty. Check the '{api_key_conf_name}' setting in config.py.")
         if inputs == "":
-            inputs = "你好👋"
-
+            inputs = "Hello"
 
         headers, payload = generate_message(
             input=inputs,
@@ -202,42 +219,38 @@ def get_predict_function(
                     timeout=TIMEOUT_SECONDS,
                 )
                 break
-            except:
+            except Exception:
                 retry += 1
                 traceback.print_exc()
                 if retry > MAX_RETRY:
                     raise TimeoutError
                 if MAX_RETRY != 0:
-                    logger.error(f"请求超时，正在重试 ({retry}/{MAX_RETRY}) ……")
-        
+                    logger.error(f"Request timed out, retrying ({retry}/{MAX_RETRY}) ...")
+
         result = ""
         finish_reason = ""
         if reasoning:
             reasoning_buffer = ""
-        
+
         stream_response = response.iter_lines()
         while True:
             try:
                 chunk = next(stream_response)
             except StopIteration:
                 if result == "":
-                    raise RuntimeError(f"获得空的回复，可能原因:{finish_reason}")
+                    raise RuntimeError(f"Empty response received. Possible cause: {finish_reason}")
                 break
             except requests.exceptions.ConnectionError:
-                chunk = next(stream_response)  # 失败了，重试一次？再失败就没办法了。
+                chunk = next(stream_response)  # retry once on transient error
             response_text, reasoning_content, finish_reason, decoded_chunk = decode_chunk(chunk)
-            # 返回的数据流第一次为空，继续等待
-            if response_text == "" and (reasoning == False or reasoning_content == "") and finish_reason != "False":
+            # First delta is typically empty — wait for content
+            if response_text == "" and (not reasoning or reasoning_content == "") and finish_reason != "False":
                 continue
-            if response_text == "API_ERROR" and (
-                finish_reason != "False" or finish_reason != "stop"
-            ):
+            if response_text == "API_ERROR" and finish_reason not in ("False", "stop"):
                 chunk = get_full_error(chunk, stream_response)
                 chunk_decoded = chunk.decode()
                 logger.error(chunk_decoded)
-                raise RuntimeError(
-                    f"API异常,请检测终端输出。可能的原因是:{finish_reason}"
-                )
+                raise RuntimeError(f"API error — check terminal output. Finish reason: {finish_reason}")
             if chunk:
                 try:
                     if finish_reason == "stop":
@@ -248,69 +261,58 @@ def get_predict_function(
                     if reasoning:
                         reasoning_buffer += reasoning_content
                     if observe_window is not None:
-                        # 观测窗，把已经获取的数据显示出去
                         if len(observe_window) >= 1:
-                            observe_window[0] += response_text
-                        # 看门狗，如果超过期限没有喂狗，则终止
+                            observe_window[0] += response_text  # update output buffer
                         if len(observe_window) >= 2:
                             if (time.time() - observe_window[1]) > watch_dog_patience:
-                                raise RuntimeError("用户取消了程序。")
+                                raise RuntimeError("Request cancelled by user.")
                 except Exception as e:
                     chunk = get_full_error(chunk, stream_response)
-                    chunk_decoded = chunk.decode()
-                    error_msg = chunk_decoded
-                    logger.error(error_msg)
-                    raise RuntimeError("Json解析不合常规")
+                    logger.error(chunk.decode())
+                    raise RuntimeError("Unexpected JSON structure in stream response.")
+
         if reasoning:
-            paragraphs = ''.join([f'<p style="margin: 1.25em 0;">{line}</p>' for line in reasoning_buffer.split('\n')])
-            return f'''<div class="reasoning_process" >{paragraphs}</div>\n\n''' + result
+            paragraphs = "".join(
+                f'<p style="margin: 1.25em 0;">{line}</p>'
+                for line in reasoning_buffer.split("\n")
+            )
+            return f'<div class="reasoning_process">{paragraphs}</div>\n\n' + result
         return result
 
     def predict(
-        inputs,
-        llm_kwargs,
-        plugin_kwargs,
+        inputs: str,
+        llm_kwargs: dict,
+        plugin_kwargs: dict,
         chatbot,
-        history=[],
-        system_prompt="",
-        stream=True,
-        additional_fn=None,
+        history: list = [],
+        system_prompt: str = "",
+        stream: bool = True,
+        additional_fn: str | None = None,
     ):
         """
-        发送至chatGPT，流式获取输出。
-        用于基础的对话功能。
-        inputs 是本次问询的输入
-        top_p, temperature是chatGPT的内部调优参数
-        history 是之前的对话列表（注意无论是inputs还是history，内容太长了都会触发token数量溢出的错误）
-        chatbot 为WebUI中显示的对话列表，修改它，然后yield出去，可以直接修改对话界面内容
-        additional_fn代表点击的哪个按钮，按钮见functional.py
+        Stream a response from the provider and update the Gradio UI.
+        See bridge_all.py for full parameter documentation.
         """
         from .bridge_all import model_info
-        if len(APIKEY) == 0:
-            raise RuntimeError(f"APIKEY为空,请检查配置文件的{APIKEY}")
+        if not APIKEY:
+            raise RuntimeError(
+                f"API key is empty. Check '{api_key_conf_name}' in config.py."
+            )
         if inputs == "":
-            inputs = "你好👋"
+            inputs = "Hello"
         if additional_fn is not None:
             from core_functional import handle_core_functionality
-
-            inputs, history = handle_core_functionality(
-                additional_fn, inputs, history, chatbot
-            )
+            inputs, history = handle_core_functionality(additional_fn, inputs, history, chatbot)
         logger.info(f"[raw_input] {inputs}")
         chatbot.append((inputs, ""))
-        yield from update_ui(
-            chatbot=chatbot, history=history, msg="等待响应"
-        )  # 刷新界面
+        yield from update_ui(chatbot=chatbot, history=history, msg="Waiting for response")
 
-        # check mis-behavior
         if is_the_upload_folder(inputs):
             chatbot[-1] = (
                 inputs,
-                f"[Local Message] 检测到操作错误！当您上传文档之后，需点击“**函数插件区**”按钮进行处理，请勿点击“提交”按钮或者“基础功能区”按钮。",
+                "[Local Message] Incorrect action! After uploading a file use a Plugin button, not Submit.",
             )
-            yield from update_ui(
-                chatbot=chatbot, history=history, msg="正常"
-            )  # 刷新界面
+            yield from update_ui(chatbot=chatbot, history=history, msg="ok")
             time.sleep(2)
 
         headers, payload = generate_message(
@@ -340,15 +342,11 @@ def get_predict_function(
                     timeout=TIMEOUT_SECONDS,
                 )
                 break
-            except:
+            except Exception:
                 retry += 1
                 chatbot[-1] = (chatbot[-1][0], timeout_bot_msg)
-                retry_msg = (
-                    f"，正在重试 ({retry}/{MAX_RETRY}) ……" if MAX_RETRY > 0 else ""
-                )
-                yield from update_ui(
-                    chatbot=chatbot, history=history, msg="请求超时" + retry_msg
-                )  # 刷新界面
+                retry_msg = f", retrying ({retry}/{MAX_RETRY}) ..." if MAX_RETRY > 0 else ""
+                yield from update_ui(chatbot=chatbot, history=history, msg="Request timed out" + retry_msg)
                 if retry > MAX_RETRY:
                     raise TimeoutError
 
@@ -368,34 +366,29 @@ def get_predict_function(
             except requests.exceptions.ConnectionError:
                 chunk = next(stream_response)  # 失败了，重试一次？再失败就没办法了。
             response_text, reasoning_content, finish_reason, decoded_chunk = decode_chunk(chunk)
-            if decoded_chunk == ': keep-alive':
+            if decoded_chunk == ": keep-alive":
                 wait_counter += 1
-                yield from update_ui_latest_msg(lastmsg="等待中 " + "".join(["."] * (wait_counter%10)), chatbot=chatbot, history=history, msg="waiting ...")
-                continue
-            # 返回的数据流第一次为空，继续等待
-            if response_text == "" and (reasoning == False or reasoning_content == "") and finish_reason != "False":
-                status_text = f"finish_reason: {finish_reason}"
-                yield from update_ui(
-                    chatbot=chatbot, history=history, msg=status_text
+                yield from update_ui_latest_msg(
+                    lastmsg="Waiting " + "." * (wait_counter % 10),
+                    chatbot=chatbot, history=history, msg="waiting ...",
                 )
+                continue
+            # First delta is typically empty — wait for content
+            if response_text == "" and (not reasoning or reasoning_content == "") and finish_reason != "False":
+                status_text = f"finish_reason: {finish_reason}"
+                yield from update_ui(chatbot=chatbot, history=history, msg=status_text)
                 continue
             if chunk:
                 try:
-                    if response_text == "API_ERROR" and (
-                        finish_reason != "False" or finish_reason != "stop"
-                    ):
+                    if response_text == "API_ERROR" and finish_reason not in ("False", "stop"):
                         chunk = get_full_error(chunk, stream_response)
                         chunk_decoded = chunk.decode()
                         chatbot[-1] = (
                             chatbot[-1][0],
-                            f"[Local Message] {finish_reason}, 获得以下报错信息：\n"
-                            + chunk_decoded,
+                            f"[Local Message] API error ({finish_reason}):\n" + chunk_decoded,
                         )
-                        yield from update_ui(
-                            chatbot=chatbot,
-                            history=history,
-                            msg="API异常:" + chunk_decoded,
-                        )  # 刷新界面
+                        yield from update_ui(chatbot=chatbot, history=history,
+                                             msg="API error: " + chunk_decoded)
                         logger.error(chunk_decoded)
                         return
 
@@ -406,29 +399,29 @@ def get_predict_function(
                     if reasoning:
                         gpt_replying_buffer += response_text
                         gpt_reasoning_buffer += reasoning_content
-                        paragraphs = ''.join([f'<p style="margin: 1.25em 0;">{line}</p>' for line in gpt_reasoning_buffer.split('\n')])
-                        history[-1] = f'<div class="reasoning_process">{paragraphs}</div>\n\n---\n\n' + gpt_replying_buffer
+                        paragraphs = "".join(
+                            f'<p style="margin: 1.25em 0;">{line}</p>'
+                            for line in gpt_reasoning_buffer.split("\n")
+                        )
+                        history[-1] = (
+                            f'<div class="reasoning_process">{paragraphs}</div>\n\n---\n\n'
+                            + gpt_replying_buffer
+                        )
                     else:
                         gpt_replying_buffer += response_text
-                        # 如果这里抛出异常，一般是文本过长，详情见get_full_error的输出
                         history[-1] = gpt_replying_buffer
                     chatbot[-1] = (history[-2], history[-1])
-                    yield from update_ui(
-                        chatbot=chatbot, history=history, msg=status_text
-                    )  # 刷新界面
+                    yield from update_ui(chatbot=chatbot, history=history, msg=status_text)
                 except Exception as e:
-                    yield from update_ui(
-                        chatbot=chatbot, history=history, msg="Json解析不合常规"
-                    )  # 刷新界面
+                    yield from update_ui(chatbot=chatbot, history=history, msg="JSON parse error")
                     chunk = get_full_error(chunk, stream_response)
                     chunk_decoded = chunk.decode()
                     chatbot[-1] = (
                         chatbot[-1][0],
-                        "[Local Message] 解析错误,获得以下报错信息：\n" + chunk_decoded,
+                        "[Local Message] Parse error:\n" + chunk_decoded,
                     )
-                    yield from update_ui(
-                        chatbot=chatbot, history=history, msg="Json异常" + chunk_decoded
-                    )  # 刷新界面
+                    yield from update_ui(chatbot=chatbot, history=history,
+                                         msg="JSON error: " + chunk_decoded)
                     logger.error(chunk_decoded)
                     return
 

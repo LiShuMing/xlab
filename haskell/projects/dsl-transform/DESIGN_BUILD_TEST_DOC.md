@@ -10,6 +10,7 @@ A comprehensive guide to the Data Processing DSL Interpreter built with Haskell 
 
 This project implements a **Data Processing DSL Interpreter** using Haskell's `mtl` (Monad Transformer Library). The goal is to demonstrate how Monad Transformers elegantly handle computation contexts (State, Environment, Errors) without the boilerplate of explicit context passing found in imperative languages.
 
+
 ### 1.2 Architecture
 
 ```
@@ -52,6 +53,7 @@ type EvalMonad = ReaderT Env (ExceptT EvalError (StateT EvalState Identity))
 
 | Transformer | Purpose | Key Operations |
 |-------------|---------|----------------|
+|-------------|---------|----------------|
 | `ReaderT Env` | Immutable variable bindings | `ask`, `local` |
 | `ExceptT EvalError` | Error propagation | `throwError`, `catchError` |
 | `StateT EvalState` | Mutable execution state | `modify`, `get`, `put` |
@@ -73,6 +75,7 @@ data Value
 
 Closures capture their defining environment, enabling lexical scoping.
 
+
 ### 1.4 Language Features
 
 | Feature | Syntax | Example |
@@ -93,14 +96,15 @@ Closures capture their defining environment, enabling lexical scoping.
 ### 1.5 Comparison: Haskell vs C++ Style Context Passing
 
 **C++ Style (Explicit Context):**
+
 ```cpp
 Value eval(AST* ast, Env* env, State* state, Error** error) {
     if (*error) return nullptr;  // Check and propagate
-    
+
     Env* newEnv = extendEnv(env, name, value);
     Value result = eval(body, newEnv, state, error);
     freeEnv(newEnv);  // Manual cleanup
-    
+
     if (*error) return nullptr;
     return result;
 }
@@ -115,6 +119,7 @@ eval (Let name expr body) = do
 ```
 
 **Benefits:**
+
 - No manual error checking at every step
 - No explicit environment threading
 - Automatic resource management (GC)
@@ -134,6 +139,7 @@ eval (Let name expr body) = do
   - `containers >= 0.6` (for Data.Map)
   - `HUnit >= 1.6` (for testing)
   - `QuickCheck >= 2.14` (for property testing)
+
 
 ### 2.2 Project Structure
 
@@ -200,6 +206,7 @@ test-suite dsl-transform-test
   ghc-options:         -Wall -Wextra -threaded -rtsopts
 ```
 
+
 ### 2.5 Expected Output (Executable)
 
 ```
@@ -239,6 +246,7 @@ The test suite includes:
 ### 3.2 Test Categories
 
 | Category | Count | Description |
+|----------|-------|-------------|
 |----------|-------|-------------|
 | Basic Literals | 3 | Int, Bool, Nil |
 | Arithmetic | 5 | +, -, *, /, div-by-zero |
@@ -305,9 +313,9 @@ Each property is tested with 100 random inputs.
 ```haskell
 testClosureCapture :: Test
 testClosureCapture = TestCase $ do
-    -- let x = 10 in 
-    -- let f = \y -> x + y in 
-    -- let x = 20 in f 5 
+    -- let x = 10 in
+    -- let f = \y -> x + y in
+    -- let x = 20 in f 5
     -- Result: 15 (not 25!)
     let ast = Let "x" (IntLit 10)
             (Let "f" (Lambda "y" (BinOp Add (Var "x") (Var "y")))
@@ -340,6 +348,7 @@ Coverage:       All language features tested
 
 | Export | Type | Description |
 |--------|------|-------------|
+|--------|------|-------------|
 | `Name` | `type Name = String` | Variable identifiers |
 | `BinOp` | `data BinOp` | Binary operators |
 | `AST` | `data AST` | Abstract syntax tree |
@@ -348,6 +357,7 @@ Coverage:       All language features tested
 #### Eval.hs
 
 | Export | Type | Description |
+|--------|------|-------------|
 |--------|------|-------------|
 | `EvalMonad` | `* -> *` | Evaluation monad transformer stack |
 | `runEval` | `EvalMonad a -> Env -> EvalState -> (Either EvalError a, EvalState)` | Execute computation |
@@ -497,7 +507,7 @@ Seq e1 e2                    -- e1; e2
 | Arithmetic (+,-,*,/) | ✅ | ✅ |
 | Division by zero | ✅ | ✅ |
 | Comparison (<,>,==) | ✅ | ✅ |
-| Boolean (&&,\\|) | ✅ | ✅ |
+| Boolean (`&&`, `\|\|`) | ✅ | ✅ |
 | Conditionals | ✅ | ✅ |
 | Lambda | ✅ | ✅ |
 | Application | ✅ | ✅ |

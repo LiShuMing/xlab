@@ -1,7 +1,6 @@
 """Fetch content from URLs with caching and error handling."""
 
 import re
-import sys
 from dataclasses import dataclass
 from typing import List, Optional
 
@@ -28,15 +27,17 @@ class FetchResult:
 class Fetcher:
     """Fetch content from multiple URLs with caching."""
 
+    USER_AGENT = (
+        "Mozilla/5.0 (compatible; DBRadar/0.1; +https://github.com/dbradar)"
+    )
+
     def __init__(
         self,
         cache: Optional[Cache] = None,
         timeout: float = 30.0,
-        max_concurrent: int = 5,
     ):
         self.cache = cache or get_cache()
         self.timeout = timeout
-        self.max_concurrent = max_concurrent
 
     def _is_rss_url(self, url: str) -> bool:
         """Check if URL likely points to an RSS/Atom feed."""
@@ -50,10 +51,11 @@ class Fetcher:
         ]
         return any(re.search(p, url, re.IGNORECASE) for p in rss_patterns)
 
-    def _fetch_single(self, client: httpx.Client, url: str) -> FetchResult:
+    def _fetch_single(self, client: httpx.Client, url: str, product: str) -> FetchResult:
         """Fetch a single URL."""
+        content_type = "rss" if self._is_rss_url(url) else "html"
         try:
-            headers = {}
+            headers = {"User-Agent": self.USER_AGENT}
             entry = self.cache.get(url)
 
             if entry and entry.etag:
@@ -62,26 +64,13 @@ class Fetcher:
                 headers["If-Modified-Since"] = entry.last_modified
 
             response = client.get(url, headers=headers, timeout=self.timeout)
-            content_hash = self.cache.get_content_hash(response.text)
-
-            # Check if content changed (or 304 Not Modified)
-            if entry and entry.content_hash == content_hash:
-                return FetchResult(
-                    url=url,
-                    product="",  # Set by caller
-                    content=entry.content,
-                    content_type="rss" if self._is_rss_url(url) else "html",
-                    status_code=response.status_code,
-                    is_cached=True,
-                )
 
             if response.status_code == 304:
-                # Not modified, use cached content
                 return FetchResult(
                     url=url,
-                    product="",
+                    product=product,
                     content=entry.content if entry else "",
-                    content_type="rss" if self._is_rss_url(url) else "html",
+                    content_type=content_type,
                     status_code=304,
                     is_cached=True,
                 )
@@ -89,14 +78,26 @@ class Fetcher:
             if response.status_code >= 400:
                 return FetchResult(
                     url=url,
-                    product="",
+                    product=product,
                     content="",
                     content_type="error",
                     status_code=response.status_code,
                     error_message=f"HTTP {response.status_code}",
                 )
 
-            # Store in cache
+            content_hash = self.cache.get_content_hash(response.text)
+
+            # Return cached content if unchanged
+            if entry and entry.content_hash == content_hash:
+                return FetchResult(
+                    url=url,
+                    product=product,
+                    content=entry.content,
+                    content_type=content_type,
+                    status_code=response.status_code,
+                    is_cached=True,
+                )
+
             self.cache.set(
                 url=url,
                 content=response.text,
@@ -108,9 +109,9 @@ class Fetcher:
 
             return FetchResult(
                 url=url,
-                product="",
+                product=product,
                 content=response.text,
-                content_type="rss" if self._is_rss_url(url) else "html",
+                content_type=content_type,
                 status_code=response.status_code,
                 is_cached=False,
             )
@@ -118,7 +119,7 @@ class Fetcher:
         except httpx.TimeoutException:
             return FetchResult(
                 url=url,
-                product="",
+                product=product,
                 content="",
                 content_type="error",
                 status_code=None,
@@ -127,7 +128,7 @@ class Fetcher:
         except httpx.RequestError as e:
             return FetchResult(
                 url=url,
-                product="",
+                product=product,
                 content="",
                 content_type="error",
                 status_code=None,
@@ -136,7 +137,7 @@ class Fetcher:
         except Exception as e:
             return FetchResult(
                 url=url,
-                product="",
+                product=product,
                 content="",
                 content_type="error",
                 status_code=None,
@@ -188,8 +189,7 @@ class Fetcher:
         # Fetch remaining URLs
         with httpx.Client(timeout=self.timeout) as client:
             for url in tqdm(urls_to_fetch, desc=f"Fetching {source.product}"):
-                result = self._fetch_single(client, url)
-                result.product = source.product
+                result = self._fetch_single(client, url, product=source.product)
                 results.append(result)
 
         return results

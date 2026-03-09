@@ -5,6 +5,7 @@
 **AI Pattern**: Generic data structures without cache consideration
 
 **Example**:
+
 ```cpp
 // AI-generated
 std::unordered_map<std::string, std::shared_ptr<State>> table;
@@ -27,6 +28,7 @@ std::unordered_map<std::string, std::shared_ptr<State>> table;
 **AI Pattern**: Using "modern C++" features that inhibit optimization
 
 **Example**:
+
 ```cpp
 // AI-generated
 virtual void update(State* s, Value v) = 0;  // Virtual dispatch
@@ -49,6 +51,7 @@ std::function<void(State&, Value)> updater;  // Type erasure
 **AI Pattern**: Code that works but fails catastrophically at scale
 
 **Example**:
+
 ```cpp
 // AI-generated
 void aggregate(Block& block) {
@@ -78,6 +81,7 @@ void aggregate(Block& block) {
 **AI Pattern**: "Thread-safe" code that doesn't scale or is subtly broken
 
 **Example**:
+
 ```cpp
 // AI-generated
 class Counter {
@@ -108,12 +112,13 @@ public:
 **AI Pattern**: "Correct" algorithms that ignore hardware reality
 
 **Example**:
+
 ```cpp
 // AI-generated quicksort (textbook)
 void quicksort(int* arr, int n) {
     if (n <= 1) return;
-    int pivot = arr[n/2];
-    int* left = new int[n];   // Dynamic allocation per recursion!
+    int pivot = arr[n / 2];
+    int* left = new int[n];  // Dynamic allocation per recursion!
     int* right = new int[n];
     // ... partition into left/right
     quicksort(left, left_size);
@@ -137,6 +142,7 @@ void quicksort(int* arr, int n) {
 ## How to Use These in Writing
 
 **Structure for AI Critique Articles**:
+
 1. Show the AI-generated code (innocuous looking)
 2. Demonstrate the failure mode (benchmark or reasoning)
 3. Explain the underlying hardware/software principle

@@ -33,7 +33,7 @@ Thus we will build our interpreter in the following steps:
 2. Build our own lexer for the C compiler.
 3. Write a recursive descent parser on our own.
 
-## Skeleton of our compiler
+## Skeleton of Our Compiler
 
 
 Modeling after c4, our compiler includes 4 main functions:

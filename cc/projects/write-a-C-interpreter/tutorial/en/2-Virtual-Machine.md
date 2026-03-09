@@ -5,7 +5,7 @@ the interpreter's code generation phase.
 If you've heard of JVM and bytecode, that's what we are trying to build, but a
 way way simpler one.
 
-## How computer works internally
+## How Computer Works Internally
 
 There are three components we need to care about: CPU, registers and memory.
 Code(or assembly instruction) are stored in the memory as binary data; CPU
@@ -462,7 +462,7 @@ else if (op == LEA)  {ax = (int)(bp + *pc++);}                         // load a
 
 Together with the instructions above, we are able to make function calls.
 
-### Mathmetical Instructions
+### Mathematical Instructions
 
 Our VM will provide an instruction for each operators in C language. Each
 operator has two arguments: the first one is stored on the top of the stack

@@ -4,6 +4,7 @@
 
 ## 项目结构
 
+
 ```
 tools/lockfree-queue/
 ├── src/
@@ -21,6 +22,7 @@ tools/lockfree-queue/
 ## 两种队列实现
 
 ### 1. MPMC Queue (`MpmcQueue<T>`)
+
 - **多生产者多消费者**：多个线程可以同时 push 和 pop
 - **算法**：Michael-Scott 无锁队列算法
 - **使用场景**：线程池任务队列、事件总线
@@ -34,6 +36,7 @@ let value = queue.pop().unwrap();
 ```
 
 ### 2. MPSC Queue (`MpscQueue<T>`)
+
 - **多生产者单消费者**：多个生产者，但只能有一个消费者
 - **优化**：消费者不需要原子操作，性能更好
 - **使用场景**：日志收集、消息分发
@@ -49,6 +52,7 @@ let value = queue.pop().unwrap();
 ## 核心概念
 
 ### 1. 原子操作 (Atomic Operations)
+
 
 ```rust
 use std::sync::atomic::{AtomicUsize, Ordering};
@@ -75,6 +79,7 @@ counter.store(1, Ordering::SeqCst);
 
 ### 2. 内存序 (Memory Ordering)
 
+
 ```
 线程 A:                      线程 B:
 x.store(1, Release)          if y.load(Acquire) == 1:
@@ -92,6 +97,7 @@ Release-Acquire 保证：如果 B 看到 y=1，则一定也能看到 x=1
 | `SeqCst` | 顺序一致 | 需要全局顺序的场景 |
 
 ### 3. Compare-And-Swap (CAS)
+
 
 CAS 是无锁算法的核心操作：
 
@@ -134,6 +140,7 @@ loop {
 
 ### 4. ABA 问题
 
+
 **问题描述**：
 ```
 线程 A: 读取指针 P -> 节点 A
@@ -151,6 +158,7 @@ loop {
 ## 算法详解
 
 ### Michael-Scott 队列算法
+
 
 ```
 初始状态:
@@ -171,6 +179,7 @@ Pop 操作:
 
 ### MPSC 优化
 
+
 ```rust
 // MPMC: 消费者需要原子操作
 let head = self.head.load(Acquire);
@@ -182,6 +191,7 @@ let head = *self.head.get();  // 非原子！
 ```
 
 ## 性能对比
+
 
 运行 `cargo run --example compare`：
 
@@ -206,6 +216,7 @@ MPSC (lockfree):  25ms (4.0M ops/sec)
 
 ### 基础用法
 
+
 ```bash
 cd tools/lockfree-queue
 
@@ -226,6 +237,7 @@ cargo bench
 ```
 
 ### 线程池集成
+
 
 ```rust
 use lockfree_queue::MpmcQueue;
@@ -256,6 +268,7 @@ fn main() {
 
 ### 1. 为什么需要内存序？
 
+
 ```rust
 // 错误：没有同步
 let x = AtomicUsize::new(0);
@@ -285,6 +298,7 @@ assert_eq!(x.load(Relaxed), 1);  // 现在一定成功
 
 ### 2. 伪共享 (False Sharing)
 
+
 ```rust
 // 错误：两个原子变量在同一缓存行
 struct Counter {
@@ -309,6 +323,7 @@ struct Counter {
 
 ### 3. 无锁 vs 有锁
 
+
 | 特性 | 有锁 (Mutex) | 无锁 (Lock-free) |
 |------|-------------|-----------------|
 | 实现复杂度 | 简单 | 复杂 |
@@ -318,6 +333,7 @@ struct Counter {
 | 正确性验证 | 相对容易 | 很难 |
 
 ## 参考资料
+
 
 - [Michael-Scott Queue Paper](https://www.cs.rochester.edu/u/scott/papers/1996_PODC_queues.pdf)
 - [Rust Atomics and Locks](https://marabos.nl/atomics/)

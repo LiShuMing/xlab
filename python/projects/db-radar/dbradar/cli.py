@@ -1,5 +1,6 @@
 """CLI interface for Daily DB Radar."""
 
+import json
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
@@ -9,8 +10,8 @@ import click
 from dbradar.config import Config, get_config, set_config
 from dbradar.extractor import extract_items
 from dbradar.fetcher import fetch_sources
-from dbradar.normalize import normalize_items
-from dbradar.ranker import rank_items
+from dbradar.normalize import NormalizedItem, normalize_items
+from dbradar.ranker import RankedItem, rank_items
 from dbradar.sources import get_sources
 from dbradar.summarizer import summarize_items
 from dbradar.writer import write_reports
@@ -208,7 +209,6 @@ def fetch(config: Config, days: int, no_cache: bool):
     ranked = rank_items(normalized, days=days)
 
     output_file = config.output_dir / "fetched_items.json"
-    import json
     output_file.write_text(
         json.dumps(
             [
@@ -244,16 +244,10 @@ def summarize(config: Config, date: Optional[str], top_k: int):
     input_file = config.output_dir / "fetched_items.json"
 
     if not input_file.exists():
-        click.echo(f"Error: No fetched data found. Run 'fetch' first.", err=True)
+        click.echo("Error: No fetched data found. Run 'fetch' first.", err=True)
         return
 
-    import json
-
     data = json.loads(input_file.read_text())
-
-    # Convert to RankedItem format
-    from dbradar.ranker import Ranker, RankedItem
-    from dbradar.normalize import NormalizedItem, Normalizer
 
     ranked = []
     for i, item in enumerate(data):

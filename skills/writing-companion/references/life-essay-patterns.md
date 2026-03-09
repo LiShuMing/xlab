@@ -114,7 +114,7 @@ Value investing concepts as life metaphors.
 ```
 The Concept: Margin of safety, Mr. Market, circle of competence
 
-The Life Parallel: 
+The Life Parallel:
 - Margin of safety in relationships
 - Circle of competence in career choices
 - Intrinsic value vs market price in self-worth
@@ -130,12 +130,12 @@ The Wisdom Anyway: What's still useful
 
 When stuck for concrete details, rotate through:
 
-**Morning**: Light quality, sounds, first thoughts
-**Food**: What was eaten, how it tasted, with whom
-**Weather**: Not just "it rained" but how the air felt
-**Body**: Fatigue, energy, specific sensations
-**Space**: The room, its objects, their arrangement
-**Sound**: Background noise, music, silence quality
+- **Morning**: Light quality, sounds, first thoughts
+- **Food**: What was eaten, how it tasted, with whom
+- **Weather**: Not just "it rained" but how the air felt
+- **Body**: Fatigue, energy, specific sensations
+- **Space**: The room, its objects, their arrangement
+- **Sound**: Background noise, music, silence quality
 
 ## Opening Hooks That Work
 
@@ -154,18 +154,21 @@ When stuck for concrete details, rotate through:
 
 ## References to Keep in Back Pocket
 
-**Literature**:
+### Literature
+
 - Murakami: loneliness, parallel worlds, searching
 - Borges: labyrinths, infinite regress, memory
 - Classical Chinese poetry: transience, nature, solitude
 - Miyazaki: wind, flight, transformation, acceptance
 
-**Psychology**:
+### Psychology
+
 - Carl Rogers: unconditional positive regard
 - Viktor Frankl: meaning not found but made
 - Buddhist concept of non-attachment (not detachment)
 
-**Cultural Concepts**:
+### Cultural Concepts
+
 - Ikigai (purpose, not passion)
 - Hygge (Danish coziness/sufficiency)
 - Ubuntu (I am because we are)

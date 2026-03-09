@@ -9,6 +9,7 @@ A Rust workspace containing a library of algorithms, data structures, and CLI to
 
 ### Sorting Algorithms (16 implementations)
 
+
 | Category | Algorithms | Time Complexity | Space |
 |----------|-----------|-----------------|-------|
 | **Simple** | Bubble, Selection, Insertion, Shell, Gnome, Comb | O(n²) | O(1) |
@@ -45,6 +46,7 @@ cargo run --release -p bloom_filter
 
 ### Build
 
+
 ```bash
 # Build entire workspace
 cargo build --release
@@ -55,6 +57,7 @@ cargo build -p rlab-tools  # Tools binary only
 ```
 
 ### Run Tests
+
 
 ```bash
 # Run all tests
@@ -69,6 +72,7 @@ cargo bench -p rlab
 
 ### Using the Library
 
+
 ```rust
 use rlab::sort::{quick_sort, merge_sort, is_sorted};
 
@@ -81,6 +85,7 @@ fn main() {
 
 ### Using the CLI
 
+
 ```bash
 # Sorting benchmark
 cargo run --release -- --sort-bench
@@ -91,6 +96,7 @@ cargo run --release -- /usr/bin/ls 0x401000
 ```
 
 ## Project Structure
+
 
 ```
 rlab/
@@ -120,6 +126,7 @@ rlab/
 
 ## Algorithm Examples
 
+
 ### Quick Sort
 ```rust
 use rlab::sort::quick_sort;
@@ -148,6 +155,7 @@ radix_sort_lsd(&mut arr);  // O(n) for fixed-size integers
 
 ## Benchmark Results
 
+
 Example comparison on random data (10,000 elements):
 
 ```
@@ -165,6 +173,7 @@ cargo run --release -- --sort-bench --sizes 10000
 ```
 
 ## Workspace Layout
+
 
 ### `lib/rlab` - Library Crate
 Core algorithms and data structures.
@@ -194,6 +203,7 @@ Practice problems from LeetCode organized by category.
 
 ## Adding New Algorithms
 
+
 1. **Sorting**: Add to appropriate file in `lib/rlab/src/common/sort/`
    - `simple.rs` - O(n²) algorithms
    - `efficient.rs` - O(n log n) algorithms
@@ -204,6 +214,7 @@ Practice problems from LeetCode organized by category.
 3. **Test**: Add unit tests in source file and integration tests in `lib/rlab/tests/`
 
 ## Dependencies
+
 
 ### Library
 - `fastrand` - Fast random number generation
@@ -220,6 +231,7 @@ Practice problems from LeetCode organized by category.
 
 ## License
 
+
 Licensed under either of:
 
 - Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE))
@@ -228,6 +240,7 @@ Licensed under either of:
 at your option.
 
 ## Contributing
+
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
@@ -238,6 +251,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 5. Open a Pull Request
 
 ## Acknowledgments
+
 
 - Rust Community for excellent documentation and crates
 - Algorithms inspiration from CLRS and various computer science resources

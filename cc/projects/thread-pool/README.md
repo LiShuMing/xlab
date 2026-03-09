@@ -42,6 +42,7 @@ std::mutex queue_mutex;
 ```
 
 **Bottlenecks:**
+
 - **Lock contention**: More threads = more contention on the mutex
 - **Cache line ping-pong**: All threads access the same queue structure
 - **Context switches**: Threads block on the mutex when queue is empty
@@ -66,12 +67,11 @@ Worker 0          Worker 1          Worker 2
 ```
 
 **Key insight:**
+
 - **Owner thread**: `push_bottom()` / `pop_bottom()` - local, almost no contention
 - **Thief thread**: `steal_top()` - remote, occasional contention when idle
 
 This reduces global synchronization to a minimum while keeping all CPU cores busy.
-
----
 
 ## Architecture Overview
 
@@ -107,8 +107,6 @@ ThreadPool pool(4, false);  // false = use global mutex queue
 // Phase 2: Work-stealing (recommended for production)
 ThreadPool pool(4, true);   // true = use per-thread deques
 ```
-
----
 
 ## Memory Ordering Deep Dive
 
@@ -191,8 +189,6 @@ T1 (owner):  CAS top: 0→1 (FAILS! Thief won)
 ```
 
 **Solution:** The CAS in `pop_bottom()` detects this race and returns `nullptr`, letting the owner know the task was stolen.
-
----
 
 ## API Reference
 

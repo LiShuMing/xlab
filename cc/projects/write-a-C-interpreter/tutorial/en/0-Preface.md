@@ -14,7 +14,7 @@ you could teach me some "native" English :)
 We won't write any code in this chapter, so feel free to skip it if you are
 desperate to see some code...
 
-## Why you should care about compiler theory?
+## Why You Should Care About Compiler Theory?
 
 Because it is **COOL**!
 
@@ -60,7 +60,7 @@ code.
 The good news is building a compiler is much simpler than you can imagine.
 I won't lie, it's not easy, but definitely not hard.
 
-## Birth of this project
+## Birth of This Project
 
 One day I came across the project [c4](https://github.com/rswier/c4) on
 Github. It is a small C interpreter which is claimed to be implemented by only
@@ -81,7 +81,7 @@ project is hosted on Github: [Write a C Interpreter](https://github.com/lotabout
 
 Thanks rswier for bringing us a wonderful project!
 
-## Before you go
+## Before You Go
 
 Implementing a compiler can be boring and it is hard to debug. I hope you
 can spare enough time studying, as well as type the code. I am sure that you

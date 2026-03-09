@@ -6,9 +6,11 @@
 
 ## 项目概述
 
+
 **地铁小向导** 是一个专为 6 岁儿童设计的地铁线路学习桌面应用。通过游戏化的问答形式，让孩子在互动中学习各大城市的地铁线路知识，培养方向感和逻辑思维能力。
 
 ### 核心功能
+
 
 - 🎮 **闯关模式** - 系统随机出题（起点站 → 终点站），从 3 个选项中选择正确路线
 - 🌍 **多城市支持** - 北京、上海、东京、大阪、首尔等城市的真实地铁数据
@@ -23,6 +25,7 @@
 
 ### 前端
 
+
 | 技术 | 版本 | 用途 |
 |------|------|------|
 | React | 18.x | UI 框架 |
@@ -36,12 +39,14 @@
 
 ### 桌面框架
 
+
 | 技术 | 版本 | 用途 |
 |------|------|------|
 | Tauri | 2.x | Rust 桌面应用框架 |
 | Rust | 1.70+ | 后端运行时 |
 
 ### 测试
+
 
 | 技术 | 版本 | 用途 |
 |------|------|------|
@@ -53,6 +58,7 @@
 ---
 
 ## 项目结构
+
 
 ```
 subway-game/
@@ -106,6 +112,7 @@ subway-game/
 ---
 
 ## 核心数据类型
+
 
 ```typescript
 // 城市元数据
@@ -181,6 +188,7 @@ interface GameProgress {
 
 ### 开发命令
 
+
 ```bash
 # 启动开发服务器（在 http://localhost:1420）
 npm run dev
@@ -191,6 +199,7 @@ npm run tauri dev
 
 ### 构建命令
 
+
 ```bash
 # 构建前端（输出到 dist/）
 npm run build
@@ -200,6 +209,7 @@ npm run build
 ```
 
 ### 测试命令
+
 
 ```bash
 # 运行所有测试
@@ -213,6 +223,7 @@ npx vitest --coverage
 ```
 
 ### Tauri 命令
+
 
 ```bash
 # Tauri 开发模式
@@ -231,12 +242,14 @@ cd src-tauri && cargo build --release
 
 ### TypeScript 规范
 
+
 1. **严格类型** - 启用 `strict: true`，所有函数参数和返回值必须显式声明类型
 2. **接口优先** - 优先使用 `interface` 而非 `type` 定义对象形状
 3. **导出规范** - 组件使用命名导出 `export function ComponentName()`
 4. **类型文件** - 所有类型定义集中在 `src/types/index.ts`
 
 ### React 组件规范
+
 
 1. **函数组件** - 使用函数组件 + Hooks，不使用类组件
 2. **文件命名** - 组件文件名使用 PascalCase，如 `CitySelector.tsx`
@@ -263,11 +276,13 @@ export function ComponentName() {
 
 ### 状态管理规范
 
+
 1. **使用 Zustand** - 全局状态统一使用 Zustand 管理
 2. **持久化** - 使用 `persist` 中间件保存游戏进度到 localStorage
 3. **状态分割** - 状态和操作分开定义，便于类型推断
 
 ### 样式规范
+
 
 1. **Tailwind 优先** - 优先使用 Tailwind 工具类
 2. **主题色** - 使用 `tailwind.config.js` 中定义的颜色：
@@ -284,12 +299,14 @@ export function ComponentName() {
 
 ### 测试配置
 
+
 - **框架**: Vitest
 - **环境**: jsdom
 - **断言**: Vitest 内置 + @testing-library/jest-dom
 - **React 测试**: @testing-library/react
 
 ### 测试文件位置
+
 
 测试文件位于 `src/__tests__/` 目录：
 - `src/__tests__/routeCalculator.test.ts` - 测试 BFS 路线计算算法
@@ -298,11 +315,13 @@ export function ComponentName() {
 
 ### 测试规范
 
+
 1. **单元测试** - 重点测试工具函数（如 `routeCalculator.ts`）
 2. **Mock 数据** - 使用 mock 数据测试，不依赖真实城市数据
 3. **localStorage** - 测试环境中已配置 localStorage mock
 
 ### 运行测试
+
 
 ```bash
 # 单次运行
@@ -321,11 +340,13 @@ npx vitest --coverage
 
 ### 开发环境要求
 
+
 - macOS 10.15+
 - Node.js 18+
 - Rust 1.70+
 
 ### 构建流程
+
 
 1. **前端构建** - Vite 构建到 `dist/` 目录
 2. **Rust 检查** - `cargo check` 检查 Rust 代码
@@ -333,6 +354,7 @@ npx vitest --coverage
 4. **应用打包** - Tauri 打包为 DMG 安装包
 
 ### 构建输出
+
 
 构建完成后，输出文件位于：
 ```
@@ -342,6 +364,7 @@ src-tauri/target/release/bundle/
 ```
 
 ### 推荐构建方式
+
 
 ```bash
 # 使用构建脚本（自动完成所有步骤）
@@ -358,6 +381,7 @@ src-tauri/target/release/bundle/
 ---
 
 ## 添加新城市
+
 
 要在游戏中添加新城市，需要：
 
@@ -405,6 +429,7 @@ src-tauri/target/release/bundle/
 
 ## 路线计算算法
 
+
 核心算法位于 `src/utils/routeCalculator.ts`：
 
 1. **建图** - 从城市数据构建邻接表图结构
@@ -415,6 +440,7 @@ src-tauri/target/release/bundle/
 ---
 
 ## 安全注意事项
+
 
 1. **Tauri 配置** - `tauri.conf.json` 中配置了最小权限：
    - 不使用 `withGlobalTauri`
@@ -433,9 +459,11 @@ src-tauri/target/release/bundle/
 
 ### 开发服务器无法启动
 
+
 检查端口 1420 是否被占用，或查看 Vite 错误信息。
 
 ### Rust 构建失败
+
 
 确保 Rust 版本 >= 1.70：
 ```bash
@@ -443,6 +471,7 @@ rustc --version
 ```
 
 ### 测试失败
+
 
 检查是否所有依赖已安装：
 ```bash
@@ -453,8 +482,10 @@ npm install
 
 ## 许可证
 
+
 MIT License
 
 ---
 
 *Made with ❤️ for kids*
+

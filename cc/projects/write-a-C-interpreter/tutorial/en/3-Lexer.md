@@ -132,7 +132,7 @@ else if (token == '#') {
 }
 ```
 
-## Identifers and Symbol Table
+## Identifiers and Symbol Table
 
 Identifier is the name of a variable. But we don't actually care about the
 names in lexer, we cares about the identity. For example: `int a;`

@@ -1,84 +1,90 @@
 # PapersGPT: The Ultimate Zotero AI Plugin
+
 ## 🚀 Introducing PapersGPT AutoPilot (Zotero AI Agent)
 
 We are thrilled to release **AutoPilot**, a powerful automation tool that transforms PapersGPT into a fully autonomous research assistant. Say goodbye to manual skimming and hello to effortless literature review.
 
 ### 🛠️ How it Works
 
-1.  **Setup**: Select your preferred LLM in PapersGPT.
-2.  **Launch**: Click the **Robot Icon** (top-right corner) to enter the AutoPilot dashboard.
-3.  **Select**: Choose the specific papers from your **Zotero** library that you wish to process.
-4.  **Prompt**: Define your research goals or specific extraction prompts.
-5.  **Execute**: Sit back as the AI autonomously reads the papers and saves key insights directly into your **Zotero Notes**.
-![autopolit1224_3](https://github.com/user-attachments/assets/9b2fbb10-5265-4cea-8185-b4c0acce28fd)
+1. **Setup**: Select your preferred LLM in PapersGPT.
+2. **Launch**: Click the **Robot Icon** (top-right corner) to enter the AutoPilot dashboard.
+3. **Select**: Choose the specific papers from your **Zotero** library that you wish to process.
+4. **Prompt**: Define your research goals or specific extraction prompts.
+5. **Execute**: Sit back as the AI autonomously reads the papers and saves key insights directly into your **Zotero Notes**.
 
+![autopolit1224_3](https://github.com/user-attachments/assets/9b2fbb10-5265-4cea-8185-b4c0acce28fd)
 
 ### 🌟 Why it's a Game-Changer
 
-*   **Massive Efficiency**: "Read" and analyze **100+ papers overnight**. Start your next morning with a curated summary of your entire library.
-*   **Seamless Integration**: All AI-generated insights are synced back to Zotero automatically—no manual copy-pasting required.
-*   **Personalized Insights**: Tailor the prompts to focus on methodology, findings, or specific data points relevant to your research.
+- **Massive Efficiency**: "Read" and analyze **100+ papers overnight**. Start your next morning with a curated summary of your entire library.
+- **Seamless Integration**: All AI-generated insights are synced back to Zotero automatically—no manual copy-pasting required.
+- **Personalized Insights**: Tailor the prompts to focus on methodology, findings, or specific data points relevant to your research.
 
 > [!IMPORTANT]
 > **Open Beta Notice**: AutoPilot is currently in the early testing phase with daily usage limits. We are continuously optimizing the experience and would love to hear your feedback!
 
 ---
+
 *Ready to supercharge your research? [Try AutoPilot on PapersGPT now!](https://github.com/papersgpt/papersgpt-for-zotero/releases/download/papersgpt-v0.4.3/papersgpt-v0.4.3.xpi)*
 
+PapersGPT is a Zotero plugin that brings state-of-the-art Zotero AI capabilities directly into your research workflow, allowing you to chat PDFs in Zotero, quickly gain key detailed insight, generate summaries, and more. It supports Gemini 3, GPT 5.1, DeepSeek V3.2, Grok 4, ChatGPT, o1/o3/o4-mini, Claude Sonnet 4.5, Claude Haiku 4.5, MiniMax M2 in OpenRouter, SiliconFlow, gpt-oss, Kimi K2, GLM 4.6, DeepSeek R1 0528, Qwen3, Gemma 3, Llama 3.2 and Mistral.
 
-PapersGPT is a Zotero plugin that brings state-of-the-art Zotero AI capabilities directly into your research workflow, allowing you to chat PDFs in Zotero, quickly gain key detailed insight, generate summaries, and more. It supports Gemini 3, GPT 5.1, DeepSeek V3.2, Grok 4, ChatGPT, o1/o3/o4-mini, Claude Sonnet 4.5, Claude Haiku 4.5, MiniMax M2 in OpenRouter, SiliconFlow, gpt-oss, Kimi K2, GLM 4.6, DeepSeek R1 0528, Qwen3, Gemma 3, Llama 3.2 and Mistral.   
-Now PapersGPT supports MCP :sparkles: :fire:, any chatbot client which supports MCP can connect to your personal Zotero library through PapersGPT. Windows, Mac and Linux are all supported.    
+Now PapersGPT supports MCP :sparkles: :fire:, any chatbot client which supports MCP can connect to your personal Zotero library through PapersGPT. Windows, Mac and Linux are all supported.
+
 Support Zotero 8 since v0.3.7.    
 
 ## Quickstart
 
-***
+---
 
 ### Step 1: Download and Install
 
-1.  First, download the latest [PapersGPT](https://github.com/papersgpt/papersgpt-for-zotero/releases/download/papersgpt-v0.4.3/papersgpt-v0.4.3.xpi).  
-2.  Then, install the downloaded Zotero plugin file. For more details, please see [here](https://www.papersgpt.com/quickstart).  
+1. First, download the latest [PapersGPT](https://github.com/papersgpt/papersgpt-for-zotero/releases/download/papersgpt-v0.4.3/papersgpt-v0.4.3.xpi).
+2. Then, install the downloaded Zotero plugin file. For more details, please see [here](https://www.papersgpt.com/quickstart).  
 
 ### Step 2: Start Chatting with a PDF or Multiple PDFs
 
 #### 1. Launch PapersGPT
 
-*   **Chat with a Single PDF**
-    *   Open a PDF from your Zotero library.
-    *   When you need AI assistance, click <img width="24" height="24" alt="papersgpt-logo" src="https://github.com/user-attachments/assets/5658ede0-131f-481c-93f0-b4072440524e" />
- on the top menu of the PDF viewer or use a keyboard shortcut:
-        *   **macOS:** `Command + Enter`
-        *   **Windows:** `Ctrl + Enter`
+- **Chat with a Single PDF**
+  - Open a PDF from your Zotero library.
+  - When you need AI assistance, click <img width="24" height="24" alt="papersgpt-logo" src="https://github.com/user-attachments/assets/5658ede0-131f-481c-93f0-b4072440524e" /> on the top menu of the PDF viewer or use a keyboard shortcut:
+    - **macOS:** `Command + Enter`
+    - **Windows:** `Ctrl + Enter`
 
-*   **Chat with Multiple PDFs**
-    *   Select multiple files or a collection in the main Zotero window. Hold `Ctrl` while clicking files on Windows. Hold `Command` while clicking files on Mac. You can see the demo below.
+- **Chat with Multiple PDFs**
+  - Select multiple files or a collection in the main Zotero window. Hold `Ctrl` while clicking files on Windows. Hold `Command` while clicking files on Mac. You can see the demo below.
 
-#### 2. Select a LLM model and configure the API KEY of the model, more detailed information please see [here](https://www.papersgpt.com/models)
+#### 2. Select a LLM Model and Configure the API Key
+
+Select a LLM model and configure the API KEY of the model. More detailed information please see [here](https://www.papersgpt.com/models).
 
 #### 3. Ask Questions
 
-*   Use the built-in prompts for common tasks like: Summary, Background, Generating a literature review, Theoretical frameworks, Future directions.  
-*   You can also directly type any question or custom prompt to start the conversation.  
+- Use the built-in prompts for common tasks like: Summary, Background, Generating a literature review, Theoretical frameworks, Future directions.
+- You can also directly type any question or custom prompt to start the conversation.  
 
-### Step 3: Manage Your Findings and close the chat
+### Step 3: Manage Your Findings and Close the Chat
 
-*   After chatting, you can easily save the key insights and answers you've gathered from the conversation.  
+- After chatting, you can easily save the key insights and answers you've gathered from the conversation.
+- When you're finished, click the red cross (X) close button to exit the PapersGPT window.
 
-*   When you're finished, click the red cross (X) close button to exit the PapersGPT window.
+## Key Features
 
-## Key Features  
-**The fastest responding MCP server connecting to Zotero**  
-C++ MCP server, no need to install Python or Node, after installing the PapersGPT plugin, start Zotero, and it can be used on all Chatbot clients that support MCP Server on Mac and Windows. It supports BM25 full-text search of document title, author, tags, abstract, notes, annotation and collection.  
-Please use SSE Server of MCP in the MCP host(such as ChatWise, Cherry Studio, Cursor or Gemini Cli...), set the URL to http://localhost:9080/sse  
+**The fastest responding MCP server connecting to Zotero**
 
-**Blazing-Fast. Even for 100+ Page Documents**  
+C++ MCP server, no need to install Python or Node. After installing the PapersGPT plugin, start Zotero, and it can be used on all Chatbot clients that support MCP Server on Mac and Windows. It supports BM25 full-text search of document title, author, tags, abstract, notes, annotation and collection.
+
+Please use SSE Server of MCP in the MCP host (such as ChatWise, Cherry Studio, Cursor or Gemini Cli...), set the URL to `http://localhost:9080/sse`  
+
+**Blazing-Fast. Even for 100+ Page Documents**
+
 Optimized for heavy documents, 5x faster PDF reading, allowing you to glide through hundred-page reports, academic papers, and e-books with zero lag.  
 
-**Chat multiple PDFs**  
+**Chat Multiple PDFs**
 
 https://github.com/user-attachments/assets/a7c383cd-3986-44cb-bd0e-0d4832b07500
 
-  
 **Lots of SOTA Business LLMs For Choosing on Windows, Mac and Linux:**  
 - The offical API of Qwen, Mistral, Kimi, Z.ai and SiliconFlow can all be accessed in PapersGPT now, they are all top models with very high cost performance.   
 - Integrate OpenRouter in which there are almost all the SOTA business models, and just one key to access all the models on it.  
@@ -138,7 +144,7 @@ https://github.com/user-attachments/assets/2630a332-1bcd-4132-a37e-d8b360ba1c09
 
 - Syncs directly with your Zotero library, making it easy to manage and chat your documents without leaving the Zotero interface.  
 
-## Build the plugin
+## Build the Plugin
 
 If you like to build the plugin by yourself, do as the below commands:
 
@@ -148,19 +154,20 @@ cd papersgpt-for-zotero
 npm install
 npm run build
 ```
-The plugin file(papersgpt.xpi) will be built and generated into the build directory
+
+The plugin file (`papersgpt.xpi`) will be built and generated into the build directory
  
 ## Use Cases
 
-**Research Assistance:**  
+### Research Assistance
 
 - Summarize research papers, identify key concepts, and quickly get answers to your questions.
 
-**Academic Writing:** 
+### Academic Writing
 
-- Generate insights for literature reviews or dive deep into specific sections of papers.  
+- Generate insights for literature reviews or dive deep into specific sections of papers.
 
-**Collaborative Projects:** 
+### Collaborative Projects
 
 - Share annotated PDFs and responses with colleagues and teams for smoother collaboration.
   

@@ -17,16 +17,18 @@ pip install -r requirements.txt
 
 ## 配置
 
-1. 设置环境变量：
-   ```bash
-   export DASHSCOPE_API_KEY=your_api_key_here
-   ```
+### 1. 设置环境变量
 
-2. 或者编辑 `config.ini` 文件：
-   ```ini
-   [qwen]
-   api_key = your_api_key_here
-   ```
+```bash
+export DASHSCOPE_API_KEY=your_api_key_here
+```
+
+### 2. 或者编辑 `config.ini` 文件
+
+```ini
+[qwen]
+api_key = your_api_key_here
+```
 
 ## 使用方法
 

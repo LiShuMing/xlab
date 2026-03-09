@@ -11,12 +11,14 @@
 
 **Voice markers**: Balanced, acknowledges trade-offs, "no right answer" stance
 
+
 ### Example 2: AI Critique
 > "AI 生成的哈希表实现往往看起来正确，但缺乏对 Cache 的考量。
 > 
 > AI 偏爱 `std::shared_ptr`, `std::function`, 虚函数等抽象。这些在通用软件开发中是最佳实践，但在 OLAP 引擎中往往是性能杀手。"
 
 **Voice markers**: Specific technical critique, contrasts "general best practice" with domain reality
+
 
 ### Example 3: Production Reality
 > "审查 AI 生成的并发代码时，我总会追问三个问题：
@@ -26,10 +28,12 @@
 
 **Voice markers**: Practical, checklist-oriented, focuses on edge cases and failure modes
 
+
 ### Example 4: Architecture Philosophy
 > "这两种路径没有对错，只有取舍。StarRocks 的 codegen 路径更适合云原生场景（查询 pattern 多变，需要自适应），ClickHouse 的静态特化路径更适合本地化部署（查询 pattern 相对稳定，追求极致 latency）。"
 
 **Voice markers**: Context-dependent reasoning, no universal truth, scenario-based analysis
+
 
 ---
 
@@ -42,15 +46,18 @@
 
 **Voice markers**: Personal metaphor that illuminates technical concept (OK in tech context, would be reversed in life context), brings in parenting naturally
 
+
 ### Example 2: Long-term Value Reflection
 > "作为一位需要同时维护内核和照顾家庭的工程师，我越来越欣赏 ClickHouse 的可预测性...有时候，明确的手工控制反而是一种长期价值的投资。"
 
 **Voice markers**: Personal stake acknowledged, "long-term value" framing, integration of work and life
 
+
 ### Example 3: Anti-Hustle
 > "云原生的自动伸缩、自适应优化、零运维，这些美好愿景背后，是不断叠加的抽象层，是越来越难以调试的黑盒。当我们追求'比别人更快'时，是否也在失去对系统本质的理解？"
 
 **Voice markers**: Questions conventional wisdom, techno-criticism, slower-is-better stance
+
 
 ### Example 4: Life Philosophy (Miyazaki)
 > "宫崎骏的动画里常有这样一个主题：真正的魔法不是改变世界的力量，而是接纳世界不完美的勇气。
@@ -59,12 +66,14 @@
 
 **Voice markers**: Artistic reference that illuminates technical philosophy, acceptance over conquest
 
+
 ### Example 5: Personal Closing
 > "作为工程师，我们也面临着类似的选择：是追逐所有新技术潮流，还是在某个领域深耕成为专家？是追求简历上的'全栈'标签，还是承认自己的局限，专注于真正重要的少数事情？
 > 
 > ClickHouse 的源码给了我一个答案：在自己的边界内，做到极致。不是因为我比别人更优秀，而是因为我接纳了自己的不完美，选择了长期价值。"
 
 **Voice markers**: Self-reflective question, personal resolution, anti-comparison, value-based conclusion
+
 
 ---
 

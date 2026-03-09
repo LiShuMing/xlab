@@ -34,6 +34,7 @@ python -m dbradar run --days 7 --top-k 10
 | `dbradar summarize --date 2025-01-11` | Summarize previously fetched data |
 
 Options:
+
 - `--days` - Look back period (default: 7)
 - `--top-k` - Items to include in summary (default: 10)
 - `--no-cache` - Skip cache, fetch fresh
@@ -68,29 +69,36 @@ Reports are written to `out/YYYY-MM-DD.md` and `out/YYYY-MM-DD.json`:
 # Daily DB Radar - 2025-01-12
 
 ## Executive Summary
+
 - Item 1
 - Item 2
 
 ## Top Updates
+
 ### [Product] Title
+
 **What changed:**
+
 - Change 1
 - Change 2
 
 **Why it matters:**
+
 - Reason 1
 - Reason 2
 
 **Source(s):**
+
 - https://...
 
 **Evidence:**
+
 > Snippet from content
 ```
 
 ## Architecture
 
-```
+```text
 ┌─────────────┐
 │ websites.txt│
 └──────┬──────┘
@@ -193,7 +201,7 @@ class CustomRanker(Ranker):
 
 ## Dependencies
 
-```
+```text
 anthropic>=0.34.0      # LLM client
 httpx>=0.27.0          # HTTP client
 beautifulsoup4>=4.12.0 # HTML parsing

@@ -13,7 +13,8 @@ Structure when comparing implementations (e.g., ClickHouse vs StarRocks aggregat
    - StarRocks: Aggressive, adaptive, cloud-native
 
 3. Implementation Comparison (table format)
-   | Aspect | ClickHouse | StarRocks | Trade-off Analysis |
+   | Aspect     | ClickHouse          | StarRocks        | Trade-off Analysis |
+| ---------- | ------------------- | ---------------- | ------------------ |
 
 4. Production Scenarios
    - When CH approach wins
@@ -116,11 +117,11 @@ char* Arena::alloc(size_t size) {
 
 ### For Comparison Tables
 ```
-| Metric | Generic HashMap | ClickHouse Arena | Speedup |
-|--------|----------------|------------------|---------|
-| Allocation | O(log n) heap search | O(1) pointer bump | 10-100x |
-| Cache locality | Pointer chasing | Sequential | 3-5x |
-| Thread safety | Lock/mutex | Thread-local | No contention |
+| Metric          | Generic HashMap      | ClickHouse Arena   | Speedup         |
+| --------------- | -------------------- | ------------------ | --------------- |
+| Allocation      | O(log n) heap search | O(1) pointer bump  | 10-100x         |
+| Cache locality  | Pointer chasing      | Sequential         | 3-5x            |
+| Thread safety   | Lock/mutex           | Thread-local       | No contention   |
 ```
 
 ## Tone Markers

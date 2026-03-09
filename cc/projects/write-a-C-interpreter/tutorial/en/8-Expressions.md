@@ -8,7 +8,7 @@ variable assignment, calculation using various operators.
 We had to pay attention to two things: the precedence of operators and the
 target assembly code for operators.
 
-## Precedence of operators
+## Precedence of Operators
 
 The precedence of operators means we should compute some operators before
 others even though the latter may show up first. For example: operator `*`
@@ -78,7 +78,7 @@ Finally, we need to consider precedence for only binary/ternary operators.
 Because precedence means different operators try to "snatch" arguments from
 each other, while unary operators are the strongest.
 
-## Unary operators
+## Unary Operators
 
 Unary operators are strongest, so we serve them first. Of course, we'll also
 parse the arguments(i.e. variables, number, string, etc) for operators.
@@ -171,7 +171,7 @@ else if (token == Sizeof) {
 Note that only `sizeof(int)`, `sizeof(char)` (which by the way, is always `1` - by definition) and `sizeof(pointer type ...)`
 are supported, and the type of the result is `int`.
 
-### Variable and function invocation
+### Variable and Function Invocation
 
 They all starts with an `Id` token, thus are handled together.
 
@@ -411,7 +411,7 @@ else if (token == '~') {
 }
 ```
 
-### Unary plus and Unary minus
+### Unary Plus and Unary Minus
 
 Use `0 - x` to implement `-x`:
 

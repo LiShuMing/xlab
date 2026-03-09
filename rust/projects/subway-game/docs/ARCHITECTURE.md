@@ -2,9 +2,11 @@
 
 ## 1. 项目概述
 
+
 **地铁小向导** 是一个专为6岁儿童设计的地铁线路学习游戏，通过有趣的方式帮助孩子学习各大城市的地铁线路知识。
 
 ### 1.1 技术栈
+
 
 | 层级 | 技术 | 版本 |
 |------|------|------|
@@ -19,6 +21,7 @@
 ---
 
 ## 2. 系统架构
+
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -70,6 +73,7 @@
 
 ### 3.1 游戏状态管理
 
+
 ```typescript
 // gameStore.ts
 interface GameState {
@@ -95,6 +99,7 @@ interface GameState {
 
 ### 3.2 路线计算算法 (BFS)
 
+
 ```typescript
 // routeCalculator.ts
 function buildGraph(cityData: CityData): Map<string, GraphNode> {
@@ -113,6 +118,7 @@ function findShortestRoute(
 ```
 
 ### 3.3 题目生成流程
+
 
 ```
 生成新问题
@@ -157,6 +163,7 @@ function findShortestRoute(
 
 ### 4.1 城市数据 (cities.json)
 
+
 ```json
 {
   "cities": [
@@ -173,6 +180,7 @@ function findShortestRoute(
 ```
 
 ### 4.2 地铁线路数据 (city.json)
+
 
 ```json
 {
@@ -202,6 +210,7 @@ function findShortestRoute(
 
 ### 5.1 组件树
 
+
 ```
 App
 ├── CitySelector
@@ -216,6 +225,7 @@ App
 ```
 
 ### 5.2 组件职责
+
 
 | 组件 | 职责 |
 |------|------|
@@ -232,6 +242,7 @@ App
 
 ### 6.1 UI 规范
 
+
 | 设计元素 | 规范 |
 |----------|------|
 | 按钮尺寸 | 最小 64×64px |
@@ -241,6 +252,7 @@ App
 | 动画 | 平滑流畅 (Framer Motion) |
 
 ### 6.2 交互设计
+
 
 - 单击选择，无需拖拽
 - 大按钮，易点击
@@ -253,6 +265,7 @@ App
 
 ### 7.1 测试类型
 
+
 | 类型 | 工具 | 覆盖率目标 |
 |------|------|-----------|
 | 单元测试 | Vitest | ≥ 80% |
@@ -260,6 +273,7 @@ App
 | E2E测试 | Playwright | 核心流程 |
 
 ### 7.2 测试文件结构
+
 
 ```
 src/
@@ -275,11 +289,13 @@ src/
 
 ### 8.1 渲染优化
 
+
 - React.memo 避免不必要的重渲染
 - Framer Motion 使用 transform 而非 layout
 - 虚拟列表处理大量站点
 
 ### 8.2 加载优化
+
 
 - 代码分割 (Vite 自动)
 - 数据按需加载
@@ -291,11 +307,13 @@ src/
 
 ### 9.1 添加新城市
 
+
 1. 在 `src/data/` 创建城市 JSON 文件
 2. 更新 `cities.json` 添加城市信息
 3. 遵循相同的数据结构
 
 ### 9.2 添加新功能
+
 
 - 新组件 → `src/components/`
 - 新工具 → `src/utils/`
@@ -304,6 +322,7 @@ src/
 ---
 
 ## 10. 目录结构
+
 
 ```
 subway-game/

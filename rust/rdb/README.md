@@ -4,6 +4,7 @@ This is a minimal database implementation in Rust, demonstrating the core compon
 
 ## Components
 
+
 1. **Parser** - Parses SQL queries into an Abstract Syntax Tree (AST)
 2. **Analyzer** - Performs semantic analysis on the AST
 3. **Planner** - Creates a logical query plan
@@ -12,10 +13,12 @@ This is a minimal database implementation in Rust, demonstrating the core compon
 
 ## Current Features
 
+
 - Simple SELECT query parsing (`SELECT * FROM table WHERE condition`)
 - Basic query execution with mock data
 
 ## Example
+
 
 The project currently demonstrates a simple query execution flow:
 
@@ -24,6 +27,7 @@ SELECT * FROM users WHERE id = 1
 ```
 
 ## Project Structure
+
 
 ```
 src/
@@ -39,12 +43,14 @@ src/
 
 ## Building and Running
 
+
 ```bash
 cargo build
 cargo run
 ```
 
 ## Future Improvements
+
 
 1. Implement a proper SQL parser using a parsing library like `nom` or `lalrpop`
 2. Add support for more SQL statements (INSERT, UPDATE, DELETE, CREATE TABLE, etc.)
@@ -55,5 +61,6 @@ cargo run
 7. Implement proper error handling and reporting
 
 ## License
+
 
 This project is open-source and available under the MIT License.

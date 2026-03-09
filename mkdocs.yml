@@ -1,0 +1,24 @@
+site_name: JoJo's Docs
+theme:
+  name: material
+  language: zh  # 设置语言为中文
+  palette:
+    # 支持切换深色/浅色模式
+    - scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: 切换到深色模式
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: 切换到深色模式
+  features:
+    - navigation.tabs  # 顶部标签页导航
+    - navigation.sections # 侧边栏分组
+    - search.highlight   # 搜索高亮
+
+markdown_extensions:
+  - meta
+  - toc:
+      permalink: true
+      slugify: !!python/name:pymdownx.slugs.uslugify

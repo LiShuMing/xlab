@@ -18,19 +18,20 @@ pool.Stop();
 ```
 
 ### Stop Semantics
+
 - Graceful stop: waits for all submitted tasks to complete
 - `Stop()` is idempotent (safe to call multiple times)
 - `Submit` after `Stop()` returns a future that throws `std::runtime_error`
 
 ### Memory Ordering
+
 - Mutex provides full memory barrier, so no explicit ordering needed
 - `stopped_` flag uses `memory_order_acquire` for visibility
-
----
 
 ## Phase 2: Work-Stealing Design
 
 ### Core Insight
+
 - Owner thread: push/pop at bottom (LIFO) - local, no contention
 - Thief thread: steal from top (FIFO) - remote, occasional contention
 - Each worker has its own deque, reducing global synchronization
@@ -45,6 +46,7 @@ std::vector<Task> buffer_;    // Ring buffer (power of 2 capacity)
 ```
 
 **Invariants:**
+
 - `top >= 0`, `bottom >= top`
 - `Size = bottom - top`
 - Empty when `bottom == top`
@@ -96,11 +98,10 @@ Thief: reads task, CAS top++
 ```
 Only one can succeed. The CAS determines the winner.
 
----
-
 ## Phase 3: Cache Padding & Observability
 
 ### False Sharing Prevention
+
 ```
 Cache line: 64 bytes on most CPUs (including Apple Silicon)
 
@@ -127,11 +128,10 @@ struct Stats {
 };
 ```
 
----
-
 ## Build & Run
 
 ### Build
+
 ```bash
 cd wstp
 mkdir build && cd build
@@ -140,6 +140,7 @@ cmake --build . --target all
 ```
 
 ### Tests
+
 ```bash
 ./test_thread_pool
 ./test_ws_deque
@@ -147,31 +148,32 @@ ctest
 ```
 
 ### Benchmarks
+
 ```bash
 ./bench_throughput --benchmark_min_time=5s
 ./bench_latency --benchmark_min_time=5s
 ```
 
----
-
 ## macOS Instruments Profiling
 
 ### Time Profiler
+
 1. Open Instruments
 2. Select Time Profiler template
 3. Run the benchmark binary
 4. Look for:
-   - Time spent in mutex operations (global queue mode)
-   - Thread state (running vs waiting)
-   - CPU utilization across cores
+    - Time spent in mutex operations (global queue mode)
+    - Thread state (running vs waiting)
+    - CPU utilization across cores
 
 ### System Trace
+
 1. Select System Trace template
 2. Run workload
 3. Look for:
-   - Context switches (should be lower in work-stealing mode)
-   - Wake-up events
-   - Block times
+    - Context switches (should be lower in work-stealing mode)
+    - Wake-up events
+    - Block times
 
 ### What to Measure
 | Metric | Phase 1 (Global) | Phase 2 (Stealing) | Expected |
@@ -180,8 +182,6 @@ ctest
 | Context switches | High | Low | 50%+ reduction |
 | Throughput | Baseline | Higher | Depends on workload |
 | Latency p99 | Higher | Lower | Especially under load |
-
----
 
 ## Known Limitations & TODOs
 

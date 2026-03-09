@@ -28,7 +28,7 @@ if_statement ::= 'if' '(' expression ')' statement ['else' non_empty_statement]
 while_statement ::= 'while' '(' expression ')' non_empty_statement
 ```
 
-## Function definition
+## Function Definition
 
 Recall that we've already encountered functions when handling
 `global_declaration`:

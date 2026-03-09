@@ -10,6 +10,8 @@ from anthropic import Anthropic
 from dbradar.config import get_config
 from dbradar.ranker import RankedItem
 
+DEFAULT_MODEL = "claude-sonnet-4-20250514"
+
 
 @dataclass
 class SummaryResult:
@@ -32,7 +34,7 @@ class Summarizer:
             api_key=api_key or config.api_key,
             base_url=base_url or config.base_url,
         )
-        self.model = "claude-sonnet-4-20250514"
+        self.model = DEFAULT_MODEL
 
     def _build_prompt(self, items: List[RankedItem], top_k: int = 10) -> str:
         """Build the summarization prompt."""
@@ -58,7 +60,7 @@ Analyze the following collected items and produce a structured daily radar repor
 ## Input Data
 You have {len(item_data)} items to analyze. Here is the data:
 
-{item_data}
+{json.dumps(item_data, indent=2, ensure_ascii=False)}
 
 ## Output Format
 Generate a JSON object with the following structure (NO markdown code blocks, just raw JSON):

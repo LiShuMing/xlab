@@ -2,10 +2,10 @@
 
 This directory contains algorithm implementations, including LeetCode solutions, LCR (LintCode/LeetCode) problems, and common algorithm patterns.
 
-## Coding
-- 
-- https://www.geeksforgeeks.org/
-- https://www.hackerrank.com/
+## Coding Resources
+
+- [GeeksforGeeks](https://www.geeksforgeeks.org/)
+- [HackerRank](https://www.hackerrank.com/)
 
 ## Structure
 

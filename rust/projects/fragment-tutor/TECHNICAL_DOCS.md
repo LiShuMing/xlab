@@ -2,18 +2,22 @@
 
 ## Project Overview
 
+
 FragmentTutor is a macOS native desktop application for capturing and learning during fragmented time. Built with Tauri 2.0 (Rust + React).
 
 ## Architecture
 
 ### Frontend (React + TypeScript)
+
 - **Location**: `src/`
 - **Framework**: React 18 with Vite 5
 - **Styling**: Tailwind CSS 3.4
 - **State Management**: Zustand 4.5
 - **Routing**: React Router DOM 6.22
 
-### Backend (Rust)
+### Backend
+ (Rust)
+
 - **Location**: `src-tauri/src/`
 - **Framework**: Tauri 2.0
 - **Database**: SQLite with SQLx
@@ -23,6 +27,7 @@ FragmentTutor is a macOS native desktop application for capturing and learning d
 ## Data Models
 
 ### Document
+
 ```rust
 struct Document {
     id: String,
@@ -39,6 +44,7 @@ struct Document {
 ```
 
 ### ReviewItem (SRS)
+
 ```rust
 struct ReviewItem {
     id: String,
@@ -53,6 +59,7 @@ struct ReviewItem {
 ```
 
 ### Reflection
+
 ```rust
 struct Reflection {
     id: String,
@@ -68,12 +75,14 @@ struct Reflection {
 
 ## Spaced Repetition System (SRS)
 
+
 Simplified SM-2 Algorithm:
 - Intervals: [1, 3, 7, 14, 30] days
 - Quality scores: 0-5
 - Ease factor adjustment: EF' = EF + (0.1 - (5-Q) × (0.08 + (5-Q) × 0.02))
 
 ## Quick Digest Analysis
+
 
 Anthropic API integration for document analysis:
 - **Thesis**: One-sentence summary
@@ -85,6 +94,7 @@ Anthropic API integration for document analysis:
 - **Related Topics**: 5-8 topics for exploration
 
 ## Database Schema
+
 
 ```sql
 -- Documents table
@@ -145,6 +155,7 @@ CREATE TABLE reflections (
 
 ## Keyboard Shortcuts
 
+
 | Shortcut | Action |
 |----------|--------|
 | `⌘⇧N` | Open capture modal |
@@ -158,11 +169,13 @@ CREATE TABLE reflections (
 ## Build Status
 
 ### Frontend
+
 ✅ Successfully built
 - Location: `dist/`
 - Output: Static assets (HTML, JS, CSS)
 
 ### Backend (Known Issues)
+
 ⚠️ Requires fixes for Tauri 2.0 integration:
 1. Command registration conflicts
 2. SQLx prepare offline mode
@@ -171,12 +184,14 @@ CREATE TABLE reflections (
 ## Configuration
 
 ### Environment Variables
+
 ```bash
 # Optional: Set Anthropic API key
 ANTHROPIC_API_KEY=sk-...
 ```
 
 ### Tauri Configuration
+
 - **Window**: 1200x800, resizable, centered
 - **Bundle**: macOS .dmg, Windows .msi, Linux .deb
 - **Permissions**: Core defaults + notifications
@@ -184,6 +199,7 @@ ANTHROPIC_API_KEY=sk-...
 ## Dependencies
 
 ### Frontend
+
 ```json
 {
   "react": "^18.2.0",
@@ -209,6 +225,7 @@ uuid = "1.6"
 ## API Commands (Tauri)
 
 ### Document Commands
+
 - `capture_url(url, title)` - Capture URL content
 - `create_note(title, content)` - Create manual note
 - `get_documents(limit, offset)` - List documents
@@ -216,39 +233,47 @@ uuid = "1.6"
 - `search_documents(query)` - Search by content
 
 ### Analysis Commands
+
 - `quick_digest(document_id, api_key)` - Analyze document
 - `get_analysis(document_id)` - Retrieve analysis
 
 ### Review Commands
+
 - `get_review_queue()` - Get due reviews
 - `submit_review(item_id, score)` - Record review result
 - `create_vocab_card(word, definition, context)` - Add vocabulary
 - `create_insight_card(insight, context)` - Add insight
 
 ### Reflection Commands
+
 - `get_reflection(date)` - Get reflection for date
 - `save_reflection(input)` - Save daily reflection
 - `get_reflection_stats()` - Get reflection statistics
 
 ### Settings Commands
+
 - `get_settings()` - Retrieve settings
 - `save_api_key(api_key)` - Store API key
 
 ## Known Issues & Solutions
 
 ### Issue: SQLx Offline Mode
+
 **Problem**: `cargo sqlx prepare` requires database connection
 **Solution**: Set `DATABASE_URL` environment variable before building
 
 ### Issue: Duplicate Command Registration
+
 **Problem**: Commands registered multiple times
 **Solution**: Ensure single invocation of `generate_handler![]`
 
 ### Issue: Tauri Plugin Imports
+
 **Problem**: Plugin crates not found
 **Solution**: Use only core Tauri features for MVP
 
 ## Future Enhancements (V1)
+
 
 1. **Stronghold** for secure API key storage
 2. **Full CRUD** for all entities
@@ -263,9 +288,11 @@ uuid = "1.6"
 
 ## License
 
+
 MIT License - See LICENSE file
 
 ## Contributing
+
 
 1. Fork the repository
 2. Create feature branch (`git checkout -b feature/amazing-feature`)

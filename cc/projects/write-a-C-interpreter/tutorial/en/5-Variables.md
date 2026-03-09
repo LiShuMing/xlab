@@ -4,7 +4,7 @@ interpreter, and add the support of variables.
 The parser is more complicated than the lexer, thus we will split it into 3 parts:
 variables, functions and expressions.
 
-## EBNF grammar
+## EBNF Grammar
 
 We've talked about BNF in the previous chapter,
 [EBNF](https://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_Form) is

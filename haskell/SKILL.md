@@ -5,7 +5,7 @@ Haskell laboratory for functional programming exploration, category theory conce
 
 ## Build System
 - **Build Tool**: `cabal` or `stack`
-- ** GHC**: Glasgow Haskell Compiler
+- **GHC**: Glasgow Haskell Compiler
 - **Test Tool**: `cabal test` or `stack test`
 - **REPL**: `ghci` for interactive development
 

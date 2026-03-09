@@ -1,6 +1,8 @@
+# C Interpreter
+
 C interpreter that interprets itself.
 
-# How to Run the Code
+## How to Run the Code
 
 File `xc.c` is the original one and `xc-tutor.c` is the one that I make for
 the tutorial step by step.
@@ -14,7 +16,7 @@ gcc -o xc xc.c
 ./xc xc.c xc.c hello.c
 ```
 
-# About
+## About
 
 This project is inspired by [c4](https://github.com/rswier/c4) and is largely
 based on it.
@@ -41,20 +43,20 @@ There is also a chinese version in my blog.
 8. [手把手教你构建 C 语言编译器（8）——表达式](http://lotabout.me/2016/write-a-C-interpreter-8/)
 0. [手把手教你构建 C 语言编译器（9）——总结](http://lotabout.me/2016/write-a-C-interpreter-9/)
 
-# Resources
+## Resources
 
-Further Reading:
+### Further Reading
 
 - [Let's Build a Compiler](http://compilers.iecc.com/crenshaw/): An excellent
     starting material for building compiler.
 
 
-Forks:
+### Forks
 
 - [A fork that implement debugger for xc.c](https://github.com/descent/write-a-C-interpreter)
 
 
-# Licence
+## License
 
 The original code is licenced with GPL2, so this code will use the same
 licence.

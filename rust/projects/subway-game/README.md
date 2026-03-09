@@ -4,6 +4,7 @@
 
 ## ✨ 功能特点
 
+
 - 🎮 **简单易用** - 大按钮、清晰界面，适合儿童操作
 - 🌍 **多城市支持** - 北京、上海、东京、大阪、首尔等
 - 📚 **学习地铁线路** - 了解换乘、站点距离
@@ -15,17 +16,20 @@
 
 ### 环境要求
 
+
 - macOS 10.15+
 - Node.js 18+
 - Rust 1.70+
 
 ### 安装依赖
 
+
 ```bash
 npm install
 ```
 
 ### 开发运行
+
 
 ```bash
 npm run dev
@@ -34,6 +38,7 @@ npm run dev
 这将在 http://localhost:1420 启动开发服务器。
 
 ### 构建发布版
+
 
 ```bash
 # 使用构建脚本（推荐）
@@ -46,6 +51,7 @@ cargo tauri build
 ```
 
 ## 📁 项目结构
+
 
 ```
 subway-game/
@@ -78,12 +84,14 @@ subway-game/
 
 ## 🎮 游戏规则
 
+
 1. 选择一个城市
 2. 系统随机出题（起点站 → 终点站）
 3. 从3个选项中选择正确的路线
 4. 答对获得星星奖励 🎉
 
 ## 🏙️ 支持的城市
+
 
 | 城市 | 国家 | 难度 | 站点数 |
 |------|------|------|--------|
@@ -97,11 +105,13 @@ subway-game/
 
 ### 添加新城市
 
+
 1. 在 `src/data/` 目录下创建城市数据文件（如 `tokyo.json`）
 2. 更新 `src/data/cities.json` 添加城市信息
 3. 参考现有城市数据结构
 
 ### 修改配色
+
 
 编辑 `tailwind.config.js` 中的颜色配置：
 
@@ -116,6 +126,7 @@ colors: {
 
 ## 📦 分发
 
+
 构建完成后，DMG 安装包位于：
 ```
 src-tauri/target/release/bundle/dmg/SubwayGuide_1.0.0_x64.dmg
@@ -123,16 +134,19 @@ src-tauri/target/release/bundle/dmg/SubwayGuide_1.0.0_x64.dmg
 
 ### App Store 提交
 
+
 1. 注册 Apple Developer Program
 2. 配置代码签名
 3. 使用 Xcode 提交审核
 
 ### 直接分发
 
+
 - 分享 DMG 文件
 - 或上传到网站供用户下载
 
 ## 📝 技术栈
+
 
 - **前端**: React 18 + TypeScript + Vite
 - **UI**: Tailwind CSS + Framer Motion
@@ -142,9 +156,11 @@ src-tauri/target/release/bundle/dmg/SubwayGuide_1.0.0_x64.dmg
 
 ## 📄 许可证
 
+
 MIT License
 
 ## 👨‍👩‍👧 关于
+
 
 为6岁宝宝设计的地铁学习游戏，让孩子在游戏中学习城市交通知识，培养方向感和逻辑思维能力。
 

@@ -4,6 +4,7 @@
 
 ## Project Overview
 
+
 FragmentTutor is a macOS native desktop application designed for capturing and learning during fragmented time. It helps users capture URLs, analyze content with AI, review with spaced repetition, and track daily reflections.
 
 ### Core Features
@@ -16,6 +17,7 @@ FragmentTutor is a macOS native desktop application designed for capturing and l
 ## Technology Stack
 
 ### Frontend
+
 - **Framework**: React 18 + TypeScript 5.3
 - **Build Tool**: Vite 5
 - **Styling**: Tailwind CSS 3.4
@@ -25,6 +27,7 @@ FragmentTutor is a macOS native desktop application designed for capturing and l
 - **AI SDK**: @anthropic-ai/sdk 0.71
 
 ### Backend (Rust)
+
 - **Framework**: Tauri 2.0
 - **Database**: SQLite with SQLx 0.7
 - **HTTP Client**: Reqwest 0.11
@@ -34,11 +37,13 @@ FragmentTutor is a macOS native desktop application designed for capturing and l
 - **Minimum Rust Version**: 1.70
 
 ### Tauri Plugins
+
 - `@tauri-apps/plugin-notification` - System notifications
 - `@tauri-apps/plugin-sql` - Database operations
 - `@tauri-apps/plugin-store` - Key-value storage
 
 ## Project Structure
+
 
 ```
 fragment-tutor/
@@ -104,11 +109,13 @@ fragment-tutor/
 ## Build & Development Commands
 
 ### Prerequisites
+
 - macOS 11.0+ (primary target platform)
 - Node.js 18+
 - Rust 1.70+
 
 ### Install Dependencies
+
 
 ```bash
 # Frontend dependencies
@@ -120,6 +127,7 @@ cd src-tauri && cargo fetch && cd ..
 
 ### Development
 
+
 ```bash
 # Start frontend dev server (port 3000)
 npm run dev
@@ -130,6 +138,7 @@ npm run tauri dev
 
 ### Build for Production
 
+
 ```bash
 # Build frontend assets
 npm run build
@@ -139,6 +148,7 @@ npm run tauri build
 ```
 
 ### Code Quality
+
 
 ```bash
 # Run ESLint
@@ -152,6 +162,7 @@ npm run format
 
 ### TypeScript/React
 
+
 - **Quote Style**: Single quotes (`'string'`)
 - **Semicolons**: Required
 - **Indent**: 2 spaces
@@ -161,6 +172,7 @@ npm run format
 - **Bracket Spacing**: Enabled
 
 ### Naming Conventions
+
 - **Components**: PascalCase (e.g., `CaptureModal.tsx`)
 - **Hooks**: camelCase, prefixed with `use` (e.g., `useDocuments.ts`)
 - **Types/Interfaces**: PascalCase (e.g., `Document`, `ReviewItem`)
@@ -169,6 +181,7 @@ npm run format
 
 ### CSS/Tailwind
 
+
 - Use Tailwind utility classes primarily
 - Custom components in `index.css` with `@layer components`
 - Custom utilities in `index.css` with `@layer utilities`
@@ -176,6 +189,7 @@ npm run format
 - Custom component classes available: `.btn`, `.btn-primary`, `.btn-secondary`, `.card`, `.input`, `.badge`, `.sidebar-item`
 
 ### Rust
+
 
 - Follow standard Rust naming conventions (snake_case for functions/variables, PascalCase for types)
 - Use `anyhow`/`thiserror` for error handling
@@ -186,6 +200,7 @@ npm run format
 ## Data Models
 
 ### Document
+
 Captured URL or note with metadata.
 - `id`: string (UUID)
 - `type`: 'url' | 'note'
@@ -199,6 +214,7 @@ Captured URL or note with metadata.
 - `wordCount`: number
 
 ### ReviewItem (SRS Card)
+
 Spaced repetition flashcard for vocabulary or insights.
 - `id`: string
 - `type`: 'vocab' | 'insight'
@@ -212,6 +228,7 @@ Spaced repetition flashcard for vocabulary or insights.
 - `streak`: consecutive correct reviews
 
 ### Reflection
+
 Daily reflection entry.
 - `id`: string
 - `date`: ISO date string (YYYY-MM-DD)
@@ -224,6 +241,7 @@ Daily reflection entry.
 - `notes`: optional string
 
 ### QuickDigestResult
+
 AI analysis output structure.
 - `thesis`: string (one-sentence summary)
 - `firstPrinciples`: string[] (3-5 fundamental concepts)
@@ -234,6 +252,7 @@ AI analysis output structure.
 - `relatedTopics`: string[] (exploration topics)
 
 ## Frontend-Backend Communication
+
 
 Frontend uses Tauri's `invoke` function to call Rust commands:
 
@@ -247,12 +266,14 @@ const documents = await invoke('get_documents', { limit: 10 });
 Rust commands are registered in `src-tauri/src/lib.rs` via `generate_handler![]`.
 
 ### Current Commands (lib.rs)
+
 - `greet(name)` - Test command
 - `get_app_version()` - Returns version string
 - `get_data_dir()` - Returns app data directory path
 - `initialize_app(state)` - Runs database migrations
 
 ### Service Commands (to be implemented)
+
 The frontend services reference additional commands that need backend implementation:
 - `capture_url`, `create_note` - Document capture
 - `get_documents`, `get_document`, `delete_document`, `search_documents` - Document CRUD
@@ -262,6 +283,7 @@ The frontend services reference additional commands that need backend implementa
 - `get_settings`, `save_api_key` - Settings management
 
 ## State Management Pattern
+
 
 Zustand store in `src/store/index.ts` with:
 - **Persistent state** (localStorage): `apiKey`, `settings`
@@ -276,6 +298,7 @@ State structure includes:
 - UI state (modal open/close)
 
 ## Database Schema
+
 
 SQLite database with 4 main tables (defined in `src-tauri/src/services/database.rs`):
 
@@ -342,6 +365,7 @@ Database path: `~/Library/Application Support/FragmentTutor/fragment_tutor.db`
 
 ## Keyboard Shortcuts
 
+
 Implemented in `src/hooks/useShortcuts.ts`:
 
 | Shortcut | Action |
@@ -359,6 +383,7 @@ Implemented in `src/hooks/useShortcuts.ts`:
 
 ### Environment Variables
 
+
 Copy `.env.example` to `.env`:
 
 ```bash
@@ -368,6 +393,7 @@ ANTHROPIC_BASE_URL=https://api.anthropic.com
 
 ### Settings Storage
 
+
 User settings are persisted via Zustand to localStorage:
 - Anthropic API key
 - Notification preferences (review reminder, evening reminder, reflection reminder)
@@ -375,6 +401,7 @@ User settings are persisted via Zustand to localStorage:
 - Keyboard shortcut configuration
 
 ### Data Storage
+
 
 Application data is stored locally:
 - SQLite database: `~/Library/Application Support/FragmentTutor/fragment_tutor.db`
@@ -385,6 +412,7 @@ Application data is stored locally:
 
 ### Adding New Features
 
+
 1. **Data Model**: Define TypeScript interface in `src/types/index.ts`, Rust struct in `src-tauri/src/models/mod.rs`
 2. **Database**: Add migration in `src-tauri/src/services/database.rs`
 3. **Backend Commands**: Implement in appropriate service, register in `lib.rs` via `generate_handler![]`
@@ -394,11 +422,13 @@ Application data is stored locally:
 
 ### Error Handling
 
+
 - **Frontend**: Use try/catch with user-friendly messages in Chinese
 - **Backend**: Return `Result<T, String>` from Tauri commands
 - **API Calls**: Handle network errors gracefully
 
 ### Testing Strategy
+
 
 Currently minimal testing infrastructure. Recommended approach:
 - Rust unit tests for business logic in `src-tauri/src/`
@@ -407,12 +437,14 @@ Currently minimal testing infrastructure. Recommended approach:
 
 ## Security Considerations
 
+
 1. **API Keys**: Stored locally in SQLite and localStorage, never transmitted except to Anthropic API
 2. **Data Privacy**: All user data stored locally in SQLite
 3. **Content Security**: No inline scripts, CSP via Tauri
 4. **Network**: Only outbound HTTPS requests for URL capture and AI API
 
 ## Known Issues & Limitations
+
 
 1. **Backend Commands**: Currently minimal - full CRUD operations need implementation in Rust
 2. **AI Analysis**: Placeholder implementation in `src-tauri/src/services/anthropic.rs` (returns mock data)
@@ -422,12 +454,14 @@ Currently minimal testing infrastructure. Recommended approach:
 
 ## UI Language
 
+
 The application interface uses Chinese (简体中文) as the primary language:
 - Navigation labels: "知识库", "今日", "复习", "反省", "设置"
 - Button labels: "捕获", "60秒反省"
 - Date formatting uses Chinese locale via date-fns
 
 ## Resources
+
 
 - [Tauri 2.0 Documentation](https://tauri.app/)
 - [React Documentation](https://react.dev/)

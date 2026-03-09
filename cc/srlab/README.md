@@ -2,7 +2,7 @@
 
 This repository bootstraps a CMake-based C++ project that leverages the shared third-party bundle hosted at `/home/disk1/sr-deps/thirdparty-latest`.
 
-## Quick start
+## Quick Start
 
 ```bash
 ./build.sh
@@ -28,6 +28,7 @@ Or run test executables directly:
 ## Integrated Libraries
 
 ### From Third-Party Bundle
+
 - **Apache Arrow** - Columnar in-memory analytics (static linking)
 - **Boost 1.80.0** - System, Filesystem, Algorithm libraries
 - **GoogleTest** - Unit testing framework
@@ -35,6 +36,7 @@ Or run test executables directly:
 - **Abseil** - Google's C++ library collection (optional)
 
 ### From Source (Optional)
+
 - **Folly** - Facebook's C++ library (disabled by default)
   - **Status**: Requires `double-conversion` library which is not available in the thirdparty bundle
   - **Dependencies needed**: 

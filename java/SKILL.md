@@ -1,15 +1,18 @@
 # Java Lab (java)
 
 ## Overview
+
 Java laboratory for enterprise applications, Android development, and object-oriented design patterns.
 
 ## Build System
+
 - **Build Tool**: Gradle (primary), Maven (some projects)
 - **JDK**: Modern Java versions (check `build.gradle`)
 - **Test Tool**: JUnit 5, TestNG
 - **IDE**: IntelliJ IDEA (`.idea/` directory present)
 
 ## Project Structure
+
 ```
 java/
 ├── hello/           # Hello world / learning
@@ -17,6 +20,7 @@ java/
 ```
 
 ## Key Concepts
+
 - **OOP**: Classes, inheritance, polymorphism, encapsulation
 - **Generics**: Type-safe containers and methods
 - **Collections**: `List`, `Set`, `Map` hierarchies
@@ -25,6 +29,7 @@ java/
 - **JVM**: Memory model, garbage collection
 
 ## Coding Conventions
+
 - Use standard Java naming conventions
 - Classes: `PascalCase`
 - Methods/variables: `camelCase`
@@ -35,6 +40,7 @@ java/
 - Record classes for immutable data
 
 ## AI Vibe Coding Tips
+
 - Use `var` for local variable type inference (Java 10+)
 - Prefer `List.of()`, `Set.of()`, `Map.of()` for immutability
 - Use `Optional` to represent nullable values

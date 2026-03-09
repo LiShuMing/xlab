@@ -10,7 +10,8 @@ Shell scripting laboratory for automation, DevOps tasks, system administration, 
 - **Environment**: Environment setup in `env/`
 
 ## Project Structure
-```
+
+```text
 shell/
 ├── bin/             # Executable scripts
 ├── docker/          # Docker-related scripts
