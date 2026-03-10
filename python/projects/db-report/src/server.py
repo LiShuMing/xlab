@@ -17,7 +17,7 @@ from .report_manager import save_report
 log = structlog.get_logger()
 
 SITE_DIR = Path("site")
-MKDOCS_BIN = "/home/lism/env/venv/bin/mkdocs"
+MKDOCS_BIN = ".venv/bin/mkdocs"
 
 app = FastAPI(title="LLM API Deep Research Hub", version="0.1.0")
 

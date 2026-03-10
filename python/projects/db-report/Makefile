@@ -1,4 +1,4 @@
-VENV     := /home/lism/env/venv
+VENV     := ~/env/venv
 PYTHON   := $(VENV)/bin/python
 PIP      := $(VENV)/bin/pip
 PYTEST   := $(VENV)/bin/pytest

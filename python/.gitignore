@@ -43,3 +43,16 @@ nosetests.xml
 
 .DS_Store
 pylab/tools/articles/
+
+# Generated site files
+site/
+
+# Generated reports
+reports/
+
+# Environment files
+.env
+.env.local
+
+# Lock files
+uv.lock
