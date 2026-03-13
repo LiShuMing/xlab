@@ -1,93 +1,131 @@
-import streamlit as st
-import os
+"""
+AI Lab Platform - Main Entry Point
 
-# Set page config
+A scalable, modular AI experimentation platform built with Streamlit and LangChain.
+Features:
+- Plugin-based module architecture
+- Unified LLM factory (Qwen, OpenAI, Anthropic)
+- Centralized configuration management
+- Streaming output support
+"""
+
+import streamlit as st
+
+# Page configuration must be first Streamlit command
 st.set_page_config(
-    page_title="Finance AI Toolkit",
-    page_icon="📊",
+    page_title="AI Lab Platform",
+    page_icon="🧠",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Title and description
-st.title("📊 Finance AI Toolkit")
-st.markdown("""
-Welcome to the Finance AI Toolkit - a unified platform for financial analysis, 
-blog content analysis, technical reporting, and database management.
-""")
+# Import after setting page config
+from modules.base_module import ModuleRegistry
+from utils.ui_helpers import render_sidebar_header, render_footer
+from utils.logger import get_logger
 
-# Sidebar navigation
-st.sidebar.title("Navigation")
-app_mode = st.sidebar.selectbox(
-    "Choose the tool you want to use:",
-    [
-        "Home",
-        "Stock Analyzer Bot",
-        "Blog Analyzer",
-        "StarRocks SQL Generator",
-        "ETF Momentum Analyzer"
-    ]
-)
+# Import modules to ensure registration
+# pylint: disable=unused-import
+from modules.sandbox import SandboxModule
+from modules.stock_analyzer import StockAnalyzerModule
+from modules.blog_analyzer import BlogAnalyzerModule
+from modules.starrocks_sql import StarRocksSQLModule
+from modules.etf_analyzer import ETFAnalyzerModule
 
-# API Key Configuration
-st.sidebar.title("API Configuration")
-api_key = st.sidebar.text_input("API Key (DashScope or Anthropic)", type="password")
+# Initialize logger
+logger = get_logger(__name__)
 
-if api_key:
-    # Prefer Anthropic if key is set via env, otherwise use DashScope
-    if os.getenv("ANTHROPIC_API_KEY"):
-        os.environ["ANTHROPIC_API_KEY"] = api_key
+
+def render_sidebar() -> str:
+    """
+    Render the sidebar with module selection and API configuration.
+    
+    Returns:
+        Selected module full name.
+    """
+    render_sidebar_header("AI Lab Platform")
+    
+    # Get all registered modules
+    modules = ModuleRegistry.get_modules()
+    module_names = [m.get_full_name() for m in modules.values()]
+    
+    if not module_names:
+        st.sidebar.error("No modules available!")
+        return ""
+    
+    # Module selection
+    st.sidebar.markdown("### 📦 Modules")
+    selected = st.sidebar.selectbox(
+        "Select Module",
+        options=module_names,
+        label_visibility="collapsed"
+    )
+    
+    st.sidebar.divider()
+    
+    # API Configuration Status
+    st.sidebar.markdown("### 🔑 API Status")
+    from config.settings import settings
+    
+    if settings.DASHSCOPE_API_KEY:
+        st.sidebar.success("✅ Qwen (DashScope)")
     else:
-        os.environ["DASHSCOPE_API_KEY"] = api_key
-    st.sidebar.success("API key configured!")
+        st.sidebar.error("❌ Qwen (DashScope)")
+    
+    if settings.OPENAI_API_KEY:
+        st.sidebar.success("✅ OpenAI")
+    else:
+        st.sidebar.error("❌ OpenAI")
+    
+    if settings.ANTHROPIC_API_KEY:
+        st.sidebar.success("✅ Anthropic")
+    else:
+        st.sidebar.error("❌ Anthropic")
+    
+    st.sidebar.divider()
+    
+    # About section
+    with st.sidebar.expander("ℹ️ About"):
+        st.markdown("""
+        **AI Lab Platform** is a modular experimentation environment
+        for AI agents, RAG, and LLM applications.
+        
+        **Features:**
+        - 🧪 Sandbox experimentation
+        - 🤖 Multi-agent systems
+        - 📚 RAG knowledge bases
+        - 🔄 Streaming output
+        
+        Built with Streamlit & LangChain.
+        """)
+    
+    return selected
 
-# Display current API provider
-if os.getenv("ANTHROPIC_API_KEY"):
-    st.sidebar.info("Using: Anthropic API")
-elif os.getenv("DASHSCOPE_API_KEY"):
-    st.sidebar.info("Using: DashScope API")
-else:
-    st.sidebar.info("Set ANTHROPIC_API_KEY or DASHSCOPE_API_KEY")
 
-# Import and run selected app
-if app_mode == "Home":
-    st.markdown("""
-    ## Available Tools
+def main() -> None:
+    """Main application entry point."""
+    logger.info("Application started")
     
-    1. **Stock Analyzer Bot** - Analyze stocks and make investment decisions with AI
-    2. **Blog Analyzer** - Extract insights from technical blogs
-    3. **StarRocks SQL Generator** - Generate SQL DDL and INSERT statements for StarRocks
-    4. **ETF Momentum Analyzer** - Analyze ETF performance with momentum strategies
+    # Render sidebar and get selected module
+    selected_module_name = render_sidebar()
     
-    Select a tool from the sidebar to get started!
-    """)
+    # Route to selected module
+    if selected_module_name:
+        module = ModuleRegistry.get_module_by_name(selected_module_name)
+        if module:
+            try:
+                module.render()
+            except Exception as e:
+                st.error(f"Error rendering module: {str(e)}")
+                logger.error(f"Module render error: {e}", exc_info=True)
+        else:
+            st.error(f"Module '{selected_module_name}' not found!")
+    else:
+        st.info("👈 Please select a module from the sidebar to begin.")
     
-    st.markdown("""
-    ## How to Use
+    # Render footer
+    render_footer()
 
-    1. Enter your API Key in the sidebar (DashScope or Anthropic)
-    2. Select the tool you want to use from the navigation dropdown
-    3. Follow the specific instructions for each tool
 
-    ## Requirements
-
-    - Python 3.7+
-    - DashScope API key ([get from DashScope Console](https://dashscope.console.aliyun.com/))
-      - Or use `ANTHROPIC_BASE_URL` and `ANTHROPIC_API_KEY` environment variables
-    """)
-    
-elif app_mode == "Stock Analyzer Bot":
-    from apps.stock_analyzer import stock_analyzer_app
-    stock_analyzer_app()
-    
-elif app_mode == "Blog Analyzer":
-    from apps.blog_analyzer import blog_analyzer_app
-    blog_analyzer_app()
-    
-elif app_mode == "StarRocks SQL Generator":
-    from apps.starrocks_sql_generator import starrocks_sql_generator_app
-    starrocks_sql_generator_app()
-    
-elif app_mode == "ETF Momentum Analyzer":
-    from apps.etf_analyzer import etf_analyzer_app
-    etf_analyzer_app()
+if __name__ == "__main__":
+    main()

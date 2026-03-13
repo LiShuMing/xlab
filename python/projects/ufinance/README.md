@@ -1,47 +1,73 @@
-# Finance AI Toolkit
+# AI Lab Platform
 
-A unified platform for financial analysis, blog content analysis, technical reporting, and database management using Qwen AI via DashScope.
+A scalable, modular AI experimentation platform built with Streamlit and LangChain. Originally evolved from Finance AI Toolkit, now supporting multi-provider LLMs, plugin-based modules, and extensible AI capabilities.
 
 ## Features
 
-1. **Stock Analyzer Bot** - Analyze stocks and make investment decisions with AI
-2. **Blog Analyzer** - Extract insights from technical blogs
-3. **StarRocks SQL Generator** - Generate SQL DDL and INSERT statements for StarRocks
-4. **ETF Momentum Analyzer** - Analyze ETF performance with momentum strategies
+### Core Platform
+- **🧪 Sandbox** - Free-form AI experimentation with custom system prompts
+- **🔌 Plugin Architecture** - Auto-discoverable modules with unified interface
+- **🤖 Multi-Provider LLM Support** - Qwen (DashScope), OpenAI, Anthropic (Claude)
+- **💨 Streaming Output** - Real-time token streaming for better UX
+- **🧠 Conversation Memory** - Persistent multi-turn chat history
+
+### Migrated Tools (Legacy Support)
+- **📈 Stock Analyzer Bot** - AI-powered stock analysis with investment recommendations
+- **📝 Blog Analyzer** - Technical blog content extraction and analysis
+- **🗄️ StarRocks SQL Generator** - AI-assisted SQL DDL and INSERT statement generation
+- **📊 ETF Momentum Analyzer** - Backtesting tool for ETF momentum strategies
 
 ## Requirements
 
-- Python 3.7+
-- DashScope API key (get it from [DashScope Console](https://dashscope.console.aliyun.com/))
-
+- Python 3.8+
+- At least one API key:
+  - DashScope API key (for Qwen models)
+  - OpenAI API key
+  - Anthropic API key
 
 ## Installation
 
 1. Clone or download this repository
-2. Install the required packages:
+2. Install dependencies:
 
    ```bash
    pip install -r requirements.txt
    ```
 
+3. Configure environment variables:
+
+   ```bash
+   cp .env.example .env
+   # Edit .env with your API keys
+   ```
 
 ## Configuration
 
-The application requires a DashScope API key to function. You can provide it in one of the following ways:
+The platform supports multiple AI providers. Configure at least one:
 
-### 1. Environment Variable
+### DashScope (Qwen)
 
 ```bash
 export DASHSCOPE_API_KEY="your_dashscope_api_key_here"
 ```
 
-### 2. Direct Input
+### OpenAI
 
-Enter the API key in the application interface (less secure)
+```bash
+export OPENAI_API_KEY="your_openai_api_key_here"
+```
+
+### Anthropic (Claude)
+
+```bash
+export ANTHROPIC_API_KEY="your_anthropic_api_key_here"
+```
+
+Or use the `.env` file (see `.env.example` for all options).
 
 ## Usage
 
-Run the application with:
+Run the application:
 
 ```bash
 streamlit run app.py
@@ -49,30 +75,74 @@ streamlit run app.py
 
 Then:
 
-1. Enter your DashScope API Key in the sidebar
-2. Select the tool you want to use from the navigation dropdown
-3. Follow the specific instructions for each tool
+1. Select a module from the sidebar
+2. Configure model parameters (temperature, max tokens) if needed
+3. Start experimenting!
 
-## Tools Overview
+## Architecture
 
-### Stock Analyzer Bot
+```
+.
+├── app.py                  # Main entry point with module routing
+├── config/                 # Centralized configuration
+│   └── settings.py         # API keys, model params, paths
+├── core/                   # Core infrastructure
+│   ├── llm_factory.py      # Unified LLM factory
+│   ├── callback_handler.py # Streaming output handlers
+│   └── memory_manager.py   # Conversation memory
+├── modules/                # Plugin modules
+│   ├── base_module.py      # Abstract base class
+│   ├── sandbox/            # Sandbox experimentation
+│   ├── stock_analyzer/     # Stock analysis (migrated)
+│   ├── blog_analyzer/      # Blog analysis (migrated)
+│   ├── starrocks_sql/      # SQL generation (migrated)
+│   └── etf_analyzer/       # ETF analysis (migrated)
+├── tools/                  # Custom tool base classes
+└── utils/                  # Shared utilities
+```
 
-Analyze stocks and get investment recommendations with AI assistance.
+## Creating Custom Modules
 
-### Blog Analyzer
+To add a new module:
 
-Analyze English technical blogs and extract key insights, technical concepts, and language learning notes.
+```python
+from modules.base_module import BaseModule, register_module
 
-### StarRocks SQL Generator
+@register_module
+class MyModule(BaseModule):
+    name = "My Module"
+    description = "What my module does"
+    icon = "🚀"
+    order = 30  # Sort order in sidebar
+    
+    def render(self) -> None:
+        self.display_header()
+        # Your UI code here
+```
 
-Generate StarRocks-compatible CREATE TABLE DDL and INSERT statements based on your SQL queries.
+The module will be automatically discovered and added to the sidebar!
 
-### ETF Momentum Analyzer
+## Migration from Finance AI Toolkit
 
-Analyze ETF performance using momentum strategies and backtest trading approaches.
+This project evolved from the Finance AI Toolkit. All 4 original tools have been successfully migrated to the new plugin architecture with improved features:
+- Unified LLM factory supporting multiple providers
+- Consistent UI patterns across all modules
+- Better error handling and user feedback
+- Configurable model parameters
 
-## Notes
+| Original Tool | New Module | Status |
+|--------------|------------|--------|
+| Stock Analyzer Bot | modules/stock_analyzer/ | ✅ Migrated |
+| Blog Analyzer | modules/blog_analyzer/ | ✅ Migrated |
+| StarRocks SQL Generator | modules/starrocks_sql/ | ✅ Migrated |
+| ETF Momentum Analyzer | modules/etf_analyzer/ | ✅ Migrated |
 
-- All tools use Qwen AI via the DashScope API
-- The application is designed to be modular and extensible
-- Each tool can be run independently if needed
+## License
+
+MIT License - See LICENSE file for details.
+
+## Resources
+
+- [DashScope Documentation](https://dashscope.console.aliyun.com/)
+- [LangChain Documentation](https://python.langchain.com/)
+- [Streamlit Documentation](https://docs.streamlit.io/)
