@@ -6,12 +6,16 @@ Based on DESIGN.md specification:
 - 8-section structured report
 - Macro environment assessment
 - Technical, fundamental, and risk analysis
+
+Uses utils.output layer for report generation and distribution.
 """
 
 import json
 import re
 from typing import Tuple, Optional, Dict, Any
 from datetime import datetime, timedelta
+from pathlib import Path
+
 import streamlit as st
 import yfinance as yf
 import pandas as pd
@@ -20,6 +24,16 @@ import numpy as np
 from modules.base_module import BaseModule, register_module
 from core.llm_factory import get_llm
 from config.settings import settings
+
+# Import output layer
+from utils.output import (
+    Report,
+    ReportFormat,
+    ReportSection,
+    ReportMetadata,
+    quick_output,
+    create_stock_report,
+)
 
 
 # System prompt based on DESIGN.md
@@ -139,6 +153,8 @@ class StockAnalyzerModule(BaseModule):
     - Technical analysis with indicators
     - Fundamental financial health analysis
     - Risk matrix and position sizing recommendations
+    
+    Uses utils.output layer for report generation and distribution.
     """
     
     name = "Stock Analyzer"
@@ -188,6 +204,14 @@ class StockAnalyzerModule(BaseModule):
                 index=1,
                 help="Price history to include in analysis"
             )
+            
+            # Output format selection
+            output_format = st.selectbox(
+                "Report Output Format",
+                options=["markdown", "html", "json"],
+                index=0,
+                help="Format for download (display is always Markdown)"
+            )
         
         # Analyze button
         if st.button("Generate Analysis Report", type="primary", use_container_width=True):
@@ -202,7 +226,7 @@ class StockAnalyzerModule(BaseModule):
                 return
             
             try:
-                self._run_analysis(query, temperature, max_tokens, data_range)
+                self._run_analysis(query, temperature, max_tokens, data_range, output_format)
             except Exception as e:
                 st.error(f"Error during analysis: {str(e)}")
                 import traceback
@@ -230,7 +254,14 @@ class StockAnalyzerModule(BaseModule):
             - Lower temperature (0.2-0.3) for more consistent output
             """)
     
-    def _run_analysis(self, query: str, temperature: float, max_tokens: int, data_range: str) -> None:
+    def _run_analysis(
+        self, 
+        query: str, 
+        temperature: float, 
+        max_tokens: int, 
+        data_range: str,
+        output_format: str
+    ) -> None:
         """
         Run the complete stock analysis workflow.
         
@@ -239,6 +270,7 @@ class StockAnalyzerModule(BaseModule):
             temperature: LLM temperature
             max_tokens: Max tokens for response
             data_range: Historical data range
+            output_format: Output format for download
         """
         # Step 1: Extract ticker
         with st.spinner("🔍 Identifying stock..."):
@@ -260,23 +292,47 @@ class StockAnalyzerModule(BaseModule):
         
         # Step 3: Generate analysis
         with st.spinner("🤖 Generating comprehensive report (this may take 30-60 seconds)..."):
-            report = self._generate_report(query, company_name, ticker, data_package, temperature, max_tokens)
+            report_content = self._generate_report(
+                query, company_name, ticker, data_package, temperature, max_tokens
+            )
         
-        # Step 4: Display results
+        # Step 4: Create structured report and output
         st.success("✅ Analysis Complete!")
         st.divider()
-        st.markdown(report)
         
-        # Add download button for the report
-        st.divider()
-        report_filename = f"{ticker}_analysis_{datetime.now().strftime('%Y%m%d')}.md"
-        st.download_button(
-            label="📥 Download Report (Markdown)",
-            data=report,
-            file_name=report_filename,
-            mime="text/markdown",
-            use_container_width=True
+        # Create Report object
+        report = create_stock_report(
+            ticker=ticker,
+            company_name=company_name,
+            content=report_content,
+            title=f"{ticker} Investment Analysis Report",
+            data={
+                "current_price": data_package.get("current_price"),
+                "market_cap": data_package.get("market_cap"),
+                "sector": data_package.get("sector"),
+                "technical": data_package.get("technical"),
+            }
         )
+        
+        # Determine output format
+        format_map = {
+            "markdown": ReportFormat.MARKDOWN,
+            "html": ReportFormat.HTML,
+            "json": ReportFormat.JSON,
+        }
+        report_format = format_map.get(output_format, ReportFormat.MARKDOWN)
+        
+        # Use output layer for rendering and distribution
+        result = quick_output(
+            report=report,
+            format=report_format,
+            filename=f"{ticker}_analysis_{datetime.now().strftime('%Y%m%d')}.{report_format.value}",
+            show_streamlit=True,
+            show_download=True,
+        )
+        
+        if not result["success"]:
+            st.error(f"Failed to save report: {result.get('error', 'Unknown error')}")
     
     def _extract_ticker(self, query: str) -> Tuple[str, str]:
         """
@@ -293,7 +349,7 @@ class StockAnalyzerModule(BaseModule):
             'APPLE': 'AAPL', 'MICROSOFT': 'MSFT', 'GOOGLE': 'GOOGL', 'ALPHABET': 'GOOGL',
             'AMAZON': 'AMZN', 'TESLA': 'TSLA', 'META': 'META', 'FACEBOOK': 'META',
             'NVIDIA': 'NVDA', 'NETFLIX': 'NFLX', 'AMD': 'AMD', 'INTEL': 'INTC',
-            'TESLA': 'TSLA', 'BERKSHIRE': 'BRK-B', 'BERKSHIRE HATHAWAY': 'BRK-B',
+            'BERKSHIRE': 'BRK-B', 'BERKSHIRE HATHAWAY': 'BRK-B',
             'JPMORGAN': 'JPM', 'JP MORGAN': 'JPM', 'BANK OF AMERICA': 'BAC',
             'WELLS FARGO': 'WFC', 'CITIBANK': 'C', 'CITI': 'C',
             'VISA': 'V', 'MASTERCARD': 'MA', 'AMERICAN EXPRESS': 'AXP',
@@ -613,7 +669,7 @@ Last 10 Days Price Action:
             max_tokens: Max tokens
         
         Returns:
-            Formatted analysis report
+            Formatted analysis report content (markdown)
         """
         # Prepare user prompt with all data
         user_prompt = f"""

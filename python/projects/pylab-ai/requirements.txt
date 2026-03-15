@@ -38,6 +38,13 @@ typing-extensions>=4.10.0
 
 # Optional: Financial data tools (from original project)
 yfinance>=0.2.0
-akshare>=1.10.0
+akshare>=1.10.0         # A-share data support
 matplotlib>=3.7.0
 html2text>=2024.0.0
+
+# Technical Analysis
+pandas-ta>=0.3.14b       # Enhanced technical indicators (optional)
+
+# Email Delivery (Phase 2)
+# aiosmtplib>=3.0.0      # Async SMTP for email delivery
+# email-validator>=2.0.0 # Email validation
