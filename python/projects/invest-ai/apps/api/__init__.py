@@ -1,3 +1,3 @@
-"""API 应用包"""
+"""API application package."""
 
 __version__ = "0.1.0"

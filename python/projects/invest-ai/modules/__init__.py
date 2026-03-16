@@ -1,3 +1,3 @@
-"""Invest-AI Modules - 业务模块包"""
+"""Invest-AI Business Modules Package."""
 
 __version__ = "0.1.0"

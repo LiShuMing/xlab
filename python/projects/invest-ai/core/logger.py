@@ -1,4 +1,4 @@
-"""日志系统 - 基于 structlog 的结构化日志"""
+"""Logging system based on structlog."""
 
 import logging
 import sys
@@ -9,21 +9,31 @@ from structlog.typing import Processor
 
 
 def get_logger(name: str = "invest-ai") -> structlog.BoundLogger:
-    """获取结构化日志器"""
+    """Get structured logger instance.
+
+    Args:
+        name: Logger name, typically the module name.
+
+    Returns:
+        Configured BoundLogger instance.
+    """
     return structlog.get_logger(name)
 
 
 def setup_logging(level: str = "INFO") -> None:
-    """配置日志系统"""
+    """Configure logging system.
 
-    # 标准库日志配置
+    Args:
+        level: Logging level (DEBUG, INFO, WARNING, ERROR).
+    """
+    # Standard library logging setup
     logging.basicConfig(
         format="%(message)s",
         stream=sys.stdout,
         level=getattr(logging, level.upper()),
     )
 
-    # structlog 配置
+    # structlog configuration
     processors: list[Processor] = [
         structlog.contextvars.merge_contextvars,
         structlog.processors.add_log_level,

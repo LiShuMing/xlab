@@ -1,38 +1,49 @@
-"""股价数据采集器"""
+"""Stock price data collector."""
 
 import aiohttp
-from typing import Optional
 from datetime import datetime
+from typing import Optional
 
 from .base import BaseCollector, CrawlResult
 
 
 class PriceCollector(BaseCollector):
-    """股价数据采集器 - 支持 A 股、港股、美股"""
+    """Stock price collector supporting A-share, HK-share, and US-stock.
+
+    This collector uses Sina Finance API to fetch real-time stock prices.
+    """
 
     name = "price_collector"
-    description = "采集股票实时价格数据"
+    description = "Collect real-time stock price data"
 
     def __init__(self, timeout: int = 10):
+        """Initialize price collector.
+
+        Args:
+            timeout: Request timeout in seconds.
+        """
         self.timeout = timeout
         self.session: Optional[aiohttp.ClientSession] = None
 
     def validate_params(self, stock_code: str, **kwargs) -> bool:
-        return bool(stock_code) and len(stock_code) >= 2
-
-    async def collect(
-        self,
-        stock_code: str,
-        **kwargs,
-    ) -> CrawlResult:
-        """
-        采集股票价格数据
+        """Validate stock code parameter.
 
         Args:
-            stock_code: 股票代码
+            stock_code: Stock code to validate.
 
         Returns:
-            CrawlResult 包含价格数据
+            True if stock code is valid.
+        """
+        return bool(stock_code) and len(stock_code) >= 2
+
+    async def collect(self, stock_code: str, **kwargs) -> CrawlResult:
+        """Collect stock price data.
+
+        Args:
+            stock_code: Stock code (e.g., sh600519, sz000001, AAPL).
+
+        Returns:
+            CrawlResult with price data.
         """
         market = self._detect_market(stock_code)
 
@@ -44,17 +55,24 @@ class PriceCollector(BaseCollector):
             elif market == "US":
                 data = await self._fetch_us_price(stock_code)
             else:
-                return CrawlResult.fail(f"不支持的市场类型：{market}", source=self.name)
+                return CrawlResult.fail(f"Unsupported market: {market}", source=self.name)
 
             if data:
                 return CrawlResult.ok(data, source=self.name)
-            return CrawlResult.fail("未获取到数据", source=self.name)
+            return CrawlResult.fail("No data received", source=self.name)
 
         except Exception as e:
             return CrawlResult.fail(str(e), source=self.name)
 
     async def _fetch_cn_price(self, stock_code: str) -> Optional[dict]:
-        """获取 A 股价格（新浪接口）"""
+        """Fetch A-share price from Sina API.
+
+        Args:
+            stock_code: A-share stock code.
+
+        Returns:
+            Price data dictionary or None.
+        """
         url = f"http://hq.sinajs.cn/list={stock_code}"
         headers = {
             "Referer": "http://finance.sina.com.cn",
@@ -69,8 +87,14 @@ class PriceCollector(BaseCollector):
         return None
 
     async def _fetch_hk_price(self, stock_code: str) -> Optional[dict]:
-        """获取港股价格（新浪接口）"""
-        # 港股代码转换：00700 -> hk00700
+        """Fetch HK-share price from Sina API.
+
+        Args:
+            stock_code: HK-share stock code.
+
+        Returns:
+            Price data dictionary or None.
+        """
         code = stock_code.replace(".HK", "").replace("hk", "")
         url = f"http://hq.sinajs.cn/list=hk{code}"
         headers = {
@@ -86,7 +110,14 @@ class PriceCollector(BaseCollector):
         return None
 
     async def _fetch_us_price(self, stock_code: str) -> Optional[dict]:
-        """获取美股价格（新浪接口）"""
+        """Fetch US-stock price from Sina API.
+
+        Args:
+            stock_code: US stock symbol.
+
+        Returns:
+            Price data dictionary or None.
+        """
         url = f"http://hq.sinajs.cn/list=gb_{stock_code.lower()}"
         headers = {
             "Referer": "http://finance.sina.com.cn",
@@ -101,8 +132,15 @@ class PriceCollector(BaseCollector):
         return None
 
     def _parse_cn_quote(self, text: str, stock_code: str) -> Optional[dict]:
-        """解析 A 股行情数据"""
-        # 格式：var hq_str_sh600519="贵州茅台，2024-03-15,1688.00,1690.00,1688.00,1700.00,1680.00,..."
+        """Parse A-share quote data.
+
+        Args:
+            text: Raw quote response text.
+            stock_code: Stock code.
+
+        Returns:
+            Parsed price data or None.
+        """
         if "=" not in text:
             return None
 
@@ -142,7 +180,15 @@ class PriceCollector(BaseCollector):
             return None
 
     def _parse_hk_quote(self, text: str, stock_code: str) -> Optional[dict]:
-        """解析港股行情数据"""
+        """Parse HK-share quote data.
+
+        Args:
+            text: Raw quote response text.
+            stock_code: Stock code.
+
+        Returns:
+            Parsed price data or None.
+        """
         if "=" not in text:
             return None
 
@@ -171,7 +217,15 @@ class PriceCollector(BaseCollector):
             return None
 
     def _parse_us_quote(self, text: str, stock_code: str) -> Optional[dict]:
-        """解析美股行情数据"""
+        """Parse US-stock quote data.
+
+        Args:
+            text: Raw quote response text.
+            stock_code: Stock symbol.
+
+        Returns:
+            Parsed price data or None.
+        """
         if "=" not in text:
             return None
 
@@ -198,19 +252,26 @@ class PriceCollector(BaseCollector):
             return None
 
     def format_markdown(self, data: dict) -> str:
-        """格式化为 Markdown 表格"""
-        return f"""## 实时股价
+        """Format price data as Markdown table.
 
-| 项目 | 数值 |
-|------|------|
-| 股票代码 | {data.get('stock_code', 'N/A')} |
-| 股票名称 | {data.get('name', 'N/A')} |
-| 当前价格 | {self._format_currency(data.get('current_price'), data.get('currency', '$'))} |
-| 涨跌幅 | {self._format_percent(data.get('change_percent'))} |
-| 涨跌额 | {self._format_currency(data.get('change'), data.get('currency', '$'))} |
-| 开盘价 | {self._format_currency(data.get('open'), data.get('currency', '$'))} |
-| 最高价 | {self._format_currency(data.get('high'), data.get('currency', '$'))} |
-| 最低价 | {self._format_currency(data.get('low'), data.get('currency', '$'))} |
-| 昨收价 | {self._format_currency(data.get('prev_close'), data.get('currency', '$'))} |
-| 成交量 | {self._format_number(data.get('volume'), 0)} |
+        Args:
+            data: Price data dictionary.
+
+        Returns:
+            Markdown formatted table.
+        """
+        return f"""## Real-Time Stock Price
+
+| Item | Value |
+|------|-------|
+| Stock Code | {data.get('stock_code', 'N/A')} |
+| Stock Name | {data.get('name', 'N/A')} |
+| Current Price | {self._format_currency(data.get('current_price'), data.get('currency', '$'))} |
+| Change | {self._format_percent(data.get('change_percent'))} |
+| Change Amount | {self._format_currency(data.get('change'), data.get('currency', '$'))} |
+| Open | {self._format_currency(data.get('open'), data.get('currency', '$'))} |
+| High | {self._format_currency(data.get('high'), data.get('currency', '$'))} |
+| Low | {self._format_currency(data.get('low'), data.get('currency', '$'))} |
+| Prev Close | {self._format_currency(data.get('prev_close'), data.get('currency', '$'))} |
+| Volume | {self._format_number(data.get('volume'), 0)} |
 """

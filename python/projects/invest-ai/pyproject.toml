@@ -1,7 +1,7 @@
 [project]
 name = "invest-ai"
 version = "0.1.0"
-description = "基于 LLM 的股票分析报告平台"
+description = "LLM-powered stock analysis report platform"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
@@ -10,18 +10,18 @@ authors = [
 ]
 
 dependencies = [
-    # Web 框架
+    # Web framework
     "fastapi>=0.109.0",
     "uvicorn[standard]>=0.27.0",
     "pydantic>=2.5.0",
     "pydantic-settings>=2.1.0",
 
-    # LLM 编排
+    # LLM orchestration
     "langchain>=0.1.0",
     "langchain-openai>=0.0.5",
     "langgraph>=0.0.20",
 
-    # 数据收集
+    # Data collection
     "yfinance>=0.2.36",
     "akshare>=1.12.0",
     "pandas>=2.1.0",
@@ -29,16 +29,16 @@ dependencies = [
     "requests>=2.31.0",
     "aiohttp>=3.9.0",
 
-    # 技术分析
+    # Technical analysis
     "pandas-ta>=0.3.14b",
     "ta-lib>=0.4.28",
 
-    # 数据存储
+    # Data storage
     "sqlalchemy>=2.0.25",
     "asyncpg>=0.29.0",
     "redis>=5.0.0",
 
-    # 工具库
+    # Utilities
     "python-dotenv>=1.0.0",
     "structlog>=24.1.0",
     "tenacity>=8.2.0",

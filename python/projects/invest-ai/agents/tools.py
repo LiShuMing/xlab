@@ -1,8 +1,6 @@
-"""Agent 工具实现"""
+"""Agent tool implementations."""
 
-import asyncio
-from datetime import datetime, timedelta
-from typing import Any, Optional
+from typing import Any
 
 from .base import BaseAgentTool, ToolInfo, ToolParameter, ToolResult
 from modules.data_collector import (
@@ -14,70 +12,82 @@ from modules.data_collector import (
 
 
 class QueryStockPriceTool(BaseAgentTool):
-    """股价查询工具"""
+    """Tool for querying real-time stock prices."""
 
     name = "query_stock_price"
-    description = "查询股票实时价格"
+    description = "Query stock real-time price"
 
     def __init__(self):
+        """Initialize price query tool."""
         self._collector = PriceCollector()
 
     def get_info(self) -> ToolInfo:
+        """Get tool information."""
         return ToolInfo(
             name=self.name,
-            description="获取股票的实时股价、涨跌幅、成交量等数据",
+            description="Get real-time stock price, change percent, volume, and market cap",
             parameters=[
                 ToolParameter(
                     name="stock_code",
                     type="string",
-                    description="股票代码，如 sh600519(茅台),sz000001(平安),AAPL(苹果)",
+                    description="Stock code, e.g., sh600519 (Moutai), sz000001 (Ping An), AAPL",
                     required=True,
                 ),
             ],
         )
 
     async def execute(self, arguments: dict[str, Any]) -> str:
+        """Execute price query.
+
+        Args:
+            arguments: Tool arguments with stock_code.
+
+        Returns:
+            Formatted price data or error message.
+        """
         stock_code = arguments.get("stock_code", "")
         if not stock_code:
-            return ToolResult.fail("股票代码不能为空", self.name).result
+            return ToolResult.fail("Stock code is required", self.name).result
 
         result = await self._collector.collect(stock_code=stock_code)
         if result.success:
             return PriceCollector().format_markdown(result.data)
-        return ToolResult.fail(result.error or "获取失败", self.name).result
+        return ToolResult.fail(result.error or "Failed to fetch data", self.name).result
 
 
 class QueryKLineDataTool(BaseAgentTool):
-    """K 线数据查询工具"""
+    """Tool for querying K-line (candlestick) data."""
 
     name = "query_kline_data"
-    description = "查询股票 K 线数据"
+    description = "Query stock K-line data"
 
     def __init__(self):
+        """Initialize K-line query tool."""
         self._collector = KLineCollector()
 
     def get_info(self) -> ToolInfo:
+        """Get tool information."""
         return ToolInfo(
             name=self.name,
-            description="获取股票的历史 K 线数据，包括开盘价、最高价、最低价、收盘价、成交量",
+            description="Get historical K-line data including open, high, low, close, and volume",
             parameters=[
                 ToolParameter(
                     name="stock_code",
                     type="string",
-                    description="股票代码",
+                    description="Stock code",
                     required=True,
                 ),
                 ToolParameter(
                     name="days",
                     type="integer",
-                    description="获取 K 线的天数，默认 90 天，最大 365 天",
+                    description="Number of days to fetch (default: 90, max: 365)",
                     required=False,
                     default=90,
                 ),
                 ToolParameter(
                     name="period",
                     type="string",
-                    description="K 线周期：day(日线), week(周线), month(月线)",
+                    description="Period type: day, week, month",
                     required=False,
                     default="day",
                     enum=["day", "week", "month"],
@@ -86,6 +96,14 @@ class QueryKLineDataTool(BaseAgentTool):
         )
 
     async def execute(self, arguments: dict[str, Any]) -> str:
+        """Execute K-line query.
+
+        Args:
+            arguments: Tool arguments.
+
+        Returns:
+            Formatted K-line data or error message.
+        """
         stock_code = arguments.get("stock_code", "")
         days = arguments.get("days", 90)
         period = arguments.get("period", "day")
@@ -93,74 +111,86 @@ class QueryKLineDataTool(BaseAgentTool):
         result = await self._collector.collect(stock_code=stock_code, days=days, period=period)
         if result.success:
             return KLineCollector().format_markdown(result.data)
-        return ToolResult.fail(result.error or "获取失败", self.name).result
+        return ToolResult.fail(result.error or "Failed to fetch data", self.name).result
 
 
 class QueryFinancialMetricsTool(BaseAgentTool):
-    """财务指标查询工具"""
+    """Tool for querying financial metrics."""
 
     name = "query_financial_metrics"
-    description = "查询股票财务指标"
+    description = "Query stock financial metrics"
 
     def __init__(self):
+        """Initialize financial metrics query tool."""
         self._collector = FinancialCollector()
 
     def get_info(self) -> ToolInfo:
+        """Get tool information."""
         return ToolInfo(
             name=self.name,
-            description="查询股票的财务指标，包括估值、盈利能力、增长能力、财务健康等",
+            description="Get financial metrics including valuation, profitability, growth, and financial health",
             parameters=[
                 ToolParameter(
                     name="stock_code",
                     type="string",
-                    description="股票代码",
+                    description="Stock code",
                     required=True,
                 ),
             ],
         )
 
     async def execute(self, arguments: dict[str, Any]) -> str:
+        """Execute financial metrics query.
+
+        Args:
+            arguments: Tool arguments with stock_code.
+
+        Returns:
+            Formatted financial data or error message.
+        """
         stock_code = arguments.get("stock_code", "")
         if not stock_code:
-            return ToolResult.fail("股票代码不能为空", self.name).result
+            return ToolResult.fail("Stock code is required", self.name).result
 
         result = await self._collector.collect(stock_code=stock_code)
         if result.success:
             return FinancialCollector().format_markdown(result.data)
-        return ToolResult.fail(result.error or "获取失败", self.name).result
+        return ToolResult.fail(result.error or "Failed to fetch data", self.name).result
 
 
 class QueryMarketNewsTool(BaseAgentTool):
-    """市场新闻查询工具"""
+    """Tool for querying market news."""
 
     name = "query_market_news"
-    description = "查询市场新闻"
+    description = "Query market news"
 
     def __init__(self):
+        """Initialize news query tool."""
         self._collector = NewsCollector()
 
     def get_info(self) -> ToolInfo:
+        """Get tool information."""
         return ToolInfo(
             name=self.name,
-            description="获取市场新闻、财经资讯，支持按股票或宏观新闻筛选",
+            description="Get market news and financial information, support stock-specific or macro news",
             parameters=[
                 ToolParameter(
                     name="stock_code",
                     type="string",
-                    description="股票代码（可选），不传则返回宏观新闻",
+                    description="Stock code (optional, fetches macro news if not provided)",
                     required=False,
                 ),
                 ToolParameter(
                     name="limit",
                     type="integer",
-                    description="返回新闻条数，默认 20 条",
+                    description="Number of news items (default: 20)",
                     required=False,
                     default=20,
                 ),
                 ToolParameter(
                     name="days",
                     type="integer",
-                    description="最近 N 天的新闻，默认 7 天",
+                    description="Number of days to look back (default: 7)",
                     required=False,
                     default=7,
                 ),
@@ -168,6 +198,14 @@ class QueryMarketNewsTool(BaseAgentTool):
         )
 
     async def execute(self, arguments: dict[str, Any]) -> str:
+        """Execute news query.
+
+        Args:
+            arguments: Tool arguments.
+
+        Returns:
+            Formatted news data or error message.
+        """
         stock_code = arguments.get("stock_code")
         limit = arguments.get("limit", 20)
         days = arguments.get("days", 7)
@@ -175,4 +213,4 @@ class QueryMarketNewsTool(BaseAgentTool):
         result = await self._collector.collect(stock_code=stock_code, limit=limit, days=days)
         if result.success:
             return NewsCollector().format_markdown(result.data)
-        return ToolResult.fail(result.error or "获取失败", self.name).result
+        return ToolResult.fail(result.error or "Failed to fetch data", self.name).result

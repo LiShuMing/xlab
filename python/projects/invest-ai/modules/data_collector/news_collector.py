@@ -1,4 +1,4 @@
-"""新闻资讯采集器"""
+"""News and market information collector."""
 
 import aiohttp
 from datetime import datetime, timedelta
@@ -8,15 +8,32 @@ from .base import BaseCollector, CrawlResult
 
 
 class NewsCollector(BaseCollector):
-    """新闻资讯采集器 - 获取财经新闻"""
+    """News and market information collector.
+
+    Fetches stock-specific news and macroeconomic news.
+    """
 
     name = "news_collector"
-    description = "采集市场新闻和资讯"
+    description = "Collect market news and financial information"
 
     def __init__(self, timeout: int = 15):
+        """Initialize news collector.
+
+        Args:
+            timeout: Request timeout in seconds.
+        """
         self.timeout = timeout
 
     def validate_params(self, stock_code: Optional[str] = None, limit: int = 20, **kwargs) -> bool:
+        """Validate parameters.
+
+        Args:
+            stock_code: Optional stock code.
+            limit: Number of news items to fetch.
+
+        Returns:
+            True if parameters are valid.
+        """
         return limit > 0 and limit <= 100
 
     async def collect(
@@ -26,16 +43,15 @@ class NewsCollector(BaseCollector):
         days: int = 7,
         **kwargs,
     ) -> CrawlResult:
-        """
-        采集新闻数据
+        """Collect news data.
 
         Args:
-            stock_code: 股票代码（可选）
-            limit: 返回数量
-            days: 最近 N 天
+            stock_code: Stock code (optional, fetches macro news if not provided).
+            limit: Number of news items.
+            days: Number of days to look back.
 
         Returns:
-            CrawlResult 包含新闻列表
+            CrawlResult with news data.
         """
         try:
             news_list = await self._fetch_news(stock_code, limit, days)
@@ -52,16 +68,30 @@ class NewsCollector(BaseCollector):
         limit: int,
         days: int,
     ) -> List[dict]:
-        """获取新闻列表"""
-        # 如果没有指定股票，获取宏观新闻
+        """Fetch news list.
+
+        Args:
+            stock_code: Stock code.
+            limit: Number of items.
+            days: Days to look back.
+
+        Returns:
+            List of news items.
+        """
         if not stock_code:
             return await self._fetch_macro_news(limit)
-
-        # 使用 yfinance 获取股票新闻
         return await self._fetch_stock_news(stock_code, limit)
 
     async def _fetch_stock_news(self, stock_code: str, limit: int) -> List[dict]:
-        """获取个股新闻（yfinance）"""
+        """Fetch stock-specific news from yfinance.
+
+        Args:
+            stock_code: Stock code.
+            limit: Number of items.
+
+        Returns:
+            List of news items.
+        """
         try:
             import yfinance as yf
 
@@ -78,10 +108,12 @@ class NewsCollector(BaseCollector):
                     "title": item.get("title", ""),
                     "source": item.get("publisher", ""),
                     "link": item.get("link", ""),
-                    "published_at": datetime.fromtimestamp(item.get("providerPublishTime", 0)).strftime(
-                        "%Y-%m-%d %H:%M"
+                    "published_at": datetime.fromtimestamp(
+                        item.get("providerPublishTime", 0)
+                    ).strftime("%Y-%m-%d %H:%M"),
+                    "summary": (
+                        item.get("summary", "")[:200] + "..." if item.get("summary") else ""
                     ),
-                    "summary": item.get("summary", "")[:200] + "..." if item.get("summary") else "",
                 })
 
             return news_list
@@ -89,27 +121,33 @@ class NewsCollector(BaseCollector):
             return []
 
     async def _fetch_macro_news(self, limit: int) -> List[dict]:
-        """获取宏观财经新闻（新浪财经）"""
-        url = "https://finance.sina.com.cn/roll/index.shtml"
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-            "Accept": "text/html,application/xhtml+xml",
-        }
+        """Fetch macroeconomic news.
 
-        # 简化版本：返回模拟数据
-        # 实际项目中应实现真实的爬虫
+        Args:
+            limit: Number of items.
+
+        Returns:
+            List of news items (placeholder).
+        """
         return [
             {
-                "title": "央行：保持流动性合理充裕",
-                "source": "新浪财经",
+                "title": "Central Bank: Maintain Adequate Liquidity",
+                "source": "Sina Finance",
                 "link": "https://finance.sina.com.cn",
                 "published_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
-                "summary": "央行表示将继续实施稳健的货币政策，保持流动性合理充裕...",
+                "summary": "The central bank will continue to implement prudent monetary policy...",
             }
         ]
 
     def _convert_ticker(self, stock_code: str) -> str:
-        """转换股票代码为 yfinance 格式"""
+        """Convert stock code to yfinance ticker format.
+
+        Args:
+            stock_code: Stock code.
+
+        Returns:
+            yfinance ticker symbol.
+        """
         code = stock_code.upper()
         if code.startswith("SH"):
             return f"{code[2:]}.SS"
@@ -120,21 +158,28 @@ class NewsCollector(BaseCollector):
         return code
 
     def format_markdown(self, data: dict) -> str:
-        """格式化为 Markdown"""
+        """Format news data as Markdown.
+
+        Args:
+            data: News data dictionary.
+
+        Returns:
+            Markdown formatted news list.
+        """
         news_list = data.get("news", [])
 
         if not news_list:
-            return "## 市场新闻\n\n暂无相关新闻数据"
+            return "## Market News\n\nNo news available"
 
-        md = f"""## 市场新闻（{data.get('count', 0)}条）
+        md = f"""## Market News ({data.get('count', 0)} items)
 
 """
         for i, news in enumerate(news_list[:10], 1):
-            md += f"""### {i}. {news.get('title', '无标题')}
-- **来源**: {news.get('source', '未知')}
-- **时间**: {news.get('published_at', '未知')}
-- **链接**: [{news.get('link', '查看')}]({news.get('link', '#')})
-- **摘要**: {news.get('summary', '无摘要')}
+            md += f"""### {i}. {news.get('title', 'No Title')}
+- **Source**: {news.get('source', 'Unknown')}
+- **Time**: {news.get('published_at', 'Unknown')}
+- **Link**: [{news.get('link', 'View')}]({news.get('link', '#')})
+- **Summary**: {news.get('summary', 'No summary')}
 
 """
         return md

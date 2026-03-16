@@ -1,17 +1,26 @@
-"""Agent 系统 - 基于 ReAct 模式的多 Agent 编排"""
+"""Agent system base classes and types."""
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Any, Optional
 from datetime import datetime
+from typing import Any, Optional
 
 
 @dataclass
 class ToolParameter:
-    """工具参数定义"""
+    """Tool parameter definition.
+
+    Attributes:
+        name: Parameter name.
+        type: Parameter type (string, number, integer, boolean, array, object).
+        description: Parameter description.
+        required: Whether parameter is required.
+        enum: Allowed values (if applicable).
+        default: Default value (if applicable).
+    """
 
     name: str
-    type: str  # string, number, integer, boolean, array, object
+    type: str
     description: str
     required: bool = False
     enum: Optional[list] = None
@@ -20,7 +29,13 @@ class ToolParameter:
 
 @dataclass
 class ToolInfo:
-    """工具元信息"""
+    """Tool metadata for LLM discovery.
+
+    Attributes:
+        name: Tool name.
+        description: Tool description.
+        parameters: Parameter definitions.
+    """
 
     name: str
     description: str
@@ -28,23 +43,55 @@ class ToolInfo:
 
 
 class BaseAgentTool(ABC):
-    """Agent 工具基类"""
+    """Abstract base class for agent tools.
+
+    Subclasses must implement get_info() and execute() methods.
+
+    Example:
+        class QueryPriceTool(BaseAgentTool):
+            name = "query_price"
+            description = "Query stock price"
+
+            def get_info(self) -> ToolInfo:
+                return ToolInfo(...)
+
+            async def execute(self, args: dict) -> str:
+                return "Price data..."
+    """
 
     name: str = "base_tool"
-    description: str = "基础工具"
+    description: str = "Base tool"
 
     @abstractmethod
     def get_info(self) -> ToolInfo:
-        """获取工具信息，供 LLM 理解工具用途"""
+        """Get tool information for LLM discovery.
+
+        Returns:
+            ToolInfo instance.
+        """
         pass
 
     @abstractmethod
     async def execute(self, arguments: dict[str, Any]) -> str:
-        """执行工具逻辑，返回字符串结果"""
+        """Execute tool logic.
+
+        Args:
+            arguments: Tool arguments.
+
+        Returns:
+            Result string.
+        """
         pass
 
     def validate_params(self, params: dict[str, Any]) -> bool:
-        """参数校验"""
+        """Validate parameters.
+
+        Args:
+            params: Parameters to validate.
+
+        Returns:
+            True if valid.
+        """
         info = self.get_info()
         for param in info.parameters:
             if param.required and param.name not in params:
@@ -52,7 +99,11 @@ class BaseAgentTool(ABC):
         return True
 
     def get_schema(self) -> dict:
-        """获取 JSON Schema 格式的工具描述"""
+        """Get JSON Schema representation.
+
+        Returns:
+            JSON Schema dictionary.
+        """
         info = self.get_info()
         properties = {}
         required = []
@@ -80,7 +131,16 @@ class BaseAgentTool(ABC):
 
 @dataclass
 class ToolResult:
-    """工具执行结果"""
+    """Tool execution result.
+
+    Attributes:
+        success: Whether execution succeeded.
+        result: Result string.
+        error: Error message (if failed).
+        tool_name: Tool name.
+        execution_time: Execution duration in seconds.
+        metadata: Additional metadata.
+    """
 
     success: bool
     result: str = ""
@@ -91,6 +151,16 @@ class ToolResult:
 
     @classmethod
     def ok(cls, result: str, tool_name: str = "", metadata: dict = None) -> "ToolResult":
+        """Create successful result.
+
+        Args:
+            result: Result string.
+            tool_name: Tool name.
+            metadata: Additional metadata.
+
+        Returns:
+            ToolResult instance.
+        """
         return cls(
             success=True,
             result=result,
@@ -100,6 +170,15 @@ class ToolResult:
 
     @classmethod
     def fail(cls, error: str, tool_name: str = "") -> "ToolResult":
+        """Create failed result.
+
+        Args:
+            error: Error message.
+            tool_name: Tool name.
+
+        Returns:
+            ToolResult instance.
+        """
         return cls(
             success=False,
             error=error,
@@ -109,7 +188,20 @@ class ToolResult:
 
 @dataclass
 class AgentState:
-    """Agent 执行状态"""
+    """Agent execution state.
+
+    Attributes:
+        messages: Conversation messages.
+        tool_calls: Tool call history.
+        tool_results: Tool execution results.
+        current_step: Current step number.
+        max_steps: Maximum steps allowed.
+        is_complete: Whether execution is complete.
+        final_response: Final response string.
+        error: Error message (if failed).
+        created_at: Creation timestamp.
+        updated_at: Last update timestamp.
+    """
 
     messages: list[dict] = field(default_factory=list)
     tool_calls: list[dict] = field(default_factory=list)
@@ -123,13 +215,29 @@ class AgentState:
     updated_at: datetime = field(default_factory=datetime.now)
 
     def add_message(self, role: str, content: str) -> "AgentState":
-        """添加消息"""
+        """Add message to state.
+
+        Args:
+            role: Message role (user/assistant/system).
+            content: Message content.
+
+        Returns:
+            Self for method chaining.
+        """
         self.messages.append({"role": role, "content": content, "timestamp": datetime.now()})
         self.updated_at = datetime.now()
         return self
 
     def add_tool_call(self, tool_name: str, args: dict) -> "AgentState":
-        """添加工具调用"""
+        """Add tool call to state.
+
+        Args:
+            tool_name: Tool name.
+            args: Tool arguments.
+
+        Returns:
+            Self for method chaining.
+        """
         self.tool_calls.append(
             {"tool_name": tool_name, "args": args, "timestamp": datetime.now()}
         )
@@ -137,31 +245,60 @@ class AgentState:
         return self
 
     def add_tool_result(self, result: ToolResult) -> "AgentState":
-        """添加工具执行结果"""
+        """Add tool result to state.
+
+        Args:
+            result: Tool result.
+
+        Returns:
+            Self for method chaining.
+        """
         self.tool_results.append(result)
         self.updated_at = datetime.now()
         return self
 
     def next_step(self) -> int:
-        """进入下一步"""
+        """Advance to next step.
+
+        Returns:
+            New step number.
+        """
         self.current_step += 1
         self.updated_at = datetime.now()
         return self.current_step
 
     def complete(self, response: str) -> "AgentState":
-        """标记完成"""
+        """Mark execution as complete.
+
+        Args:
+            response: Final response.
+
+        Returns:
+            Self for method chaining.
+        """
         self.is_complete = True
         self.final_response = response
         self.updated_at = datetime.now()
         return self
 
     def fail(self, error: str) -> "AgentState":
-        """标记失败"""
+        """Mark execution as failed.
+
+        Args:
+            error: Error message.
+
+        Returns:
+            Self for method chaining.
+        """
         self.error = error
         self.is_complete = True
         self.updated_at = datetime.now()
         return self
 
     def can_continue(self) -> bool:
-        """判断是否可以继续执行"""
+        """Check if execution can continue.
+
+        Returns:
+            True if not complete and under max steps.
+        """
         return not self.is_complete and self.current_step < self.max_steps

@@ -1,4 +1,4 @@
-"""FastAPI 应用入口"""
+"""FastAPI application entry point."""
 
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
@@ -16,28 +16,38 @@ settings = get_settings()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator:
-    """应用生命周期管理"""
-    # 启动时初始化
+    """Application lifespan manager.
+
+    Args:
+        app: FastAPI application instance.
+
+    Yields:
+        None.
+    """
+    # Startup
     setup_logging(settings.log_level)
-    logger.info("Invest-AI API 启动中...")
+    logger.info("Starting Invest-AI API...")
 
     yield
 
-    # 关闭时清理
-    logger.info("Invest-AI API 关闭中...")
+    # Shutdown
+    logger.info("Shutting down Invest-AI API...")
 
 
 def create_app() -> FastAPI:
-    """创建 FastAPI 应用实例"""
+    """Create FastAPI application instance.
 
+    Returns:
+        Configured FastAPI application.
+    """
     app = FastAPI(
         title=settings.app_name,
-        description="基于 LLM 的股票分析报告平台",
+        description="LLM-powered stock analysis report platform",
         version="0.1.0",
         lifespan=lifespan,
     )
 
-    # CORS 配置
+    # CORS middleware
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
@@ -46,12 +56,17 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    # 注册路由
+    # Register routes
     app.include_router(api_router, prefix="/api/v1")
 
-    # 健康检查
+    # Health check endpoint
     @app.get("/health")
     async def health_check():
+        """Health check endpoint.
+
+        Returns:
+            Health status dictionary.
+        """
         return {"status": "healthy", "version": "0.1.0"}
 
     return app

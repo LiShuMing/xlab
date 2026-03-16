@@ -1,12 +1,12 @@
-"""K 线数据采集器"""
+"""K-line (candlestick) data collector using yfinance."""
 
 import yfinance as yf
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Optional
 
 from .base import BaseCollector, CrawlResult
 
-# 需要 pandas 支持
+# pandas dependency
 try:
     import pandas as pd
 except ImportError:
@@ -14,15 +14,32 @@ except ImportError:
 
 
 class KLineCollector(BaseCollector):
-    """K 线数据采集器 - 使用 yfinance 获取"""
+    """K-line data collector using yfinance.
+
+    Supports daily, weekly, and monthly candlestick data.
+    """
 
     name = "kline_collector"
-    description = "采集股票 K 线数据（OHLCV）"
+    description = "Collect stock K-line (OHLCV) data"
 
     def __init__(self, timeout: int = 30):
+        """Initialize K-line collector.
+
+        Args:
+            timeout: Request timeout in seconds.
+        """
         self.timeout = timeout
 
     def validate_params(self, stock_code: str, days: int = 90, **kwargs) -> bool:
+        """Validate parameters.
+
+        Args:
+            stock_code: Stock code.
+            days: Number of days to fetch.
+
+        Returns:
+            True if parameters are valid.
+        """
         if not stock_code:
             return False
         if not isinstance(days, int) or days < 1 or days > 365:
@@ -36,23 +53,22 @@ class KLineCollector(BaseCollector):
         period: str = "day",
         **kwargs,
     ) -> CrawlResult:
-        """
-        采集 K 线数据
+        """Collect K-line data.
 
         Args:
-            stock_code: 股票代码
-            days: 获取天数
-            period: 周期 (day/week/month)
+            stock_code: Stock code.
+            days: Number of days to fetch.
+            period: Period type (day/week/month).
 
         Returns:
-            CrawlResult 包含 K 线数据
+            CrawlResult with K-line data.
         """
         try:
             ticker = self._convert_ticker(stock_code)
             data = yf.download(ticker, period=f"{days}d", interval=self._get_interval(period))
 
             if data.empty:
-                return CrawlResult.fail("未获取到 K 线数据", source=self.name)
+                return CrawlResult.fail("No K-line data received", source=self.name)
 
             kline_data = self._parse_kline(data, stock_code)
             return CrawlResult.ok(kline_data, source=self.name)
@@ -61,24 +77,38 @@ class KLineCollector(BaseCollector):
             return CrawlResult.fail(str(e), source=self.name)
 
     def _convert_ticker(self, stock_code: str) -> str:
-        """转换股票代码为 yfinance 格式"""
+        """Convert stock code to yfinance ticker format.
+
+        Args:
+            stock_code: Stock code.
+
+        Returns:
+            yfinance ticker symbol.
+        """
         code = stock_code.upper()
 
-        # A 股：sh600519 -> 600519.SS, sz000001 -> 000001.SZ
+        # A-share: sh600519 -> 600519.SS, sz000001 -> 000001.SZ
         if code.startswith("SH"):
             return f"{code[2:]}.SS"
         elif code.startswith("SZ"):
             return f"{code[2:]}.SZ"
 
-        # 港股：0700.HK 保持不变
+        # HK-share: keep as is (e.g., 0700.HK)
         if ".HK" in code:
             return code
 
-        # 美股：直接返回
+        # US-stock: return as is
         return code
 
     def _get_interval(self, period: str) -> str:
-        """获取 yfinance 时间间隔参数"""
+        """Get yfinance interval parameter.
+
+        Args:
+            period: Period type.
+
+        Returns:
+            yfinance interval string.
+        """
         intervals = {
             "day": "1d",
             "week": "5d",
@@ -87,10 +117,18 @@ class KLineCollector(BaseCollector):
         return intervals.get(period, "1d")
 
     def _parse_kline(self, data, stock_code: str) -> dict:
-        """解析 K 线数据"""
+        """Parse K-line data from yfinance response.
+
+        Args:
+            data: yfinance download result.
+            stock_code: Stock code.
+
+        Returns:
+            Parsed K-line data dictionary.
+        """
         klines = []
 
-        # 处理 MultiIndex 列（新版本的 yfinance）
+        # Handle MultiIndex columns (newer yfinance versions)
         if isinstance(data.columns, pd.MultiIndex):
             data = data.droplevel("Ticker", axis=1)
 
@@ -113,16 +151,24 @@ class KLineCollector(BaseCollector):
         }
 
     def format_markdown(self, data: dict, show_recent: int = 10) -> str:
-        """格式化为 Markdown 表格"""
+        """Format K-line data as Markdown table.
+
+        Args:
+            data: K-line data dictionary.
+            show_recent: Number of recent days to show.
+
+        Returns:
+            Markdown formatted table.
+        """
         klines = data.get("klines", [])[-show_recent:]
 
-        md = f"""## K 线数据（最近{show_recent}个交易日）
+        md = f"""## K-Line Data (Last {show_recent} Trading Days)
 
-| 日期 | 开盘 | 最高 | 最低 | 收盘 | 成交量 |
-|------|------|------|------|------|--------|
+| Date | Open | High | Low | Close | Volume |
+|------|------|------|-----|-------|--------|
 """
         for k in klines:
             md += f"| {k['date']} | {self._format_number(k['open'])} | {self._format_number(k['high'])} | {self._format_number(k['low'])} | {self._format_number(k['close'])} | {self._format_number(k['volume'], 0)} |\n"
 
-        md += f"\n*共 {data.get('count', 0)} 个交易日数据 ({data.get('start_date')} ~ {data.get('end_date')})*"
+        md += f"\n*Total {data.get('count', 0)} trading days ({data.get('start_date')} ~ {data.get('end_date')})*"
         return md

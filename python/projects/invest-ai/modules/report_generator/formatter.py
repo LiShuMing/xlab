@@ -1,92 +1,128 @@
-"""报告格式化器"""
+"""Report formatter for multiple output formats."""
+
+import json
 
 from .types import Report, ReportFormat
 
 
 class ReportFormatter:
-    """报告格式化器 - 将报告转换为不同格式"""
+    """Format reports for multiple output formats.
+
+    Supports Markdown, HTML, and JSON formats.
+    """
 
     @staticmethod
     def format(report: Report, format_type: ReportFormat = ReportFormat.MARKDOWN) -> str:
-        """格式化报告"""
-        if format_type == ReportFormat.MARKDOWN:
-            return ReportFormatter._to_markdown(report)
-        elif format_type == ReportFormat.HTML:
-            return ReportFormatter._to_html(report)
-        elif format_type == ReportFormat.JSON:
-            return ReportFormatter._to_json(report)
-        else:
-            return ReportFormatter._to_markdown(report)
+        """Format report to specified format.
+
+        Args:
+            report: Report instance.
+            format_type: Output format.
+
+        Returns:
+            Formatted report string.
+        """
+        formatters = {
+            ReportFormat.MARKDOWN: ReportFormatter._to_markdown,
+            ReportFormat.HTML: ReportFormatter._to_html,
+            ReportFormat.JSON: ReportFormatter._to_json,
+        }
+        formatter = formatters.get(format_type, ReportFormatter._to_markdown)
+        return formatter(report)
 
     @staticmethod
     def _to_markdown(report: Report) -> str:
-        """转换为 Markdown 格式"""
+        """Convert report to Markdown format.
+
+        Args:
+            report: Report instance.
+
+        Returns:
+            Markdown string.
+        """
         md = ""
 
-        # 标题
-        title = report.title or f"{report.stock_name} ({report.stock_code}) 投资分析报告"
+        # Title
+        title = report.title or f"{report.stock_name} ({report.stock_code}) Investment Analysis"
         md += f"# {title}\n\n"
 
-        # 报告元信息
-        md += f"**生成时间**: {report.created_at.strftime('%Y-%m-%d %H:%M')}\n"
-        md += f"**分析模型**: {report.model_name}\n"
-        md += f"**分析耗时**: {report.analysis_duration:.2f}秒\n\n"
+        # Metadata
+        md += f"**Generated**: {report.created_at.strftime('%Y-%m-%d %H:%M')}\n"
+        md += f"**Model**: {report.model_name}\n"
+        md += f"**Duration**: {report.analysis_duration:.2f}s\n\n"
 
-        # 摘要
+        # Summary
         if report.summary:
-            md += f"## 摘要\n\n{report.summary}\n\n"
+            md += f"## Summary\n\n{report.summary}\n\n"
 
-        # 评级
+        # Rating
         if report.rating:
-            md += "## 投资评级\n\n"
+            md += "## Investment Rating\n\n"
             rating_emoji = {
-                "强烈推荐": "🔥",
-                "推荐": "👍",
-                "中性": "😐",
-                "谨慎": "⚠️",
-                "不推荐": "❌",
+                "Strong Buy": "🔥",
+                "Buy": "👍",
+                "Hold": "😐",
+                "Caution": "⚠️",
+                "Sell": "❌",
             }
             emoji = rating_emoji.get(report.rating, "📊")
-            md += f"| 项目 | 评估 |\n|------|------|\n"
-            md += f"| 综合评级 | {emoji} {report.rating} |\n"
+            md += f"| Metric | Value |\n|--------|-------|\n"
+            md += f"| Rating | {emoji} {report.rating} |\n"
             if report.confidence:
-                md += f"| 置信度 | {report.confidence} |\n"
+                md += f"| Confidence | {report.confidence} |\n"
             if report.target_price:
-                md += f"| 目标价 | ${report.target_price:.2f} |\n"
+                md += f"| Target Price | ${report.target_price:.2f} |\n"
             md += "\n"
 
-        # 正文章节
-        md += "## 详细分析\n\n"
+        # Sections
+        md += "## Detailed Analysis\n\n"
         for section in report.sections:
             md += f"### {section.title}\n\n"
             md += f"{section.content}\n\n"
 
-        # 免责声明
+        # Disclaimer
         md += "---\n\n"
-        md += "## 免责声明\n\n"
-        md += "本报告由 AI 生成，仅供参考，不构成投资建议。投资有风险，入市需谨慎。\n"
+        md += "## Disclaimer\n\n"
+        md += "This report is AI-generated for reference only and does not constitute investment advice. "
+        md += "Investing involves risks. Please conduct your own research before making investment decisions.\n"
 
         return md
 
     @staticmethod
     def _to_html(report: Report) -> str:
-        """转换为 HTML 格式"""
-        import markdown
+        """Convert report to HTML format.
 
-        md_content = ReportFormatter._to_markdown(report)
-        html_body = markdown.markdown(
-            md_content,
-            extensions=["tables", "fenced_code", "toc"],
-        )
+        Args:
+            report: Report instance.
+
+        Returns:
+            HTML string with embedded styles.
+        """
+        try:
+            import markdown
+
+            md_content = ReportFormatter._to_markdown(report)
+            html_body = markdown.markdown(
+                md_content,
+                extensions=["tables", "fenced_code", "toc"],
+            )
+        except ImportError:
+            html_body = f"<div>{report.title}</div>"
 
         html = f"""<!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{report.title or '投资分析报告'}</title>
+    <title>{report.title or 'Investment Analysis Report'}</title>
     <style>
-        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; }}
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }}
         h1 {{ color: #1a1a1a; border-bottom: 2px solid #007bff; padding-bottom: 10px; }}
         h2 {{ color: #333; margin-top: 30px; }}
         h3 {{ color: #555; }}
@@ -106,9 +142,14 @@ class ReportFormatter:
 
     @staticmethod
     def _to_json(report: Report) -> str:
-        """转换为 JSON 格式"""
-        import json
+        """Convert report to JSON format.
 
+        Args:
+            report: Report instance.
+
+        Returns:
+            JSON string.
+        """
         data = {
             "report_id": report.report_id,
             "stock_code": report.stock_code,

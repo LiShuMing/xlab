@@ -1,3 +1,3 @@
-"""Invest-AI Core - 核心基础设施模块"""
+"""Invest-AI Core Infrastructure Module."""
 
 __version__ = "0.1.0"

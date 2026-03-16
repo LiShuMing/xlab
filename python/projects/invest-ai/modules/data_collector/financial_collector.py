@@ -1,22 +1,38 @@
-"""财务数据采集器"""
+"""Financial data collector using yfinance."""
 
 import yfinance as yf
-from typing import Optional, Any
 from datetime import datetime
+from typing import Optional, Any
 
 from .base import BaseCollector, CrawlResult
 
 
 class FinancialCollector(BaseCollector):
-    """财务数据采集器 - 使用 yfinance 获取"""
+    """Financial metrics collector using yfinance.
+
+    Collects valuation, profitability, growth, and financial health metrics.
+    """
 
     name = "financial_collector"
-    description = "采集股票财务数据和指标"
+    description = "Collect stock financial metrics and ratios"
 
     def __init__(self, timeout: int = 30):
+        """Initialize financial collector.
+
+        Args:
+            timeout: Request timeout in seconds.
+        """
         self.timeout = timeout
 
     def validate_params(self, stock_code: str, **kwargs) -> bool:
+        """Validate stock code parameter.
+
+        Args:
+            stock_code: Stock code.
+
+        Returns:
+            True if stock code is provided.
+        """
         return bool(stock_code)
 
     async def collect(
@@ -25,22 +41,21 @@ class FinancialCollector(BaseCollector):
         report_type: str = "all",
         **kwargs,
     ) -> CrawlResult:
-        """
-        采集财务数据
+        """Collect financial data.
 
         Args:
-            stock_code: 股票代码
-            report_type: 报表类型 (all/income/balance/cashflow)
+            stock_code: Stock code.
+            report_type: Report type (all/income/balance/cashflow).
 
         Returns:
-            CrawlResult 包含财务数据
+            CrawlResult with financial data.
         """
         try:
             ticker = self._convert_ticker(stock_code)
             info = yf.Ticker(ticker).info
 
             if not info:
-                return CrawlResult.fail("未获取到财务数据", source=self.name)
+                return CrawlResult.fail("No financial data received", source=self.name)
 
             financial_data = self._parse_financials(info, stock_code)
             return CrawlResult.ok(financial_data, source=self.name)
@@ -49,7 +64,14 @@ class FinancialCollector(BaseCollector):
             return CrawlResult.fail(str(e), source=self.name)
 
     def _convert_ticker(self, stock_code: str) -> str:
-        """转换股票代码为 yfinance 格式"""
+        """Convert stock code to yfinance ticker format.
+
+        Args:
+            stock_code: Stock code.
+
+        Returns:
+            yfinance ticker symbol.
+        """
         code = stock_code.upper()
 
         if code.startswith("SH"):
@@ -61,7 +83,15 @@ class FinancialCollector(BaseCollector):
         return code
 
     def _parse_financials(self, info: dict, stock_code: str) -> dict:
-        """解析财务数据"""
+        """Parse financial metrics from yfinance info.
+
+        Args:
+            info: yfinance info dictionary.
+            stock_code: Stock code.
+
+        Returns:
+            Parsed financial metrics dictionary.
+        """
         return {
             "stock_code": stock_code,
             "market_cap": self._safe_get(info, "marketCap"),
@@ -93,57 +123,79 @@ class FinancialCollector(BaseCollector):
         }
 
     def _safe_get(self, data: dict, key: str) -> Optional[Any]:
-        """安全获取字典值"""
+        """Safely get value from dictionary.
+
+        Args:
+            data: Source dictionary.
+            key: Key to lookup.
+
+        Returns:
+            Value or None if not found or invalid.
+        """
         value = data.get(key)
         if value is None or value == "N/A":
             return None
         return value
 
     def format_markdown(self, data: dict) -> str:
-        """格式化为 Markdown 表格"""
-        md = """## 财务指标
+        """Format financial data as Markdown tables.
 
-### 估值指标
-| 指标 | 数值 |
-|------|------|
-"""
-        md += f"| 总市值 | {self._format_valuation(data.get('market_cap'))} |\n"
-        md += f"| 企业价值 | {self._format_valuation(data.get('enterprise_value'))} |\n"
-        md += f"| 市盈率 (TTM) | {self._format_number(data.get('trailing_pe'))} |\n"
-        md += f"| 市净率 | {self._format_number(data.get('price_to_book'))} |\n"
-        md += f"| 市销率 | {self._format_number(data.get('price_to_sales'))} |\n"
+        Args:
+            data: Financial data dictionary.
 
-        md += """
-### 盈利能力
-| 指标 | 数值 |
-|------|------|
+        Returns:
+            Markdown formatted tables.
+        """
+        md = """## Financial Metrics
+
+### Valuation Ratios
+| Metric | Value |
+|--------|-------|
 """
-        md += f"| 净利率 | {self._format_percent(data.get('profit_margin'))} |\n"
-        md += f"| 营业利润率 | {self._format_percent(data.get('operating_margin'))} |\n"
-        md += f"| 净资产收益率 | {self._format_percent(data.get('return_on_equity'))} |\n"
-        md += f"| 总资产收益率 | {self._format_percent(data.get('return_on_assets'))} |\n"
+        md += f"| Market Cap | {self._format_valuation(data.get('market_cap'))} |\n"
+        md += f"| Enterprise Value | {self._format_valuation(data.get('enterprise_value'))} |\n"
+        md += f"| P/E Ratio (TTM) | {self._format_number(data.get('trailing_pe'))} |\n"
+        md += f"| P/B Ratio | {self._format_number(data.get('price_to_book'))} |\n"
+        md += f"| P/S Ratio | {self._format_number(data.get('price_to_sales'))} |\n"
 
         md += """
-### 增长能力
-| 指标 | 数值 |
-|------|------|
+### Profitability Metrics
+| Metric | Value |
+|--------|-------|
 """
-        md += f"| 营收增长率 | {self._format_percent(data.get('revenue_growth'))} |\n"
-        md += f"| 盈利增长率 | {self._format_percent(data.get('earnings_growth'))} |\n"
+        md += f"| Net Profit Margin | {self._format_percent(data.get('profit_margin'))} |\n"
+        md += f"| Operating Margin | {self._format_percent(data.get('operating_margin'))} |\n"
+        md += f"| Return on Equity | {self._format_percent(data.get('return_on_equity'))} |\n"
+        md += f"| Return on Assets | {self._format_percent(data.get('return_on_assets'))} |\n"
 
         md += """
-### 财务健康
-| 指标 | 数值 |
-|------|------|
+### Growth Metrics
+| Metric | Value |
+|--------|-------|
 """
-        md += f"| 资产负债率 | {self._format_number(data.get('debt_to_equity'))} |\n"
-        md += f"| 流动比率 | {self._format_number(data.get('current_ratio'))} |\n"
-        md += f"| 速动比率 | {self._format_number(data.get('quick_ratio'))} |\n"
+        md += f"| Revenue Growth | {self._format_percent(data.get('revenue_growth'))} |\n"
+        md += f"| Earnings Growth | {self._format_percent(data.get('earnings_growth'))} |\n"
+
+        md += """
+### Financial Health
+| Metric | Value |
+|--------|-------|
+"""
+        md += f"| Debt-to-Equity | {self._format_number(data.get('debt_to_equity'))} |\n"
+        md += f"| Current Ratio | {self._format_number(data.get('current_ratio'))} |\n"
+        md += f"| Quick Ratio | {self._format_number(data.get('quick_ratio'))} |\n"
 
         return md
 
     def _format_valuation(self, value: Optional[float]) -> str:
-        """格式化估值（亿元）"""
+        """Format valuation value.
+
+        Args:
+            value: Numeric value.
+
+        Returns:
+            Formatted string with B/M suffix.
+        """
         if value is None:
             return "N/A"
         if value >= 1_000_000_000:

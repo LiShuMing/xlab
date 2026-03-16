@@ -1,58 +1,98 @@
-"""异常定义 - 应用级异常类"""
+"""Application-specific exceptions."""
 
 
 class InvestAIError(Exception):
-    """应用基础异常"""
+    """Base exception for Invest-AI application.
+
+    Attributes:
+        message: Error message.
+        code: Error code for programmatic handling.
+    """
 
     def __init__(self, message: str, code: str = "INVEST_AI_ERROR"):
+        """Initialize exception.
+
+        Args:
+            message: Human-readable error message.
+            code: Machine-readable error code.
+        """
         self.message = message
         self.code = code
         super().__init__(self.message)
 
 
 class DataCollectionError(InvestAIError):
-    """数据收集异常"""
+    """Exception raised when data collection fails."""
 
     def __init__(self, message: str, source: str = ""):
+        """Initialize exception.
+
+        Args:
+            message: Error message.
+            source: Data source that failed.
+        """
         super().__init__(
-            message=f"数据收集失败 [{source}]: {message}",
+            message=f"Data collection failed [{source}]: {message}",
             code="DATA_COLLECTION_ERROR",
         )
 
 
 class LLMError(InvestAIError):
-    """LLM 调用异常"""
+    """Exception raised when LLM invocation fails."""
 
     def __init__(self, message: str, model: str = ""):
+        """Initialize exception.
+
+        Args:
+            message: Error message.
+            model: Model that failed.
+        """
         super().__init__(
-            message=f"LLM 调用失败 [{model}]: {message}",
+            message=f"LLM invocation failed [{model}]: {message}",
             code="LLM_ERROR",
         )
 
 
 class ReportGenerationError(InvestAIError):
-    """报告生成异常"""
+    """Exception raised when report generation fails."""
 
     def __init__(self, message: str, step: str = ""):
+        """Initialize exception.
+
+        Args:
+            message: Error message.
+            step: Generation step that failed.
+        """
         super().__init__(
-            message=f"报告生成失败 [{step}]: {message}",
+            message=f"Report generation failed [{step}]: {message}",
             code="REPORT_GENERATION_ERROR",
         )
 
 
 class StockNotFoundError(InvestAIError):
-    """股票未找到异常"""
+    """Exception raised when stock is not found."""
 
     def __init__(self, stock_code: str):
+        """Initialize exception.
+
+        Args:
+            stock_code: Stock code that was not found.
+        """
         super().__init__(
-            message=f"未找到股票：{stock_code}",
+            message=f"Stock not found: {stock_code}",
             code="STOCK_NOT_FOUND",
         )
 
 
 class APIError(InvestAIError):
-    """API 异常"""
+    """Exception raised for API errors."""
 
     def __init__(self, message: str, status_code: int = 500):
+        """Initialize exception.
+
+        Args:
+            message: Error message.
+            status_code: HTTP status code.
+        """
         super().__init__(message=message, code="API_ERROR")
         self.status_code = status_code

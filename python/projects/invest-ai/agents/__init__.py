@@ -1,3 +1,3 @@
-"""Invest-AI Agents - 多 Agent 系统包"""
+"""Invest-AI Multi-Agent System Package."""
 
 __version__ = "0.1.0"

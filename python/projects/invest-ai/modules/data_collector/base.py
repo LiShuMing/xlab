@@ -1,14 +1,23 @@
-"""数据采集器基类"""
+"""Base collector module."""
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Any, Optional
 from datetime import datetime
+from typing import Any, Optional
 
 
 @dataclass
 class CrawlResult:
-    """爬虫结果"""
+    """Web scraping result.
+
+    Attributes:
+        success: Whether the crawl was successful.
+        data: Crawled data (if successful).
+        error: Error message (if failed).
+        source: Data source name.
+        timestamp: When the crawl occurred.
+        metadata: Additional metadata.
+    """
 
     success: bool
     data: Any = None
@@ -19,6 +28,16 @@ class CrawlResult:
 
     @classmethod
     def ok(cls, data: Any, source: str = "", metadata: dict = None) -> "CrawlResult":
+        """Create successful result.
+
+        Args:
+            data: Crawled data.
+            source: Data source name.
+            metadata: Optional metadata.
+
+        Returns:
+            CrawlResult instance.
+        """
         return cls(
             success=True,
             data=data,
@@ -28,6 +47,15 @@ class CrawlResult:
 
     @classmethod
     def fail(cls, error: str, source: str = "") -> "CrawlResult":
+        """Create failed result.
+
+        Args:
+            error: Error message.
+            source: Data source name.
+
+        Returns:
+            CrawlResult instance.
+        """
         return cls(
             success=False,
             error=error,
@@ -36,56 +64,99 @@ class CrawlResult:
 
 
 class BaseCollector(ABC):
-    """数据采集器基类"""
+    """Abstract base class for data collectors.
+
+    Subclasses must implement collect() and validate_params() methods.
+    """
 
     name: str = "base_collector"
-    description: str = "基础数据采集器"
+    description: str = "Base data collector"
 
     @abstractmethod
     async def collect(self, **kwargs) -> CrawlResult:
-        """采集数据"""
+        """Collect data.
+
+        Args:
+            **kwargs: Collector-specific parameters.
+
+        Returns:
+            CrawlResult with collected data.
+        """
         pass
 
     @abstractmethod
     def validate_params(self, **kwargs) -> bool:
-        """验证参数"""
+        """Validate input parameters.
+
+        Args:
+            **kwargs: Parameters to validate.
+
+        Returns:
+            True if parameters are valid.
+        """
         pass
 
     def _format_currency(self, value: float | None, symbol: str = "$") -> str:
-        """格式化货币显示"""
+        """Format currency value.
+
+        Args:
+            value: Numeric value.
+            symbol: Currency symbol.
+
+        Returns:
+            Formatted currency string.
+        """
         if value is None:
             return "N/A"
         return f"{symbol}{value:,.2f}"
 
     def _format_percent(self, value: float | None) -> str:
-        """格式化百分比"""
+        """Format percentage value.
+
+        Args:
+            value: Numeric value.
+
+        Returns:
+            Formatted percentage string.
+        """
         if value is None:
             return "N/A"
         return f"{value:+.2f}%"
 
     def _format_number(self, value: float | None, decimals: int = 2) -> str:
-        """格式化数字"""
+        """Format numeric value.
+
+        Args:
+            value: Numeric value.
+            decimals: Number of decimal places.
+
+        Returns:
+            Formatted number string.
+        """
         if value is None:
             return "N/A"
         return f"{value:,.{decimals}f}"
 
     def _detect_market(self, stock_code: str) -> str:
-        """
-        检测股票市场
+        """Detect stock market from code.
 
-        返回：'CN' (A 股), 'HK' (港股), 'US' (美股)
+        Args:
+            stock_code: Stock code to analyze.
+
+        Returns:
+            Market identifier: 'CN' (A-share), 'HK' (HK-share), 'US' (US-stock).
         """
         code = stock_code.lower()
 
-        # A 股：sh 或 sz 开头
+        # A-share: starts with sh or sz
         if code.startswith("sh") or code.startswith("sz"):
             return "CN"
 
-        # 港股：HK 结尾或 5 位数字
+        # HK-share: ends with HK or 5-digit number
         if code.endswith("hk") or (code.replace(".", "").isdigit() and len(code) <= 5):
             return "HK"
 
-        # 美股：字母组成
+        # US-stock: alphabetic characters
         if code.isalpha():
             return "US"
 

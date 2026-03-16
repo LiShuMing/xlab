@@ -1,12 +1,11 @@
-"""API 路由"""
+"""API routes for stock analysis endpoints."""
 
-from fastapi import APIRouter, HTTPException, BackgroundTasks
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 from typing import Optional
 
 from core.logger import get_logger
 from agents.orchestrator import SimpleAgentOrchestrator
-from modules.report_generator import ReportBuilder, ReportFormatter, ReportFormat
 
 logger = get_logger(__name__)
 
@@ -14,16 +13,34 @@ router = APIRouter()
 
 
 class AnalysisRequest(BaseModel):
-    """分析请求"""
+    """Analysis request model.
 
-    stock_code: str = Field(..., description="股票代码，如 sh600519, sz000001, AAPL")
-    query: str = Field(default="请进行全面分析并给出投资建议", description="分析query")
+    Attributes:
+        stock_code: Stock ticker symbol.
+        query: Analysis query or instructions.
+        temperature: LLM temperature (0.0-1.0).
+        max_tokens: Maximum tokens in response.
+    """
+
+    stock_code: str = Field(..., description="Stock code (e.g., sh600519, sz000001, AAPL)")
+    query: str = Field(
+        default="Please provide comprehensive analysis and investment recommendations",
+        description="Analysis query",
+    )
     temperature: Optional[float] = Field(default=0.3, ge=0, le=1, description="LLM temperature")
-    max_tokens: Optional[int] = Field(default=4000, ge=100, le=8000, description="最大 token 数")
+    max_tokens: Optional[int] = Field(default=4000, ge=100, le=8000, description="Max tokens")
 
 
 class AnalysisResponse(BaseModel):
-    """分析响应"""
+    """Analysis response model.
+
+    Attributes:
+        success: Whether analysis succeeded.
+        report: Generated report (if successful).
+        error: Error message (if failed).
+        stock_code: Stock code analyzed.
+        duration: Analysis duration in seconds.
+    """
 
     success: bool
     report: Optional[str] = None
@@ -34,16 +51,21 @@ class AnalysisResponse(BaseModel):
 
 @router.post("/analyze", response_model=AnalysisResponse)
 async def analyze_stock(request: AnalysisRequest) -> AnalysisResponse:
-    """分析股票并生成报告"""
+    """Analyze stock and generate investment report.
+
+    Args:
+        request: Analysis request with stock code and query.
+
+    Returns:
+        Analysis response with generated report.
+    """
     import time
 
     start_time = time.time()
 
     try:
-        # 创建 Agent 编排器
         orchestrator = SimpleAgentOrchestrator()
 
-        # 执行分析
         state = await orchestrator.analyze(
             stock_code=request.stock_code,
             user_query=request.query,
@@ -65,7 +87,7 @@ async def analyze_stock(request: AnalysisRequest) -> AnalysisResponse:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"分析失败：{e}")
+        logger.error(f"Analysis failed: {e}")
         return AnalysisResponse(
             success=False,
             report=None,
@@ -77,7 +99,14 @@ async def analyze_stock(request: AnalysisRequest) -> AnalysisResponse:
 
 @router.get("/stocks/{stock_code}/price")
 async def get_stock_price(stock_code: str):
-    """获取股票实时价格"""
+    """Get stock real-time price.
+
+    Args:
+        stock_code: Stock ticker symbol.
+
+    Returns:
+        Price data dictionary.
+    """
     from modules.data_collector import PriceCollector
 
     collector = PriceCollector()
@@ -95,7 +124,16 @@ async def get_kline_data(
     days: int = 90,
     period: str = "day",
 ):
-    """获取 K 线数据"""
+    """Get stock K-line data.
+
+    Args:
+        stock_code: Stock ticker symbol.
+        days: Number of days to fetch.
+        period: Period type (day/week/month).
+
+    Returns:
+        K-line data dictionary.
+    """
     from modules.data_collector import KLineCollector
 
     collector = KLineCollector()
@@ -109,7 +147,14 @@ async def get_kline_data(
 
 @router.get("/stocks/{stock_code}/financials")
 async def get_financials(stock_code: str):
-    """获取财务指标"""
+    """Get stock financial metrics.
+
+    Args:
+        stock_code: Stock ticker symbol.
+
+    Returns:
+        Financial metrics dictionary.
+    """
     from modules.data_collector import FinancialCollector
 
     collector = FinancialCollector()
@@ -123,7 +168,15 @@ async def get_financials(stock_code: str):
 
 @router.get("/news")
 async def get_news(stock_code: Optional[str] = None, limit: int = 20):
-    """获取市场新闻"""
+    """Get market news.
+
+    Args:
+        stock_code: Optional stock code for stock-specific news.
+        limit: Number of news items to return.
+
+    Returns:
+        News data dictionary.
+    """
     from modules.data_collector import NewsCollector
 
     collector = NewsCollector()

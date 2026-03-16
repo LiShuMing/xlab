@@ -1,264 +1,304 @@
-# Invest-AI 实施总结
+# Invest-AI Implementation Summary
 
-## 已完成的工作
+## Project Overview
 
-### 1. 项目基础结构 ✅
+Invest-AI is an LLM-powered stock analysis report platform that generates professional investment analysis reports through automated data collection and multi-agent orchestration.
 
-创建了完整的项目目录结构：
+## Completed Work
+
+### 1. Project Structure ✅
 
 ```
 invest-ai/
-├── apps/
-│   ├── api/           # FastAPI 后端
-│   └── web/           # React 前端
+├── core/                      # Core infrastructure
+│   ├── llm.py                # LLM client wrapper
+│   ├── config.py             # Configuration management
+│   ├── logger.py             # Logging system
+│   └── errors.py             # Custom exceptions
 ├── modules/
-│   ├── data_collector/      # 数据收集模块
-│   ├── report_generator/    # 报告生成模块
-│   └── stock_analyzer/      # 股票分析模块
-├── agents/                  # Agent 系统
-├── core/                    # 核心基础设施
-├── storage/                 # 数据存储
-└── tests/                   # 测试
+│   ├── data_collector/       # Data collection module
+│   │   ├── base.py           # Base collector class
+│   │   ├── price_collector.py # Price data collector
+│   │   ├── kline_collector.py # K-line data collector
+│   │   ├── financial_collector.py # Financial metrics collector
+│   │   └── news_collector.py # News collector
+│   ├── report_generator/     # Report generation module
+│   │   ├── types.py          # Type definitions
+│   │   ├── builder.py        # Report builder
+│   │   └── formatter.py      # Report formatter
+│   └── stock_analyzer/       # Stock analyzer module
+├── agents/                   # Multi-agent system
+│   ├── base.py               # Agent base classes
+│   ├── tools.py              # Agent tools
+│   └── orchestrator.py       # Agent orchestrator
+├── apps/
+│   ├── api/                  # FastAPI backend
+│   │   ├── main.py           # Application entry point
+│   │   └── routes.py         # API routes
+│   └── web/                  # React frontend
+├── storage/                  # Data storage layer
+└── tests/                    # Test suite
 ```
 
-### 2. 核心基础设施 (core/) ✅
+### 2. Core Infrastructure (core/) ✅
 
-**`core/llm.py`** - LLM 客户端封装
-- 支持多模型提供商（OpenAI、DeepSeek 等）
-- 统一配置管理
-- 懒加载模型实例
+**`llm.py`** - LLM Client Wrapper
+- Multi-provider support (OpenAI, DeepSeek, etc.)
+- Unified configuration via `LLMConfig`
+- Lazy-loaded model instances
+- Fluent API for configuration overrides
 
-**`core/config.py`** - 配置管理
-- 基于 pydantic-settings
-- 环境变量自动加载
-- 单例模式
+**`config.py`** - Configuration Management
+- Pydantic-settings based
+- Environment variable auto-loading
+- Singleton pattern via `@lru_cache`
 
-**`core/logger.py`** - 日志系统
-- 基于 structlog 的结构化日志
-- 彩色控制台输出
+**`logger.py`** - Logging System
+- Structured logging with structlog
+- Colored console output
+- Context variable support
 
-**`core/errors.py`** - 异常定义
-- 应用级异常类
-- 分类清晰的异常层次
+**`errors.py`** - Exception Hierarchy
+- `InvestAIError` base exception
+- Specialized exceptions: `DataCollectionError`, `LLMError`, `ReportGenerationError`, `StockNotFoundError`, `APIError`
 
-### 3. 数据收集模块 (modules/data_collector/) ✅
+### 3. Data Collection Module (modules/data_collector/) ✅
 
-**`base.py`** - 采集器基类
-- 统一接口定义
-- 通用格式化方法
-- 市场自动检测
+**`base.py`** - Base Collector
+- Abstract base class `BaseCollector`
+- `CrawlResult` dataclass for standardized results
+- Utility methods for formatting and market detection
 
-**`price_collector.py`** - 股价采集器
-- 支持 A 股、港股、美股
-- 新浪财经 API
-- Markdown 格式化输出
+**`price_collector.py`** - Price Collector
+- Multi-market support: A-share, HK-share, US-stock
+- Sina Finance API integration
+- Markdown table formatting
 
-**`kline_collector.py`** - K 线采集器
-- yfinance 数据源
-- 支持多周期（日/周/月）
-- 可配置天数
+**`kline_collector.py`** - K-line Collector
+- yfinance integration
+- Configurable period (day/week/month)
+- pandas dependency for data parsing
 
-**`financial_collector.py`** - 财务数据采集器
-- 16+ 财务指标
-- 估值、盈利能力、增长能力、财务健康
-- 分类展示
+**`financial_collector.py`** - Financial Collector
+- 16+ financial metrics
+- Categories: valuation, profitability, growth, financial health
+- Formatted Markdown tables
 
-**`news_collector.py`** - 新闻资讯采集器
-- 个股新闻和宏观新闻
-- yfinance 数据源
-- Markdown 格式化
+**`news_collector.py`** - News Collector
+- Stock-specific and macro news
+- yfinance news API
+- Structured news item format
 
-### 4. 报告生成模块 (modules/report_generator/) ✅
+### 4. Report Generation Module (modules/report_generator/) ✅
 
-**`types.py`** - 类型定义
-- Report 数据结构
-- ReportSection 章节
-- ReportFormat 格式枚举
+**`types.py`** - Type Definitions
+- `ReportFormat` enum (Markdown/HTML/JSON)
+- `ReportSection` dataclass
+- `Report` dataclass with fluent API
 
-**`builder.py`** - 报告构建器
-- 流式 API
-- 链式调用
-- 自动排序章节
+**`builder.py`** - Report Builder
+- Fluent builder pattern
+- Method chaining support
+- Auto-incrementing section order
 
-**`formatter.py`** - 报告格式化器
-- Markdown 格式
-- HTML 格式（带样式）
-- JSON 格式
+**`formatter.py`** - Report Formatter
+- Markdown output with emoji ratings
+- HTML output with embedded CSS
+- JSON output for API responses
 
-### 5. Agent 系统 (agents/) ✅
+### 5. Agent System (agents/) ✅
 
-**`base.py`** - Agent 基础
-- BaseAgentTool 工具基类
-- ToolResult 执行结果
-- AgentState 执行状态
+**`base.py`** - Agent Base Classes
+- `BaseAgentTool` abstract base
+- `ToolInfo` and `ToolParameter` for tool discovery
+- `AgentState` for execution tracking
 
-**`tools.py`** - 工具实现
-- QueryStockPriceTool
-- QueryKLineDataTool
-- QueryFinancialMetricsTool
-- QueryMarketNewsTool
+**`tools.py`** - Tool Implementations
+- `QueryStockPriceTool`
+- `QueryKLineDataTool`
+- `QueryFinancialMetricsTool`
+- `QueryMarketNewsTool`
 
-**`orchestrator.py`** - Agent 编排器
-- 基于 LangGraph 的 ReAct 模式
-- 简化版顺序执行编排器
-- 自动化工具调用
+**`orchestrator.py`** - Agent Orchestrator
+- `AgentOrchestrator` with LangGraph (ReAct pattern)
+- `SimpleAgentOrchestrator` for sequential execution
+- State machine with conditional edges
 
-### 6. FastAPI 后端 (apps/api/) ✅
+### 6. FastAPI Backend (apps/api/) ✅
 
-**`main.py`** - 应用入口
-- 生命周期管理
-- CORS 配置
-- 健康检查
+**`main.py`** - Application Entry Point
+- Lifespan manager for startup/shutdown
+- CORS middleware configuration
+- Health check endpoint
 
-**`routes.py`** - API 路由
-- `POST /api/v1/analyze` - 股票分析
-- `GET /api/v1/stocks/{code}/price` - 获取价格
-- `GET /api/v1/stocks/{code}/kline` - 获取 K 线
-- `GET /api/v1/stocks/{code}/financials` - 获取财务
-- `GET /api/v1/news` - 获取新闻
+**`routes.py`** - API Routes
+- `POST /api/v1/analyze` - Stock analysis
+- `GET /api/v1/stocks/{code}/price` - Real-time price
+- `GET /api/v1/stocks/{code}/kline` - K-line data
+- `GET /api/v1/stocks/{code}/financials` - Financial metrics
+- `GET /api/v1/news` - Market news
 
-### 7. React 前端 (apps/web/) ✅
+### 7. React Frontend (apps/web/) ✅
 
-**技术栈**：
+**Tech Stack:**
 - React 18 + TypeScript
 - Ant Design 5
 - React Router 6
-- Axios
-- React Markdown
+- Axios for HTTP
+- React Markdown for rendering
 
-**页面组件**：
-- `Layout.tsx` - 布局组件
-- `AnalyzerPage.tsx` - 股票分析页面
-- `ReportPage.tsx` - 报告详情页面
-- `HistoryPage.tsx` - 历史记录页面
+**Components:**
+- `Layout.tsx` - Main layout with navigation
+- `AnalyzerPage.tsx` - Stock analysis page
+- `ReportPage.tsx` - Report detail view
+- `HistoryPage.tsx` - Analysis history
 
-**功能**：
-- 股票代码输入
-- 快速查看按钮
-- 分析报告展示（Markdown 渲染）
-- 加载状态
+### 8. DevOps Configuration ✅
 
-### 8. 项目配置 ✅
+**`pyproject.toml`** - Python Project
+- uv/hatchling build system
+- Development dependencies
+- Ruff, mypy, pytest configuration
 
-**`pyproject.toml`** - Python 项目配置
-- 依赖管理
-- 构建配置
-- Ruff/Mypy/Pytest 配置
+**`docker-compose.yml`** - Container Orchestration
+- PostgreSQL service
+- Redis service
+- API service
+- Web service
 
-**`package.json`** - 前端项目配置
-- 依赖定义
-- 脚本命令
-
-**`docker-compose.yml`** - Docker 编排
-- PostgreSQL
-- Redis
-- 后端 API
-- 前端 Web
-
-**`Dockerfile`** - 容器化配置
-- 多阶段构建
-- 健康检查
+**`Dockerfile`** - Multi-stage Build
+- Python 3.11 slim base
+- uv for dependency management
+- Health check configuration
 
 ---
 
-## 快速开始
+## Quick Start
 
-### 安装依赖
+### Prerequisites
+
+- Python 3.11+
+- Node.js 18+
+- Redis (or use Docker Compose)
+- PostgreSQL (or use Docker Compose)
+
+### Installation
 
 ```bash
+# Clone repository
 cd invest-ai
 
-# 安装 Python 依赖
+# Install Python dependencies
 pip install -e ".[dev]"
 
-# 安装前端依赖
+# Install frontend dependencies
 cd apps/web
 npm install
-```
 
-### 配置环境变量
-
-```bash
-# 复制环境配置
+# Configure environment
 cp .env.example .env
-
-# 编辑 .env，配置 LLM API Key
-# OPENAI_API_KEY=sk-xxx
-# OPENAI_BASE_URL=https://api.openai.com/v1
-# MODEL_NAME=gpt-4o
+# Edit .env with your LLM API key
 ```
 
-### 启动服务
+### Environment Configuration
+
+```env
+# LLM Configuration
+OPENAI_API_KEY=sk-your-key
+OPENAI_BASE_URL=https://api.openai.com/v1
+MODEL_NAME=gpt-4o
+
+# Database
+DATABASE_URL=postgresql://localhost:5432/invest_ai
+REDIS_URL=redis://localhost:6379/0
+
+# Application
+LOG_LEVEL=info
+APP_ENV=development
+```
+
+### Run Services
 
 ```bash
-# 方式 1：直接启动
+# Option 1: Direct execution
 
-# 终端 1 - 启动后端
+# Terminal 1 - Backend
 cd apps/api
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 
-# 终端 2 - 启动前端
+# Terminal 2 - Frontend
 cd apps/web
 npm run dev
 
-# 方式 2：Docker Compose
+# Option 2: Docker Compose
 docker-compose up -d
 ```
 
-### 访问应用
+### Access Application
 
-- 前端：http://localhost:5173
-- 后端 API 文档：http://localhost:8000/docs
-- 健康检查：http://localhost:8000/health
-
----
-
-## 下一步建议
-
-### 待完善功能
-
-1. **存储层** - 实现 PostgreSQL 数据模型，持久化分析报告
-2. **历史记录** - 完善历史记录页面，支持查看/删除
-3. **导出功能** - 支持导出报告为 PDF/HTML
-4. **K 线图表** - 使用 Recharts 绘制 K 线图
-5. **更多工具** - 添加行业研究、宏观经济、投资者互动等工具
-6. **LangGraph 集成** - 完善基于 LangGraph 的真正 ReAct 编排
-7. **错误处理** - 更友好的错误提示和重试机制
-8. **测试覆盖** - 单元测试、集成测试
-
-### 性能优化
-
-1. **数据缓存** - Redis 缓存股价数据，减少 API 调用
-2. **并发采集** - 并行采集多个数据源
-3. **流式输出** - 实时显示分析进度
-4. **增量更新** - 报告增量生成
-
-### 用户体验
-
-1. **收藏功能** - 收藏关注的股票
-2. **定时报告** - 定期生成分析报告
-3. **价格提醒** - 设置价格预警
-4. **对比分析** - 多股票对比分析
+- **Frontend:** http://localhost:5173
+- **API Docs:** http://localhost:8000/docs
+- **Health Check:** http://localhost:8000/health
 
 ---
 
-## 技术亮点
+## Code Style
 
-1. **清晰的模块化架构** - 每个模块职责单一，易于维护和扩展
-2. **类型安全** - 全面的类型注解，TypeScript 严格模式
-3. **可测试性** - 依赖注入，接口抽象
-4. **多模型支持** - 统一的 LLM 接口，支持切换不同提供商
-5. **多市场数据** - A 股、港股、美股全覆盖
-6. **现代化 UI** - Ant Design + React，响应式设计
-7. **容器化部署** - Docker Compose 一键部署
+All Python code follows:
+- **PEP 8** style guide
+- **Type hints** for all function signatures
+- **Google-style docstrings** for classes and methods
+- **Dataclasses** for data containers
+- **Abstract base classes** for interfaces
 
 ---
 
-## 项目规模
+## Architecture Highlights
 
-- **Python 文件**: ~15 个
-- **TypeScript 文件**: ~8 个
-- **总代码行数**: ~2500+ 行
-- **核心模块**: 8 个
-- **API 端点**: 5 个
-- **页面组件**: 4 个
+1. **Modular Design** - Single responsibility per module
+2. **Type Safety** - Comprehensive type annotations
+3. **Testability** - Dependency injection, interface abstraction
+4. **Multi-Provider LLM** - Unified interface for different LLM providers
+5. **Multi-Market Data** - A-share, HK-share, US-stock support
+6. **Modern UI** - React + Ant Design responsive design
+7. **Container Ready** - Docker Compose one-command deployment
+
+---
+
+## Project Statistics
+
+- **Python Files:** ~15
+- **TypeScript Files:** ~8
+- **Total Lines of Code:** ~2,500+
+- **Core Modules:** 8
+- **API Endpoints:** 5
+- **Page Components:** 4
+
+---
+
+## Next Steps
+
+### Pending Features
+
+1. **Storage Layer** - PostgreSQL models for report persistence
+2. **History Management** - Complete history page with CRUD operations
+3. **Export Functionality** - PDF/HTML export support
+4. **K-line Charts** - Recharts integration for visualization
+5. **Additional Tools** - Industry research, macroeconomic data, investor Q&A
+6. **LangGraph Integration** - Complete ReAct orchestration
+7. **Error Handling** - Better error messages and retry mechanisms
+8. **Test Coverage** - Unit and integration tests
+
+### Performance Optimizations
+
+1. **Data Caching** - Redis caching for price data
+2. **Concurrent Collection** - Parallel data fetching
+3. **Streaming Output** - Real-time progress display
+4. **Incremental Updates** - Incremental report generation
+
+### User Experience
+
+1. **Watchlist** - Favorite stocks functionality
+2. **Scheduled Reports** - Periodic report generation
+3. **Price Alerts** - Price notification system
+4. **Comparison Analysis** - Multi-stock comparison
