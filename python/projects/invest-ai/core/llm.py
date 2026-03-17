@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from langchain_openai import ChatOpenAI
+from langchain_anthropic import ChatAnthropic
 from langchain_core.language_models.chat_models import BaseChatModel
 
 
@@ -38,10 +38,12 @@ class LLMConfig:
         """
         import os
 
+        from dotenv import load_dotenv
+        load_dotenv()
         return cls(
-            api_key=os.getenv("OPENAI_API_KEY"),
-            base_url=os.getenv("OPENAI_BASE_URL"),
-            model_name=os.getenv("MODEL_NAME", "gpt-4o"),
+            api_key=os.getenv("ANTHROPIC_API_KEY"),
+            base_url=os.getenv("ANTHROPIC_BASE_URL"),
+            model_name=os.getenv("MODEL_NAME", "claude-sonnet-4-5"),
             temperature=float(os.getenv("LLM_TEMPERATURE", "0.3")),
             max_tokens=int(os.getenv("LLM_MAX_TOKENS", "4000")),
         )
@@ -62,17 +64,17 @@ class LLMProvider:
         raise NotImplementedError
 
 
-class OpenAIProvider(LLMProvider):
-    """OpenAI-compatible provider (OpenAI, DeepSeek, etc.)."""
+class AnthropicProvider(LLMProvider):
+    """Anthropic-compatible provider (Claude, Qwen Code, etc.)."""
 
     def get_chat_model(self, config: LLMConfig) -> BaseChatModel:
-        """Create OpenAI-compatible chat model.
+        """Create Anthropic-compatible chat model.
 
         Args:
             config: LLM configuration.
 
         Returns:
-            ChatOpenAI instance.
+            ChatAnthropic instance.
 
         Raises:
             ValueError: If API key is not provided.
@@ -80,7 +82,7 @@ class OpenAIProvider(LLMProvider):
         if not config.api_key:
             raise ValueError("API key is required")
 
-        return ChatOpenAI(
+        return ChatAnthropic(
             api_key=config.api_key,
             base_url=config.base_url,
             model=config.model_name,
@@ -129,7 +131,7 @@ class LLMClient:
         Returns:
             LLMProvider instance.
         """
-        return OpenAIProvider()
+        return AnthropicProvider()
 
     def with_temperature(self, temperature: float) -> "LLMClient":
         """Create new client with specified temperature.

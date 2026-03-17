@@ -350,7 +350,7 @@ Analyze the stock thoroughly and provide investment recommendations."""
         return None
 
     async def _generate_report(self, stock_code: str, data: dict) -> str:
-        """Generate analysis report.
+        """Generate analysis report using LLM.
 
         Args:
             stock_code: Stock code.
@@ -361,26 +361,42 @@ Analyze the stock thoroughly and provide investment recommendations."""
         """
         import time
 
-        report = f"# {stock_code} Investment Analysis Report\n\n"
-        report += f"**Generated**: {time.strftime('%Y-%m-%d %H:%M')}\n\n"
-
+        raw_data_sections = []
         if "query_stock_price" in data:
-            report += "## Real-Time Price\n\n"
-            report += data["query_stock_price"]
-            report += "\n\n"
-
+            raw_data_sections.append(f"### Real-Time Price\n{data['query_stock_price']}")
         if "query_kline_data" in data:
-            report += "## K-Line Trend\n\n"
-            report += data["query_kline_data"]
-            report += "\n\n"
-
+            raw_data_sections.append(f"### K-Line Data\n{data['query_kline_data']}")
         if "query_financial_metrics" in data:
-            report += "## Financial Metrics\n\n"
-            report += data["query_financial_metrics"]
-            report += "\n\n"
-
+            raw_data_sections.append(f"### Financial Metrics\n{data['query_financial_metrics']}")
         if "query_market_news" in data:
-            report += "## Market News\n\n"
-            report += data["query_market_news"]
+            raw_data_sections.append(f"### Market News\n{data['query_market_news']}")
+
+        raw_data = "\n\n".join(raw_data_sections)
+
+        prompt = f"""You are a professional stock investment analyst. Based on the following data for stock {stock_code}, write a comprehensive investment analysis report in Chinese.
+
+The report must include:
+1. 行情概览 - current price, trend summary
+2. 技术分析 - K-line pattern analysis, support/resistance levels
+3. 基本面分析 - valuation (P/E, P/B), profitability, financial health
+4. 市场资讯 - relevant news impact
+5. 投资建议 - buy/hold/sell recommendation with reasoning and risk warnings
+
+Write in Markdown format with clear sections. Be specific and data-driven.
+
+--- RAW DATA ---
+{raw_data}
+--- END DATA ---
+
+Now write the full analysis report:"""
+
+        from langchain_core.messages import HumanMessage
+        response = await self.llm_client.model.ainvoke([HumanMessage(content=prompt)])
+        llm_analysis = response.content
+
+        report = f"# {stock_code} 投资分析报告\n\n"
+        report += f"**生成时间**: {time.strftime('%Y-%m-%d %H:%M')}\n\n"
+        report += "---\n\n"
+        report += llm_analysis
 
         return report

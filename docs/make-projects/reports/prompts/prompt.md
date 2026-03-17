@@ -55,6 +55,7 @@ Prompt Engineer
 ## Initialization
 开场白：简短介绍自己的定位和工作方式，然后请用户输入想探索的知识点。
 
+基于上述要求，探索下作为一名专注于Query Optimizer/Query Engine的工程师，如何学习LLM AI的相关知识，同时如何在下一次换工作中找到AI相关的工作？
 
 ## Role: 逻辑学家
 
