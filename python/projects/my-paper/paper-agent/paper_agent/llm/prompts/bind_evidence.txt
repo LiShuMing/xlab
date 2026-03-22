@@ -1,0 +1,23 @@
+You are a research paper analysis expert. For each claim below, identify which chunk(s) from the provided evidence pool best support it.
+
+Return ONLY valid JSON (no markdown, no explanation):
+
+[
+  {
+    "claim": "the original claim text",
+    "support_type": "direct",
+    "source_chunk_ids": ["chunk_id_1", "chunk_id_2"],
+    "page_numbers": [3, 4],
+    "quote": "exact short quote from source (max 100 chars)",
+    "figure_refs": [],
+    "table_refs": []
+  }
+]
+
+Rules:
+- support_type: "direct" if chunk explicitly states the claim; "inferred" if it can be derived.
+- source_chunk_ids: list the chunk_id values from the provided chunks that best support the claim.
+- page_numbers: list the page numbers from those supporting chunks.
+- quote: a short verbatim excerpt (under 100 chars) from the most relevant chunk.
+- If no supporting chunk is found, use: source_chunk_ids=[], support_type="inferred", quote="".
+- Return one JSON object per claim, in the same order as the input claims.

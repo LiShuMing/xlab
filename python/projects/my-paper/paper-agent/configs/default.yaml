@@ -1,0 +1,39 @@
+# Default configuration for paper-agent
+# CLI parameters take precedence over these values
+
+# Parser settings
+parser: pymupdf
+chunk_size: 1200
+chunk_overlap: 150
+section_aware: true
+extract_figures: false
+extract_tables: false
+skip_references: false
+
+# Retrieval settings
+retrieval_mode: hybrid  # vector | bm25 | hybrid
+top_k: 8
+rerank: false
+
+# LLM settings
+provider: anthropic  # anthropic | openai
+model: qwen3.5-plus
+embedding_model: text-embedding-3-large
+temperature: 0.1
+max_tokens: 4096
+timeout: 300
+
+# Analysis settings
+template: deep-dive  # summary | deep-dive | blog | group-talk | interview-note
+analysis_depth: standard  # fast | standard | deep
+with_related: false
+with_critique: false
+with_followup: false
+citation_style: inline  # inline | footnote
+focus: null  # null | system | method | experiment | theory
+
+# Engineering settings
+save_trace: false
+save_prompts: false
+verbose: false
+debug: false
