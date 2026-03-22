@@ -40,6 +40,7 @@ echo "[$DATE] my-email digest written to $OUT_DIR/digest-$DATE.json"
 
 # ── Rebuild MkDocs index ────────────────────────────────────────────────────
 DOCS_DIR="$HOME/work/my-docs"
+REPORTS_DIR="$DOCS_DIR/reports"
 INDEX="$DOCS_DIR/index.md"
 
 {
@@ -51,22 +52,21 @@ INDEX="$DOCS_DIR/index.md"
   echo ""
   echo "| Date | Files |"
   echo "|------|-------|"
-  for d in $(ls -r "$DOCS_DIR" | grep -E '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'); do
-    files=$(ls "$DOCS_DIR/$d"/*.md 2>/dev/null | wc -l)
-    echo "| [$d]($d/index.md) | $files |"
+  for d in $(ls -r "$REPORTS_DIR" 2>/dev/null | grep -E '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'); do
+    files=$(ls "$REPORTS_DIR/$d"/*.md 2>/dev/null | wc -l)
+    echo "| [$d](reports/$d/index.md) | $files |"
   done
 } > "$INDEX"
 
-# Create per-day index if missing
-if [ ! -f "$OUT_DIR/index.md" ]; then
-  {
-    echo "# $DATE"
-    echo ""
-    for f in "$OUT_DIR"/*.md; do
-      name=$(basename "$f" .md)
-      echo "- [$name]($name.md)"
-    done
-  } > "$OUT_DIR/index.md"
-fi
+# Create per-day index
+{
+  echo "# $DATE"
+  echo ""
+  for f in "$OUT_DIR"/*.md; do
+    [ -f "$f" ] || continue
+    name=$(basename "$f" .md)
+    echo "- [$name]($name.md)"
+  done
+} > "$OUT_DIR/index.md"
 
 echo "[$DATE] MkDocs index updated"

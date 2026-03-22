@@ -15,14 +15,14 @@ console = Console()
 
 
 def _require_api_key() -> None:
-    """Abort with a helpful message if ANTHROPIC_API_KEY is not set."""
+    """Abort with a helpful message if LLM_API_KEY is not configured."""
     from pia.config.settings import get_settings
     settings = get_settings()
-    if not settings.anthropic_api_key:
+    if not settings.llm_api_key:
         console.print(
-            "[red]Error: ANTHROPIC_API_KEY environment variable is not set.[/red]\n"
-            "Export it before running analysis:\n"
-            "  export ANTHROPIC_API_KEY=sk-ant-..."
+            "[red]Error: LLM_API_KEY is not set.[/red]\n"
+            "Add it to ~/.env:\n"
+            "  LLM_API_KEY=sk-..."
         )
         raise typer.Exit(1)
 
