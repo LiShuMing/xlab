@@ -46,6 +46,7 @@ def weekly_digest(
     ),
     model: Optional[str] = typer.Option(None, "--model", "-m", help="LLM model override"),
     show: bool = typer.Option(True, "--show/--no-show", help="Print report to terminal"),
+    output_dir: Optional[str] = typer.Option(None, "--output-dir", "-o", help="Directory to save report (overrides default)"),
 ) -> None:
     """Generate a weekly digest for the specified products.
 
@@ -79,8 +80,15 @@ def weekly_digest(
             raise typer.Exit(1)
 
     from pia.config.settings import get_settings
+    from pathlib import Path
     settings = get_settings()
-    report_path = settings.reports_dir / f"digest_weekly_{digest.id[:8]}.md"
+    filename = f"digest_weekly_{digest.id[:8]}.md"
+    if output_dir:
+        report_path = Path(output_dir).expanduser() / filename
+        report_path.parent.mkdir(parents=True, exist_ok=True)
+        report_path.write_text(digest.content_md, encoding="utf-8")
+    else:
+        report_path = settings.reports_dir / filename
 
     console.print(f"\n[green]Digest generated.[/green] Saved to: [dim]{report_path}[/dim]\n")
 
@@ -95,6 +103,7 @@ def monthly_digest(
     ),
     model: Optional[str] = typer.Option(None, "--model", "-m", help="LLM model override"),
     show: bool = typer.Option(True, "--show/--no-show", help="Print report to terminal"),
+    output_dir: Optional[str] = typer.Option(None, "--output-dir", "-o", help="Directory to save report (overrides default)"),
 ) -> None:
     """Generate a monthly digest for the specified products.
 
@@ -128,8 +137,15 @@ def monthly_digest(
             raise typer.Exit(1)
 
     from pia.config.settings import get_settings
+    from pathlib import Path
     settings = get_settings()
-    report_path = settings.reports_dir / f"digest_monthly_{digest.id[:8]}.md"
+    filename = f"digest_monthly_{digest.id[:8]}.md"
+    if output_dir:
+        report_path = Path(output_dir).expanduser() / filename
+        report_path.parent.mkdir(parents=True, exist_ok=True)
+        report_path.write_text(digest.content_md, encoding="utf-8")
+    else:
+        report_path = settings.reports_dir / filename
 
     console.print(f"\n[green]Digest generated.[/green] Saved to: [dim]{report_path}[/dim]\n")
 

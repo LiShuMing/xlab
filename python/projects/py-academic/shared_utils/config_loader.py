@@ -7,21 +7,79 @@ from shared_utils.colorful import log亮红, log亮绿, log亮蓝
 pj = os.path.join
 default_user_name = 'default_user'
 
+# LLM API key names that must come from ~/.env (never from config files)
+_LLM_API_KEY_NAMES = {
+    "API_KEY",
+    "ANTHROPIC_API_KEY",
+    "DASHSCOPE_API_KEY",
+    "QWEN_API_KEY",
+    "DEEPSEEK_API_KEY",
+    "AZURE_API_KEY",
+    "ZHIPUAI_API_KEY",
+    "MOONSHOT_API_KEY",
+    "YIMODEL_API_KEY",
+    "ARK_API_KEY",
+    "GROK_API_KEY",
+    "MINIMAX_API_KEY",
+    "GEMINI_API_KEY",
+    "HUGGINGFACE_ACCESS_TOKEN",
+    "XFYUN_API_KEY",
+    "XFYUN_APPID",
+    "XFYUN_API_SECRET",
+    "MATHPIX_APPID",
+    "MATHPIX_APPKEY",
+    "DOC2X_API_KEY",
+    "JINA_API_KEY",
+    "SEMANTIC_SCHOLAR_KEY",
+    "SLACK_CLAUDE_BOT_ID",
+    "SLACK_CLAUDE_USER_TOKEN",
+    "BAIDU_CLOUD_API_KEY",
+    "BAIDU_CLOUD_SECRET_KEY",
+    "TAICHU_API_KEY",
+    "ALIYUN_TOKEN",
+    "ALIYUN_APPKEY",
+    "ALIYUN_ACCESSKEY",
+    "ALIYUN_SECRET",
+}
+
+
+def _load_dotenv():
+    """Load ~/.env file into os.environ if it exists. Called once at startup."""
+    env_path = os.path.expanduser("~/.env")
+    if not os.path.isfile(env_path):
+        return
+    try:
+        with open(env_path, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith("#"):
+                    continue
+                if "=" not in line:
+                    continue
+                key, _, value = line.partition("=")
+                key = key.strip()
+                value = value.strip()
+                # Strip surrounding quotes
+                if len(value) >= 2 and value[0] == value[-1] and value[0] in ('"', "'"):
+                    value = value[1:-1]
+                # Only set if not already present (env vars take precedence)
+                if key and key not in os.environ:
+                    os.environ[key] = value
+        log亮绿(f"[CONFIG] Loaded ~/.env from {env_path}")
+    except Exception as e:
+        log亮红(f"[CONFIG] Failed to load ~/.env: {e}")
+
+
+# Load ~/.env at module import time
+_load_dotenv()
+
+
 def read_env_variable(arg, default_value):
     """
-    环境变量可以是 `GPT_ACADEMIC_CONFIG`(优先)，也可以直接是`CONFIG`
-    例如在windows cmd中，既可以写：
-        set USE_PROXY=True
-        set API_KEY=sk-j7caBpkRoxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-        set proxies={"http":"http://127.0.0.1:10085", "https":"http://127.0.0.1:10085",}
-        set AVAIL_LLM_MODELS=["gpt-3.5-turbo", "chatglm"]
-        set AUTHENTICATION=[("username", "password"), ("username2", "password2")]
-    也可以写：
-        set GPT_ACADEMIC_USE_PROXY=True
-        set GPT_ACADEMIC_API_KEY=sk-j7caBpkRoxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-        set GPT_ACADEMIC_proxies={"http":"http://127.0.0.1:10085", "https":"http://127.0.0.1:10085",}
-        set GPT_ACADEMIC_AVAIL_LLM_MODELS=["gpt-3.5-turbo", "chatglm"]
-        set GPT_ACADEMIC_AUTHENTICATION=[("username", "password"), ("username2", "password2")]
+    Read a config value from environment variables.
+    Supports two naming patterns:
+      - GPT_ACADEMIC_<ARG>  (higher priority)
+      - <ARG>
     """
     arg_with_prefix = "GPT_ACADEMIC_" + arg
     if arg_with_prefix in os.environ:
@@ -30,13 +88,17 @@ def read_env_variable(arg, default_value):
         env_arg = os.environ[arg]
     else:
         raise KeyError
-    log亮绿(f"[ENV_VAR] 尝试加载{arg}，默认值：{default_value} --> 修正值：{env_arg}")
+    log亮绿(f"[ENV_VAR] Loading {arg}, default: {default_value!r} --> override: {env_arg!r}")
     try:
         if isinstance(default_value, bool):
             env_arg = env_arg.strip()
-            if env_arg == 'True': r = True
-            elif env_arg == 'False': r = False
-            else: log亮红('Expect `True` or `False`, but have:', env_arg); r = default_value
+            if env_arg == 'True':
+                r = True
+            elif env_arg == 'False':
+                r = False
+            else:
+                log亮红('Expected `True` or `False`, got:', env_arg)
+                r = default_value
         elif isinstance(default_value, int):
             r = int(env_arg)
         elif isinstance(default_value, float):
@@ -51,69 +113,89 @@ def read_env_variable(arg, default_value):
             assert arg == "proxies"
             r = eval(env_arg)
         else:
-            log亮红(f"[ENV_VAR] 环境变量{arg}不支持通过环境变量设置! ")
+            log亮红(f"[ENV_VAR] {arg} does not support environment variable override!")
             raise KeyError
     except:
-        log亮红(f"[ENV_VAR] 环境变量{arg}加载失败! ")
-        raise KeyError(f"[ENV_VAR] 环境变量{arg}加载失败! ")
+        log亮红(f"[ENV_VAR] Failed to load environment variable {arg}!")
+        raise KeyError(f"[ENV_VAR] Failed to load environment variable {arg}!")
 
-    log亮绿(f"[ENV_VAR] 成功读取环境变量{arg}")
+    log亮绿(f"[ENV_VAR] Successfully loaded {arg}")
     return r
 
 
 @lru_cache(maxsize=128)
 def read_single_conf_with_lru_cache(arg):
     from shared_utils.key_pattern_manager import is_any_api_key
+
+    # LLM API keys must come from ~/.env / environment variables only
+    if arg in _LLM_API_KEY_NAMES:
+        try:
+            default_ref = getattr(importlib.import_module('config'), arg)
+        except AttributeError:
+            default_ref = ""
+        try:
+            r = read_env_variable(arg, default_ref)
+        except KeyError:
+            r = ""  # Return empty string if not set in environment
+            log亮红(f"[CONFIG] LLM key '{arg}' not found in ~/.env or environment. "
+                    f"Please add it to ~/.env.")
+        return r
+
     try:
-        # 优先级1. 获取环境变量作为配置
-        default_ref = getattr(importlib.import_module('config'), arg) # 读取默认值作为数据类型转换的参考
+        # Priority 1: environment variable
+        default_ref = getattr(importlib.import_module('config'), arg)
         r = read_env_variable(arg, default_ref)
     except:
         try:
-            # 优先级2. 获取config_private中的配置
+            # Priority 2: config_private.py
             r = getattr(importlib.import_module('config_private'), arg)
         except:
-            # 优先级3. 获取config中的配置
+            # Priority 3: config.py default
             r = getattr(importlib.import_module('config'), arg)
 
-    # 在读取API_KEY时，检查一下是不是忘了改config
+    # Validate API_URL_REDIRECT format
     if arg == 'API_URL_REDIRECT':
-        oai_rd = r.get("https://api.openai.com/v1/chat/completions", None) # API_URL_REDIRECT填写格式是错误的，请阅读`https://github.com/binary-husky/gpt_academic/wiki/项目配置说明`
+        oai_rd = r.get("https://api.openai.com/v1/chat/completions", None)
         if oai_rd and not oai_rd.endswith('/completions'):
-            log亮红("\n\n[API_URL_REDIRECT] API_URL_REDIRECT填错了。请阅读`https://github.com/binary-husky/gpt_academic/wiki/项目配置说明`。如果您确信自己没填错，无视此消息即可。")
+            log亮红("\n\n[API_URL_REDIRECT] API_URL_REDIRECT appears malformed. "
+                    "Please check the configuration.")
             time.sleep(5)
+
     if arg == 'API_KEY':
-        log亮蓝(f"[API_KEY] 本项目现已支持OpenAI和Azure的api-key。也支持同时填写多个api-key，如API_KEY=\"openai-key1,openai-key2,azure-key3\"")
-        log亮蓝(f"[API_KEY] 您既可以在config.py中修改api-key(s)，也可以在问题输入区输入临时的api-key(s)，然后回车键提交后即可生效。")
+        log亮蓝(f"[API_KEY] Supports OpenAI and Azure api-keys. "
+                f"Multiple keys can be comma-separated: API_KEY=\"key1,key2,key3\"")
+        log亮蓝(f"[API_KEY] You can set this in ~/.env or pass a temporary key in the input box.")
         if is_any_api_key(r):
-            log亮绿(f"[API_KEY] 您的 API_KEY 是: {r[:15]}*** API_KEY 导入成功")
+            log亮绿(f"[API_KEY] API_KEY loaded: {r[:15]}***")
         else:
-            log亮红(f"[API_KEY] 您的 API_KEY（{r[:15]}***）不满足任何一种已知的密钥格式，请在config文件中修改API密钥之后再运行（详见`https://github.com/binary-husky/gpt_academic/wiki/api_key`）。")
+            if r:
+                log亮红(f"[API_KEY] API_KEY ({r[:15]}***) does not match any known key format.")
+
     if arg == 'proxies':
-        if not read_single_conf_with_lru_cache('USE_PROXY'): r = None # 检查USE_PROXY，防止proxies单独起作用
+        if not read_single_conf_with_lru_cache('USE_PROXY'):
+            r = None
         if r is None:
-            log亮红('[PROXY] 网络代理状态：未配置。无代理状态下很可能无法访问OpenAI家族的模型。建议：检查USE_PROXY选项是否修改。')
+            log亮红('[PROXY] No proxy configured. OpenAI models may be unreachable without a proxy.')
         else:
-            log亮绿('[PROXY] 网络代理状态：已配置。配置信息如下：', str(r))
-            assert isinstance(r, dict), 'proxies格式错误，请注意proxies选项的格式，不要遗漏括号。'
+            log亮绿('[PROXY] Proxy configured:', str(r))
+            assert isinstance(r, dict), 'proxies must be a dict. Check the proxies config format.'
     return r
 
 
 @lru_cache(maxsize=128)
 def get_conf(*args):
     """
-    本项目的所有配置都集中在config.py中。 修改配置有三种方法，您只需要选择其中一种即可：
-        - 直接修改config.py
-        - 创建并修改config_private.py
-        - 修改环境变量（修改docker-compose.yml等价于修改容器内部的环境变量）
+    Retrieve one or more configuration values.
 
-    注意：如果您使用docker-compose部署，请修改docker-compose（等价于修改容器内部的环境变量）
+    Priority: ~/.env / environment variables > config_private.py > config.py
+    LLM API keys are loaded exclusively from ~/.env / environment variables.
     """
     res = []
     for arg in args:
         r = read_single_conf_with_lru_cache(arg)
         res.append(r)
-    if len(res) == 1: return res[0]
+    if len(res) == 1:
+        return res[0]
     return res
 
 
@@ -127,5 +209,6 @@ def set_conf(key, value):
 
 
 def set_multi_conf(dic):
-    for k, v in dic.items(): set_conf(k, v)
+    for k, v in dic.items():
+        set_conf(k, v)
     return

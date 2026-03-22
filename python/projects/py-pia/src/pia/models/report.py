@@ -1,12 +1,14 @@
 """Report data models."""
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from typing import Optional
 
 
 class Report(BaseModel):
     """Represents a generated analysis report for a single release."""
+
+    model_config = ConfigDict(protected_namespaces=())
 
     id: str
     product_id: str
@@ -21,6 +23,8 @@ class Report(BaseModel):
 
 class DigestReport(BaseModel):
     """Represents a multi-product digest report."""
+
+    model_config = ConfigDict(protected_namespaces=())
 
     id: str
     report_type: str = "digest"

@@ -70,6 +70,7 @@ def analyze_latest(
     model: Optional[str] = typer.Option(None, "--model", "-m", help="LLM model override"),
     force: bool = typer.Option(False, "--force", "-f", help="Bypass cache and re-analyze"),
     show: bool = typer.Option(True, "--show/--no-show", help="Print report to terminal"),
+    output_dir: Optional[str] = typer.Option(None, "--output-dir", "-o", help="Directory to save report (overrides default)"),
 ) -> None:
     """Analyze the latest release of a product.
 
@@ -102,8 +103,14 @@ def analyze_latest(
             raise typer.Exit(1)
 
     from pia.config.settings import get_settings
+    from pathlib import Path
     settings = get_settings()
-    report_path = settings.reports_dir / product.id / f"{release.version}.md"
+    if output_dir:
+        report_path = Path(output_dir).expanduser() / f"{product.id}_{release.version}.md"
+        report_path.parent.mkdir(parents=True, exist_ok=True)
+        report_path.write_text(report.content_md, encoding="utf-8")
+    else:
+        report_path = settings.reports_dir / product.id / f"{release.version}.md"
 
     console.print(f"\n[green]Report generated.[/green] Saved to: [dim]{report_path}[/dim]\n")
 
@@ -118,6 +125,7 @@ def analyze_version(
     model: Optional[str] = typer.Option(None, "--model", "-m", help="LLM model override"),
     force: bool = typer.Option(False, "--force", "-f", help="Bypass cache and re-analyze"),
     show: bool = typer.Option(True, "--show/--no-show", help="Print report to terminal"),
+    output_dir: Optional[str] = typer.Option(None, "--output-dir", "-o", help="Directory to save report (overrides default)"),
 ) -> None:
     """Analyze a specific version of a product.
 
@@ -153,8 +161,14 @@ def analyze_version(
             raise typer.Exit(1)
 
     from pia.config.settings import get_settings
+    from pathlib import Path
     settings = get_settings()
-    report_path = settings.reports_dir / product.id / f"{release.version}.md"
+    if output_dir:
+        report_path = Path(output_dir).expanduser() / f"{product.id}_{release.version}.md"
+        report_path.parent.mkdir(parents=True, exist_ok=True)
+        report_path.write_text(report.content_md, encoding="utf-8")
+    else:
+        report_path = settings.reports_dir / product.id / f"{release.version}.md"
 
     console.print(f"\n[green]Report generated.[/green] Saved to: [dim]{report_path}[/dim]\n")
 

@@ -122,8 +122,10 @@ def summarize(target_date: str | None, limit: int) -> None:
 @cli.command()
 @click.option("--date", "target_date", default=None, help="YYYY-MM-DD (default: today)")
 @click.option("--out", default=None, help="Write digest JSON to this file path.")
-def digest(target_date: str | None, out: str | None) -> None:
+@click.option("--output-dir", default=None, help="Write digest JSON to <dir>/digest-<date>.json.")
+def digest(target_date: str | None, out: str | None, output_dir: str | None) -> None:
     """Build and store the daily digest from summarized messages."""
+    import os
     from my_email.digest.builder import build_digest
 
     if not target_date:
@@ -136,7 +138,13 @@ def digest(target_date: str | None, out: str | None) -> None:
     conn.commit()
     conn.close()
 
-    if out:
+    if output_dir:
+        os.makedirs(output_dir, exist_ok=True)
+        path = os.path.join(output_dir, f"digest-{target_date}.json")
+        with open(path, "w") as f:
+            f.write(digest_json)
+        click.echo(f"Digest written to {path}")
+    elif out:
         with open(out, "w") as f:
             f.write(digest_json)
         click.echo(f"Digest written to {out}")
