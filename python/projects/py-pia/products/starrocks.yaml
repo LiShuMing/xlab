@@ -1,0 +1,24 @@
+id: starrocks
+name: StarRocks
+category: open_source
+homepage: https://www.starrocks.io/
+description: "Real-time analytics database for sub-second queries at scale"
+
+sources:
+  - type: github_releases
+    url: https://github.com/StarRocks/starrocks/releases
+    priority: 100
+
+analysis:
+  audience:
+    - data_engineer
+    - database_engineer
+    - product_manager
+  competitor_set:
+    - clickhouse
+    - doris
+    - trino
+  prompt_profile: database_olap
+
+version_rules:
+  strategy: semver_loose

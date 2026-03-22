@@ -1,0 +1,24 @@
+id: duckdb
+name: DuckDB
+category: open_source
+homepage: https://duckdb.org/
+description: "In-process analytical database for data science and analytics"
+
+sources:
+  - type: github_releases
+    url: https://api.github.com/repos/duckdb/duckdb/releases
+    priority: 100
+
+analysis:
+  audience:
+    - data_engineer
+    - data_scientist
+    - developer
+  competitor_set:
+    - clickhouse
+    - polars
+    - sqlite
+  prompt_profile: database_olap
+
+version_rules:
+  strategy: semver_loose
