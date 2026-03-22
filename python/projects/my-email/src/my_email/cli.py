@@ -177,11 +177,27 @@ def show(target_date: str | None) -> None:
         recv = s.get("received_at", "")[:10]
         summary = s.get("summary", "")
         key_points = s.get("key_points", [])
+        action_items = s.get("action_items", [])
+        people = s.get("people_mentioned", [])
+        links = s.get("links", [])
 
         click.echo(f"[{rel}] {title}")
         click.echo(f"  {org}  |  {recv}")
         click.echo(f"  Topics: {topics}")
-        click.echo(f"  {summary}")
-        for pt in key_points:
-            click.echo(f"  • {pt}")
         click.echo()
+        click.echo(f"  Summary:")
+        click.echo(f"  {summary}")
+        click.echo()
+        click.echo(f"  Key Points:")
+        for pt in key_points:
+            click.echo(f"    • {pt}")
+        if people:
+            click.echo(f"\n  People: {', '.join(people)}")
+        if links:
+            click.echo(f"  Links: {', '.join(links[:5])}" + ("..." if len(links) > 5 else ""))
+        if action_items:
+            click.echo(f"\n  ⚠️  Action Items:")
+            for item in action_items:
+                click.echo(f"    • {item}")
+        click.echo()
+        click.echo("-" * 60)

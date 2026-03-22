@@ -1,8 +1,11 @@
 import base64
 import json
+import socket
 from datetime import datetime, timezone
 
+import httplib2
 import structlog
+from google_auth_httplib2 import AuthorizedHttp
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
@@ -16,9 +19,28 @@ log = structlog.get_logger()
 
 # ── Gmail API helpers ─────────────────────────────────────────────────────────
 
+def _build_http():
+    """Build HTTP client with timeout and proxy support."""
+    kwargs = {"timeout": settings.gmail_timeout}
+    if settings.gmail_proxy:
+        proxy_url = settings.gmail_proxy
+        # Parse proxy URL: http://host:port
+        if "://" in proxy_url:
+            proxy_url = proxy_url.split("://")[-1]
+        proxy_host, proxy_port = proxy_url.rsplit(":", 1)
+        kwargs["proxy_info"] = httplib2.ProxyInfo(
+            proxy_type=httplib2.socks.PROXY_TYPE_HTTP,
+            proxy_host=proxy_host,
+            proxy_port=int(proxy_port),
+        )
+    return httplib2.Http(**kwargs)
+
+
 def build_service():
     creds = get_credentials(settings.gmail_credentials_file, settings.gmail_token_file)
-    return build("gmail", "v1", credentials=creds)
+    http = _build_http()
+    authed_http = AuthorizedHttp(creds, http=http)
+    return build("gmail", "v1", http=authed_http)
 
 
 def _decode_payload(payload: dict) -> tuple[str, str]:
@@ -117,20 +139,78 @@ def _fetch_history_refs(service, start_history_id: str) -> tuple[list[dict], str
     return refs, new_history_id
 
 
+def _message_matches_filter(raw: dict, query: str) -> bool:
+    """Check if a message matches the Gmail query filter.
+    
+    Supports: is:unread, is:read, label:, from:, to:, subject:, etc.
+    """
+    if not query or query.strip() == "is:unread":
+        # Default: check unread label
+        labels = raw.get("labelIds", [])
+        return "UNREAD" in labels
+    
+    query = query.strip().lower()
+    labels = [l.lower() for l in raw.get("labelIds", [])]
+    headers = {h["name"].lower(): h["value"].lower() for h in raw["payload"].get("headers", [])}
+    
+    # Parse simple query patterns
+    # is:unread, is:read
+    if query == "is:unread":
+        return "unread" in labels
+    if query == "is:read":
+        return "unread" not in labels
+    
+    # label:xxx
+    if query.startswith("label:"):
+        label_name = query[6:].strip().lower()
+        return label_name in labels
+    
+    # from:xxx
+    if query.startswith("from:"):
+        from_addr = headers.get("from", "")
+        search = query[5:].strip()
+        return search in from_addr
+    
+    # to:xxx  
+    if query.startswith("to:"):
+        to_addr = headers.get("to", "")
+        search = query[3:].strip()
+        return search in to_addr
+    
+    # subject:xxx
+    if query.startswith("subject:"):
+        subject = headers.get("subject", "")
+        search = query[8:].strip()
+        return search in subject
+    
+    # Default: accept all (complex queries not supported in incremental sync)
+    return True
+
+
 def _ingest_refs(service, refs: list[dict], db_conn) -> int:
     """Fetch full messages for each ref and upsert into DB. Returns count inserted."""
     total = 0
+    skipped = 0
     for ref in refs:
         try:
             raw = service.users().messages().get(
                 userId="me", id=ref["id"], format="full"
             ).execute()
+            
+            # Apply filter for incremental sync
+            if not _message_matches_filter(raw, settings.gmail_filter_query):
+                skipped += 1
+                continue
+            
             msg = _parse_message(raw)
             if upsert_message(db_conn, msg):
                 total += 1
                 log.info("gmail.sync.inserted", id=msg["id"], subject=msg["subject"][:80])
         except HttpError as e:
             log.warning("gmail.sync.fetch_error", id=ref["id"], error=str(e))
+    
+    if skipped > 0:
+        log.info("gmail.sync.filtered", skipped=skipped)
     return total
 
 
@@ -148,7 +228,23 @@ def initial_sync(db_conn) -> tuple[int, str]:
     """
     service = build_service()
 
-    profile = service.users().getProfile(userId="me").execute()
+    try:
+        profile = service.users().getProfile(userId="me").execute()
+    except (TimeoutError, socket.timeout) as e:
+        log.error("gmail.sync.timeout", error=str(e))
+        raise RuntimeError(
+            f"Connection to Gmail API timed out after {settings.gmail_timeout}s. "
+            "If you are in a region that requires a proxy to access Google services, "
+            f"please set GMAIL_PROXY in your .env file (e.g., GMAIL_PROXY=http://127.0.0.1:7890). "
+            f"Original error: {e}"
+        ) from e
+    except socket.error as e:
+        log.error("gmail.sync.socket_error", error=str(e))
+        raise RuntimeError(
+            f"Failed to connect to Gmail API: {e}. "
+            "Please check your network connection and proxy settings."
+        ) from e
+    
     history_id = profile["historyId"]
 
     refs = _fetch_message_refs(service, settings.gmail_filter_query)
@@ -180,6 +276,20 @@ def incremental_sync(db_conn) -> tuple[int, str]:
             log.warning("gmail.incremental_sync.history_expired_fallback", error=str(e))
             return initial_sync(db_conn)
         raise
+    except (TimeoutError, socket.timeout) as e:
+        log.error("gmail.sync.timeout", error=str(e))
+        raise RuntimeError(
+            f"Connection to Gmail API timed out after {settings.gmail_timeout}s. "
+            "If you are in a region that requires a proxy to access Google services, "
+            f"please set GMAIL_PROXY in your .env file (e.g., GMAIL_PROXY=http://127.0.0.1:7890). "
+            f"Original error: {e}"
+        ) from e
+    except socket.error as e:
+        log.error("gmail.sync.socket_error", error=str(e))
+        raise RuntimeError(
+            f"Failed to connect to Gmail API: {e}. "
+            "Please check your network connection and proxy settings."
+        ) from e
 
     log.info("gmail.incremental_sync.found", count=len(refs))
     total = _ingest_refs(service, refs, db_conn)

@@ -78,9 +78,14 @@ Key env vars:
 
 ```
 GMAIL_FILTER_QUERY=from:(*-dev@lists.apache.org) OR label:newsletters
+GMAIL_TIMEOUT=60
+GMAIL_PROXY=http://127.0.0.1:7890  # Required in regions where Google is blocked
 LLM_BASE_URL=http://localhost:11434/v1
 LLM_MODEL=qwen2.5:7b
 ```
+
+> **Note**: If you are in a region that requires a proxy to access Google services (e.g., mainland China),
+> you must set `GMAIL_PROXY` to your HTTP proxy address (e.g., `http://127.0.0.1:7890`).
 
 ## Usage
 

@@ -28,9 +28,12 @@ class EmailSummary(BaseModel):
     title: str = Field(description="Clean title of the email or newsletter issue")
     sender_org: str = Field(description="Organization or project name, e.g. 'Apache Iceberg'")
     topics: list[str] = Field(description="3–8 main technical topic keywords")
-    summary: str = Field(description="2–4 sentence factual summary of the content")
-    key_points: list[str] = Field(description="3–6 concrete bullet points worth remembering")
+    summary: str = Field(description="5–8 sentence detailed factual summary of the content")
+    key_points: list[str] = Field(description="5–10 concrete bullet points worth remembering")
     relevance: str = Field(description='"high" | "medium" | "low" — for data/infra engineering')
+    action_items: list[str] = Field(description="Action items, deadlines, or decisions requiring attention (if any)", default_factory=list)
+    people_mentioned: list[str] = Field(description="Key people, authors, or maintainers mentioned", default_factory=list)
+    links: list[str] = Field(description="Important URLs, PRs, issues, or references mentioned", default_factory=list)
 
 
 # ── prompts ───────────────────────────────────────────────────────────────────
@@ -50,13 +53,17 @@ Body:
 {body}
 
 Return a JSON object with exactly these fields:
-- title        (string) clean title
-- sender_org   (string) organization or project name
-- topics       (array of strings) 3–8 technical keywords
-- summary      (string) 2–4 sentence factual summary
-- key_points   (array of strings) 3–6 concrete points worth noting
-- relevance    (string) "high" | "medium" | "low" — relevance to data engineering / distributed systems
+- title            (string) clean, descriptive title
+- sender_org       (string) organization or project name
+- topics           (array of strings) 3–8 technical keywords
+- summary          (string) 5–8 sentence detailed factual summary, include context and implications
+- key_points       (array of strings) 5–10 concrete bullet points with technical details, numbers, and specifics
+- relevance        (string) "high" | "medium" | "low" — relevance to data engineering / distributed systems
+- action_items     (array of strings) deadlines, decisions, or action items (empty if none)
+- people_mentioned (array of strings) key people, authors, maintainers mentioned (empty if none)
+- links            (array of strings) URLs, PR numbers, issue references (empty if none)
 
+Be thorough and specific. Include technical details, metrics, and concrete examples when available.
 JSON only."""
 
 
