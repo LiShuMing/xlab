@@ -1,11 +1,12 @@
 """paper-agent CLI entry point."""
 
-import os
+from __future__ import annotations
+
 from pathlib import Path
 
+import typer
 from dotenv import load_dotenv
 from rich.console import Console
-import typer
 
 from paper_agent.cli.commands import analyze, ask, parse, related, report
 
@@ -31,10 +32,13 @@ related.register(app)
 
 @app.callback(invoke_without_command=True)
 def main(
-    version: bool = typer.Option(False, "--version", "-V", help="Show version and exit."),
+    version: bool = typer.Option(
+        False, "--version", "-V", help="Show version and exit."
+    ),
 ) -> None:
     """[bold]paper-agent[/bold] - Academic paper reading and analysis tool."""
     if version:
         from paper_agent import __version__
+
         console.print(f"paper-agent {__version__}")
         raise typer.Exit()

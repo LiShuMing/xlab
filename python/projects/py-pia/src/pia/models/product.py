@@ -1,8 +1,10 @@
 """Product data models."""
 
-from pydantic import BaseModel
+from __future__ import annotations
+
 from datetime import datetime
-from typing import Optional
+
+from pydantic import BaseModel, Field
 
 
 class ProductSource(BaseModel):
@@ -16,8 +18,8 @@ class ProductSource(BaseModel):
 class ProductAnalysisConfig(BaseModel):
     """Configuration for LLM analysis of a product."""
 
-    audience: list[str] = []
-    competitor_set: list[str] = []
+    audience: list[str] = Field(default_factory=list)
+    competitor_set: list[str] = Field(default_factory=list)
     prompt_profile: str = "database_olap"
 
 
@@ -36,7 +38,7 @@ class Product(BaseModel):
     homepage: str
     description: str
     sources: list[ProductSource]
-    analysis: ProductAnalysisConfig = ProductAnalysisConfig()
-    version_rules: ProductVersionRules = ProductVersionRules()
-    config_path: Optional[str] = None
-    created_at: Optional[datetime] = None
+    analysis: ProductAnalysisConfig = Field(default_factory=ProductAnalysisConfig)
+    version_rules: ProductVersionRules = Field(default_factory=ProductVersionRules)
+    config_path: str | None = None
+    created_at: datetime | None = None

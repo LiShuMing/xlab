@@ -1,13 +1,16 @@
 """Product configuration loader from YAML files."""
 
+from __future__ import annotations
+
+from pathlib import Path
+
 import structlog
 import yaml
-from pathlib import Path
 
 from pia.config.settings import get_settings
 from pia.models.product import Product
 
-log = structlog.get_logger()
+logger = structlog.get_logger()
 
 
 def load_product(path: Path) -> Product:
@@ -43,7 +46,7 @@ def load_all_products() -> list[Product]:
         try:
             products.append(load_product(yaml_file))
         except Exception as e:
-            log.warning(
+            logger.warning(
                 "failed to load product config",
                 path=str(yaml_file),
                 error=str(e),

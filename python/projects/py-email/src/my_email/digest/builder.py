@@ -38,6 +38,7 @@ class DailyDigest(BaseModel):
     date: str
     total_emails: int
     high_relevance_count: int
+    skipped_count: int = 0  # Non-technical emails filtered out
     top_topics: list[str]
     topic_clusters: list[TopicCluster]
     summaries: list[dict[str, Any]]
@@ -49,6 +50,7 @@ def build_digest(db_conn: sqlite3.Connection, digest_date: str) -> DailyDigest:
 
     Aggregates topic frequencies and ranks them across all emails for the date.
     Pure aggregation — no LLM calls.
+    Filters out non-technical emails (relevance="skip").
 
     Args:
         db_conn: Database connection.
@@ -71,12 +73,19 @@ def build_digest(db_conn: sqlite3.Connection, digest_date: str) -> DailyDigest:
         )
 
     summaries: list[dict[str, Any]] = []
+    skipped_count = 0
     topic_index: dict[str, list[str]] = {}
     high_count = 0
 
     for row in rows:
         data = json.loads(row["summary_json"])
         summary = EmailSummary(**data)
+
+        # Skip non-technical emails
+        if summary.relevance == "skip":
+            skipped_count += 1
+            log.debug("digest.skipped_non_technical", title=summary.title[:50])
+            continue
 
         if summary.relevance == "high":
             high_count += 1
@@ -103,6 +112,7 @@ def build_digest(db_conn: sqlite3.Connection, digest_date: str) -> DailyDigest:
         date=digest_date,
         total_emails=len(summaries),
         high_relevance_count=high_count,
+        skipped_count=skipped_count,
         top_topics=top_topics,
         topic_clusters=topic_clusters,
         summaries=summaries,
@@ -112,6 +122,7 @@ def build_digest(db_conn: sqlite3.Connection, digest_date: str) -> DailyDigest:
         "digest.built",
         date=digest_date,
         total=len(summaries),
+        skipped=skipped_count,
         high=high_count,
         top_topics=top_topics[:5],
     )

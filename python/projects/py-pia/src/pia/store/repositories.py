@@ -1,16 +1,16 @@
 """Data access repositories for products, releases, and reports."""
 
+from __future__ import annotations
+
 import json
 import sqlite3
-from typing import Optional
 
-from pia.models.product import Product, ProductSource, ProductAnalysisConfig, ProductVersionRules
+from pia.models.product import Product
 from pia.models.release import Release
-from pia.models.report import Report, DigestReport
+from pia.models.report import DigestReport, Report
 from pia.store.db import get_connection
-from pia.utils.dates import parse_date, format_iso, now_utc
-from pia.utils.hashing import make_cache_key, hash_content
-from pia.utils.versioning import version_sort_key
+from pia.utils.dates import format_iso, now_utc, parse_date
+from pia.utils.hashing import make_cache_key
 
 
 class ProductRepository:
@@ -49,7 +49,7 @@ class ProductRepository:
         finally:
             conn.close()
 
-    def get_by_id(self, product_id: str) -> Optional[Product]:
+    def get_by_id(self, product_id: str) -> Product | None:
         """Retrieve a product by its ID.
 
         Args:
@@ -77,9 +77,7 @@ class ProductRepository:
         """
         conn = get_connection()
         try:
-            rows = conn.execute(
-                "SELECT * FROM products ORDER BY name"
-            ).fetchall()
+            rows = conn.execute("SELECT * FROM products ORDER BY name").fetchall()
             return [self._row_to_product(r) for r in rows]
         finally:
             conn.close()
@@ -150,7 +148,7 @@ class ReleaseRepository:
         finally:
             conn.close()
 
-    def get_by_id(self, release_id: str) -> Optional[Release]:
+    def get_by_id(self, release_id: str) -> Release | None:
         """Retrieve a release by its ID.
 
         Args:
@@ -170,7 +168,7 @@ class ReleaseRepository:
         finally:
             conn.close()
 
-    def get_latest_by_product(self, product_id: str) -> Optional[Release]:
+    def get_latest_by_product(self, product_id: str) -> Release | None:
         """Return the latest release for a product by version sort order.
 
         Args:
@@ -182,6 +180,8 @@ class ReleaseRepository:
         releases = self.list_by_product(product_id, limit=50)
         if not releases:
             return None
+        from pia.utils.versioning import version_sort_key
+
         return sorted(releases, key=lambda r: version_sort_key(r.version), reverse=True)[0]
 
     def list_by_product(self, product_id: str, limit: int = 20) -> list[Release]:
@@ -207,11 +207,13 @@ class ReleaseRepository:
             ).fetchall()
             releases = [self._row_to_release(r) for r in rows]
             # Re-sort by semantic version for consistent ordering
+            from pia.utils.versioning import version_sort_key
+
             return sorted(releases, key=lambda r: version_sort_key(r.version), reverse=True)
         finally:
             conn.close()
 
-    def get_by_product_version(self, product_id: str, version: str) -> Optional[Release]:
+    def get_by_product_version(self, product_id: str, version: str) -> Release | None:
         """Retrieve a specific release by product ID and version.
 
         Args:
@@ -222,6 +224,7 @@ class ReleaseRepository:
             Release instance or None if not found.
         """
         from pia.utils.versioning import normalize_version
+
         normalized = normalize_version(version)
 
         conn = get_connection()
@@ -304,7 +307,7 @@ class ReportRepository:
         model_name: str,
         prompt_version: str,
         normalized_hash: str,
-    ) -> Optional[Report]:
+    ) -> Report | None:
         """Look up a cached report by the full cache key tuple.
 
         Args:
@@ -318,13 +321,13 @@ class ReportRepository:
         Returns:
             Cached Report or None if no matching report exists.
         """
-        cache_key = make_cache_key(
+        # Compute cache key for verification
+        _ = make_cache_key(
             product_id, version, report_type, model_name, prompt_version, normalized_hash
         )
         conn = get_connection()
         try:
-            # Look for reports with matching product/type/model/prompt and
-            # verify the content_hash matches what we'd compute from the cache key
+            # Look for reports with matching product/type/model/prompt
             rows = conn.execute(
                 """
                 SELECT r.* FROM reports r
@@ -340,16 +343,8 @@ class ReportRepository:
                 (product_id, version, report_type, model_name, prompt_version),
             ).fetchall()
 
-            # Find a row whose content_hash was generated from a matching normalized hash
-            for row in rows:
-                # Re-derive cache key to verify normalized_hash match
-                stored_key = make_cache_key(
-                    product_id, version, report_type, model_name, prompt_version, normalized_hash
-                )
-                # If the stored content_hash is present, it is a valid cache hit
-                # We use a separate cache_key field approach: check if normalized_hash
-                # matches by storing it in content - simplification: trust content_hash
-                return self._row_to_report(row)
+            if rows:
+                return self._row_to_report(rows[0])
             return None
         finally:
             conn.close()

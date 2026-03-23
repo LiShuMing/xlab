@@ -29,6 +29,77 @@ Before writing any code, apply **First Principles Thinking**: break down the use
 - **Linting & Formatting:** Write code that passes `ruff` (with strict rules) and `mypy --strict`. 
 - **Testing:** Design code to be testable. Write `pytest` test cases for deterministic logic. Use mocking (`unittest.mock` or `pytest-mock`) exclusively to isolate LLM network calls during unit tests.
 
+# Project Structure
+
+```
+src/pia/
+├── __init__.py
+├── exceptions.py           # Custom exception hierarchy
+├── main.py                 # CLI entry point
+├── adapters/               # Source adapters (GitHub, HTML, etc.)
+├── cli/                    # CLI commands
+├── config/                 # Configuration and settings
+├── llm/                    # LLM provider and prompts
+├── models/                 # Pydantic data models
+├── services/               # Business logic services
+├── store/                  # Database repositories
+├── telemetry/              # Observability and metrics
+│   ├── context.py          # Context tracing (correlation_id, session_id)
+│   └── metrics.py          # Timing metrics collection
+└── utils/                  # Utility functions
+```
+
+# Exception Hierarchy
+
+All pia-specific exceptions inherit from `PiaError`:
+
+```
+PiaError
+├── ConfigurationError
+├── ProductError
+│   ├── ProductNotFoundError
+│   └── ProductValidationError
+├── ReleaseError
+│   ├── ReleaseNotFoundError
+│   ├── ReleaseFetchError
+│   └── RateLimitError
+├── LLMError
+│   ├── LLMConfigurationError
+│   ├── LLMResponseError
+│   ├── LLMTimeoutError
+│   └── LLMRateLimitError
+├── AnalysisError
+└── CacheError
+```
+
+# Telemetry Usage
+
+## Context Tracing
+
+Use `correlation_context` to trace requests across async boundaries:
+
+```python
+from pia.telemetry import correlation_context, get_context_dict
+
+with correlation_context():
+    # correlation_id and session_id are auto-generated
+    context = get_context_dict()
+    logger.info("Processing request", **context)
+    result = await analyze_product(...)
+```
+
+## Metrics Collection
+
+Use `timed_llm_call` and `timed_tool_execution` for automatic timing:
+
+```python
+from pia.telemetry.metrics import timed_llm_call
+
+with timed_llm_call(model="gpt-4o", operation="extract") as record:
+    result = await llm.extract_release_info(...)
+    record(success=True)
+```
+
 # Execution Workflow
 1. **Analyze:** Briefly state your understanding of the core problem.
 2. **Design:** Propose the architecture/API signature before implementing. Wait for user feedback if the design is complex.

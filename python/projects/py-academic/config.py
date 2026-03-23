@@ -1,5 +1,5 @@
 """
-Configuration file for py-academic.
+Configuration file for GPT Academic.
 
 Priority: environment variables (including ~/.env) > config_private.py > config.py
 
@@ -10,7 +10,6 @@ LLM API keys are NOT configured here. Set them in ~/.env:
     ANTHROPIC_API_KEY=sk-ant-...      # Claude / Anthropic
     QWEN_API_KEY=sk-...               # Qwen / DashScope
     DASHSCOPE_API_KEY=sk-...          # Alternative Qwen key name
-    DEEPSEEK_API_KEY=sk-...           # DeepSeek
 
 Non-secret settings (model selection, UI, etc.) can still be overridden via
 config_private.py or environment variables.
@@ -19,30 +18,37 @@ config_private.py or environment variables.
 # --------------- LLM model selection ---------------
 
 # Default model shown in the dropdown. Must be in AVAIL_LLM_MODELS.
-LLM_MODEL = "claude-3-sonnet-20240229"
+LLM_MODEL = "claude-sonnet-4-5"
 
 AVAIL_LLM_MODELS = [
     # Anthropic / Claude
-    "claude-3-sonnet-20240229",
+    "claude-sonnet-4-5",
+    "claude-3-7-sonnet-20250219",
     "claude-3-5-sonnet-20241022",
     "claude-3-opus-20240229",
+    "claude-3-sonnet-20240229",
+    "claude-3-haiku-20240307",
     # OpenAI
     "gpt-4o",
     "gpt-4o-mini",
+    "gpt-4.1",
+    "gpt-4.1-mini",
+    "gpt-4.1-nano",
     "gpt-4-turbo",
     "gpt-3.5-turbo",
     "o1",
     "o1-mini",
+    "o3",
+    "o3-mini",
+    "o4-mini",
     # Qwen / DashScope
     "qwen-max",
     "qwen-plus",
+    "qwen-turbo",
     "dashscope-qwen3-14b",
     "dashscope-qwen3-32b",
     "dashscope-deepseek-r1",
     "dashscope-deepseek-v3",
-    # DeepSeek
-    "deepseek-chat",
-    "deepseek-reasoner",
 ]
 
 EMBEDDING_MODEL = "text-embedding-3-small"
@@ -51,7 +57,7 @@ EMBEDDING_MODEL = "text-embedding-3-small"
 QWEN_BASE_URL = ""
 
 # Models used when "Query multiple models" plugin is invoked (separated by &)
-MULTI_QUERY_LLM_MODELS = "gpt-3.5-turbo&claude-3-sonnet-20240229"
+MULTI_QUERY_LLM_MODELS = "gpt-4o-mini&claude-3-5-sonnet-20241022"
 
 # --------------- Network / proxy ---------------
 
@@ -213,17 +219,3 @@ AUTO_CONTEXT_MAX_CLIP_RATIO = [
 
 # Custom API key format pattern (advanced, rarely needed)
 CUSTOM_API_KEY_PATTERN = ""
-
-# Baidu Qianfan model (if using qianfan model)
-BAIDU_CLOUD_QIANFAN_MODEL = 'ERNIE-Bot'
-
-# Local Qwen model selection
-QWEN_LOCAL_MODEL_SELECTION = "Qwen/Qwen-1_8B-Chat-Int8"
-
-# Local ChatGLM model path
-CHATGLM_LOCAL_MODEL_PATH = "THUDM/glm-4-9b-chat"
-CHATGLM_PTUNING_CHECKPOINT = ""
-
-# Local LLM device and quantization
-LOCAL_MODEL_DEVICE = "cpu"   # Options: "cpu", "cuda"
-LOCAL_MODEL_QUANT = "FP16"   # Options: "FP16", "INT4", "INT8"

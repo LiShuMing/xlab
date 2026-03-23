@@ -1,116 +1,250 @@
 """
 Centralized configuration management for the AI Lab Platform.
-All API keys, model parameters, and paths are managed here.
+All API keys, model parameters, and paths are managed here using Pydantic Settings.
 """
 
-import os
 from pathlib import Path
-from typing import Optional
+from typing import Any
+
 from dotenv import load_dotenv
+from pydantic import Field, field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Load environment variables from ~/.env first (global config), then local .env
 load_dotenv(Path.home() / ".env")
 load_dotenv(override=True)
 
 # Base paths
-BASE_DIR = Path(__file__).parent.parent
-VECTOR_STORE_DIR = BASE_DIR / "vector_store"
-LOGS_DIR = BASE_DIR / "logs"
+BASE_DIR: Path = Path(__file__).parent.parent
+VECTOR_STORE_DIR: Path = BASE_DIR / "vector_store"
+LOGS_DIR: Path = BASE_DIR / "logs"
 
 # Ensure directories exist
 VECTOR_STORE_DIR.mkdir(exist_ok=True)
 LOGS_DIR.mkdir(exist_ok=True)
 
 
-class Settings:
-    """Application settings loaded from environment variables."""
+class Settings(BaseSettings):
+    """
+    Application settings loaded from environment variables.
     
-    # API Keys
-    DASHSCOPE_API_KEY: Optional[str] = os.getenv("DASHSCOPE_API_KEY")
-    OPENAI_API_KEY: Optional[str] = os.getenv("OPENAI_API_KEY")
-    ANTHROPIC_API_KEY: Optional[str] = os.getenv("ANTHROPIC_API_KEY")
+    Uses Pydantic v2 Settings for validation and type safety.
+    All settings can be overridden via environment variables or .env file.
+    """
     
-    # Qwen Coding Plan (special API for coding tasks)
-    # Get from: https://help.aliyun.com/zh/model-studio/coding-plan-quickstart
-    DASHSCOPE_CODING_API_KEY: Optional[str] = os.getenv("DASHSCOPE_CODING_API_KEY")
-    DASHSCOPE_CODING_BASE_URL: Optional[str] = os.getenv(
-        "DASHSCOPE_CODING_BASE_URL", 
-        "https://coding.dashscope.aliyuncs.com/v1"
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+        case_sensitive=False,
     )
     
-    # Optional: Custom base URL for Anthropic (for proxy/enterprise endpoints)
-    ANTHROPIC_BASE_URL: Optional[str] = os.getenv("ANTHROPIC_BASE_URL")
+    # API Keys
+    dashscope_api_key: str | None = Field(
+        default=None,
+        description="DashScope API key for Qwen models"
+    )
+    openai_api_key: str | None = Field(
+        default=None,
+        description="OpenAI API key"
+    )
+    anthropic_api_key: str | None = Field(
+        default=None,
+        description="Anthropic API key"
+    )
+    
+    # Qwen Coding Plan (special API for coding tasks)
+    dashscope_coding_api_key: str | None = Field(
+        default=None,
+        description="DashScope Coding Plan API key"
+    )
+    dashscope_coding_base_url: str = Field(
+        default="https://coding.dashscope.aliyuncs.com/v1",
+        description="Base URL for Qwen Coding API"
+    )
+    
+    # Optional: Custom base URL for Anthropic
+    anthropic_base_url: str | None = Field(
+        default=None,
+        description="Custom base URL for Anthropic API (for proxy/enterprise)"
+    )
     
     # LLM Configuration
-    DEFAULT_PROVIDER: str = os.getenv("DEFAULT_PROVIDER", "qwen")
-    DEFAULT_MODEL: str = os.getenv("DEFAULT_MODEL", "qwen-turbo")
+    default_provider: str = Field(
+        default="qwen",
+        description="Default LLM provider"
+    )
+    default_model: str = Field(
+        default="qwen-turbo",
+        description="Default model name"
+    )
     
     # Model Parameters
-    DEFAULT_TEMPERATURE: float = float(os.getenv("DEFAULT_TEMPERATURE", "0.7"))
-    DEFAULT_MAX_TOKENS: int = int(os.getenv("DEFAULT_MAX_TOKENS", "2000"))
-    
-    # Qwen Models
-    QWEN_MODELS = {
-        "qwen-turbo": "qwen-turbo",
-        "qwen-plus": "qwen-plus",
-        "qwen-max": "qwen-max",
-        "qwen-max-longcontext": "qwen-max-longcontext",
-    }
-    
-    # Qwen Coding Models (requires Coding Plan subscription)
-    # Model list: https://help.aliyun.com/zh/model-studio/models
-    QWEN_CODING_MODELS = {
-        "qwen3.5-plus": "qwen3.5-plus",           # General purpose, supports images
-        "qwen3-coder-plus": "qwen3-coder-plus",   # Optimized for coding
-        "qwen3-coder-next": "qwen3-coder-next",   # Latest coder model
-        "qwen3-max-2026-01-23": "qwen3-max-2026-01-23",  # Max model with thinking
-    }
-    
-    # OpenAI Models
-    OPENAI_MODELS = {
-        "gpt-3.5-turbo": "gpt-3.5-turbo",
-        "gpt-4": "gpt-4",
-        "gpt-4-turbo": "gpt-4-turbo-preview",
-    }
+    default_temperature: float = Field(
+        default=0.7,
+        ge=0.0,
+        le=2.0,
+        description="Default sampling temperature"
+    )
+    default_max_tokens: int = Field(
+        default=2000,
+        ge=100,
+        le=16000,
+        description="Default maximum tokens to generate"
+    )
     
     # Embedding Configuration
-    EMBEDDING_PROVIDER: str = os.getenv("EMBEDDING_PROVIDER", "dashscope")
-    DASHSCOPE_EMBEDDING_MODEL: str = os.getenv(
-        "DASHSCOPE_EMBEDDING_MODEL", 
-        "text-embedding-v2"
+    embedding_provider: str = Field(
+        default="dashscope",
+        description="Embedding provider"
+    )
+    dashscope_embedding_model: str = Field(
+        default="text-embedding-v2",
+        description="DashScope embedding model"
     )
     
     # RAG Configuration
-    CHUNK_SIZE: int = int(os.getenv("CHUNK_SIZE", "500"))
-    CHUNK_OVERLAP: int = int(os.getenv("CHUNK_OVERLAP", "50"))
-    TOP_K_RETRIEVAL: int = int(os.getenv("TOP_K_RETRIEVAL", "4"))
+    chunk_size: int = Field(
+        default=500,
+        ge=100,
+        le=2000,
+        description="Text chunk size for RAG"
+    )
+    chunk_overlap: int = Field(
+        default=50,
+        ge=0,
+        le=500,
+        description="Chunk overlap for RAG"
+    )
+    top_k_retrieval: int = Field(
+        default=4,
+        ge=1,
+        le=20,
+        description="Top-K retrieval for RAG"
+    )
     
-    # Vector Store
-    FAISS_INDEX_PATH: Path = VECTOR_STORE_DIR / "faiss_index"
+    # Logging
+    log_level: str = Field(
+        default="INFO",
+        pattern="^(DEBUG|INFO|WARNING|ERROR|CRITICAL)$",
+        description="Logging level"
+    )
+    log_to_file: bool = Field(
+        default=True,
+        description="Whether to log to file"
+    )
     
-    @classmethod
-    def validate_api_key(cls, provider: str) -> bool:
-        """Check if API key is configured for the given provider."""
-        if provider == "qwen":
-            return bool(cls.DASHSCOPE_API_KEY)
-        elif provider == "qwen-coder":
-            return bool(cls.DASHSCOPE_CODING_API_KEY)
-        elif provider == "openai":
-            return bool(cls.OPENAI_API_KEY)
-        elif provider == "anthropic":
-            return bool(cls.ANTHROPIC_API_KEY)
-        return False
+    # Observability
+    enable_llm_tracing: bool = Field(
+        default=True,
+        description="Enable LLM I/O tracing"
+    )
     
-    @classmethod
-    def get_available_models(cls, provider: str) -> dict:
-        """Get available models for the given provider."""
-        if provider == "qwen":
-            return cls.QWEN_MODELS
-        elif provider == "qwen-coder":
-            return cls.QWEN_CODING_MODELS
-        elif provider == "openai":
-            return cls.OPENAI_MODELS
-        return {}
+    @property
+    def qwen_models(self) -> dict[str, str]:
+        """Get available Qwen models."""
+        return {
+            "qwen-turbo": "qwen-turbo",
+            "qwen-plus": "qwen-plus",
+            "qwen-max": "qwen-max",
+            "qwen-max-longcontext": "qwen-max-longcontext",
+        }
+    
+    @property
+    def qwen_coding_models(self) -> dict[str, str]:
+        """Get available Qwen Coding models."""
+        return {
+            "qwen3.5-plus": "qwen3.5-plus",
+            "qwen3-coder-plus": "qwen3-coder-plus",
+            "qwen3-coder-next": "qwen3-coder-next",
+            "qwen3-max-2026-01-23": "qwen3-max-2026-01-23",
+        }
+    
+    @property
+    def openai_models(self) -> dict[str, str]:
+        """Get available OpenAI models."""
+        return {
+            "gpt-3.5-turbo": "gpt-3.5-turbo",
+            "gpt-4": "gpt-4",
+            "gpt-4-turbo": "gpt-4-turbo-preview",
+            "gpt-4o": "gpt-4o",
+        }
+    
+    @property
+    def anthropic_models(self) -> dict[str, str]:
+        """Get available Anthropic models."""
+        return {
+            "claude-3-sonnet": "claude-3-sonnet-20240229",
+            "claude-3-opus": "claude-3-opus-20240229",
+            "claude-3-haiku": "claude-3-haiku-20240307",
+        }
+    
+    @property
+    def faiss_index_path(self) -> Path:
+        """Get FAISS index path."""
+        return VECTOR_STORE_DIR / "faiss_index"
+    
+    def validate_api_key(self, provider: str) -> bool:
+        """
+        Check if API key is configured for the given provider.
+        
+        Args:
+            provider: LLM provider identifier
+            
+        Returns:
+            True if API key is configured, False otherwise
+        """
+        match provider.lower():
+            case "qwen":
+                return bool(self.dashscope_api_key)
+            case "qwen-coder":
+                return bool(self.dashscope_coding_api_key)
+            case "openai":
+                return bool(self.openai_api_key)
+            case "anthropic":
+                return bool(self.anthropic_api_key)
+            case _:
+                return False
+    
+    def get_available_models(self, provider: str) -> dict[str, str]:
+        """
+        Get available models for the given provider.
+        
+        Args:
+            provider: LLM provider identifier
+            
+        Returns:
+            Dictionary of model names to model IDs
+        """
+        match provider.lower():
+            case "qwen":
+                return self.qwen_models
+            case "qwen-coder":
+                return self.qwen_coding_models
+            case "openai":
+                return self.openai_models
+            case "anthropic":
+                return self.anthropic_models
+            case _:
+                return {}
+    
+    def get_configured_providers(self) -> list[str]:
+        """
+        Get list of configured (has API key) providers.
+        
+        Returns:
+            List of provider names with valid API keys
+        """
+        providers: list[str] = []
+        if self.dashscope_api_key:
+            providers.append("qwen")
+        if self.dashscope_coding_api_key:
+            providers.append("qwen-coder")
+        if self.openai_api_key:
+            providers.append("openai")
+        if self.anthropic_api_key:
+            providers.append("anthropic")
+        return providers
 
 
 # Global settings instance

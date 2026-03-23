@@ -1,121 +1,249 @@
 """
 LLM Factory module for unified model access.
+
 Supports Qwen, OpenAI, and Anthropic providers with seamless switching.
+Includes tracing and structured logging for observability.
 """
 
-from typing import Optional, Union
-from langchain_core.language_models.chat_models import BaseChatModel
-from langchain_community.chat_models import ChatTongyi
-from langchain_openai import ChatOpenAI
-from langchain_anthropic import ChatAnthropic
+import time
+from typing import Any
+
 import streamlit as st
+from langchain_anthropic import ChatAnthropic
+from langchain_community.chat_models import ChatTongyi
+from langchain_community.embeddings import DashScopeEmbeddings
+from langchain_core.callbacks import BaseCallbackHandler
+from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_core.messages import BaseMessage
+from langchain_core.outputs import ChatResult
+from langchain_openai import ChatOpenAI
 
 from config.settings import settings
+from utils.logger import get_logger, trace_llm_call, trace_llm_io, set_correlation_id
+
+logger = get_logger(__name__)
+
+
+class TracingCallbackHandler(BaseCallbackHandler):
+    """
+    Callback handler that traces LLM calls for observability.
+    
+    Logs input/output payloads and timing information at DEBUG level.
+    """
+    
+    def __init__(self, provider: str, model: str):
+        """
+        Initialize tracing handler.
+        
+        Args:
+            provider: LLM provider name
+            model: Model name
+        """
+        self.provider = provider
+        self.model = model
+        self.start_time: float | None = None
+        
+    def on_llm_start(
+        self,
+        serialized: dict[str, Any] | None,
+        prompts: list[str],
+        **kwargs: Any
+    ) -> None:
+        """Log LLM start with input payload."""
+        self.start_time = time.time()
+        
+        # Trace input
+        trace_llm_io(
+            logger,
+            "input",
+            {
+                "provider": self.provider,
+                "model": self.model,
+                "prompt_count": len(prompts),
+                "prompts": prompts[:3],  # Limit to first 3 prompts for size
+            }
+        )
+    
+    def on_llm_end(self, response: ChatResult, **kwargs: Any) -> None:
+        """Log LLM completion with output and timing."""
+        latency_ms = (time.time() - self.start_time) * 1000 if self.start_time else None
+        
+        # Extract token usage if available
+        llm_output = response.llm_output or {}
+        token_usage = llm_output.get("token_usage", {})
+        prompt_tokens = token_usage.get("prompt_tokens") or token_usage.get("input_tokens")
+        completion_tokens = token_usage.get("completion_tokens") or token_usage.get("output_tokens")
+        
+        # Trace output
+        trace_llm_io(
+            logger,
+            "output",
+            {
+                "provider": self.provider,
+                "model": self.model,
+                "generation_count": len(response.generations),
+                "token_usage": token_usage,
+                "latency_ms": latency_ms,
+            }
+        )
+        
+        # Log metrics
+        if latency_ms:
+            trace_llm_call(
+                logger,
+                self.provider,
+                self.model,
+                prompt_tokens=prompt_tokens,
+                completion_tokens=completion_tokens,
+                latency_ms=latency_ms,
+            )
+    
+    def on_llm_error(self, error: BaseException, **kwargs: Any) -> None:
+        """Log LLM errors."""
+        latency_ms = (time.time() - self.start_time) * 1000 if self.start_time else None
+        
+        logger.error(
+            "llm_error",
+            provider=self.provider,
+            model=self.model,
+            error_type=type(error).__name__,
+            error=str(error),
+            latency_ms=latency_ms,
+        )
 
 
 def get_llm(
-    provider: Optional[str] = None,
-    model_name: Optional[str] = None,
-    temperature: Optional[float] = None,
-    max_tokens: Optional[int] = None,
+    provider: str | None = None,
+    model_name: str | None = None,
+    temperature: float | None = None,
+    max_tokens: int | None = None,
     streaming: bool = True,
-    **kwargs
+    enable_tracing: bool | None = None,
+    **kwargs: Any
 ) -> BaseChatModel:
     """
     Factory function to get LLM instance based on provider.
     
     Args:
-        provider: LLM provider ("qwen", "openai", "anthropic"). 
-                  Defaults to settings.DEFAULT_PROVIDER.
+        provider: LLM provider ("qwen", "qwen-coder", "openai", "anthropic").
+                  Defaults to settings.default_provider.
         model_name: Specific model name. Defaults to provider's default.
-        temperature: Sampling temperature (0-2). Defaults to settings.DEFAULT_TEMPERATURE.
-        max_tokens: Maximum tokens to generate. Defaults to settings.DEFAULT_MAX_TOKENS.
+        temperature: Sampling temperature (0-2). Defaults to settings.default_temperature.
+        max_tokens: Maximum tokens to generate. Defaults to settings.default_max_tokens.
         streaming: Enable streaming output. Defaults to True.
+        enable_tracing: Enable LLM I/O tracing. Defaults to settings.enable_llm_tracing.
         **kwargs: Additional provider-specific parameters.
     
     Returns:
-        BaseChatModel: Configured LLM instance.
+        Configured LLM instance.
     
     Raises:
         ValueError: If provider is not supported or API key is missing.
-    """
-    provider = provider or settings.DEFAULT_PROVIDER
-    temperature = temperature if temperature is not None else settings.DEFAULT_TEMPERATURE
-    max_tokens = max_tokens if max_tokens is not None else settings.DEFAULT_MAX_TOKENS
     
+    Example:
+        >>> llm = get_llm(provider="qwen", temperature=0.7)
+        >>> response = llm.invoke("Hello, world!")
+    """
+    provider = provider or settings.default_provider
+    temperature = temperature if temperature is not None else settings.default_temperature
+    max_tokens = max_tokens if max_tokens is not None else settings.default_max_tokens
+    enable_tracing = enable_tracing if enable_tracing is not None else settings.enable_llm_tracing
+    
+    # Validate API key
     if not settings.validate_api_key(provider):
-        raise ValueError(
+        error_msg = (
             f"API key for provider '{provider}' is not configured. "
             f"Please set the corresponding environment variable."
         )
+        logger.error("missing_api_key", provider=provider)
+        raise ValueError(error_msg)
     
-    if provider == "qwen":
-        model = model_name or settings.DEFAULT_MODEL
-        return ChatTongyi(
-            model=model,
-            temperature=temperature,
-            max_tokens=max_tokens,
-            streaming=streaming,
-            dashscope_api_key=settings.DASHSCOPE_API_KEY,
-            **kwargs
-        )
+    # Build callbacks
+    callbacks: list[BaseCallbackHandler] = []
+    if enable_tracing:
+        callbacks.append(TracingCallbackHandler(provider, model_name or "default"))
     
-    elif provider == "qwen-coder":
-        # Qwen Coding Plan uses OpenAI-compatible API
-        model = model_name or "qwen3-coder-plus"
-        return ChatOpenAI(
-            model=model,
-            temperature=temperature,
-            max_tokens=max_tokens,
-            streaming=streaming,
-            api_key=settings.DASHSCOPE_CODING_API_KEY,
-            base_url=settings.DASHSCOPE_CODING_BASE_URL,
-            **kwargs
-        )
+    logger.debug(
+        "creating_llm",
+        provider=provider,
+        model=model_name,
+        temperature=temperature,
+        streaming=streaming,
+    )
     
-    elif provider == "openai":
-        model = model_name or "gpt-3.5-turbo"
-        return ChatOpenAI(
-            model=model,
-            temperature=temperature,
-            max_tokens=max_tokens,
-            streaming=streaming,
-            api_key=settings.OPENAI_API_KEY,
-            **kwargs
-        )
-    
-    elif provider == "anthropic":
-        model = model_name or "claude-3-sonnet-20240229"
-        anthropic_kwargs = {
-            "model": model,
-            "temperature": temperature,
-            "max_tokens": max_tokens,
-            "streaming": streaming,
-            "api_key": settings.ANTHROPIC_API_KEY,
-        }
-        # Add base_url if configured
-        if settings.ANTHROPIC_BASE_URL:
-            anthropic_kwargs["base_url"] = settings.ANTHROPIC_BASE_URL
-        anthropic_kwargs.update(kwargs)
-        return ChatAnthropic(**anthropic_kwargs)
-    
-    else:
-        raise ValueError(
-            f"Unsupported provider: {provider}. "
-            f"Supported providers: qwen, openai, anthropic"
-        )
+    match provider.lower():
+        case "qwen":
+            model = model_name or settings.default_model
+            return ChatTongyi(
+                model=model,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                streaming=streaming,
+                dashscope_api_key=settings.dashscope_api_key,
+                callbacks=callbacks if callbacks else None,
+                **kwargs
+            )
+        
+        case "qwen-coder":
+            model = model_name or "qwen3-coder-plus"
+            return ChatOpenAI(
+                model=model,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                streaming=streaming,
+                api_key=settings.dashscope_coding_api_key,
+                base_url=settings.dashscope_coding_base_url,
+                callbacks=callbacks if callbacks else None,
+                **kwargs
+            )
+        
+        case "openai":
+            model = model_name or "gpt-3.5-turbo"
+            return ChatOpenAI(
+                model=model,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                streaming=streaming,
+                api_key=settings.openai_api_key,
+                callbacks=callbacks if callbacks else None,
+                **kwargs
+            )
+        
+        case "anthropic":
+            model = model_name or "claude-3-sonnet-20240229"
+            anthropic_kwargs: dict[str, Any] = {
+                "model": model,
+                "temperature": temperature,
+                "max_tokens": max_tokens,
+                "streaming": streaming,
+                "api_key": settings.anthropic_api_key,
+                "callbacks": callbacks if callbacks else None,
+            }
+            if settings.anthropic_base_url:
+                anthropic_kwargs["base_url"] = settings.anthropic_base_url
+            anthropic_kwargs.update(kwargs)
+            return ChatAnthropic(**anthropic_kwargs)
+        
+        case _:
+            error_msg = (
+                f"Unsupported provider: {provider}. "
+                f"Supported providers: qwen, qwen-coder, openai, anthropic"
+            )
+            logger.error("unsupported_provider", provider=provider)
+            raise ValueError(error_msg)
 
 
 @st.cache_resource
 def get_cached_llm(
-    provider: Optional[str] = None,
-    model_name: Optional[str] = None,
-    temperature: Optional[float] = None,
-    max_tokens: Optional[int] = None,
-    _cache_key: Optional[str] = None
+    provider: str | None = None,
+    model_name: str | None = None,
+    temperature: float | None = None,
+    max_tokens: int | None = None,
+    _cache_key: str | None = None
 ) -> BaseChatModel:
     """
     Cached version of get_llm to avoid recreating model instances.
+    
     Use _cache_key to force refresh when needed.
     
     Args:
@@ -126,44 +254,74 @@ def get_cached_llm(
         _cache_key: Optional cache invalidation key.
     
     Returns:
-        BaseChatModel: Cached LLM instance.
+        Cached LLM instance.
+    
+    Note:
+        This function uses @st.cache_resource, so the returned instance
+        is shared across sessions. Do not modify the instance state.
     """
     return get_llm(
         provider=provider,
         model_name=model_name,
         temperature=temperature,
         max_tokens=max_tokens,
-        streaming=True
+        streaming=True,
+        enable_tracing=False,  # Disable tracing for cached instances
     )
 
 
 def get_available_providers() -> list[str]:
-    """Get list of configured providers."""
-    providers = []
-    if settings.DASHSCOPE_API_KEY:
-        providers.append("qwen")
-    if settings.DASHSCOPE_CODING_API_KEY:
-        providers.append("qwen-coder")
-    if settings.OPENAI_API_KEY:
-        providers.append("openai")
-    if settings.ANTHROPIC_API_KEY:
-        providers.append("anthropic")
-    return providers
+    """
+    Get list of configured providers (those with API keys).
+    
+    Returns:
+        List of provider names that can be used immediately.
+    """
+    return settings.get_configured_providers()
 
 
-def get_embedding_model():
+def get_embedding_model() -> DashScopeEmbeddings:
     """
     Get embedding model based on configuration.
     
     Returns:
         Embeddings instance for vector operations.
+    
+    Raises:
+        ValueError: If the configured embedding provider is not supported.
     """
-    from langchain_community.embeddings import DashScopeEmbeddings
+    match settings.embedding_provider.lower():
+        case "dashscope":
+            if not settings.dashscope_api_key:
+                raise ValueError(
+                    "DashScope API key is required for embeddings. "
+                    "Please set DASHSCOPE_API_KEY in your .env file."
+                )
+            return DashScopeEmbeddings(
+                model=settings.dashscope_embedding_model,
+                dashscope_api_key=settings.dashscope_api_key
+            )
+        
+        case _:
+            raise ValueError(
+                f"Unsupported embedding provider: {settings.embedding_provider}. "
+                f"Supported providers: dashscope"
+            )
+
+
+def count_tokens(messages: list[BaseMessage], model: str = "qwen-turbo") -> int:
+    """
+    Estimate token count for a list of messages.
     
-    if settings.EMBEDDING_PROVIDER == "dashscope":
-        return DashScopeEmbeddings(
-            model=settings.DASHSCOPE_EMBEDDING_MODEL,
-            dashscope_api_key=settings.DASHSCOPE_API_KEY
-        )
+    Uses a simple heuristic: ~4 characters per token.
+    For accurate counts, use tiktoken or provider-specific tokenizers.
     
-    raise ValueError(f"Unsupported embedding provider: {settings.EMBEDDING_PROVIDER}")
+    Args:
+        messages: List of LangChain messages
+        model: Model name (for future provider-specific counting)
+    
+    Returns:
+        Estimated token count
+    """
+    total_chars = sum(len(msg.content) for msg in messages)
+    return total_chars // 4

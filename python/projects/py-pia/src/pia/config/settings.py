@@ -1,8 +1,11 @@
 """Application settings and configuration."""
 
+from __future__ import annotations
+
 import os
 from pathlib import Path
-from pydantic import BaseModel
+
+from pydantic import BaseModel, Field
 
 
 def _load_env_file() -> None:
@@ -12,6 +15,7 @@ def _load_env_file() -> None:
         return
     try:
         from dotenv import load_dotenv
+
         load_dotenv(env_path, override=False)
     except ImportError:
         # Manual fallback: parse key=value lines
@@ -50,7 +54,6 @@ class Settings(BaseModel):
         _load_env_file()
 
         self.github_token = os.environ.get("GITHUB_TOKEN", self.github_token)
-
         self.llm_base_url = os.environ.get("LLM_BASE_URL", self.llm_base_url)
         self.llm_api_key = os.environ.get("LLM_API_KEY", self.llm_api_key)
         self.llm_model = os.environ.get("LLM_MODEL", self.llm_model)

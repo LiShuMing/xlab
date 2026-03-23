@@ -46,14 +46,14 @@ default_user_name = "default_user"
 
 """
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-第一部分
-函数插件输入输出接驳区
-    - ChatBotWithCookies:   带Cookies的Chatbot类，为实现更多强大的功能做基础
-    - ArgsGeneralWrapper:   装饰器函数，用于重组输入参数，改变输入参数的顺序与结构
-    - update_ui:            刷新界面用 yield from update_ui(chatbot, history)
-    - CatchException:       将插件中出的所有问题显示在界面上
-    - HotReload:            实现插件的热更新
-    - trimmed_format_exc:   打印traceback，为了安全而隐藏绝对地址
+Part 1
+Function Plugin I/O Interface
+    - ChatBotWithCookies:   Chatbot class with cookies for extended functionality
+    - ArgsGeneralWrapper:   Decorator to restructure input parameters
+    - update_ui:            Refresh UI with yield from update_ui(chatbot, history)
+    - CatchException:       Display all plugin errors in the chat interface
+    - HotReload:            Enable plugin hot-reloading
+    - trimmed_format_exc:   Print traceback with hidden absolute paths for security
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 """
 
@@ -90,9 +90,8 @@ class ChatBotWithCookies(list):
 
 def ArgsGeneralWrapper(f):
     """
-    装饰器函数ArgsGeneralWrapper，用于重组输入参数，改变输入参数的顺序与结构。
-    该装饰器是大多数功能调用的入口。
-    函数示意图：https://mermaid.live/edit#pako:eNqNVFtPGkEY_StkntoEDQtLoTw0sWqapjQxVWPabmOm7AiEZZcsQ9QiiW012qixqdeqqIn10geBh6ZR8PJnmAWe-hc6l3VhrWnLEzNzzvnO953ZyYOYoSIQAWOaMR5LQBN7hvoU3UN_g5iu7imAXEyT4wUF3Pd0dT3y9KGYYUJsmK8V0GPGs0-QjkyojZgwk0Fm82C2dVghX08U8EaoOHjOfoEMU0XmADRhOksVWnNLjdpM82qFzB6S5Q_WWsUhuqCc3JtAsVR_OoMnhyZwXgHWwbS1d4gnsLVZJp-P6mfVxveqAgqC70Jz_pQCOGDKM5xFdNNPDdilF6uSU_hOYqu4a3MHYDZLDzq5fodrC3PWcEaFGPUaRiqJWK_W9g9rvRITa4dhy_0nw67SiePMp3oSR6PPn41DGgllkvkizYwsrmtaejTFd8V4yekGmT1zqrt4XGlAy8WTuiPULF01LksZvukSajfQQRAxmYi5S0D81sDcyzapVdn6sYFHkjhhGyel3frVQnvsnbR23lEjlhIlaOJiFPWzU5G4tfNJo8ejwp47-TbvJkKKZvmxA6SKo16oaazJysfG6klr9T0pbTW2ZqzlL_XaT8fYbQLXe4mSmvoCZXMaa7FePW6s7jVqK9bujvse3WFjY5_Z4KfsA4oiPY4T7Drvn1tLJTbG1to1qR79ulgk89-oJbvZzbIwJty6u20LOReWa9BvwserUd9s9MIKc3x5TUWEoAhUyJK5y85w_yG-dFu_R9waoU7K581y8W_qLle35-rG9Nxcrz8QHRsc0K-r9NViYRT36KsFvCCNzDRMqvSVyzOKAnACpZECIvSvCs2UAhS9QHEwh43BST0GItjMIS_I8e-sLwnj9A262cxA_ZVh0OUY1LJiDSJ5MAEiUijYLUtBORR6KElyQPaCSRDpksNSd8AfluSgHPaFC17wjrOlbgbzyyFf4IFPDvoD_sJvnkdK-g
+    Decorator ArgsGeneralWrapper to restructure input parameters.
+    This decorator is the entry point for most function calls.
     """
     def decorated(request: gradio.Request, cookies:dict, max_length:int, llm_model:str,
                   txt:str, txt2:str, top_p:float, temperature:float, chatbot:list,
@@ -100,7 +99,7 @@ def ArgsGeneralWrapper(f):
         txt_passon = txt
         history = json.loads(json_history) if json_history else []
         if txt == "" and txt2 != "": txt_passon = txt2
-        # 引入一个有cookie的chatbot
+        # Create a chatbot with cookies
         if request.username is not None:
             user_name = request.username
         else:
@@ -132,16 +131,16 @@ def ArgsGeneralWrapper(f):
         chatbot_with_cookie.write_list(chatbot)
 
         if cookies.get('lock_plugin', None) is None:
-            # 正常状态
-            if len(args) == 0:  # 插件通道
+            # Normal state
+            if len(args) == 0:  # Plugin channel
                 yield from f(txt_passon, llm_kwargs, plugin_kwargs, chatbot_with_cookie, history, system_prompt, request)
-            else:               # 对话通道，或者基础功能通道
-                # 基础对话通道，或者基础功能通道
+            else:               # Chat channel or basic function channel
+                # Basic chat channel or basic function channel
                 if get_conf('AUTO_CONTEXT_CLIP_ENABLE'):
                     txt_passon, history = auto_context_clip(txt_passon, history)
                 yield from f(txt_passon, llm_kwargs, plugin_kwargs, chatbot_with_cookie, history, system_prompt, *args)
         else:
-            # 处理少数情况下的特殊插件的锁定状态
+            # Handle special plugin lock state in rare cases
             module, fn_name = cookies['lock_plugin'].split('->')
             f_hot_reload = getattr(importlib.import_module(module, fn_name), fn_name)
             yield from f_hot_reload(txt_passon, llm_kwargs, plugin_kwargs, chatbot_with_cookie, history, system_prompt, request)
@@ -156,31 +155,31 @@ def ArgsGeneralWrapper(f):
     return decorated
 
 
-def update_ui(chatbot:ChatBotWithCookies, history:list, msg:str="正常", **kwargs):  # 刷新界面
+def update_ui(chatbot:ChatBotWithCookies, history:list, msg:str="normal", **kwargs):  # Refresh UI
     """
-    刷新用户界面
+    Refresh user interface
     """
-    assert isinstance(history, list), "history必须是一个list"
+    assert isinstance(history, list), "history must be a list"
     assert isinstance(
         chatbot, ChatBotWithCookies
-    ), "在传递chatbot的过程中不要将其丢弃。必要时, 可用clear将其清空, 然后用for+append循环重新赋值。"
+    ), "Do not discard chatbot during transmission. Use clear() if necessary, then reassign with for+append loop."
     cookies = chatbot.get_cookies()
-    # 备份一份History作为记录
+    # Backup history as record
     cookies.update({"history": history})
-    # 解决插件锁定时的界面显示问题
+    # Fix UI display when plugin is locked
     if cookies.get("lock_plugin", None):
         label = (
             cookies.get("llm_model", "")
             + " | "
-            + "正在锁定插件"
+            + "Locking plugin"
             + cookies.get("lock_plugin", None)
         )
         chatbot_gr = gradio.update(value=chatbot, label=label)
         if cookies.get("label", "") != label:
-            cookies["label"] = label  # 记住当前的label
+            cookies["label"] = label  # Remember current label
     elif cookies.get("label", None):
         chatbot_gr = gradio.update(value=chatbot, label=cookies.get("llm_model", ""))
-        cookies["label"] = None  # 清空label
+        cookies["label"] = None  # Clear label
     else:
         chatbot_gr = chatbot
 
@@ -189,9 +188,9 @@ def update_ui(chatbot:ChatBotWithCookies, history:list, msg:str="正常", **kwar
     yield cookies, chatbot_gr, json_history, msg
 
 
-def update_ui_latest_msg(lastmsg:str, chatbot:ChatBotWithCookies, history:list, delay:float=1, msg:str="正常"):  # 刷新界面
+def update_ui_latest_msg(lastmsg:str, chatbot:ChatBotWithCookies, history:list, delay:float=1, msg:str="normal"):  # Refresh UI
     """
-    刷新用户界面
+    Refresh user interface
     """
     if len(chatbot) == 0:
         chatbot.append(["update_ui_last_msg", lastmsg])
@@ -225,7 +224,7 @@ class FriendlyException(Exception):
 
 def CatchException(f):
     """
-    装饰器函数，捕捉函数f中的异常并封装到一个生成器中返回，并显示到聊天当中。
+    Decorator to catch exceptions from function f, wrap them in a generator, and display in chat.
     """
 
     @wraps(f)
@@ -237,29 +236,28 @@ def CatchException(f):
             tb_str = '```\n' + trimmed_format_exc() + '```'
             if len(chatbot_with_cookie) == 0:
                 chatbot_with_cookie.clear()
-                chatbot_with_cookie.append(["插件调度异常:\n" + tb_str, None])
+                chatbot_with_cookie.append(["Plugin dispatch exception:\n" + tb_str, None])
             chatbot_with_cookie[-1] = [chatbot_with_cookie[-1][0], e.generate_error_html()]
-            yield from update_ui(chatbot=chatbot_with_cookie, history=history, msg=f'异常')  # 刷新界面
+            yield from update_ui(chatbot=chatbot_with_cookie, history=history, msg=f'exception')  # Refresh UI
         except Exception as e:
             tb_str = '```\n' + trimmed_format_exc() + '```'
             if len(chatbot_with_cookie) == 0:
                 chatbot_with_cookie.clear()
-                chatbot_with_cookie.append(["插件调度异常", "异常原因"])
-            chatbot_with_cookie[-1] = [chatbot_with_cookie[-1][0], f"[Local Message] 插件调用出错: \n\n{tb_str} \n"]
-            yield from update_ui(chatbot=chatbot_with_cookie, history=history, msg=f'异常 {e}')  # 刷新界面
+                chatbot_with_cookie.append(["Plugin dispatch exception", "Exception reason"])
+            chatbot_with_cookie[-1] = [chatbot_with_cookie[-1][0], f"[Local Message] Plugin call error: \n\n{tb_str} \n"]
+            yield from update_ui(chatbot=chatbot_with_cookie, history=history, msg=f'exception {e}')  # Refresh UI
 
     return decorated
 
 
 def HotReload(f):
     """
-    HotReload的装饰器函数，用于实现Python函数插件的热更新。
-    函数热更新是指在不停止程序运行的情况下，更新函数代码，从而达到实时更新功能。
-    在装饰器内部，使用wraps(f)来保留函数的元信息，并定义了一个名为decorated的内部函数。
-    内部函数通过使用importlib模块的reload函数和inspect模块的getmodule函数来重新加载并获取函数模块，
-    然后通过getattr函数获取函数名，并在新模块中重新加载函数。
-    最后，使用yield from语句返回重新加载过的函数，并在被装饰的函数上执行。
-    最终，装饰器函数返回内部函数。这个内部函数可以将函数的原始定义更新为最新版本，并执行函数的新版本。
+    Decorator for HotReload to enable hot-updating of Python function plugins.
+    Hot-reloading allows updating function code without stopping the program.
+    Inside the decorator, wraps(f) preserves function metadata, and a decorated internal function is defined.
+    The internal function uses importlib.reload and inspect.getmodule to reload and get the function module,
+    then uses getattr to get the function name and reload it in the new module.
+    Finally, yield from returns the reloaded function and executes it on the decorated function.
     """
     if get_conf("PLUGIN_HOT_RELOAD"):
 
@@ -276,46 +274,46 @@ def HotReload(f):
 
 """
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-第二部分
-其他小工具:
-    - write_history_to_file:    将结果写入markdown文件中
-    - regular_txt_to_markdown:  将普通文本转换为Markdown格式的文本。
-    - report_exception:         向chatbot中添加简单的意外错误信息
-    - text_divide_paragraph:    将文本按照段落分隔符分割开，生成带有段落标签的HTML代码。
-    - markdown_convertion:      用多种方式组合，将markdown转化为好看的html
-    - format_io:                接管gradio默认的markdown处理方式
-    - on_file_uploaded:         处理文件的上传（自动解压）
-    - on_report_generated:      将生成的报告自动投射到文件上传区
-    - clip_history:             当历史上下文过长时，自动截断
-    - get_conf:                 获取设置
-    - select_api_key:           根据当前的模型类别，抽取可用的api-key
+Part 2
+Other Utilities:
+    - write_history_to_file:    Write results to markdown file
+    - regular_txt_to_markdown:  Convert plain text to markdown format
+    - report_exception:         Add simple error messages to chatbot
+    - text_divide_paragraph:    Split text by paragraph separators, generate HTML with paragraph tags
+    - markdown_convertion:      Combine multiple methods to convert markdown to beautiful HTML
+    - format_io:                Override gradio's default markdown processing
+    - on_file_uploaded:         Handle file uploads (auto-extract archives)
+    - on_report_generated:      Auto-project generated reports to file upload area
+    - clip_history:             Auto-truncate when context history is too long
+    - get_conf:                 Get configuration settings
+    - select_api_key:           Extract available API key based on current model type
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 """
 
 
 def get_reduce_token_percent(text:str):
     """
-    * 此函数未来将被弃用
+    * This function will be deprecated in the future
     """
     try:
         # text = "maximum context length is 4097 tokens. However, your messages resulted in 4870 tokens"
         pattern = r"(\d+)\s+tokens\b"
         match = re.findall(pattern, text)
-        EXCEED_ALLO = 500  # 稍微留一点余地，否则在回复时会因余量太少出问题
+        EXCEED_ALLO = 500  # Leave some buffer to avoid issues with too little margin in responses
         max_limit = float(match[0]) - EXCEED_ALLO
         current_tokens = float(match[1])
         ratio = max_limit / current_tokens
         assert ratio > 0 and ratio < 1
         return ratio, str(int(current_tokens - max_limit))
     except:
-        return 0.5, "不详"
+        return 0.5, "unknown"
 
 
 def write_history_to_file(
     history:list, file_basename:str=None, file_fullname:str=None, auto_caption:bool=True
 ):
     """
-    将对话记录history以Markdown格式写入文件中。如果没有指定文件名，则使用当前时间生成文件名。
+    Write conversation history to file in Markdown format. If no filename is specified, use current time.
     """
     import os
     import time
@@ -348,7 +346,7 @@ def write_history_to_file(
 
 def regular_txt_to_markdown(text:str):
     """
-    将普通文本转换为Markdown格式的文本。
+    Convert plain text to markdown format.
     """
     text = text.replace("\n", "\n\n")
     text = text.replace("\n\n\n", "\n\n")
@@ -358,7 +356,7 @@ def regular_txt_to_markdown(text:str):
 
 def report_exception(chatbot:ChatBotWithCookies, history:list, a:str, b:str):
     """
-    向chatbot中添加错误信息
+    Add error message to chatbot
     """
     chatbot.append((a, b))
     history.extend([a, b])
@@ -366,7 +364,7 @@ def report_exception(chatbot:ChatBotWithCookies, history:list, a:str, b:str):
 
 def find_free_port()->int:
     """
-    返回当前系统中可用的未使用端口。
+    Return an available unused port on the current system.
     """
     import socket
     from contextlib import closing
@@ -415,7 +413,7 @@ def file_already_in_downloadzone(file:str, user_path:str):
 
 
 def promote_file_to_downloadzone(file:str, rename_file:str=None, chatbot:ChatBotWithCookies=None):
-    # 将文件复制一份到下载区
+    # Copy file to download zone
     import shutil
 
     if chatbot is not None:
@@ -423,7 +421,7 @@ def promote_file_to_downloadzone(file:str, rename_file:str=None, chatbot:ChatBot
     else:
         user_name = default_user_name
     if not os.path.exists(file):
-        raise FileNotFoundError(f"文件{file}不存在")
+        raise FileNotFoundError(f"File {file} does not exist")
     user_path = get_log_folder(user_name, plugin_name=None)
     if file_already_in_downloadzone(file, user_path):
         new_path = file
@@ -432,19 +430,19 @@ def promote_file_to_downloadzone(file:str, rename_file:str=None, chatbot:ChatBot
         if rename_file is None:
             rename_file = f"{gen_time_str()}-{os.path.basename(file)}"
         new_path = pj(user_path, rename_file)
-        # 如果已经存在，先删除
+        # Remove if already exists
         if os.path.exists(new_path) and not os.path.samefile(new_path, file):
             os.remove(new_path)
-        # 把文件复制过去
+        # Copy file
         if not os.path.exists(new_path):
             shutil.copyfile(file, new_path)
-    # 将文件添加到chatbot cookie中
+    # Add file to chatbot cookies
     if chatbot is not None:
         if "files_to_promote" in chatbot._cookies:
             current = chatbot._cookies["files_to_promote"]
         else:
             current = []
-        if new_path not in current:  # 避免把同一个文件添加多次
+        if new_path not in current:  # Avoid adding same file multiple times
             chatbot._cookies.update({"files_to_promote": [new_path] + current})
     return new_path
 
@@ -462,7 +460,7 @@ def del_outdated_uploads(outdate_time_seconds:float, target_path_base:str=None):
     current_time = time.time()
     one_hour_ago = current_time - outdate_time_seconds
     # Get a list of all subdirectories in the user_upload_dir folder
-    # Remove subdirectories that are older than one hour
+    # Remove subdirectories that are older than specified time
     for subdirectory in glob.glob(f"{user_upload_dir}/*"):
         subdirectory_time = os.path.getmtime(subdirectory)
         if subdirectory_time < one_hour_ago:
@@ -477,9 +475,9 @@ def del_outdated_uploads(outdate_time_seconds:float, target_path_base:str=None):
 def to_markdown_tabs(head: list, tabs: list, alignment=":---:", column=False, omit_path=None):
     """
     Args:
-        head: 表头：[]
-        tabs: 表值：[[列1], [列2], [列3], [列4]]
-        alignment: :--- 左对齐， :---: 居中对齐， ---: 右对齐
+        head: Table header: []
+        tabs: Table values: [[col1], [col2], [col3], [col4]]
+        alignment: :--- left, :---: center, ---: right
         column: True to keep data in columns, False to keep data in rows (default).
     Returns:
         A string representation of the markdown table.
@@ -511,22 +509,22 @@ def on_file_uploaded(
     txt:str, txt2:str, checkboxes:List[str], cookies:dict
 ):
     """
-    当文件被上传时的回调函数
+    Callback function when files are uploaded
     """
     if len(files) == 0:
         return chatbot, txt
 
-    # 创建工作路径
+    # Create working path
     user_name = default_user_name if not request.username else request.username
     time_tag = gen_time_str()
     target_path_base = get_upload_folder(user_name, tag=time_tag)
     os.makedirs(target_path_base, exist_ok=True)
 
-    # 移除过时的旧文件从而节省空间&保护隐私
-    outdate_time_seconds = 3600  # 一小时
+    # Remove outdated files to save space and protect privacy
+    outdate_time_seconds = 3600  # One hour
     del_outdated_uploads(outdate_time_seconds, get_upload_folder(user_name))
 
-    # 逐个文件转移到目标路径
+    # Move files to target path one by one
     upload_msg = ""
     for file in files:
         file_origin_name = os.path.basename(file.orig_name)
@@ -536,21 +534,21 @@ def on_file_uploaded(
             file_path=this_file_path, dest_dir=this_file_path + ".extract"
         )
 
-    # 整理文件集合 输出消息
+    # Organize file collection and output message
     files = glob.glob(f"{target_path_base}/**/*", recursive=True)
     moved_files = [fp for fp in files]
     max_file_to_show = 10
     if len(moved_files) > max_file_to_show:
-        moved_files = moved_files[:max_file_to_show//2] + [f'... ( 📌省略{len(moved_files) - max_file_to_show}个文件的显示 ) ...'] + \
+        moved_files = moved_files[:max_file_to_show//2] + [f'... ( 📌 omitting {len(moved_files) - max_file_to_show} files ) ...'] + \
                       moved_files[-max_file_to_show//2:]
-    moved_files_str = to_markdown_tabs(head=["文件"], tabs=[moved_files], omit_path=target_path_base)
+    moved_files_str = to_markdown_tabs(head=["File"], tabs=[moved_files], omit_path=target_path_base)
     chatbot.append(
         [
-            "我上传了文件，请查收",
-            f"[Local Message] 收到以下文件 （上传到路径：{target_path_base}）: " +
+            "I uploaded files, please check",
+            f"[Local Message] Received the following files (uploaded to: {target_path_base}): " +
             f"\n\n{moved_files_str}" +
-            f"\n\n调用路径参数已自动修正到: \n\n{txt}" +
-            f"\n\n现在您点击任意函数插件时，以上文件将被作为输入参数" +
+            f"\n\nPath parameter has been auto-corrected to: \n\n{txt}" +
+            f"\n\nNow when you click any function plugin, the above files will be used as input parameters" +
             upload_msg,
         ]
     )
@@ -606,7 +604,7 @@ def load_chat_cookies():
         "AZURE_CFG_ARRAY", "NUM_CUSTOM_BASIC_BTN"
     )
 
-    # deal with azure openai key
+    # Deal with azure openai key
     if is_any_api_key(AZURE_API_KEY):
         if is_any_api_key(API_KEY):
             API_KEY = API_KEY + "," + AZURE_API_KEY
@@ -615,7 +613,7 @@ def load_chat_cookies():
     if len(AZURE_CFG_ARRAY) > 0:
         for azure_model_name, azure_cfg_dict in AZURE_CFG_ARRAY.items():
             if not azure_model_name.startswith("azure"):
-                raise ValueError("AZURE_CFG_ARRAY中配置的模型必须以azure开头")
+                raise ValueError("Models in AZURE_CFG_ARRAY must start with 'azure'")
             AZURE_API_KEY_ = azure_cfg_dict["AZURE_API_KEY"]
             if is_any_api_key(AZURE_API_KEY_):
                 if is_any_api_key(API_KEY):
@@ -627,11 +625,11 @@ def load_chat_cookies():
     for k in range(NUM_CUSTOM_BASIC_BTN):
         customize_fn_overwrite_.update(
             {
-                "自定义按钮"
+                "Custom Button"
                 + str(k + 1): {
                     "Title": r"",
-                    "Prefix": r"请在自定义菜单中定义提示词前缀.",
-                    "Suffix": r"请在自定义菜单中定义提示词后缀",
+                    "Prefix": r"Please define prompt prefix in custom menu.",
+                    "Suffix": r"Please define prompt suffix in custom menu.",
                 }
             }
         )
@@ -654,13 +652,13 @@ def clear_line_break(txt):
 
 class DummyWith:
     """
-    这段代码定义了一个名为DummyWith的空上下文管理器，
-    它的作用是……额……就是不起作用，即在代码结构不变得情况下取代其他的上下文管理器。
-    上下文管理器是一种Python对象，用于与with语句一起使用，
-    以确保一些资源在代码块执行期间得到正确的初始化和清理。
-    上下文管理器必须实现两个方法，分别为 __enter__()和 __exit__()。
-    在上下文执行开始的情况下，__enter__()方法会在代码块被执行前被调用，
-    而在上下文执行结束时，__exit__()方法则会被调用。
+    A dummy context manager that does nothing.
+    Used to replace other context managers without changing code structure.
+    A context manager is a Python object used with the with statement
+    to ensure resources are properly initialized and cleaned up.
+    Context managers must implement __enter__() and __exit__() methods.
+    __enter__() is called before the code block executes,
+    and __exit__() is called when the context execution ends.
     """
 
     def __enter__(self):
@@ -672,7 +670,7 @@ class DummyWith:
 
 def run_gradio_in_subpath(demo, auth, port, custom_path):
     """
-    把gradio的运行地址更改到指定的二次路径上
+    Change gradio's running address to a specified sub-path
     """
 
     def is_path_legal(path: str) -> bool:
@@ -724,18 +722,18 @@ def auto_context_clip(current, history, policy='search_optimal'):
     elif policy == 'search_optimal':
         return auto_context_clip_search_optimal(current, history)
     else:
-        raise RuntimeError(f"未知的自动上下文裁剪策略: {policy}。")
+        raise RuntimeError(f"Unknown auto context clip policy: {policy}.")
 
 
 
 """
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-第三部分
-其他小工具:
-    - zip_folder:    把某个路径下所有文件压缩，然后转移到指定的另一个路径中（gpt写的）
-    - gen_time_str:  生成时间戳
-    - ProxyNetworkActivate: 临时地启动代理网络（如果有）
-    - objdump/objload: 快捷的调试函数
+Part 3
+Other Utilities:
+    - zip_folder:    Compress all files under a path and move to another path
+    - gen_time_str:  Generate timestamp
+    - ProxyNetworkActivate: Temporarily activate proxy network (if available)
+    - objdump/objload: Quick debug functions
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 """
 
@@ -825,16 +823,16 @@ def get_user(chatbotwithcookies:ChatBotWithCookies):
 
 class ProxyNetworkActivate:
     """
-    这段代码定义了一个名为ProxyNetworkActivate的空上下文管理器, 用于给一小段代码上代理
+    A context manager for temporarily enabling proxy network for a code block
     """
 
     def __init__(self, task=None) -> None:
         self.task = task
         if not task:
-            # 不给定task, 那么我们默认代理生效
+            # No task specified, proxy is enabled by default
             self.valid = True
         else:
-            # 给定了task, 我们检查一下
+            # Check if task is in proxy whitelist
             from toolbox import get_conf
 
             WHEN_TO_USE_PROXY = get_conf("WHEN_TO_USE_PROXY")
@@ -866,7 +864,7 @@ class ProxyNetworkActivate:
 
 def Singleton(cls):
     """
-    一个单实例装饰器
+    A singleton decorator
     """
     _instance = {}
 
@@ -905,7 +903,7 @@ def have_any_recent_upload_image_files(chatbot:ChatBotWithCookies, pop:bool=Fals
     else:
         return False, None  # most_recent_uploaded is too old
 
-# Claude3 model supports graphic context dialogue, reads all images
+# Claude 3 models support image context dialogue, reads all images
 def every_image_file_in_path(chatbot:ChatBotWithCookies):
     if chatbot is None:
         return False, []  # chatbot is None
@@ -953,7 +951,8 @@ def map_file_to_sha256(file_path):
 
 def check_repeat_upload(new_pdf_path, pdf_hash):
     '''
-    检查历史上传的文件是否与新上传的文件相同，如果相同则返回(True, 重复文件路径)，否则返回(False，None)
+    Check if a previously uploaded file is the same as the newly uploaded file.
+    Returns (True, duplicate_file_path) if same, otherwise (False, None)
     '''
     from toolbox import get_conf
     import PyPDF2
@@ -968,11 +967,11 @@ def check_repeat_upload(new_pdf_path, pdf_hash):
             reader1 = PyPDF2.PdfFileReader(file1)
             reader2 = PyPDF2.PdfFileReader(file2)
 
-            # 比较页数是否相同
+            # Compare number of pages
             if reader1.getNumPages() != reader2.getNumPages():
                 continue
 
-            # 比较每一页的内容是否相同
+            # Compare content of each page
             for page_num in range(reader1.getNumPages()):
                 page1 = reader1.getPage(page_num).extractText()
                 page2 = reader2.getPage(page_num).extractText()
@@ -985,7 +984,7 @@ def check_repeat_upload(new_pdf_path, pdf_hash):
         if len(maybe_project_dir) > 0:
             return True, os.path.dirname(maybe_project_dir[0])
 
-    # 如果所有页的内容都相同，返回 True
+    # If all pages have the same content, return True
     return False, None
 
 def log_chat(llm_model: str, input_str: str, output_str: str):

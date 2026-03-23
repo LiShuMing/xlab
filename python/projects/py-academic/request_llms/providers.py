@@ -36,12 +36,18 @@ class OpenAIProvider(LLMProvider):
     SUPPORTED_MODELS = [
         "gpt-4o",
         "gpt-4o-mini",
+        "gpt-4.1",
+        "gpt-4.1-mini",
+        "gpt-4.1-nano",
         "gpt-4-turbo",
         "gpt-4",
         "gpt-3.5-turbo",
-        "o1-preview",
+        "o1",
         "o1-mini",
+        "o1-preview",
+        "o3",
         "o3-mini",
+        "o4-mini",
     ]
     
     DEFAULT_BASE_URL = "https://api.openai.com/v1"
@@ -50,12 +56,18 @@ class OpenAIProvider(LLMProvider):
     CONTEXT_LENGTHS = {
         "gpt-4o": 128000,
         "gpt-4o-mini": 128000,
+        "gpt-4.1": 1047576,
+        "gpt-4.1-mini": 1047576,
+        "gpt-4.1-nano": 1047576,
         "gpt-4-turbo": 128000,
         "gpt-4": 8192,
         "gpt-3.5-turbo": 16385,
+        "o1": 200000,
         "o1-preview": 128000,
         "o1-mini": 128000,
+        "o3": 200000,
         "o3-mini": 200000,
+        "o4-mini": 200000,
     }
     
     def __init__(
@@ -207,34 +219,38 @@ class AnthropicProvider(LLMProvider):
     """
     Anthropic Claude API provider.
     
-    Supports Claude 3 and newer models.
+    Supports Claude 3, Claude 3.5, Claude 3.7 and Claude 4 models.
     Also supports Claude-compatible endpoints (e.g., via DashScope).
     
     Example:
         >>> provider = AnthropicProvider(
-        ...     model="claude-3-opus-20240229",
+        ...     model="claude-sonnet-4-5",
         ...     api_key="sk-ant-..."
         ... )
         >>> response = await provider.chat([Message.user("Hello!")])
     """
     
     SUPPORTED_MODELS = [
+        "claude-sonnet-4-5",
+        "claude-3-7-sonnet-20250219",
+        "claude-3-5-sonnet-20241022",
+        "claude-3-5-sonnet-20240620",
         "claude-3-opus-20240229",
         "claude-3-sonnet-20240229",
         "claude-3-haiku-20240307",
-        "claude-3-5-sonnet-20240620",
-        "claude-3-5-sonnet-20241022",
     ]
     
     DEFAULT_BASE_URL = "https://api.anthropic.com/v1"
     
     # Context lengths for Claude models
     CONTEXT_LENGTHS = {
+        "claude-sonnet-4-5": 200000,
+        "claude-3-7-sonnet-20250219": 200000,
+        "claude-3-5-sonnet-20241022": 200000,
+        "claude-3-5-sonnet-20240620": 200000,
         "claude-3-opus-20240229": 200000,
         "claude-3-sonnet-20240229": 200000,
         "claude-3-haiku-20240307": 200000,
-        "claude-3-5-sonnet-20240620": 200000,
-        "claude-3-5-sonnet-20241022": 200000,
     }
     
     def __init__(
@@ -423,6 +439,7 @@ class QwenProvider(LLMProvider):
     - qwen-max, qwen-plus, qwen-turbo
     - qwen3.5-plus
     - dashscope-qwen3-* models
+    - dashscope-deepseek models (via DashScope)
     
     Also supports custom Qwen-compatible endpoints via QWEN_BASE_URL.
     

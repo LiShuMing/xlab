@@ -1,5 +1,7 @@
 """Abstract base class for all source adapters."""
 
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 
 from pia.models.product import Product, ProductSource
@@ -14,7 +16,9 @@ class BaseAdapter(ABC):
     """
 
     @abstractmethod
-    async def fetch_releases(self, product: Product, source: ProductSource) -> list[Release]:
+    async def fetch_releases(
+        self, product: Product, source: ProductSource
+    ) -> list[Release]:
         """Fetch a list of releases from the given source.
 
         Args:

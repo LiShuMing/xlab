@@ -1,14 +1,18 @@
 """Release discovery and management service."""
 
+from __future__ import annotations
+
 import structlog
 
 from pia.adapters.docs_html import DocsHtmlAdapter
 from pia.adapters.github_releases import GitHubReleasesAdapter
+from pia.exceptions import RateLimitError, ReleaseError, ReleaseFetchError
 from pia.models.product import Product
 from pia.models.release import Release
 from pia.store.repositories import ReleaseRepository
+from pia.telemetry import get_context_dict
 
-log = structlog.get_logger()
+logger = structlog.get_logger()
 
 
 class ReleaseService:
@@ -32,15 +36,23 @@ class ReleaseService:
 
         Returns:
             Combined list of all fetched releases across all sources.
+
+        Raises:
+            RateLimitError: If API rate limit is exceeded.
+            ReleaseFetchError: If fetching fails for all sources.
         """
+        context = get_context_dict()
         all_releases: list[Release] = []
+        any_success = False
+
         for source in sorted(product.sources, key=lambda s: s.priority, reverse=True):
             adapter = self.adapters.get(source.type)
             if not adapter:
-                log.warning(
+                logger.warning(
                     "unknown adapter type",
                     product=product.id,
                     source_type=source.type,
+                    **context,
                 )
                 continue
             try:
@@ -48,22 +60,39 @@ class ReleaseService:
                 for r in releases:
                     self.repo.upsert(r)
                 all_releases.extend(releases)
-                log.info(
+                any_success = True
+                logger.info(
                     "source synced",
                     product=product.id,
                     source_type=source.type,
                     count=len(releases),
+                    **context,
                 )
             except Exception as e:
-                log.warning(
+                error_msg = str(e)
+                logger.warning(
                     "sync failed",
                     product=product.id,
                     source_type=source.type,
-                    error=str(e),
+                    error=error_msg,
+                    **context,
                 )
                 # Re-raise rate-limit errors so the CLI can show a clear message
-                if "rate limit" in str(e).lower():
-                    raise
+                if "rate limit" in error_msg.lower():
+                    raise RateLimitError(
+                        product_id=product.id,
+                        source_type=source.type,
+                        source_url=source.url,
+                    ) from e
+
+        if not any_success and product.sources:
+            raise ReleaseFetchError(
+                "Failed to fetch releases from all sources",
+                product_id=product.id,
+                source_type="multiple",
+                source_url=str([s.url for s in product.sources]),
+            )
+
         return all_releases
 
     def get_latest(self, product_id: str) -> Release | None:

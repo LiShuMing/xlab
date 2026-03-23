@@ -1,9 +1,12 @@
 """CLI commands for listing product versions."""
 
+from __future__ import annotations
+
 import typer
 from rich.console import Console
 from rich.table import Table
 
+from pia.exceptions import ProductNotFoundError
 from pia.services.product_service import ProductService
 from pia.services.release_service import ReleaseService
 from pia.store.repositories import ReportRepository
@@ -55,7 +58,11 @@ def versions(
         published = (
             release.published_at.strftime("%Y-%m-%d") if release.published_at else "unknown"
         )
-        analyzed = "[green]Y[/green]" if report_repo.list_by_release(release.id) else "[dim]N[/dim]"
+        analyzed = (
+            "[green]Y[/green]"
+            if report_repo.list_by_release(release.id)
+            else "[dim]N[/dim]"
+        )
         table.add_row(release.version, published, release.source_url, analyzed)
 
     console.print(table)

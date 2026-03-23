@@ -20,6 +20,18 @@ class ReportFormat(str, Enum):
     JSON = "json"
 
 
+class OutputLanguage(str, Enum):
+    """Output language for report.
+
+    Values:
+        ZH: Chinese (default).
+        EN: English.
+    """
+
+    ZH = "zh"
+    EN = "en"
+
+
 @dataclass
 class ReportSection:
     """Report section.

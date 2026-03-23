@@ -56,3 +56,5 @@ reports/
 
 # Lock files
 uv.lock
+
+projects/py-radar/out/

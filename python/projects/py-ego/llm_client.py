@@ -24,7 +24,7 @@ class LLMClient:
         messages: list[dict[str, str] | ChatMessage],
         *,
         temperature: float = 0.8,
-        max_tokens: int = 2048,
+        max_tokens: int = 4096,
         **kwargs: Any,
     ) -> str:
         """Send a chat completion request to the LLM."""

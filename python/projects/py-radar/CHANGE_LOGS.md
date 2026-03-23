@@ -2,6 +2,143 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2026-03-23] - Web Server for Viewing Reports
+
+### Added
+
+#### Web Server (`dbradar/server.py`)
+- Flask-based web server for viewing reports in browser
+- `dbradar serve` CLI command to start the server
+- Options: `--host`, `--port`, `--debug`
+- Auto-refresh every 5 minutes
+
+#### Web Template (`dbradar/web/templates/index.html`)
+- Hacker News style UI for displaying news
+- Executive Summary section with key highlights
+- Intelligence Analysis section:
+  - Trend Analysis (emerging/declining topics)
+  - Competition Analysis (per-product insights)
+- Action Items checklist
+- Expandable detail panels for each news item
+- Tags auto-extracted from content
+- Responsive design for mobile
+
+#### API Endpoints
+- `GET /` - Main web page with latest report
+- `GET /api/news` - JSON API for latest news
+- `GET /api/history` - List historical reports
+- `GET /api/report/<date>` - Get specific report by date
+
+### Usage
+```bash
+# Start web server
+python -m dbradar serve
+
+# Custom port
+python -m dbradar serve --port 8080
+
+# Debug mode
+python -m dbradar serve --debug
+```
+
+### Dependencies
+- Added `flask>=3.0.0` to pyproject.toml
+
+---
+
+## [2026-03-23] - Intelligence Module (Trend Detection & Competitive Analysis)
+
+### Added
+
+#### Intelligence Module (`dbradar/intelligence/`)
+- **`types.py`** - Type definitions for intelligence analysis
+  - `AnalysisMode` enum: BASIC, TRENDS, COMPETITION, INTELLIGENCE
+  - `AnalysisOptions` dataclass for configuring analysis
+  - `TrendResult` with emerging/declining topics and trend velocity
+  - `CompetitiveInsight` with recent_moves, positioning_changes, threats, opportunities
+  - `ToolResult` wrapper with `ok()` and `fail()` factory methods
+  - `IntelligenceReport` as final synthesized output
+
+- **`trends.py`** - Trend detection analyzer
+  - `TrendAnalyzer` class that reads historical `out/*.json` files
+  - `get_historical_summaries()` loads JSON files within date window
+  - `has_history()` checks if enough data exists for analysis
+  - `analyze()` uses LLM to identify semantic trends across time
+  - Graceful degradation: returns empty result if no history
+
+- **`competition.py`** - Competitive analysis
+  - `CompetitionAnalyzer` class for generating competitive insights
+  - `analyze()` generates per-product insights:
+    - Recent moves (announcements, releases)
+    - Positioning changes in market
+    - Competitive threats from rivals
+    - Opportunities to exploit
+  - Requires 2+ products for meaningful analysis
+
+- **`agent.py`** - Orchestration layer
+  - `IntelligenceAgent` orchestrates all tools
+  - `analyze()` runs summarize first (must succeed), then optional tools
+  - `_run_parallel_analysis()` uses ThreadPoolExecutor for concurrent execution
+  - Returns `IntelligenceReport` with all results
+
+#### CLI Integration (`dbradar/cli.py`)
+- New flags for `run` command:
+  - `--intelligence` - Enable full intelligence (trends + competition)
+  - `--trends` - Enable trend detection only
+  - `--analyze-competition` - Enable competitive analysis only
+  - `--history-days N` - Days of history for trend analysis (default: 14)
+
+#### Writer Updates (`dbradar/writer.py`)
+- `Report` dataclass extended with:
+  - `trends: Optional[TrendResult]`
+  - `competition: List[CompetitiveInsight]`
+- `to_dict()` includes `intelligence` section when present
+- `write_markdown()` renders intelligence sections:
+  - Trend Analysis (emerging/declining topics)
+  - Competitive Analysis (per-product insights)
+- `write_report()` accepts optional `trends` and `competition` params
+
+#### Tests (`tests/`)
+- `conftest.py` - Shared fixtures for testing
+- `test_trends.py` - 15 tests for TrendAnalyzer
+- `test_competition.py` - 13 tests for CompetitionAnalyzer
+- `test_agent.py` - 13 tests for IntelligenceAgent
+- All 41 tests pass
+
+### Technical Details
+
+#### Architecture
+- **Agent-based design**: IntelligenceAgent orchestrates specialized tools
+- **Graceful degradation**: If optional tool fails, continue without it
+- **JSON-based history**: Uses existing `out/*.json` files (no separate storage)
+- **Parallel execution**: ThreadPoolExecutor for concurrent LLM calls
+- **Sync codebase**: No asyncio, consistent with existing code
+
+#### LLM Prompts
+- Trend analysis: Historical summaries + current day → emerging/declining topics
+- Competition analysis: Updates by product → competitive insights per product
+- Output format: JSON array/object with structured fields
+
+### Usage
+```bash
+# Basic summary (default)
+python -m dbradar run --html
+
+# With trend detection
+python -m dbradar run --trends --html
+
+# With competitive analysis
+python -m dbradar run --analyze-competition --html
+
+# Full intelligence mode
+python -m dbradar run --intelligence --html
+
+# Custom history window for trends
+python -m dbradar run --trends --history-days 30 --html
+```
+
+---
+
 ## [2026-03-23] - Documentation Rules Update
 
 ### Changed

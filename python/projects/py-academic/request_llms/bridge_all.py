@@ -61,9 +61,9 @@ model_info: Dict[str, Dict[str, Any]] = {
     "gpt-4o-mini": _create_compatible_model_entry("gpt-4o-mini", max_token=128000, has_multimodal=True),
     "gpt-4o-2024-05-13": _create_compatible_model_entry("gpt-4o-2024-05-13", max_token=128000, has_multimodal=True),
     "chatgpt-4o-latest": _create_compatible_model_entry("chatgpt-4o-latest", max_token=128000, has_multimodal=True),
-    "gpt-4.1": _create_compatible_model_entry("gpt-4.1", max_token=828000, has_multimodal=True),
-    "gpt-4.1-mini": _create_compatible_model_entry("gpt-4.1-mini", max_token=828000, has_multimodal=True),
-    "gpt-4.1-nano": _create_compatible_model_entry("gpt-4.1-nano", max_token=828000, has_multimodal=True),
+    "gpt-4.1": _create_compatible_model_entry("gpt-4.1", max_token=1047576, has_multimodal=True),
+    "gpt-4.1-mini": _create_compatible_model_entry("gpt-4.1-mini", max_token=1047576, has_multimodal=True),
+    "gpt-4.1-nano": _create_compatible_model_entry("gpt-4.1-nano", max_token=1047576, has_multimodal=True),
     
     # o-series models
     "o1-mini": _create_compatible_model_entry(
@@ -88,7 +88,19 @@ model_info: Dict[str, Dict[str, Any]] = {
         "o3-mini", max_token=200000,
         openai_disable_system_prompt=True,
         openai_disable_stream=True,
-        openai_force_temperature_one_one=True
+        openai_force_temperature_one=True
+    ),
+    "o3": _create_compatible_model_entry(
+        "o3", max_token=200000,
+        openai_disable_system_prompt=True,
+        openai_disable_stream=True,
+        openai_force_temperature_one=True
+    ),
+    "o4-mini": _create_compatible_model_entry(
+        "o4-mini", max_token=200000,
+        openai_disable_system_prompt=True,
+        openai_disable_stream=True,
+        openai_force_temperature_one=True
     ),
     
     # Anthropic Models
@@ -101,19 +113,21 @@ model_info: Dict[str, Dict[str, Any]] = {
     "claude-3-5-sonnet-20240620": _create_compatible_model_entry("claude-3-5-sonnet-20240620", max_token=200000),
     "claude-3-5-sonnet-20241022": _create_compatible_model_entry("claude-3-5-sonnet-20241022", max_token=200000),
     "claude-3-5-sonnet": _create_compatible_model_entry("claude-3-5-sonnet", max_token=200000),
+    "claude-3-7-sonnet-20250219": _create_compatible_model_entry("claude-3-7-sonnet-20250219", max_token=200000),
+    "claude-sonnet-4-5": _create_compatible_model_entry("claude-sonnet-4-5", max_token=200000),
     
     # Qwen Models
     "qwen-max": _create_compatible_model_entry("qwen-max", max_token=32000),
     "qwen-max-latest": _create_compatible_model_entry("qwen-max-latest", max_token=32000),
     "qwen-max-2025-01-25": _create_compatible_model_entry("qwen-max-2025-01-25", max_token=32000),
-    "qwen-plus": _create_compatible_model_entry("qwen-plus", max_token=32000),
-    "qwen-turbo": _create_compatible_model_entry("qwen-turbo", max_token=32000),
-    "qwen3.5-plus": _create_compatible_model_entry("qwen3.5-plus", max_token=32000),
+    "qwen-plus": _create_compatible_model_entry("qwen-plus", max_token=131072),
+    "qwen-turbo": _create_compatible_model_entry("qwen-turbo", max_token=131072),
+    "qwen3.5-plus": _create_compatible_model_entry("qwen3.5-plus", max_token=131072),
     
     # Dashscope Models
-    "dashscope-qwen3-14b": _create_compatible_model_entry("dashscope-qwen3-14b", max_token=32000),
-    "dashscope-qwen3-32b": _create_compatible_model_entry("dashscope-qwen3-32b", max_token=32000),
-    "dashscope-qwen3-235b-a22b": _create_compatible_model_entry("dashscope-qwen3-235b-a22b", max_token=32000),
+    "dashscope-qwen3-14b": _create_compatible_model_entry("dashscope-qwen3-14b", max_token=131072),
+    "dashscope-qwen3-32b": _create_compatible_model_entry("dashscope-qwen3-32b", max_token=131072),
+    "dashscope-qwen3-235b-a22b": _create_compatible_model_entry("dashscope-qwen3-235b-a22b", max_token=131072),
     "dashscope-deepseek-r1": _create_compatible_model_entry("dashscope-deepseek-r1", max_token=64000),
     "dashscope-deepseek-v3": _create_compatible_model_entry("dashscope-deepseek-v3", max_token=64000),
 }

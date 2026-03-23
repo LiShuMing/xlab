@@ -1,9 +1,12 @@
 # AI Lab Platform - Python Dependencies
+# ======================================
 
 # Web Framework
+# -------------
 streamlit>=1.35.0
 
 # LangChain Ecosystem
+# -------------------
 langchain>=0.2.0
 langchain-community>=0.2.0
 langchain-core>=0.2.0
@@ -12,39 +15,62 @@ langchain-anthropic>=0.1.0
 langgraph>=0.1.0
 
 # AI/LLM Providers
+# ----------------
 dashscope>=1.19.0
 openai>=1.0.0
 anthropic>=0.50.0
 
 # Vector Store
+# ------------
 faiss-cpu>=1.8.0
 
-# Configuration
+# Configuration & Settings
+# ------------------------
 python-dotenv>=1.0.0
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+
+# Structured Logging
+# ------------------
+structlog>=24.0.0
 
 # Data Processing
+# ---------------
 pandas>=2.0.0
 numpy>=1.24.0
 
-# Web Scraping (for tools)
+# Web Scraping
+# ------------
 requests>=2.31.0
 beautifulsoup4>=4.12.0
-
-# Validation
-pydantic>=2.0.0
-
-# Type Hints (for Python < 3.10)
-typing-extensions>=4.10.0
-
-# Optional: Financial data tools (from original project)
-yfinance>=0.2.0
-akshare>=1.10.0         # A-share data support
-matplotlib>=3.7.0
 html2text>=2024.0.0
 
-# Technical Analysis
-pandas-ta>=0.3.14b       # Enhanced technical indicators (optional)
+# Type Hints
+# ----------
+typing-extensions>=4.10.0
 
-# Email Delivery (Phase 2)
-# aiosmtplib>=3.0.0      # Async SMTP for email delivery
-# email-validator>=2.0.0 # Email validation
+# Financial Data & Visualization
+# ------------------------------
+yfinance>=0.2.0
+akshare>=1.10.0
+matplotlib>=3.7.0
+
+# Testing
+# -------
+pytest>=8.0.0
+pytest-mock>=3.12.0
+
+# Development Tools
+# ---------------
+ruff>=0.3.0
+mypy>=1.8.0
+
+# Optional: Technical Analysis
+# ----------------------------
+pandas-ta>=0.3.14b
+
+# Optional: Async Support (Future)
+# --------------------------------
+# asyncio-mqtt>=0.16.0
+# aiosmtplib>=3.0.0
+# email-validator>=2.0.0

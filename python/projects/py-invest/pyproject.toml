@@ -62,7 +62,7 @@ build-backend = "hatchling.build"
 py-invest = "cli:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["apps", "modules", "agents", "core", "storage"]
+packages = ["modules", "agents", "core"]
 
 [tool.ruff]
 line-length = 100

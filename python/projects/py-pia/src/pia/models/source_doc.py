@@ -1,7 +1,8 @@
 """Source document data models."""
 
+from __future__ import annotations
+
 from pydantic import BaseModel
-from typing import Optional
 
 
 class SourceDocument(BaseModel):
@@ -20,7 +21,7 @@ class NormalizedDoc(BaseModel):
     """Represents a normalized (cleaned) source document in markdown."""
 
     title: str
-    published_at: Optional[str]
+    published_at: str | None
     headings: list[str]
     markdown_body: str
     extracted_links: list[str]

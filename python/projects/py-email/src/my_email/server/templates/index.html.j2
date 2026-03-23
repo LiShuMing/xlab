@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Digest Viewer</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .header h1 { font-size: 24px; }
+        .header-info { font-size: 14px; opacity: 0.9; }
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-right: 1px solid #e0e0e0;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+        .sidebar-header {
+            padding: 16px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            font-weight: 600;
+            font-size: 14px;
+            color: #666;
+        }
+        .date-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .date-item:hover { background: #f5f5f5; }
+        .date-item.active {
+            background: #e8f0fe;
+            border-left: 3px solid #667eea;
+        }
+        .date-item.loading { opacity: 0.6; }
+        .date-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .date-value { font-weight: 600; font-size: 14px; }
+        .date-badge {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+        .date-badge.today { background: #dcfce7; color: #166534; }
+        .date-badge.missing { background: #fef3c7; color: #92400e; }
+        .date-badge.empty { background: #f3f4f6; color: #6b7280; }
+        .date-meta {
+            font-size: 12px;
+            color: #888;
+            margin-top: 4px;
+        }
+        .generate-btn {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: #667eea;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 6px;
+        }
+        .generate-btn:hover { background: #5a67d8; }
+        .generate-btn:disabled { background: #ccc; cursor: not-allowed; }
+        .main {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .main-header {
+            padding: 12px 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .current-date { font-weight: 600; font-size: 16px; }
+        .actions { display: flex; gap: 8px; }
+        .btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            background: white;
+            transition: all 0.2s;
+        }
+        .btn:hover { background: #f5f5f5; }
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        .btn-primary:hover { background: #5a67d8; }
+        .content {
+            flex: 1;
+            overflow: hidden;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #666;
+        }
+        .empty-state h2 { margin-bottom: 8px; }
+        .empty-state p { color: #888; }
+        .loading-spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 6px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @media (max-width: 768px) {
+            .container { flex-direction: column; }
+            .sidebar { width: 100%; max-height: 200px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📧 Email Digest Viewer</h1>
+        <div class="header-info">my-email • {{ today }}</div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">📅 Dates</div>
+            {% for item in dates %}
+            <div class="date-item" data-date="{{ item.date }}" onclick="loadDigest('{{ item.date }}')">
+                <div class="date-row">
+                    <span class="date-value">{{ item.date }}</span>
+                    {% if item.has_digest %}
+                    <span class="date-badge">✓ Ready</span>
+                    {% elif item.task_status == 'running' %}
+                    <span class="date-badge"><span class="loading-spinner"></span>Running</span>
+                    {% elif item.msg_count > 0 %}
+                    <span class="date-badge missing">{{ item.msg_count }} msgs</span>
+                    {% else %}
+                    <span class="date-badge empty">—</span>
+                    {% endif %}
+                </div>
+                {% if item.msg_count > 0 and not item.has_digest and item.task_status != 'running' %}
+                <button class="generate-btn" onclick="event.stopPropagation(); generateDigest('{{ item.date }}')">
+                    Generate
+                </button>
+                {% endif %}
+                <div class="date-meta">
+                    {% if item.is_today %}Today • {% endif %}
+                    {{ item.processed_count }}/{{ item.msg_count }} processed
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="main">
+            <div class="main-header">
+                <span class="current-date" id="currentDate">Select a date</span>
+                <div class="actions">
+                    <button class="btn" onclick="refreshCurrent()">↻ Refresh</button>
+                    <button class="btn btn-primary" id="generateBtn" style="display:none" onclick="generateCurrent()">
+                        Generate Digest
+                    </button>
+                </div>
+            </div>
+            <div class="content" id="content">
+                <div class="empty-state">
+                    <h2>Select a date</h2>
+                    <p>Choose a date from the sidebar to view the digest</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentDate = null;
+
+        async function loadDigest(date) {
+            currentDate = date;
+            document.getElementById('currentDate').textContent = date;
+
+            // Update active state
+            document.querySelectorAll('.date-item').forEach(el => {
+                el.classList.remove('active');
+                if (el.dataset.date === date) {
+                    el.classList.add('active');
+                }
+            });
+
+            const content = document.getElementById('content');
+            content.innerHTML = '<div class="empty-state"><div class="loading-spinner"></div><p>Loading...</p></div>';
+
+            try {
+                const response = await fetch(`/api/digest/${date}`);
+                if (response.ok) {
+                    const html = await response.text();
+                    content.innerHTML = `<iframe srcdoc="${escapeHtml(html)}"></iframe>`;
+                    document.getElementById('generateBtn').style.display = 'none';
+                } else if (response.status === 202) {
+                    const html = await response.text();
+                    content.innerHTML = html;
+                    document.getElementById('generateBtn').style.display = 'inline-block';
+                } else if (response.status === 404) {
+                    content.innerHTML = '<div class="empty-state"><h2>No data</h2><p>No messages found for this date</p></div>';
+                    document.getElementById('generateBtn').style.display = 'none';
+                } else {
+                    const err = await response.json();
+                    content.innerHTML = `<div class="empty-state"><h2>Error</h2><p>${err.detail}</p></div>`;
+                }
+            } catch (e) {
+                content.innerHTML = `<div class="empty-state"><h2>Error</h2><p>${e.message}</p></div>`;
+            }
+        }
+
+        async function generateDigest(date) {
+            const item = document.querySelector(`.date-item[data-date="${date}"]`);
+            if (item) {
+                item.classList.add('loading');
+            }
+
+            try {
+                const response = await fetch(`/api/generate/${date}`, { method: 'POST' });
+                const result = await response.json();
+
+                if (result.status === 'started') {
+                    pollStatus(date);
+                } else if (result.status === 'already_running') {
+                    alert('Generation already in progress');
+                }
+            } catch (e) {
+                alert('Failed to start generation: ' + e.message);
+            }
+        }
+
+        async function pollStatus(date) {
+            const poll = async () => {
+                try {
+                    const response = await fetch(`/api/status/${date}`);
+                    const status = await response.json();
+
+                    if (status.status === 'running') {
+                        setTimeout(poll, 2000);
+                    } else if (status.status === 'completed') {
+                        location.reload();
+                    } else if (status.status === 'failed') {
+                        alert('Generation failed: ' + status.error);
+                        location.reload();
+                    } else if (status.status === 'no_data') {
+                        alert('No data to generate digest');
+                        location.reload();
+                    }
+                } catch (e) {
+                    console.error('Poll error:', e);
+                    setTimeout(poll, 2000);
+                }
+            };
+            poll();
+        }
+
+        function refreshCurrent() {
+            if (currentDate) {
+                loadDigest(currentDate);
+            }
+        }
+
+        function generateCurrent() {
+            if (currentDate) {
+                generateDigest(currentDate);
+            }
+        }
+
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, '&amp;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+        }
+
+        // Load today's digest on start
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = '{{ today }}';
+            const todayItem = document.querySelector(`.date-item[data-date="${today}"]`);
+            if (todayItem) {
+                loadDigest(today);
+            }
+        });
+    </script>
+</body>
+</html>

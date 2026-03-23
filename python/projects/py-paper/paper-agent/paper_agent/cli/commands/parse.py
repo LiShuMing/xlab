@@ -5,7 +5,6 @@ from __future__ import annotations
 import time
 import uuid
 from pathlib import Path
-from typing import Optional
 
 import typer
 from rich.console import Console
@@ -18,8 +17,8 @@ from paper_agent.parser.chunker import chunk_blocks
 from paper_agent.parser.pdf_parser import parse_pdf
 from paper_agent.parser.section_detector import assign_section_to_blocks, detect_sections
 from paper_agent.utils.hashing import sha256_file
-from paper_agent.utils.io import write_json, write_jsonl
-from paper_agent.utils.logging import get_logger
+from paper_agent.utils.io import read_json, write_json, write_jsonl
+from paper_agent.utils.logging import configure_logging, get_logger, set_correlation_id
 
 console = Console()
 logger = get_logger(__name__)
@@ -32,10 +31,20 @@ def run_parse(
     resume: bool = False,
     force: bool = False,
 ) -> RunPaths:
-    """
-    Execute parse pipeline: PDF -> pages.json, sections.json, chunks.jsonl.
+    """Execute parse pipeline: PDF -> pages.json, sections.json, chunks.jsonl.
 
-    Returns RunPaths for the output directory.
+    Args:
+        pdf_path: Path to the PDF file
+        output_dir: Output directory
+        config: Run configuration
+        resume: Whether to resume from last successful stage
+        force: Whether to overwrite existing output
+
+    Returns:
+        RunPaths for the output directory
+
+    Raises:
+        typer.Exit: If the PDF doesn't exist or processing fails
     """
     if not pdf_path.exists():
         console.print(f"[red]Error:[/red] File not found: {pdf_path}")
@@ -68,14 +77,14 @@ def run_parse(
             document_id=document_id,
             filename=pdf_path.name,
             sha256=sha256,
-            config=config.model_dump(mode="json"),
+            config=config.to_dict(),
         )
         console.print(f"[green]Starting run:[/green] {run_dir}")
 
     # Save config
-    write_json(paths.config, config.model_dump(mode="json"))
+    write_json(paths.config, config.to_dict())
 
-    t_start = time.time()
+    t_start = time.perf_counter()
 
     with Progress(
         SpinnerColumn(),
@@ -93,7 +102,10 @@ def run_parse(
                 pages_data = parse_pdf(pdf_path)
                 write_json(paths.pages, pages_data)
                 state.mark_completed(Stage.PARSE)
-                progress.update(task, description=f"[green]Parsed {pages_data['total_pages']} pages[/green]")
+                progress.update(
+                    task,
+                    description=f"[green]Parsed {pages_data['total_pages']} pages[/green]",
+                )
             except Exception as e:
                 state.mark_failed(Stage.PARSE, str(e))
                 console.print(f"[red]Parse failed:[/red] {e}")
@@ -106,7 +118,7 @@ def run_parse(
             task = progress.add_task("Detecting sections and chunking...", total=None)
             state.mark_in_progress(Stage.CHUNK)
             try:
-                pages_data = _load_pages(paths)
+                pages_data = read_json(paths.pages)
                 sections = detect_sections(pages_data)
                 write_json(paths.sections, sections)
 
@@ -134,14 +146,9 @@ def run_parse(
                 console.print(f"[red]Chunking failed:[/red] {e}")
                 raise typer.Exit(1)
 
-    elapsed = time.time() - t_start
+    elapsed = time.perf_counter() - t_start
     console.print(f"\n[bold green]Done[/bold green] in {elapsed:.1f}s → {run_dir}")
     return paths
-
-
-def _load_pages(paths: RunPaths) -> dict:
-    from paper_agent.utils.io import read_json
-    return read_json(paths.pages)
 
 
 def register(app: typer.Typer) -> None:
@@ -150,21 +157,35 @@ def register(app: typer.Typer) -> None:
     @app.command()
     def parse(
         pdf: Path = typer.Argument(..., help="Path to the PDF file"),
-        output: Path = typer.Option(Path("./runs"), "--output", "-o", help="Output directory"),
-        run_name: Optional[str] = typer.Option(None, "--run-name", help="Custom run name"),
+        output: Path = typer.Option(
+            Path("./runs"), "--output", "-o", help="Output directory"
+        ),
+        run_name: str | None = typer.Option(None, "--run-name", help="Custom run name"),
         parser: str = typer.Option("pymupdf", "--parser", help="PDF parser: pymupdf"),
-        chunk_size: int = typer.Option(1200, "--chunk-size", help="Max characters per chunk"),
-        chunk_overlap: int = typer.Option(150, "--chunk-overlap", help="Overlap between chunks"),
-        section_aware: bool = typer.Option(True, "--section-aware/--no-section-aware"),
-        skip_references: bool = typer.Option(False, "--skip-references", help="Skip references section"),
-        resume: bool = typer.Option(False, "--resume", help="Resume from last successful stage"),
+        chunk_size: int = typer.Option(
+            1200, "--chunk-size", help="Max characters per chunk"
+        ),
+        chunk_overlap: int = typer.Option(
+            150, "--chunk-overlap", help="Overlap between chunks"
+        ),
+        section_aware: bool = typer.Option(
+            True, "--section-aware/--no-section-aware"
+        ),
+        skip_references: bool = typer.Option(
+            False, "--skip-references", help="Skip references section"
+        ),
+        resume: bool = typer.Option(
+            False, "--resume", help="Resume from last successful stage"
+        ),
         force: bool = typer.Option(False, "--force", help="Overwrite existing output"),
-        config_file: Optional[Path] = typer.Option(None, "--config", help="Config YAML file"),
+        config_file: Path | None = typer.Option(
+            None, "--config", help="Config YAML file"
+        ),
         verbose: bool = typer.Option(False, "--verbose", "-v"),
         debug: bool = typer.Option(False, "--debug"),
     ) -> None:
         """Parse a PDF into pages, sections, and chunks. No LLM calls."""
-        from paper_agent.utils.logging import configure_logging
+        set_correlation_id()
         configure_logging(verbose=verbose, debug=debug)
 
         cfg = RunConfig.load(

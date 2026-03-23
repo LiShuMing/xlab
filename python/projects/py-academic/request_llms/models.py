@@ -20,12 +20,18 @@ def register_all_models() -> None:
     openai_models = [
         "gpt-4o",
         "gpt-4o-mini",
+        "gpt-4.1",
+        "gpt-4.1-mini",
+        "gpt-4.1-nano",
         "gpt-4-turbo",
         "gpt-4",
         "gpt-3.5-turbo",
-        "o1-preview",
+        "o1",
         "o1-mini",
+        "o1-preview",
+        "o3",
         "o3-mini",
+        "o4-mini",
     ]
     
     for model in openai_models:
@@ -33,11 +39,13 @@ def register_all_models() -> None:
     
     # ========== Anthropic (Claude) Models ==========
     anthropic_models = [
+        "claude-sonnet-4-5",
+        "claude-3-7-sonnet-20250219",
+        "claude-3-5-sonnet-20241022",
+        "claude-3-5-sonnet-20240620",
         "claude-3-opus-20240229",
         "claude-3-sonnet-20240229",
         "claude-3-haiku-20240307",
-        "claude-3-5-sonnet-20240620",
-        "claude-3-5-sonnet-20241022",
     ]
     
     for model in anthropic_models:

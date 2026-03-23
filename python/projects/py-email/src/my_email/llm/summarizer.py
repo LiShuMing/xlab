@@ -73,15 +73,15 @@ class LLMConnectionError(LLMSummarizationError):
 class EmailSummary(BaseModel):
     """Structured summary of an email newsletter."""
 
-    title: str = Field(description="Clean title of the email or newsletter issue")
+    title: str = Field(description="Clean title of the email or newsletter issue (中文)")
     sender_org: str = Field(description="Organization or project name, e.g. 'Apache Iceberg'")
-    topics: list[str] = Field(description="3–8 main technical topic keywords")
-    summary: str = Field(description="5–8 sentence detailed factual summary of the content")
-    key_points: list[str] = Field(description="5–10 concrete bullet points worth remembering")
-    relevance: str = Field(description='"high" | "medium" | "low" — for data/infra engineering')
+    topics: list[str] = Field(description="3–8 main technical topic keywords (中文+英文)")
+    summary: str = Field(description="5–8 sentence detailed factual summary of the content (中文)")
+    key_points: list[str] = Field(description="5–10 concrete bullet points worth remembering (中文)")
+    relevance: str = Field(description='"high" | "medium" | "low" | "skip" — for data/infra engineering. Use "skip" for non-technical emails.')
     action_items: list[str] = Field(
         default_factory=list,
-        description="Action items, deadlines, or decisions requiring attention (if any)",
+        description="Action items, deadlines, or decisions requiring attention (if any) (中文)",
     )
     people_mentioned: list[str] = Field(
         default_factory=list,
@@ -99,6 +99,14 @@ _SYSTEM_PROMPT = """\
 You are a technical digest assistant for a senior data/infrastructure engineer.
 Read the email below and extract structured information.
 Be precise and factual. Focus on technical content — ignore marketing, unsubscribe links, and boilerplate.
+Only include TECHNICAL emails related to: software engineering, data engineering, distributed systems, databases, cloud infrastructure, DevOps, ML/AI, security, open source projects.
+
+IMPORTANT: Return content in Chinese (中文) with English technical terms preserved. For example:
+- title: "Apache Iceberg 发布 1.5.0 版本"
+- topics: ["表格式", "数据湖", "Table Format", "Apache Iceberg"]
+- summary: "Apache Iceberg 1.5.0 发布，新增了..."
+- key_points: ["支持新的 Partition Evolution", "性能提升 30%"]
+
 Return ONLY valid JSON. No markdown fences. No explanation."""
 
 _USER_TEMPLATE = """\
@@ -110,16 +118,17 @@ Body:
 {body}
 
 Return a JSON object with exactly these fields:
-- title            (string) clean, descriptive title
+- title            (string) 中文标题，保留英文专有名词
 - sender_org       (string) organization or project name
-- topics           (array of strings) 3–8 technical keywords
-- summary          (string) 5–8 sentence detailed factual summary, include context and implications
-- key_points       (array of strings) 5–10 concrete bullet points with technical details, numbers, and specifics
-- relevance        (string) "high" | "medium" | "low" — relevance to data engineering / distributed systems
-- action_items     (array of strings) deadlines, decisions, or action items (empty if none)
+- topics           (array of strings) 3–8 technical keywords (中文+英文术语)
+- summary          (string) 5–8句详细的中文摘要，包含背景和影响
+- key_points       (array of strings) 5–10个中文要点，包含技术细节和数据
+- relevance        (string) "high" | "medium" | "low" | "skip" — 对数据工程/分布式系统的相关性。非技术邮件使用 "skip"
+- action_items     (array of strings) 中文描述的待办事项 (empty if none)
 - people_mentioned (array of strings) key people, authors, maintainers mentioned (empty if none)
 - links            (array of strings) URLs, PR numbers, issue references (empty if none)
 
+重要：所有描述性内容使用中文，技术术语保留英文。
 Be thorough and specific. Include technical details, metrics, and concrete examples when available.
 JSON only."""
 
@@ -133,6 +142,8 @@ Focus on:
 3. Action items or next steps mentioned
 4. Consensus or disagreements among participants
 Be precise and factual. Focus on technical content.
+
+IMPORTANT: Return content in Chinese (中文) with English technical terms preserved.
 Return ONLY valid JSON. No markdown fences. No explanation."""
 
 _THREAD_USER_TEMPLATE = """\
@@ -143,20 +154,21 @@ Date Range: {date_range}
 {body}
 
 Return a JSON object with exactly these fields:
-- title            (string) clean, descriptive title for the entire thread
+- title            (string) 中文标题，保留英文专有名词
 - sender_org       (string) primary organization or project name
-- topics           (array of strings) 3–8 technical keywords covering the thread
-- summary          (string) 5–10 sentence summary of the entire thread, including:
-                   * What was discussed
-                   * Key points raised by different participants
-                   * Any conclusions or decisions reached
-                   * Evolution of the discussion
-- key_points       (array of strings) 5–10 concrete bullet points from the entire thread
-- relevance        (string) "high" | "medium" | "low" — relevance to data engineering / distributed systems
-- action_items     (array of strings) any action items, deadlines, or next steps (empty if none)
+- topics           (array of strings) 3–8 technical keywords (中文+英文术语)
+- summary          (string) 5–10句中文摘要，包含:
+                   * 讨论的主题
+                   * 参与者的主要观点
+                   * 结论或决定
+                   * 讨论的演进过程
+- key_points       (array of strings) 5–10个中文要点
+- relevance        (string) "high" | "medium" | "low" | "skip" — 对数据工程/分布式系统的相关性
+- action_items     (array of strings) 中文待办事项 (empty if none)
 - people_mentioned (array of strings) key participants and people mentioned (empty if none)
 - links            (array of strings) URLs, PRs, issues referenced (empty if none)
 
+重要：所有描述性内容使用中文，技术术语保留英文。
 Synthesize information across all messages. Don't just list each message separately.
 JSON only."""
 
@@ -188,8 +200,8 @@ def _strip_fences(text: str) -> str:
 def _validate_relevance(value: str) -> str:
     """Validate and normalize relevance field."""
     normalized = value.lower().strip()
-    if normalized not in ("high", "medium", "low"):
-        raise ValueError(f"Invalid relevance value: {value}. Must be 'high', 'medium', or 'low'.")
+    if normalized not in ("high", "medium", "low", "skip"):
+        raise ValueError(f"Invalid relevance value: {value}. Must be 'high', 'medium', 'low', or 'skip'.")
     return normalized
 
 

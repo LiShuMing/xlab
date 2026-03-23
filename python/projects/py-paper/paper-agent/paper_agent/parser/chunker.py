@@ -5,12 +5,17 @@ from __future__ import annotations
 import uuid
 from typing import Any
 
-from paper_agent.utils.logging import get_logger
+from paper_agent.utils.logging import get_logger, set_agent_step
 
 logger = get_logger(__name__)
 
 # Sections to skip when building the main retrieval index
-_SKIP_SECTIONS = {"references", "acknowledgments", "acknowledgements", "acknowledgment"}
+_SKIP_SECTIONS: set[str] = {
+    "references",
+    "acknowledgments",
+    "acknowledgements",
+    "acknowledgment",
+}
 
 
 def chunk_blocks(
@@ -20,31 +25,25 @@ def chunk_blocks(
     chunk_overlap: int = 150,
     skip_references: bool = False,
 ) -> list[dict[str, Any]]:
-    """
-    Convert annotated blocks into retrieval chunks.
+    """Convert annotated blocks into retrieval chunks.
 
     Strategy:
     1. Group blocks by section
     2. Within each section, split by token count with overlap
     3. Preserve section, page, and figure/table reference metadata
 
+    Args:
+        annotated_blocks: Blocks with section annotations
+        document_id: Unique document identifier
+        chunk_size: Target chunk size in characters
+        chunk_overlap: Overlap between chunks in characters
+        skip_references: Whether to skip reference sections
+
     Returns:
-        [
-            {
-                "chunk_id": str,
-                "document_id": str,
-                "section": str,
-                "section_normalized": str,
-                "page_start": int,
-                "page_end": int,
-                "chunk_type": "paragraph",
-                "text": str,
-                "figure_refs": [],
-                "table_refs": [],
-            }
-        ]
+        List of chunk dictionaries with metadata
     """
-    chunks = []
+    set_agent_step("chunk_blocks")
+    chunks: list[dict[str, Any]] = []
 
     # Group consecutive blocks by section
     section_groups = _group_by_section(annotated_blocks)
@@ -56,18 +55,35 @@ def chunk_blocks(
 
         section_title = group[0]["section"] if group else ""
         section_chunks = _split_into_chunks(
-            group, document_id, section_title, section_norm, chunk_size, chunk_overlap
+            group,
+            document_id,
+            section_title,
+            section_norm,
+            chunk_size,
+            chunk_overlap,
         )
         chunks.extend(section_chunks)
 
-    logger.info("chunking_done", total_chunks=len(chunks))
+    logger.info(
+        "chunking_done",
+        total_chunks=len(chunks),
+        document_id=document_id,
+        sections=len(section_groups),
+    )
     return chunks
 
 
 def _group_by_section(
     blocks: list[dict[str, Any]],
 ) -> list[tuple[str, list[dict[str, Any]]]]:
-    """Group blocks into contiguous runs of the same section."""
+    """Group blocks into contiguous runs of the same section.
+
+    Args:
+        blocks: Annotated blocks
+
+    Returns:
+        List of (section_normalized, blocks) tuples
+    """
     groups: list[tuple[str, list[dict[str, Any]]]] = []
     current_section: str | None = None
     current_group: list[dict[str, Any]] = []
@@ -96,7 +112,19 @@ def _split_into_chunks(
     chunk_size: int,
     chunk_overlap: int,
 ) -> list[dict[str, Any]]:
-    """Split a section's blocks into overlapping chunks by character count."""
+    """Split a section's blocks into overlapping chunks by character count.
+
+    Args:
+        blocks: Section blocks
+        document_id: Document ID
+        section_title: Human-readable section title
+        section_norm: Normalized section name
+        chunk_size: Target chunk size
+        chunk_overlap: Overlap size
+
+    Returns:
+        List of chunk dictionaries
+    """
     # Collect all text with page tracking, splitting oversized blocks
     segments: list[tuple[str, int]] = []  # (text, page_num)
     for block in blocks:
@@ -114,12 +142,13 @@ def _split_into_chunks(
         return []
 
     # Build chunks with overlap
-    chunks = []
+    chunks: list[dict[str, Any]] = []
     current_texts: list[str] = []
     current_pages: list[int] = []
     current_len = 0
 
     def flush_chunk() -> None:
+        """Write the current chunk to the list."""
         if not current_texts:
             return
         text = "\n\n".join(current_texts)
@@ -164,17 +193,26 @@ def _split_into_chunks(
 
 
 def _split_text(text: str, max_len: int) -> list[str]:
-    """Split text into parts of at most max_len characters, preferring sentence boundaries."""
-    parts = []
-    while len(text) > max_len:
+    """Split text into parts of at most max_len characters, preferring sentence boundaries.
+
+    Args:
+        text: Text to split
+        max_len: Maximum length per part
+
+    Returns:
+        List of text parts
+    """
+    parts: list[str] = []
+    remaining = text
+    while len(remaining) > max_len:
         # Try to split at a sentence boundary
-        split_at = text.rfind(". ", 0, max_len)
+        split_at = remaining.rfind(". ", 0, max_len)
         if split_at == -1:
             split_at = max_len
         else:
             split_at += 1  # include the period
-        parts.append(text[:split_at].strip())
-        text = text[split_at:].strip()
-    if text:
-        parts.append(text)
+        parts.append(remaining[:split_at].strip())
+        remaining = remaining[split_at:].strip()
+    if remaining:
+        parts.append(remaining)
     return parts

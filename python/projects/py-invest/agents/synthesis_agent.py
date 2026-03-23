@@ -21,15 +21,44 @@ class SynthesisAgent:
     a final report with all 9 GS-style sections.
     """
 
-    def __init__(self, stock_code: str, llm_client: LLMClient):
+    # Section title translations
+    SECTION_TITLES = {
+        "zh": {
+            "investment_thesis": "投资论点",
+            "price_target_methodology": "目标价与方法论",
+            "scenario_analysis": "情景分析",
+            "technical_picture": "技术面分析",
+            "fundamental_analysis": "基本面分析",
+            "sector_comparables": "行业与可比公司",
+            "key_catalysts": "关键催化剂",
+            "risk_factors": "风险因素",
+            "recommendation": "投资建议",
+        },
+        "en": {
+            "investment_thesis": "Investment Thesis",
+            "price_target_methodology": "Price Target & Methodology",
+            "scenario_analysis": "Scenario Analysis",
+            "technical_picture": "Technical Picture",
+            "fundamental_analysis": "Fundamental Analysis",
+            "sector_comparables": "Sector & Comparables",
+            "key_catalysts": "Key Catalysts",
+            "risk_factors": "Risk Factors",
+            "recommendation": "Recommendation",
+        },
+    }
+
+    def __init__(self, stock_code: str, llm_client: LLMClient, lang: str = "zh"):
         """Initialize synthesis agent.
 
         Args:
             stock_code: Stock ticker symbol.
             llm_client: LLM client instance.
+            lang: Output language ("zh" for Chinese, "en" for English).
         """
         self.stock_code = stock_code
         self.llm_client = llm_client
+        self.lang = lang
+        self.titles = self.SECTION_TITLES.get(lang, self.SECTION_TITLES["zh"])
 
     def _build_synthesis_prompt(
         self,
@@ -51,6 +80,9 @@ class SynthesisAgent:
         Returns:
             Full synthesis prompt string.
         """
+
+        # Language instruction for the prompt
+        language_instruction = "Chinese" if self.lang == "zh" else "English"
 
         # Format specialist outputs as JSON for the LLM
         tech_json = json.dumps(
@@ -184,7 +216,7 @@ IMPORTANT RULES:
 - For sections 4-8, REPRODUCE the numbers and facts from the specialist JSON EXACTLY — do not invent new values
 - Present specialist data as readable prose, not JSON
 - Be specific and data-driven — avoid generic statements
-- Write in Chinese (except ticker symbols)
+- Write in {language_instruction}
 - Use Markdown formatting
 
 Return ONLY a JSON object with these fields (no markdown fences):
@@ -329,44 +361,51 @@ Return ONLY a JSON object with these fields (no markdown fences):
         # Add sections in order
         sections = [
             ReportSection(
-                title="Investment Thesis",
+                title=self.titles["investment_thesis"],
                 content=report_data.get("investment_thesis", ""),
                 order=1,
             ),
             ReportSection(
-                title="Price Target & Methodology",
-                content=f"Target Price: ${report_data.get('target_price', 'N/A')}\n\n"
+                title=self.titles["price_target_methodology"],
+                content=f"Target Price: ¥{report_data.get('target_price', 'N/A')}\n\n"
                         f"Methodology: {report_data.get('target_price_methodology', 'N/A')}\n\n"
                         f"Upside/Downside: {report_data.get('upside_pct', 'N/A')}%",
                 order=2,
             ),
             ReportSection(
-                title="Technical Picture",
+                title=self.titles["scenario_analysis"],
+                content=f"**Bull Case:** {report_data.get('bull_case', 'N/A')}\n\n"
+                        f"**Base Case:** {report_data.get('base_case', 'N/A')}\n\n"
+                        f"**Bear Case:** {report_data.get('bear_case', 'N/A')}",
+                order=3,
+            ),
+            ReportSection(
+                title=self.titles["technical_picture"],
                 content=report_data.get("technical_picture", ""),
                 order=4,
             ),
             ReportSection(
-                title="Fundamental Analysis",
+                title=self.titles["fundamental_analysis"],
                 content=report_data.get("fundamental_analysis", ""),
                 order=5,
             ),
             ReportSection(
-                title="Sector & Comparables",
+                title=self.titles["sector_comparables"],
                 content=report_data.get("sector_comparables", ""),
                 order=6,
             ),
             ReportSection(
-                title="Key Catalysts",
+                title=self.titles["key_catalysts"],
                 content=report_data.get("key_catalysts", ""),
                 order=7,
             ),
             ReportSection(
-                title="Risk Factors",
+                title=self.titles["risk_factors"],
                 content=report_data.get("risk_factors", ""),
                 order=8,
             ),
             ReportSection(
-                title="Recommendation",
+                title=self.titles["recommendation"],
                 content=f"**Rating**: {report_data.get('recommendation', 'Hold')}\n\n"
                         f"**Conviction**: {report_data.get('conviction', 'medium')}",
                 order=9,

@@ -2,6 +2,84 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-03-23 - Feature: 中文输出 + 技术邮件过滤
+
+### Features
+
+#### 中文输出 (`src/my_email/llm/summarizer.py`)
+- **默认中文输出** - Summary、key_points、action_items 等描述性内容使用中文
+- **保留英文术语** - 技术关键词、项目名称等专有名词保留英文
+- 示例: `title: "Apache Iceberg 发布 1.5.0 版本"`
+
+#### 技术邮件过滤
+- **relevance 字段扩展** - 新增 `"skip"` 值用于标记非技术邮件
+- **Digest 过滤** - `build_digest()` 自动过滤 `relevance="skip"` 的邮件
+- **统计显示** - HTML digest 显示"已跳过"的非技术邮件数量
+- 只有与以下领域相关的邮件才会被保留：
+  - 软件工程、数据工程、分布式系统
+  - 数据库、云基础设施、DevOps
+  - ML/AI、安全、开源项目
+
+#### Server 改进 (`src/my_email/server/app.py`)
+- **默认显示 7 天** - 主页面从 30 天改为 7 天
+- **UI 中文化** - 所有标签改为中文（高优先级、中等、低、待办事项等）
+
+### UI Changes (`src/my_email/digest/templates/digest.html.j2`)
+- 统计栏: "技术邮件"、"高优先级"、"已跳过"
+- 优先级标签: 高优先级、中等、低
+- 侧边栏: "热门话题"、"今日话题"
+- Action Items: "待办事项"
+
+---
+
+## 2026-03-23 - Feature: Web Server Mode
+
+### Features
+
+#### Server Module (`src/my_email/server/`)
+- **Web interface** for browsing daily email digests
+  - `GET /` - Main page with date list and digest viewer
+  - `GET /api/dates` - JSON API listing all available digest dates
+  - `GET /api/digest/{date}` - Get HTML digest for a specific date
+  - `POST /api/generate/{date}` - Trigger sync+summarize+digest pipeline
+  - `GET /api/status/{date}` - Poll generation task status
+
+#### Background Task System
+- **Async pipeline** for delayed digest generation
+  - Incremental sync → Summarize → Build digest
+  - Task status tracking for polling
+  - Error handling with structured logging
+
+#### UI Features
+- Responsive sidebar with 30-day date list
+- Visual indicators: Ready/Missing/Empty states
+- "Generate" button for dates without digest
+- Loading spinner during background tasks
+- iframe-based HTML digest viewer
+
+### CLI Changes (`src/my_email/cli.py`)
+- **`server` command** - Start web server
+  - `--host` option (default: 127.0.0.1)
+  - `--port` option (default: 8080)
+  - `--reload` flag for development
+
+### Dependencies (`pyproject.toml`)
+- Added: `fastapi>=0.110`, `uvicorn>=0.29`
+
+### Usage
+```bash
+# Start server
+my-email server
+
+# With options
+my-email server --host 0.0.0.0 --port 3000
+
+# Development mode with auto-reload
+my-email server --reload
+```
+
+---
+
 ## 2026-03-23 - Bugfix: Missing Database Tables and HTML Template
 
 ### Bug Fixes

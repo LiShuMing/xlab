@@ -1,5 +1,7 @@
 """Content hashing utilities for caching and deduplication."""
 
+from __future__ import annotations
+
 import hashlib
 
 

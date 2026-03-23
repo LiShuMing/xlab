@@ -7,13 +7,19 @@ import sys
 from datetime import datetime
 
 
-async def analyze_stock(stock_code: str, query: str, verbose: bool = False) -> int:
+async def analyze_stock(
+    stock_code: str,
+    query: str,
+    verbose: bool = False,
+    lang: str = "zh",
+) -> int:
     """Run investment analysis on a stock.
 
     Args:
         stock_code: Stock ticker symbol (e.g., sh600519, AAPL).
         query: Analysis request (e.g., "综合分析", "技术分析").
         verbose: Show detailed progress.
+        lang: Output language ("zh" for Chinese, "en" for English).
 
     Returns:
         Exit code (0 for success, 1 for error).
@@ -27,7 +33,7 @@ async def analyze_stock(stock_code: str, query: str, verbose: bool = False) -> i
             print(f"分析请求：{query}", file=sys.stderr)
             print(file=sys.stderr)
 
-        orchestrator = SimpleAgentOrchestrator()
+        orchestrator = SimpleAgentOrchestrator(lang=lang)
         state = await orchestrator.analyze(stock_code, query)
 
         if state.error:
@@ -36,7 +42,7 @@ async def analyze_stock(stock_code: str, query: str, verbose: bool = False) -> i
 
         if state.report:
             # Output the markdown report to stdout
-            print(ReportFormatter.format(state.report, ReportFormat.MARKDOWN))
+            print(ReportFormatter.format(state.report, ReportFormat.MARKDOWN, lang=lang))
 
             if verbose:
                 print(file=sys.stderr)
@@ -65,7 +71,8 @@ async def analyze_stock(stock_code: str, query: str, verbose: bool = False) -> i
 
 def cmd_analyze(args: argparse.Namespace) -> int:
     """Handle the 'analyze' command."""
-    return asyncio.run(analyze_stock(args.code, args.query, args.verbose))
+    lang = "en" if args.en else "zh"
+    return asyncio.run(analyze_stock(args.code, args.query, args.verbose, lang))
 
 
 def cmd_version(args: argparse.Namespace) -> int:
@@ -111,6 +118,11 @@ Examples:
         "-v", "--verbose",
         action="store_true",
         help="Show detailed progress"
+    )
+    analyze_parser.add_argument(
+        "--en",
+        action="store_true",
+        help="Output report in English (default: Chinese)"
     )
     analyze_parser.set_defaults(func=cmd_analyze)
 

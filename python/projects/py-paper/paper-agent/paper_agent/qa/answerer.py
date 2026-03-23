@@ -2,15 +2,23 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Any
 
 from paper_agent.llm.client import LLMClient
-from paper_agent.utils.logging import get_logger
+from paper_agent.utils.logging import get_logger, set_agent_step
 
 logger = get_logger(__name__)
 
 _PROMPT_FILE = Path(__file__).parent.parent / "llm" / "prompts" / "qa_answer.txt"
+
+_DEFAULT_SYSTEM = """You are a scientific paper reading assistant. Answer questions about papers accurately and concisely.
+- Base answers strictly on the provided context
+- Always cite specific page numbers and sections
+- If the answer is not in the context, say so clearly
+- Distinguish between what the authors claim vs what you infer
+"""
 
 
 def answer_question(
@@ -20,16 +28,20 @@ def answer_question(
     evidence: list[dict[str, Any]],
     llm: LLMClient,
 ) -> dict[str, Any]:
-    """
-    Answer a question given retrieved chunks and paper schema.
+    """Answer a question given retrieved chunks and paper schema.
+
+    Args:
+        question: User question
+        chunks: Retrieved relevant chunks
+        schema: Paper schema dictionary
+        evidence: Evidence bindings
+        llm: LLM client instance
 
     Returns:
-        {
-            "answer": str,
-            "citations": [{"chunk_id": str, "pages": list[int], "section": str}]
-        }
+        Dictionary with answer text and citations list
     """
-    system_prompt = _PROMPT_FILE.read_text() if _PROMPT_FILE.exists() else _DEFAULT_SYSTEM
+    set_agent_step("answer_question")
+    system_prompt = _PROMPT_FILE.read_text(encoding="utf-8") if _PROMPT_FILE.exists() else _DEFAULT_SYSTEM
 
     context = _format_context(chunks)
     schema_summary = _format_schema_summary(schema)
@@ -58,24 +70,43 @@ CITATIONS:
 - chunk_id: <id>, pages: <pages>, section: <section>
 """
 
-    logger.info("answering_question", question=question[:80])
+    logger.info("answering_question", question=question[:80], chunks=len(chunks))
     raw = llm.complete(prompt, system=system_prompt, max_tokens=2000)
 
     return _parse_answer(raw, chunks)
 
 
 def _format_context(chunks: list[dict[str, Any]]) -> str:
-    parts = []
+    """Format chunks for QA context.
+
+    Args:
+        chunks: Retrieved chunks
+
+    Returns:
+        Formatted context string
+    """
+    parts: list[str] = []
     for c in chunks:
         cid = c.get("chunk_id", "")[:8]
         sec = c.get("section", c.get("section_normalized", ""))
-        pages = f"p{c['page_start']}-{c['page_end']}"
-        parts.append(f"[{cid} | {sec} | {pages}]\n{c['text'][:600]}")
+        page_start = c.get("page_start", 0)
+        page_end = c.get("page_end", 0)
+        pages = f"p{page_start}-{page_end}"
+        text = c.get("text", "")
+        parts.append(f"[{cid} | {sec} | {pages}]\n{text[:600]}")
     return "\n\n".join(parts)
 
 
 def _format_schema_summary(schema: dict[str, Any]) -> str:
-    lines = [
+    """Format schema for QA context.
+
+    Args:
+        schema: Paper schema dictionary
+
+    Returns:
+        Formatted summary string
+    """
+    lines: list[str] = [
         f"Title: {schema.get('title', '')}",
         f"Problem: {schema.get('problem_statement', '')}",
         "Contributions:",
@@ -87,9 +118,17 @@ def _format_schema_summary(schema: dict[str, Any]) -> str:
 
 
 def _parse_answer(raw: str, chunks: list[dict[str, Any]]) -> dict[str, Any]:
-    """Parse LLM output into structured answer + citations."""
+    """Parse LLM output into structured answer + citations.
+
+    Args:
+        raw: Raw LLM response
+        chunks: Available chunks for lookup
+
+    Returns:
+        Dictionary with answer and citations
+    """
     answer = raw
-    citations = []
+    citations: list[dict[str, Any]] = []
 
     if "ANSWER:" in raw and "CITATIONS:" in raw:
         parts = raw.split("CITATIONS:", 1)
@@ -106,7 +145,6 @@ def _parse_answer(raw: str, chunks: list[dict[str, Any]]) -> dict[str, Any]:
             if not line:
                 continue
             # Try to extract chunk_id
-            import re
             cid_match = re.search(r"chunk_id:\s*([a-f0-9]+)", line)
             pages_match = re.search(r"pages?:\s*([\d,\s]+)", line)
             sec_match = re.search(r"section:\s*(.+?)(?:,|$)", line)
@@ -129,12 +167,5 @@ def _parse_answer(raw: str, chunks: list[dict[str, Any]]) -> dict[str, Any]:
     elif "ANSWER:" in raw:
         answer = raw.split("ANSWER:", 1)[1].strip()
 
+    logger.debug("answer_parsed", answer_len=len(answer), citations=len(citations))
     return {"answer": answer, "citations": citations}
-
-
-_DEFAULT_SYSTEM = """You are a scientific paper reading assistant. Answer questions about papers accurately and concisely.
-- Base answers strictly on the provided context
-- Always cite specific page numbers and sections
-- If the answer is not in the context, say so clearly
-- Distinguish between what the authors claim vs what you infer
-"""

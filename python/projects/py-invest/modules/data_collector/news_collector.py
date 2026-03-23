@@ -123,21 +123,18 @@ class NewsCollector(BaseCollector):
     async def _fetch_macro_news(self, limit: int) -> List[dict]:
         """Fetch macroeconomic news.
 
+        Note: Macro news requires external API integration (e.g., NewsAPI, Alpha Vantage).
+        Currently returns empty list - stock-specific news is available via yfinance.
+
         Args:
             limit: Number of items.
 
         Returns:
-            List of news items (placeholder).
+            Empty list (macro news API not configured).
         """
-        return [
-            {
-                "title": "Central Bank: Maintain Adequate Liquidity",
-                "source": "Sina Finance",
-                "link": "https://finance.sina.com.cn",
-                "published_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
-                "summary": "The central bank will continue to implement prudent monetary policy...",
-            }
-        ]
+        # TODO: Integrate with macro news API (NewsAPI, Alpha Vantage, etc.)
+        # For now, return empty to avoid presenting fake data as real
+        return []
 
     def _convert_ticker(self, stock_code: str) -> str:
         """Convert stock code to yfinance ticker format.

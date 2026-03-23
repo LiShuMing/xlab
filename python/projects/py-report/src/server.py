@@ -38,10 +38,26 @@ async def refresh(
     product: str = Query(..., description="LLM API product name to research"),
     language: str = Query("English", description="Report language"),
     depth: str = Query("deep", description="Research depth: standard | deep | executive"),
+    mode: str | None = Query(None, description="Research mode: standard | deep | executive | verified"),
+    competitors: str = Query("", description="Comma-separated list of competitors to compare"),
 ) -> JSONResponse:
-    """Trigger a new research call and rebuild MkDocs."""
+    """Trigger a new research call and rebuild MkDocs.
+
+    The agent-based pipeline generates reports with optional:
+    - Fact verification (web search)
+    - Competitive comparison
+    - Version history tracking
+    - Technical documentation analysis
+    """
     try:
-        content = await generate_report_async(product, language, depth)
+        competitor_list = [c.strip() for c in competitors.split(",") if c.strip()]
+        content = await generate_report_async(
+            product,
+            language,
+            depth,
+            mode=mode,
+            competitors=competitor_list if competitor_list else None,
+        )
         report_path = save_report(product, content)
         _build_mkdocs()
     except ResearcherError as exc:

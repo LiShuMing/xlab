@@ -1,8 +1,10 @@
 """Release data models."""
 
-from pydantic import BaseModel
+from __future__ import annotations
+
 from datetime import datetime
-from typing import Optional
+
+from pydantic import BaseModel
 
 
 class Release(BaseModel):
@@ -12,10 +14,10 @@ class Release(BaseModel):
     product_id: str
     version: str
     title: str
-    published_at: Optional[datetime]
+    published_at: datetime | None
     source_url: str
     source_type: str
     source_hash: str
-    raw_snapshot_path: Optional[str] = None
-    normalized_snapshot_path: Optional[str] = None
+    raw_snapshot_path: str | None = None
+    normalized_snapshot_path: str | None = None
     discovered_at: datetime

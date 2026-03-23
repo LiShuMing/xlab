@@ -10,7 +10,7 @@ from paper_agent.utils.logging import get_logger
 logger = get_logger(__name__)
 
 # Common academic paper section titles
-_KNOWN_SECTIONS = [
+_KNOWN_SECTIONS: set[str] = {
     "abstract",
     "introduction",
     "related work",
@@ -41,7 +41,7 @@ _KNOWN_SECTIONS = [
     "references",
     "appendix",
     "limitations",
-]
+}
 
 _SECTION_RE = re.compile(
     r"^(\d+\.?\d*\.?\s+)?([A-Z][A-Za-z\s\-:]+)$"
@@ -49,26 +49,21 @@ _SECTION_RE = re.compile(
 
 
 def detect_sections(pages_data: dict[str, Any]) -> list[dict[str, Any]]:
-    """
-    Detect sections from parsed pages.
+    """Detect sections from parsed pages.
 
     Handles two PDF layouts:
     1. Section title is its own block (standalone heading)
     2. Section title is the first line(s) of a block (ACM/IEEE two-column style)
 
+    Args:
+        pages_data: Parsed page data with text_blocks
+
     Returns:
-        [
-            {
-                "title": str,
-                "normalized_title": str,
-                "start_page": int,
-                "start_block": int,
-                "end_page": int | None,
-            }
-        ]
+        List of section dictionaries with title, normalized_title,
+        start_page, start_block, and end_page
     """
-    sections = []
-    pages = pages_data["pages"]
+    sections: list[dict[str, Any]] = []
+    pages: list[dict[str, Any]] = pages_data["pages"]
 
     for page in pages:
         page_num = page["page_num"]
@@ -85,7 +80,7 @@ def detect_sections(pages_data: dict[str, Any]) -> list[dict[str, Any]]:
                     "end_page": None,
                 })
 
-    # Fill end_page
+    # Fill end_page for each section
     for i in range(len(sections) - 1):
         sections[i]["end_page"] = sections[i + 1]["start_page"]
     if sections:
@@ -96,7 +91,14 @@ def detect_sections(pages_data: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def _is_section_heading(text: str) -> bool:
-    """Heuristic to identify section headings."""
+    """Heuristic to identify section headings.
+
+    Args:
+        text: Block text to check
+
+    Returns:
+        True if the text appears to be a section heading
+    """
     lines = text.strip().splitlines()
     if len(lines) > 2:
         return False
@@ -131,14 +133,19 @@ def _is_section_heading(text: str) -> bool:
 
 
 def _extract_heading_from_block(text: str) -> str | None:
-    """
-    Extract a section heading from a block, even if the block contains body text.
+    """Extract a section heading from a block, even if the block contains body text.
 
     Handles two patterns:
     - Standalone heading: the entire block is a heading
     - Embedded heading: first 1-2 lines of block match a heading pattern (ACM style)
       e.g. "1\nINTRODUCTION\nWith the rapid evolution..."
            "4.2\nIncremental Maintenance Part\nThis part..."
+
+    Args:
+        text: Block text
+
+    Returns:
+        Extracted heading or None
     """
     lines = text.splitlines()
     if not lines:
@@ -159,10 +166,8 @@ def _extract_heading_from_block(text: str) -> str | None:
             if _is_section_heading(candidate):
                 return candidate
 
-    # Pattern 3: "4.2\nIncremental Maintenance Part\nThis part..." where number+title are merged
-    # Handle "4.2\nTitle Here\nbody text" — check second line as heading
+    # Pattern 3: Check if line[1] looks like a title
     if len(lines) >= 3:
-        # Check if line[1] looks like a title
         second = lines[1].strip()
         if _is_section_heading(second):
             return second
@@ -178,7 +183,14 @@ def _extract_heading_from_block(text: str) -> str | None:
 
 
 def _normalize_title(text: str) -> str:
-    """Normalize a section title for comparison."""
+    """Normalize a section title for comparison.
+
+    Args:
+        text: Section title
+
+    Returns:
+        Normalized lowercase title
+    """
     # Remove leading numbers like "1.", "2.1", "A."
     text = re.sub(r"^\d+\.?\d*\.?\s*", "", text)
     text = re.sub(r"^[A-Z]\.\s*", "", text)
@@ -189,55 +201,50 @@ def assign_section_to_blocks(
     pages_data: dict[str, Any],
     sections: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
-    """
-    Return all text blocks with their assigned section.
+    """Return all text blocks with their assigned section.
+
+    Args:
+        pages_data: Parsed page data
+        sections: Detected sections
 
     Returns:
-        [
-            {
-                "page_num": int,
-                "block_num": int,
-                "text": str,
-                "bbox": list,
-                "section": str,
-                "section_normalized": str,
-            }
-        ]
+        List of blocks with section assignment
     """
     # Build a lookup: (page_num, block_idx) -> section
     block_section: dict[tuple[int, int], tuple[str, str]] = {}
 
-    pages = pages_data["pages"]
+    pages: list[dict[str, Any]] = pages_data["pages"]
     page_map = {p["page_num"]: p for p in pages}
 
     for sec_idx, section in enumerate(sections):
-        start_page = section["start_page"]
-        end_page = section["end_page"] or pages[-1]["page_num"]
-        start_block = section["start_block"]
+        start_page: int = section["start_page"]
+        end_page: int = section["end_page"] or pages[-1]["page_num"]
+        start_block: int = section["start_block"]
 
-        # Determine exclusive end block on the end_page (where the next section starts)
+        # Determine exclusive end block on the end_page
         next_section = sections[sec_idx + 1] if sec_idx + 1 < len(sections) else None
-        next_start_page = next_section["start_page"] if next_section else None
-        next_start_block = next_section["start_block"] if next_section else None
+        next_start_page: int | None = next_section["start_page"] if next_section else None
+        next_start_block: int | None = next_section["start_block"] if next_section else None
 
         for pn in range(start_page, end_page + 1):
             page = page_map.get(pn)
             if not page:
                 continue
-            for bi, block in enumerate(page["text_blocks"]):
+            for bi, _block in enumerate(page["text_blocks"]):
                 # Skip blocks before the section heading on the start page
                 if pn == start_page and bi < start_block:
                     continue
                 # Stop before the next section's heading block on its start page
-                if next_section and pn == next_start_page and bi >= next_start_block:
-                    continue
+                if next_start_page is not None and next_start_block is not None:
+                    if pn == next_start_page and bi >= next_start_block:
+                        continue
                 key = (pn, bi)
                 block_section[key] = (
                     section["title"],
                     section["normalized_title"],
                 )
 
-    result = []
+    result: list[dict[str, Any]] = []
     for page in pages:
         pn = page["page_num"]
         for bi, block in enumerate(page["text_blocks"]):

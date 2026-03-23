@@ -1,12 +1,15 @@
 """CLI commands for product catalog management."""
 
+from __future__ import annotations
+
 from pathlib import Path
-from typing import Optional
 
 import typer
 from rich.console import Console
 from rich.table import Table
 
+from pia.config.loader import load_all_products
+from pia.exceptions import ProductNotFoundError, ProductValidationError
 from pia.services.product_service import ProductService
 
 app = typer.Typer(help="Manage tracked products.")
@@ -16,13 +19,14 @@ console = Console()
 @app.command("list")
 def list_products() -> None:
     """List all tracked products."""
-    from pia.config.loader import load_all_products
     svc = ProductService()
     # Load from disk to include sources count; fall back to DB
     products = load_all_products() or svc.list_products()
 
     if not products:
-        console.print("[yellow]No products found. Check your products/ directory.[/yellow]")
+        console.print(
+            "[yellow]No products found. Check your products/ directory.[/yellow]"
+        )
         raise typer.Exit(0)
 
     table = Table(title="Tracked Products", show_lines=True)
@@ -66,7 +70,9 @@ def show_product(product_id: str = typer.Argument(..., help="Product ID")) -> No
             console.print(f"  [{s.priority:3d}] {s.type:20s} {s.url}")
 
     if product.analysis.competitor_set:
-        console.print(f"\n[bold]Competitors:[/bold] {', '.join(product.analysis.competitor_set)}")
+        console.print(
+            f"\n[bold]Competitors:[/bold] {', '.join(product.analysis.competitor_set)}"
+        )
 
     if product.analysis.audience:
         console.print(f"[bold]Audience:[/bold]     {', '.join(product.analysis.audience)}")
@@ -87,6 +93,9 @@ def add_product(
     try:
         product = svc.add_product(config)
         console.print(f"[green]Added product:[/green] {product.name} ({product.id})")
+    except ProductValidationError as e:
+        console.print(f"[red]Failed to add product: {e.message}[/red]")
+        raise typer.Exit(1)
     except Exception as e:
         console.print(f"[red]Failed to add product: {e}[/red]")
         raise typer.Exit(1)

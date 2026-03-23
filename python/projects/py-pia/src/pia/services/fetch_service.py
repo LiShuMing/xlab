@@ -1,13 +1,17 @@
 """HTTP fetch service with disk caching."""
 
-import structlog
-import httpx
+from __future__ import annotations
+
 from pathlib import Path
 
+import httpx
+import structlog
+
 from pia.config.settings import get_settings
+from pia.telemetry.metrics import timed_tool_execution
 from pia.utils.hashing import hash_url
 
-log = structlog.get_logger()
+logger = structlog.get_logger()
 
 
 class FetchService:
@@ -35,18 +39,19 @@ class FetchService:
         cache_path = settings.raw_dir / f"{hash_url(url)}.html"
 
         if cache_path.exists() and not force:
-            log.debug("fetch cache hit", url=url, path=str(cache_path))
+            logger.debug("fetch cache hit", url=url, path=str(cache_path))
             return cache_path.read_text(encoding="utf-8", errors="replace")
 
-        log.info("fetching url", url=url)
-        async with httpx.AsyncClient(follow_redirects=True, timeout=30.0) as client:
-            headers = {"User-Agent": "pia/1.0 (product intelligence agent)"}
-            resp = await client.get(url, headers=headers)
-            resp.raise_for_status()
-            content = resp.text
+        with timed_tool_execution("fetch_url"):
+            logger.info("fetching url", url=url)
+            async with httpx.AsyncClient(follow_redirects=True, timeout=30.0) as client:
+                headers = {"User-Agent": "pia/1.0 (product intelligence agent)"}
+                resp = await client.get(url, headers=headers)
+                resp.raise_for_status()
+                content = resp.text
 
         cache_path.write_text(content, encoding="utf-8")
-        log.debug("fetch cached", url=url, path=str(cache_path))
+        logger.debug("fetch cached", url=url, path=str(cache_path))
         return content
 
     async def fetch_url_to_file(self, url: str, dest: Path, force: bool = False) -> Path:
@@ -62,7 +67,10 @@ class FetchService:
         """
         if dest.exists() and not force:
             return dest
-        content = await self.fetch_url(url, force=force)
-        dest.parent.mkdir(parents=True, exist_ok=True)
-        dest.write_text(content, encoding="utf-8")
+
+        with timed_tool_execution("fetch_url_to_file"):
+            content = await self.fetch_url(url, force=force)
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            dest.write_text(content, encoding="utf-8")
+
         return dest

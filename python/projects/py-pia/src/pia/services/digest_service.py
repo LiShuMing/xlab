@@ -8,13 +8,14 @@ from datetime import timedelta
 import structlog
 
 from pia.config.settings import get_settings
-from pia.llm.provider import LLMProvider, PROMPT_VERSION
+from pia.llm.provider import PROMPT_VERSION, LLMProvider
 from pia.models.report import DigestReport
 from pia.store.repositories import ReleaseRepository, ReportRepository
+from pia.telemetry import correlation_context, get_context_dict
 from pia.utils.dates import now_utc
 from pia.utils.hashing import hash_content
 
-log = structlog.get_logger()
+logger = structlog.get_logger()
 
 
 class DigestService:
@@ -40,7 +41,8 @@ class DigestService:
         Returns:
             Generated DigestReport.
         """
-        return await self._generate_digest(product_ids, "weekly", days=7)
+        with correlation_context():
+            return await self._generate_digest(product_ids, "weekly", days=7)
 
     async def generate_monthly_digest(self, product_ids: list[str]) -> DigestReport:
         """Generate a monthly digest covering the specified products.
@@ -51,7 +53,8 @@ class DigestService:
         Returns:
             Generated DigestReport.
         """
-        return await self._generate_digest(product_ids, "monthly", days=30)
+        with correlation_context():
+            return await self._generate_digest(product_ids, "monthly", days=30)
 
     async def _generate_digest(
         self,
@@ -70,25 +73,36 @@ class DigestService:
             Generated DigestReport.
         """
         from pia.services.product_service import ProductService
+
+        context = get_context_dict()
         product_svc = ProductService()
 
         cutoff = now_utc() - timedelta(days=days)
+
+        logger.info(
+            "generating digest",
+            window=window_name,
+            product_count=len(product_ids),
+            **context,
+        )
 
         # Gather per-product data
         products_info: list[dict] = []
         for pid in product_ids:
             product = product_svc.get_product(pid)
             if not product:
-                log.warning("product not found for digest", product_id=pid)
+                logger.warning("product not found for digest", product_id=pid, **context)
                 continue
 
             releases = self.release_repo.list_by_product(pid, limit=10)
-            recent = [
-                r for r in releases
-                if r.discovered_at and r.discovered_at > cutoff
-            ]
+            recent = [r for r in releases if r.discovered_at and r.discovered_at > cutoff]
             if not recent:
-                log.info("no recent releases for product", product_id=pid, days=days)
+                logger.info(
+                    "no recent releases for product",
+                    product_id=pid,
+                    days=days,
+                    **context,
+                )
                 continue
 
             # Get the most recent available report
@@ -103,7 +117,10 @@ class DigestService:
             })
 
         if not products_info:
-            log.warning("no products with recent releases for digest")
+            logger.warning(
+                "no products with recent releases for digest",
+                **context,
+            )
             content_md = f"# {window_name.capitalize()} Digest\n\nNo recent releases found in the specified time window."
         else:
             content_md, _ = await self.llm.generate_digest(products_info, window_name)
@@ -121,10 +138,9 @@ class DigestService:
 
         # Save to file
         report_path = (
-            self.settings.reports_dir
-            / f"digest_{window_name}_{digest.id[:8]}.md"
+            self.settings.reports_dir / f"digest_{window_name}_{digest.id[:8]}.md"
         )
         report_path.write_text(content_md, encoding="utf-8")
-        log.info("digest saved", path=str(report_path))
+        logger.info("digest saved", path=str(report_path), **context)
 
         return digest

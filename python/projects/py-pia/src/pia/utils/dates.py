@@ -1,7 +1,8 @@
 """Date and time utilities."""
 
+from __future__ import annotations
+
 from datetime import datetime, timezone
-from typing import Optional
 
 from dateutil import parser as dateutil_parser
 
@@ -11,7 +12,7 @@ def now_utc() -> datetime:
     return datetime.now(timezone.utc)
 
 
-def parse_date(s: Optional[str]) -> Optional[datetime]:
+def parse_date(s: str | None) -> datetime | None:
     """Parse a date string into a datetime object.
 
     Accepts most common date formats including ISO 8601.
@@ -30,7 +31,7 @@ def parse_date(s: Optional[str]) -> Optional[datetime]:
         return None
 
 
-def format_iso(dt: Optional[datetime]) -> Optional[str]:
+def format_iso(dt: datetime | None) -> str | None:
     """Format a datetime as an ISO 8601 string.
 
     Args:

@@ -7,6 +7,7 @@ Commands:
   digest      Aggregate summaries into a daily digest JSON.
   show        Pretty-print the digest for a given date.
   topics      Show topic arc table (ongoing discussion threads).
+  server      Start web server to browse email digests.
 
 Typical daily workflow:
   my-email sync
@@ -14,6 +15,9 @@ Typical daily workflow:
   my-email digest    --date 2026-03-19 [--html [--open]]
   my-email show      --date 2026-03-19
   my-email topics
+
+Server mode:
+  my-email server --host 127.0.0.1 --port 8080
 """
 
 from __future__ import annotations
@@ -385,3 +389,36 @@ def show(target_date: str | None) -> None:
             click.echo(line)
         click.echo()
         click.echo("-" * 60)
+
+
+# ── server ────────────────────────────────────────────────────────────────────
+
+@cli.command()
+@click.option("--host", default="127.0.0.1", help="Host to bind (default: 127.0.0.1)")
+@click.option("--port", default=8080, help="Port to bind (default: 8080)")
+@click.option("--reload", is_flag=True, help="Enable auto-reload for development")
+def server(host: str, port: int, reload: bool) -> None:
+    """
+    Start web server to browse email digests.
+
+    Provides a web interface to:
+    - Browse all available digest dates
+    - View HTML digest for a specific date
+    - Trigger sync+summarize for dates without digest
+    """
+    try:
+        import uvicorn
+    except ImportError:
+        click.echo("Error: uvicorn is required for server mode.", err=True)
+        click.echo("Install with: pip install uvicorn", err=True)
+        raise SystemExit(1)
+
+    click.echo(f"Starting server at http://{host}:{port}")
+    click.echo("Press Ctrl+C to stop")
+
+    uvicorn.run(
+        "my_email.server.app:app",
+        host=host,
+        port=port,
+        reload=reload,
+    )

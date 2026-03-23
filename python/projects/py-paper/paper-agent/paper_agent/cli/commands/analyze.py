@@ -5,46 +5,60 @@ from __future__ import annotations
 import time
 import uuid
 from pathlib import Path
-from typing import Optional
 
 import typer
 from rich.console import Console
 
 from paper_agent.core.config import RunConfig
 from paper_agent.core.paths import RunPaths
+from paper_agent.core.runner import PipelineRunner
 from paper_agent.core.state import RunState, Stage
 from paper_agent.utils.hashing import sha256_file
 from paper_agent.utils.io import write_json
-from paper_agent.utils.logging import configure_logging
+from paper_agent.utils.logging import configure_logging, set_correlation_id, set_session_id
 
 console = Console()
 
 
 def register(app: typer.Typer) -> None:
+    """Register the analyze command with the CLI app."""
 
     @app.command()
     def analyze(
         pdf: Path = typer.Argument(..., help="Path to PDF file"),
         output: Path = typer.Option(Path("./runs"), "--output", "-o"),
-        run_name: Optional[str] = typer.Option(None, "--run-name"),
-        template: str = typer.Option("deep-dive", "--template", "-t",
-                                     help="Report template: summary | deep-dive"),
-        model: Optional[str] = typer.Option(None, "--model", help="LLM model name"),
-        from_stage: Optional[str] = typer.Option(None, "--from-stage",
-                                                  help="Start from stage: parse|chunk|extract|bind_evidence|report"),
-        to_stage: Optional[str] = typer.Option(None, "--to-stage",
-                                               help="Stop after stage"),
+        run_name: str | None = typer.Option(None, "--run-name"),
+        template: str = typer.Option(
+            "deep-dive",
+            "--template",
+            "-t",
+            help="Report template: summary | deep-dive",
+        ),
+        model: str | None = typer.Option(None, "--model", help="LLM model name"),
+        from_stage: str | None = typer.Option(
+            None,
+            "--from-stage",
+            help="Start from stage: parse|chunk|extract|bind_evidence|report",
+        ),
+        to_stage: str | None = typer.Option(
+            None,
+            "--to-stage",
+            help="Stop after stage",
+        ),
         resume: bool = typer.Option(False, "--resume", help="Skip completed stages"),
         force: bool = typer.Option(False, "--force", help="Overwrite existing output"),
         skip_references: bool = typer.Option(False, "--skip-references"),
         chunk_size: int = typer.Option(1200, "--chunk-size"),
         chunk_overlap: int = typer.Option(150, "--chunk-overlap"),
-        config_file: Optional[Path] = typer.Option(None, "--config"),
+        config_file: Path | None = typer.Option(None, "--config"),
         save_trace: bool = typer.Option(False, "--save-trace"),
         verbose: bool = typer.Option(False, "--verbose", "-v"),
         debug: bool = typer.Option(False, "--debug"),
     ) -> None:
         """Run full analysis pipeline on a PDF: parse → extract → report."""
+        # Set up observability context
+        set_correlation_id()
+        set_session_id()
         configure_logging(verbose=verbose, debug=debug)
 
         if not pdf.exists():
@@ -90,7 +104,7 @@ def register(app: typer.Typer) -> None:
                 document_id=document_id,
                 filename=pdf.name,
                 sha256=sha256,
-                config=cfg.model_dump(mode="json"),
+                config=cfg.to_dict(),
             )
             console.print(f"[green]Starting analysis:[/green] {run_dir}")
 
@@ -98,24 +112,22 @@ def register(app: typer.Typer) -> None:
         state._data["pdf_path"] = str(pdf.resolve())
         state._save()
 
-        write_json(paths.config, cfg.model_dump(mode="json"))
+        write_json(paths.config, cfg.to_dict())
 
         # Resolve stage range
-        from paper_agent.core.state import STAGE_ORDER
         fs = Stage(from_stage) if from_stage else Stage.PARSE
         ts = Stage(to_stage) if to_stage else Stage.REPORT
 
-        from paper_agent.core.runner import PipelineRunner
         runner = PipelineRunner(paths, state, cfg)
 
-        t0 = time.time()
+        t0 = time.perf_counter()
         try:
             runner.run(from_stage=fs, to_stage=ts, resume=resume)
         except Exception as e:
             console.print(f"\n[red]Pipeline failed:[/red] {e}")
             raise typer.Exit(1)
 
-        elapsed = time.time() - t0
+        elapsed = time.perf_counter() - t0
         console.print(f"\n[bold green]Done[/bold green] in {elapsed:.1f}s")
         console.print(f"Output: {run_dir}")
 

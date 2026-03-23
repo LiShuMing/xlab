@@ -1,5 +1,7 @@
 """Content normalization service: HTML/Markdown to clean NormalizedDoc."""
 
+from __future__ import annotations
+
 import re
 
 import markdownify
