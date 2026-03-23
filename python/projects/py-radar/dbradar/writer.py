@@ -1,13 +1,20 @@
 """Write reports to Markdown and JSON files."""
 
+from __future__ import annotations
+
 import json
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from dbradar.ranker import RankedItem
 from dbradar.summarizer import SummaryResult
+
+if TYPE_CHECKING:
+    from jinja2 import Environment
+
+    from dbradar.interests import InterestsConfig
 
 
 # Translations for UI elements
@@ -203,12 +210,59 @@ class Writer:
         path.write_text(json.dumps(report.to_dict(), indent=2, ensure_ascii=False), encoding="utf-8")
         return path
 
+    def write_html(
+        self,
+        report: Report,
+        ranked_items: List[RankedItem],
+        interests: Optional[InterestsConfig] = None,
+        filename: Optional[str] = None,
+    ) -> Path:
+        """
+        Write report as HTML using Jinja2 template.
+
+        Args:
+            report: The Report object containing summary data.
+            ranked_items: List of ranked items for score visualization.
+            interests: Optional interests config for sidebar display.
+            filename: Optional output filename (defaults to {date}.html).
+
+        Returns:
+            Path to the generated HTML file.
+        """
+        if not filename:
+            filename = f"{report.date}.html"
+
+        path = self.output_dir / filename
+
+        # Get max score for normalization
+        max_score = max((r.score for r in ranked_items), default=1.0)
+
+        # Prepare template context
+        context = {
+            "report": report,
+            "ranked_items": ranked_items[:20],  # Top 20 for display
+            "max_score": max_score,
+            "interests": interests,
+            "language": self.language,
+            "t": self.t,
+        }
+
+        # Render template
+        env = _get_jinja_env()
+        template = env.get_template("briefing.html.j2")
+        html_content = template.render(**context)
+
+        path.write_text(html_content, encoding="utf-8")
+        return path
+
     def write_report(
         self,
         summary: SummaryResult,
         ranked_items: List[RankedItem],
         fetch_failures: List[Dict[str, str]],
         date: Optional[str] = None,
+        interests: Optional[InterestsConfig] = None,
+        write_html: bool = False,
     ) -> tuple:
         """
         Write both Markdown and JSON reports.
@@ -218,9 +272,11 @@ class Writer:
             ranked_items: List of ranked items for reference.
             fetch_failures: List of fetch failure records.
             date: Optional date string (YYYY-MM-DD), defaults to today.
+            interests: Optional interests config for HTML sidebar.
+            write_html: Whether to also generate HTML output.
 
         Returns:
-            Tuple of (markdown_path, json_path).
+            Tuple of (markdown_path, json_path, html_path or None).
         """
         report_date = date or datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
@@ -243,7 +299,11 @@ class Writer:
         md_path = self.write_markdown(report)
         json_path = self.write_json(report)
 
-        return md_path, json_path
+        html_path = None
+        if write_html:
+            html_path = self.write_html(report, ranked_items, interests)
+
+        return md_path, json_path, html_path
 
 
 def write_reports(
@@ -257,3 +317,63 @@ def write_reports(
     """Convenience function to write reports."""
     writer = Writer(output_dir, language=language)
     return writer.write_report(summary, ranked_items, fetch_failures, date)
+
+
+def _get_jinja_env() -> Environment:
+    """
+    Get Jinja2 environment with lazy initialization.
+
+    Lazy initialization prevents import-time failures when templates
+    directory is missing or improperly packaged.
+    """
+    from jinja2 import Environment, FileSystemLoader, select_autoescape
+
+    template_dir = Path(__file__).parent / "templates"
+    return Environment(
+        loader=FileSystemLoader(str(template_dir)),
+        autoescape=select_autoescape(["html", "xml"]),
+    )
+
+
+def write_html_report(
+    summary: SummaryResult,
+    ranked_items: List[RankedItem],
+    output_dir: Path,
+    interests: Optional[InterestsConfig] = None,
+    date: Optional[str] = None,
+    language: str = "en",
+) -> Path:
+    """
+    Convenience function to write HTML report only.
+
+    Args:
+        summary: SummaryResult from summarizer.
+        ranked_items: List of ranked items for score visualization.
+        output_dir: Directory to write the HTML file.
+        interests: Optional interests config for sidebar display.
+        date: Optional date string (YYYY-MM-DD), defaults to today.
+        language: Output language (en/zh).
+
+    Returns:
+        Path to the generated HTML file.
+    """
+    writer = Writer(output_dir, language=language)
+    report_date = date or datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    report = Report(
+        date=report_date,
+        title=writer.t["title"].format(date=report_date),
+        executive_summary=summary.executive_summary,
+        top_updates=summary.top_updates,
+        release_notes=summary.release_notes,
+        themes=summary.themes,
+        action_items=summary.action_items,
+        fetch_failures=[],
+        metadata={
+            "total_items_collected": len(ranked_items),
+            "top_items_count": len(summary.top_updates),
+            "language": language,
+        },
+    )
+
+    return writer.write_html(report, ranked_items, interests)

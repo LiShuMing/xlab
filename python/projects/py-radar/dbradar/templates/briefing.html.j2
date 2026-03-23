@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="{{ language }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ report.title }}</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --text-color: #1f2937;
+            --bg-color: #f9fafb;
+            --card-bg: #ffffff;
+            --border-color: #e5e7eb;
+            --muted-color: #6b7280;
+            --accent-color: #10b981;
+            --warning-color: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 24px;
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                order: -1;
+            }
+        }
+
+        header {
+            grid-column: 1 / -1;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+
+        .date {
+            color: var(--muted-color);
+            font-size: 0.9rem;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--primary-color);
+            color: var(--text-color);
+        }
+
+        .executive-summary ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .executive-summary li {
+            padding: 10px 0;
+            padding-left: 24px;
+            position: relative;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .executive-summary li:last-child {
+            border-bottom: none;
+        }
+
+        .executive-summary li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .update-item {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .update-item:last-child {
+            border-bottom: none;
+        }
+
+        .update-item h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+
+        .update-item h3 a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .update-item h3 a:hover {
+            text-decoration: underline;
+        }
+
+        .update-item .product-tag {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-right: 8px;
+        }
+
+        .update-item .boosted-badge {
+            display: inline-block;
+            background: var(--accent-color);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+
+        .update-item .meta {
+            font-size: 0.85rem;
+            color: var(--muted-color);
+            margin-bottom: 12px;
+        }
+
+        .update-item ul {
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+
+        .update-item li {
+            margin-bottom: 4px;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .sidebar-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-color);
+        }
+
+        .profile-chip {
+            display: inline-flex;
+            align-items: center;
+            background: #f3f4f6;
+            padding: 6px 12px;
+            border-radius: 20px;
+            margin: 4px;
+            font-size: 0.85rem;
+        }
+
+        .profile-chip .weight {
+            background: var(--primary-color);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 8px;
+            font-size: 0.75rem;
+        }
+
+        .yaml-snippet {
+            background: #1f2937;
+            color: #e5e7eb;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.75rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        .score-bar-container {
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            margin-top: 8px;
+        }
+
+        .score-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            border-radius: 2px;
+        }
+
+        .themes-list, .actions-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .themes-list li, .actions-list li {
+            padding: 8px 0;
+            padding-left: 20px;
+            position: relative;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .themes-list li:last-child, .actions-list li:last-child {
+            border-bottom: none;
+        }
+
+        .themes-list li::before {
+            content: "◆";
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+            font-size: 0.75rem;
+        }
+
+        .actions-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        footer {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 20px;
+            color: var(--muted-color);
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>{{ report.title }}</h1>
+            <p class="date">{{ report.date }}</p>
+        </header>
+
+        <main class="main-content">
+            <!-- Executive Summary -->
+            <section class="card executive-summary">
+                <h2>{{ t.executive_summary }}</h2>
+                <ul>
+                    {% for bullet in report.executive_summary %}
+                    <li>{{ bullet }}</li>
+                    {% endfor %}
+                </ul>
+            </section>
+
+            <!-- Top Updates -->
+            <section class="card top-updates">
+                <h2>{{ t.top_updates }}</h2>
+                {% for update in report.top_updates %}
+                <div class="update-item">
+                    <h3>
+                        <span class="product-tag">{{ update.product }}</span>
+                        <a href="{{ update.sources[0] if update.sources else '#' }}">{{ update.title }}</a>
+                    </h3>
+                    <p class="meta">
+                        {% if update.what_changed %}
+                        <strong>{{ t.what_changed }}</strong>
+                        {% endif %}
+                    </p>
+                    {% if update.what_changed %}
+                    <ul>
+                        {% for change in update.what_changed[:3] %}
+                        <li>{{ change }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                    {% if update.why_it_matters %}
+                    <p class="meta" style="margin-top: 12px;"><strong>{{ t.why_it_matters }}</strong></p>
+                    <ul>
+                        {% for why in update.why_it_matters[:2] %}
+                        <li>{{ why }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </section>
+
+            <!-- Themes -->
+            {% if report.themes %}
+            <section class="card themes">
+                <h2>{{ t.themes }}</h2>
+                <ul class="themes-list">
+                    {% for theme in report.themes %}
+                    <li>{{ theme }}</li>
+                    {% endfor %}
+                </ul>
+            </section>
+            {% endif %}
+
+            <!-- Action Items -->
+            {% if report.action_items %}
+            <section class="card actions">
+                <h2>{{ t.action_items }}</h2>
+                <ul class="actions-list">
+                    {% for item in report.action_items %}
+                    <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            </section>
+            {% endif %}
+        </main>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            {% if interests and (interests.has_products() or interests.has_keywords()) %}
+            <div class="sidebar-card">
+                <h3>Personalization Profile</h3>
+                {% if interests.has_products() %}
+                <div style="margin-bottom: 12px;">
+                    <strong style="font-size: 0.85rem; color: var(--muted-color);">Products:</strong>
+                    <div style="margin-top: 8px;">
+                        {% for product, weight in interests.products.items() %}
+                        <span class="profile-chip">
+                            {{ product.title() }}
+                            <span class="weight">×{{ weight }}</span>
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                {% if interests.has_keywords() %}
+                <div>
+                    <strong style="font-size: 0.85rem; color: var(--muted-color);">Keywords:</strong>
+                    <div style="margin-top: 8px;">
+                        {% for keyword, weight in interests.keywords.items() %}
+                        <span class="profile-chip">
+                            {{ keyword }}
+                            <span class="weight">×{{ weight }}</span>
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="sidebar-card">
+                <h3>Active Config</h3>
+                <pre class="yaml-snippet">{{ interests.raw_yaml[:500] }}{% if interests.raw_yaml|length > 500 %}...{% endif %}</pre>
+            </div>
+            {% endif %}
+
+            <div class="sidebar-card">
+                <h3>Top Ranked Items</h3>
+                <div style="font-size: 0.85rem;">
+                    {% for item in ranked_items[:10] %}
+                    <div style="padding: 8px 0; border-bottom: 1px solid var(--border-color);">
+                        <div style="font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            #{{ item.rank }} {{ item.item.title[:40] }}{% if item.item.title|length > 40 %}...{% endif %}
+                            {% if item.boosted %}
+                            <span class="boosted-badge" style="font-size: 0.65rem;">★ boosted</span>
+                            {% endif %}
+                        </div>
+                        <div class="score-bar-container">
+                            <div class="score-bar" style="width: {{ (item.score / max_score * 100)|round }}%;"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="sidebar-card">
+                <h3>Statistics</h3>
+                <div style="font-size: 0.85rem; color: var(--muted-color);">
+                    <div style="padding: 4px 0;">Total items: {{ report.metadata.total_items_collected }}</div>
+                    <div style="padding: 4px 0;">Top updates: {{ report.metadata.top_items_count }}</div>
+                    <div style="padding: 4px 0;">Language: {{ report.metadata.language }}</div>
+                </div>
+            </div>
+        </aside>
+
+        <footer>
+            <p>{{ t.generated_at.format(time=report.metadata.get('generated_at', '')) }}</p>
+        </footer>
+    </div>
+</body>
+</html>

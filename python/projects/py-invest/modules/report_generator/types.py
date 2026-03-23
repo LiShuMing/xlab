@@ -51,6 +51,9 @@ class Report:
         rating: Investment rating.
         confidence: Confidence level.
         target_price: Target price.
+        bull_case: Bull case scenario analysis.
+        bear_case: Bear case scenario analysis.
+        base_case: Base case scenario analysis.
         created_at: Creation timestamp.
         model_name: LLM model used.
         analysis_duration: Analysis duration in seconds.
@@ -68,6 +71,10 @@ class Report:
     rating: str = ""
     confidence: str = ""
     target_price: Optional[float] = None
+
+    bull_case: Optional[str] = None
+    bear_case: Optional[str] = None
+    base_case: Optional[str] = None
 
     created_at: datetime = field(default_factory=datetime.now)
     model_name: str = ""

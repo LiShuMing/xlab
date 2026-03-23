@@ -7,7 +7,12 @@ import json
 import pytest
 from unittest.mock import MagicMock, patch
 
-from my_email.llm.summarizer import summarize_message, EmailSummary, _strip_fences
+from my_email.llm.summarizer import (
+    summarize_message,
+    EmailSummary,
+    _strip_fences,
+    LLMOutputValidationError,
+)
 
 
 # ── unit: _strip_fences ───────────────────────────────────────────────────────
@@ -93,7 +98,7 @@ def test_summarize_message_invalid_json(mock_openai_cls):
     mock_openai_cls.return_value = client
     client.chat.completions.create.return_value = _mock_openai_response("not json at all")
 
-    with pytest.raises(json.JSONDecodeError):
+    with pytest.raises(LLMOutputValidationError):
         summarize_message(
             subject="Test", sender="x@y.com", date="2026-03-19", body="body"
         )

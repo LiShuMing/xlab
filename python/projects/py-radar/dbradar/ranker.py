@@ -1,20 +1,37 @@
 """Rank normalized items by relevance and recency."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 from dbradar.normalize import NormalizedItem
+
+if TYPE_CHECKING:
+    from dbradar.interests import InterestsConfig
 
 
 @dataclass
 class RankedItem:
-    """A ranked item with score and reasoning."""
+    """
+    A ranked item with score and reasoning.
+
+    Attributes:
+        item: The normalized item being ranked.
+        score: The computed relevance score.
+        rank: Position in the ranked list (1-indexed).
+        reasons: List of human-readable reasons for the score.
+        boosted: Whether this item received a personalization boost.
+        boost_reason: Description of why the item was boosted.
+    """
 
     item: NormalizedItem
     score: float
     rank: int
     reasons: List[str]
+    boosted: bool = False
+    boost_reason: Optional[str] = None
 
 
 class Ranker:
@@ -28,7 +45,7 @@ class Ranker:
     WEIGHT_RECENT = 1.2
     WEIGHT_OFFICIAL = 1.3
 
-    # Keywords that boost relevance
+    # Keywords that boost relevance (fallback when no interests.keywords)
     HIGH_VALUE_KEYWORDS = [
         "performance", "execution", "optimizer", "query", "storage",
         "vectorized", "MPP", "columnar", "parquet", "index",
@@ -37,8 +54,16 @@ class Ranker:
         "benchmark", "latency", "throughput", "scale",
     ]
 
-    def __init__(self, days: int = 7):
+    def __init__(self, days: int = 7, interests: Optional[InterestsConfig] = None):
+        """
+        Initialize the ranker.
+
+        Args:
+            days: Number of days to consider for recency scoring.
+            interests: Optional interests configuration for personalized ranking.
+        """
         self.days = days
+        self.interests = interests
 
     def _parse_date(self, date_str: Optional[str]) -> Optional[datetime]:
         """Parse date string to datetime."""
@@ -85,14 +110,26 @@ class Ranker:
         return 0.2
 
     def _calculate_content_score(self, item: NormalizedItem) -> float:
-        """Calculate content relevance score."""
+        """
+        Calculate content relevance score.
+
+        Note: This returns a 'relevance_score' (0.5-1.0), distinct from
+        the 'content_score' variable in rank() which is a content-type weight.
+        """
         text = f"{item.title} {item.content}".lower()
         score = 0.5  # Base score
 
-        # Boost for high-value keywords
-        for kw in self.HIGH_VALUE_KEYWORDS:
-            if kw in text:
-                score += 0.1
+        # Use personalized keywords if available, otherwise fall back to defaults
+        if self.interests and self.interests.has_keywords():
+            # Use interests.keywords with weighted scoring
+            for kw, weight in self.interests.keywords.items():
+                if kw in text:
+                    score += 0.05 * weight
+        else:
+            # Fall back to HIGH_VALUE_KEYWORDS with flat +0.1
+            for kw in self.HIGH_VALUE_KEYWORDS:
+                if kw in text:
+                    score += 0.1
 
         # Cap at 1.0
         return min(score, 1.0)
@@ -109,6 +146,33 @@ class Ranker:
             return 1.2
 
         return 1.0
+
+    def _get_product_boost(self, item: NormalizedItem) -> tuple[bool, Optional[str]]:
+        """
+        Check if item matches any product priority and return boost info.
+
+        Uses "first match wins" rule based on YAML insertion order (dict preserves
+        insertion order in Python 3.7+). Only checks title and domain to avoid
+        false positives from comparative articles.
+
+        Args:
+            item: The normalized item to check.
+
+        Returns:
+            Tuple of (is_boosted, boost_reason).
+        """
+        if not self.interests or not self.interests.has_products():
+            return False, None
+
+        title_lower = item.title.lower()
+        domain_lower = item.domain.lower()
+
+        for product, weight in self.interests.products.items():
+            # Check title and domain only (not content to avoid false positives)
+            if product in title_lower or product in domain_lower:
+                return True, f"{product.title()} (×{weight})"
+
+        return False, None
 
     def rank(self, items: List[NormalizedItem], max_items: int = 80) -> List[RankedItem]:
         """
@@ -129,7 +193,7 @@ class Ranker:
         for item in items:
             reasons = []
 
-            # Content type weight
+            # Content type weight (content_score = type multiplier)
             content_score = 1.0
             if item.content_type == "release":
                 content_score = self.WEIGHT_RELEASE
@@ -144,6 +208,19 @@ class Ranker:
                 content_score = self.WEIGHT_DOCS
                 reasons.append("Documentation update")
 
+            # Product boost (applies to content_score)
+            boosted = False
+            boost_reason = None
+            if self.interests and self.interests.has_products():
+                is_boosted, reason = self._get_product_boost(item)
+                if is_boosted:
+                    product_name = reason.split(" ")[0] if reason else ""
+                    weight = self.interests.products.get(product_name.lower(), 1.0)
+                    content_score *= weight
+                    boosted = True
+                    boost_reason = reason
+                    reasons.append(f"★ boosted: {reason}")
+
             # Recency score
             recency_score = self._calculate_recency_score(item)
             if recency_score > 0.8:
@@ -151,7 +228,7 @@ class Ranker:
             elif recency_score > 0.6:
                 reasons.append("Recent (within 7 days)")
 
-            # Content relevance
+            # Content relevance (relevance_score = keyword signal)
             relevance_score = self._calculate_content_score(item)
             if relevance_score > 0.8:
                 reasons.append("High relevance keywords")
@@ -171,7 +248,14 @@ class Ranker:
                 + confidence * 0.15
             )
 
-            ranked.append(RankedItem(item=item, score=score, rank=0, reasons=reasons))
+            ranked.append(RankedItem(
+                item=item,
+                score=score,
+                rank=0,
+                reasons=reasons,
+                boosted=boosted,
+                boost_reason=boost_reason,
+            ))
 
         # Sort by score descending
         ranked.sort(key=lambda x: x.score, reverse=True)
@@ -187,7 +271,23 @@ class Ranker:
         return items[:k]
 
 
-def rank_items(items: List[NormalizedItem], days: int = 7, max_items: int = 80) -> List[RankedItem]:
-    """Convenience function to rank items."""
-    ranker = Ranker(days=days)
+def rank_items(
+    items: List[NormalizedItem],
+    days: int = 7,
+    max_items: int = 80,
+    interests: Optional[InterestsConfig] = None,
+) -> List[RankedItem]:
+    """
+    Convenience function to rank items.
+
+    Args:
+        items: List of normalized items to rank.
+        days: Number of days for recency window.
+        max_items: Maximum number of items to return.
+        interests: Optional interests configuration for personalized ranking.
+
+    Returns:
+        List of ranked items sorted by score.
+    """
+    ranker = Ranker(days=days, interests=interests)
     return ranker.rank(items, max_items=max_items)

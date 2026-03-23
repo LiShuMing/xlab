@@ -3,7 +3,10 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
+
+if TYPE_CHECKING:
+    from modules.report_generator.types import Report
 
 
 @dataclass
@@ -198,6 +201,7 @@ class AgentState:
         max_steps: Maximum steps allowed.
         is_complete: Whether execution is complete.
         final_response: Final response string.
+        report: Structured Report object (for multi-agent pipeline).
         error: Error message (if failed).
         created_at: Creation timestamp.
         updated_at: Last update timestamp.
@@ -210,6 +214,7 @@ class AgentState:
     max_steps: int = 10
     is_complete: bool = False
     final_response: Optional[str] = None
+    report: Optional["Report"] = None
     error: Optional[str] = None
     created_at: datetime = field(default_factory=datetime.now)
     updated_at: datetime = field(default_factory=datetime.now)

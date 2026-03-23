@@ -39,6 +39,7 @@ class Config:
         cache_dir: Optional[Path] = None,
         output_dir: Optional[Path] = None,
         website_file: Optional[Path] = None,
+        feeds_file: Optional[Path] = None,
         max_items: int = 80,
         top_k: int = 10,
         days: int = 7,
@@ -51,7 +52,10 @@ class Config:
         self.timeout = int(os.environ.get("LLM_TIMEOUT", "120"))
         self.cache_dir = cache_dir or Path("cache")
         self.output_dir = output_dir or Path("out")
+        # Support both old website_file and new feeds_file
+        # Default to feeds.json if it exists, otherwise fall back to websites.txt
         self.website_file = website_file or Path("websites.txt")
+        self.feeds_file = feeds_file or Path("feeds.json")
         self.max_items = max_items
         self.top_k = top_k
         self.days = days

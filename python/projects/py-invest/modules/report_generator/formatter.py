@@ -74,6 +74,16 @@ class ReportFormatter:
                 md += f"| Target Price | ${report.target_price:.2f} |\n"
             md += "\n"
 
+        # Bull/Bear/Base Cases
+        if report.bull_case or report.bear_case or report.base_case:
+            md += "## Scenario Analysis\n\n"
+            if report.bull_case:
+                md += f"### Bull Case\n\n{report.bull_case}\n\n"
+            if report.base_case:
+                md += f"### Base Case\n\n{report.base_case}\n\n"
+            if report.bear_case:
+                md += f"### Bear Case\n\n{report.bear_case}\n\n"
+
         # Sections
         md += "## Detailed Analysis\n\n"
         for section in report.sections:
@@ -159,6 +169,9 @@ class ReportFormatter:
             "rating": report.rating,
             "confidence": report.confidence,
             "target_price": report.target_price,
+            "bull_case": report.bull_case,
+            "bear_case": report.bear_case,
+            "base_case": report.base_case,
             "created_at": report.created_at.isoformat(),
             "model_name": report.model_name,
             "analysis_duration": report.analysis_duration,

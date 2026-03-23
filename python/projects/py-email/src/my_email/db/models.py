@@ -34,4 +34,26 @@ CREATE TABLE IF NOT EXISTS digests (
     digest_json  TEXT NOT NULL,         -- serialized DailyDigest
     created_at   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now'))
 );
+
+-- Topic arc tracking tables
+
+CREATE TABLE IF NOT EXISTS topic_daily (
+    topic       TEXT NOT NULL,
+    date        TEXT NOT NULL,        -- YYYY-MM-DD
+    count       INTEGER NOT NULL DEFAULT 1,
+    PRIMARY KEY (topic, date)
+);
+
+CREATE TABLE IF NOT EXISTS topic_tracks (
+    topic           TEXT PRIMARY KEY,
+    first_seen_date TEXT NOT NULL,    -- YYYY-MM-DD
+    last_seen_date  TEXT NOT NULL,    -- YYYY-MM-DD
+    total_mentions  INTEGER NOT NULL DEFAULT 0,
+    peak_date       TEXT NOT NULL,    -- YYYY-MM-DD
+    peak_count      INTEGER NOT NULL DEFAULT 0,
+    sample_titles   TEXT NOT NULL     -- JSON array of up to 3 email titles
+);
+
+CREATE INDEX IF NOT EXISTS idx_topic_daily_date    ON topic_daily(date);
+CREATE INDEX IF NOT EXISTS idx_topic_tracks_last   ON topic_tracks(last_seen_date);
 """

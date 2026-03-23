@@ -1,117 +1,134 @@
-import faiss
-import os
+"""FAISS-based memory storage with type-safe operations."""
+from __future__ import annotations
+
 import json
-import numpy as np
+import logging
+import os
 from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+import faiss
+import numpy as np
+from numpy.typing import NDArray
+
 from embeddings import get_embedding, get_embeddings_batch
+from exceptions import MemoryError
 
-DATA_DIR = "data"
-INDEX_FILE = os.path.join(DATA_DIR, "faiss.index")
-MEMORY_FILE = os.path.join(DATA_DIR, "memory.json")
-DIM_FILE = os.path.join(DATA_DIR, "dim.txt")
+__all__ = ["MemoryStore"]
 
-os.makedirs(DATA_DIR, exist_ok=True)
+DEFAULT_DATA_DIR = Path(__file__).parent / "data"
+
 
 class MemoryStore:
-    def __init__(self, dim=None):
-        # 如果指定了维度，使用指定维度；否则尝试从文件读取或使用默认值
-        if dim is not None:
-            self.dim = dim
-        elif os.path.exists(DIM_FILE):
-            with open(DIM_FILE, 'r') as f:
+    """FAISS-backed memory store for semantic search."""
+
+    def __init__(self, data_dir: Path | str | None = None) -> None:
+        self._data_dir = Path(data_dir) if data_dir else DEFAULT_DATA_DIR
+        self._index_file = self._data_dir / "faiss.index"
+        self._memory_file = self._data_dir / "memory.json"
+        self._dim_file = self._data_dir / "dim.txt"
+
+        self._data_dir.mkdir(parents=True, exist_ok=True)
+
+        if self._dim_file.exists():
+            with open(self._dim_file, "r") as f:
                 self.dim = int(f.read().strip())
         else:
-            # 默认维度：本地 BAAI/bge-small-zh-v1.5 模型为 512 维
-            self.dim = 512
+            self.dim = 512  # BAAI/bge-small-zh-v1.5 default
 
-        self.index = faiss.IndexFlatL2(self.dim)
-        self.memories = []
+        self.index: faiss.IndexFlatL2 = faiss.IndexFlatL2(self.dim)
+        self.memories: list[dict[str, Any]] = []
 
-        if os.path.exists(INDEX_FILE) and os.path.exists(MEMORY_FILE):
+        self._load_from_disk()
+
+    def _load_from_disk(self) -> None:
+        if self._index_file.exists() and self._memory_file.exists():
             try:
-                self.index = faiss.read_index(INDEX_FILE)
-                with open(MEMORY_FILE, 'r', encoding='utf-8') as f:
+                self.index = faiss.read_index(str(self._index_file))
+                with open(self._memory_file, "r", encoding="utf-8") as f:
                     self.memories = json.load(f)
             except Exception as e:
-                print(f"[MemoryStore] 加载历史数据失败: {e}，创建新的存储")
+                logging.warning(f"Failed to load memory: {e}")
                 self.index = faiss.IndexFlatL2(self.dim)
                 self.memories = []
 
-    def add(self, text):
+    def add(self, text: str) -> None:
         embedding = get_embedding(text)
-        if embedding is None:
+        if embedding is None or len(embedding) == 0:
             return
 
-        # 动态调整维度（如果 embedding 维度与当前不同）
         actual_dim = len(embedding)
         if actual_dim != self.dim:
-            print(f"[MemoryStore] 检测到维度变化: {self.dim} -> {actual_dim}，重新创建索引")
             self.dim = actual_dim
             self.index = faiss.IndexFlatL2(self.dim)
-            with open(DIM_FILE, 'w') as f:
-                f.write(str(self.dim))
+            self._save_dim()
 
-        self.index.add(np.array([embedding]).astype('float32'))
+        self.index.add(np.array([embedding]).astype("float32"))
         self.memories.append({
             "text": text,
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         })
-        self.save()
+        self._save()
 
-    def delete(self, index):
-        """Delete a memory by positional index and rebuild the FAISS index.
-
-        Rebuild uses get_embeddings_batch() for a single efficient forward pass.
-        Skips any memory whose embedding returns None (embedding failure fallback).
-
-        Raises IndexError if index is out of range.
-        """
+    def delete(self, index: int) -> None:
         if index < 0 or index >= len(self.memories):
-            raise IndexError(f"索引 {index} 超出范围（共 {len(self.memories)} 条记忆）")
+            raise MemoryError(
+                f"Index {index} out of range (0-{len(self.memories) - 1})",
+                index=index,
+            )
 
         self.memories.pop(index)
-
-        # Rebuild FAISS index from remaining memories using batch embedding
-        # (single forward pass, ~50x faster than N individual calls for local models)
         self.index = faiss.IndexFlatL2(self.dim)
+
         if self.memories:
-            texts = [m['text'] for m in self.memories]
+            texts = [m["text"] for m in self.memories]
             embeddings = get_embeddings_batch(texts)
             for emb in embeddings:
-                if emb is not None:  # Guard: skip failed embeddings
-                    self.index.add(np.array([emb]).astype('float32'))
+                if emb is not None and len(emb) > 0:
+                    self.index.add(np.array([emb]).astype("float32"))
 
-        self.save()
+        self._save()
 
-    def delete_all(self):
-        """Clear all memories from memory and remove all disk files."""
+    def delete_all(self) -> None:
         self.memories = []
         self.index = faiss.IndexFlatL2(self.dim)
-        for fpath in [INDEX_FILE, MEMORY_FILE, DIM_FILE]:
+        for fpath in [self._index_file, self._memory_file, self._dim_file]:
             try:
-                os.remove(fpath)
+                fpath.unlink()
             except FileNotFoundError:
                 pass
 
-    def query(self, query_text, k=3):
-        """Returns List[Tuple[dict, float]] — each tuple is (memory_dict, L2_distance)."""
+    def query(self, query_text: str, k: int = 3) -> list[tuple[dict[str, Any], float]]:
         if len(self.memories) == 0:
             return []
+
         query_vec = get_embedding(query_text)
-        if query_vec is None:
+        if query_vec is None or len(query_vec) == 0:
             return []
-        query_vec = np.array([query_vec]).astype('float32')
+
+        query_vec = np.array([query_vec]).astype("float32")
         actual_k = min(k, len(self.memories))
-        D, I = self.index.search(query_vec, actual_k)
+        distances, indices = self.index.search(query_vec, actual_k)
+
         return [
-            (self.memories[i], float(D[0][j]))
-            for j, i in enumerate(I[0])
+            (self.memories[i], float(distances[0][j]))
+            for j, i in enumerate(indices[0])
             if i < len(self.memories)
         ]
 
-    def save(self):
-        faiss.write_index(self.index, INDEX_FILE)
-        with open(MEMORY_FILE, 'w', encoding='utf-8') as f:
+    def _save(self) -> None:
+        faiss.write_index(self.index, str(self._index_file))
+        with open(self._memory_file, "w", encoding="utf-8") as f:
             json.dump(self.memories, f, ensure_ascii=False, indent=2)
-        with open(DIM_FILE, 'w') as f:
+        self._save_dim()
+
+    def _save_dim(self) -> None:
+        with open(self._dim_file, "w") as f:
             f.write(str(self.dim))
+
+    def __len__(self) -> int:
+        return len(self.memories)
+
+    def __repr__(self) -> str:
+        return f"MemoryStore(dim={self.dim}, memories={len(self.memories)})"

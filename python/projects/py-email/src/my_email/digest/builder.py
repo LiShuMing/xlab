@@ -9,7 +9,11 @@ Aggregates all summaries for a given date into a DailyDigest:
 No LLM call here — pure aggregation over already-computed summaries.
 """
 
+from __future__ import annotations
+
 import json
+import sqlite3
+from typing import Any
 
 import structlog
 from pydantic import BaseModel
@@ -21,21 +25,38 @@ log = structlog.get_logger()
 
 
 class TopicCluster(BaseModel):
+    """A topic cluster with its frequency and associated email titles."""
+
     topic: str
     count: int
     email_titles: list[str]
 
 
 class DailyDigest(BaseModel):
+    """Daily digest containing aggregated email summaries and topic analysis."""
+
     date: str
     total_emails: int
     high_relevance_count: int
-    top_topics: list[str]          # ranked by frequency
+    top_topics: list[str]
     topic_clusters: list[TopicCluster]
-    summaries: list[dict]          # EmailSummary fields + message_id + received_at
+    summaries: list[dict[str, Any]]
 
 
-def build_digest(db_conn, digest_date: str) -> DailyDigest:
+def build_digest(db_conn: sqlite3.Connection, digest_date: str) -> DailyDigest:
+    """
+    Build a daily digest from summarized messages.
+
+    Aggregates topic frequencies and ranks them across all emails for the date.
+    Pure aggregation — no LLM calls.
+
+    Args:
+        db_conn: Database connection.
+        digest_date: YYYY-MM-DD date string.
+
+    Returns:
+        DailyDigest with topic rankings and ordered summaries.
+    """
     rows = get_summaries_for_date(db_conn, digest_date)
 
     if not rows:
@@ -49,8 +70,8 @@ def build_digest(db_conn, digest_date: str) -> DailyDigest:
             summaries=[],
         )
 
-    summaries: list[dict] = []
-    topic_index: dict[str, list[str]] = {}  # topic → [email titles]
+    summaries: list[dict[str, Any]] = []
+    topic_index: dict[str, list[str]] = {}
     high_count = 0
 
     for row in rows:
@@ -64,13 +85,11 @@ def build_digest(db_conn, digest_date: str) -> DailyDigest:
             key = topic.lower().strip()
             topic_index.setdefault(key, []).append(summary.title)
 
-        summaries.append(
-            {
-                **data,
-                "message_id": row["message_id"],
-                "received_at": row["received_at"],
-            }
-        )
+        summaries.append({
+            **data,
+            "message_id": row["message_id"],
+            "received_at": row["received_at"],
+        })
 
     # Rank topics by frequency (descending), cap at 15
     ranked = sorted(topic_index.items(), key=lambda x: len(x[1]), reverse=True)[:15]

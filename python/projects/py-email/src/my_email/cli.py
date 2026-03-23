@@ -6,17 +6,23 @@ Commands:
   summarize   Run LLM summarization on unprocessed messages.
   digest      Aggregate summaries into a daily digest JSON.
   show        Pretty-print the digest for a given date.
+  topics      Show topic arc table (ongoing discussion threads).
 
 Typical daily workflow:
   my-email sync
   my-email summarize --date 2026-03-19
-  my-email digest    --date 2026-03-19
+  my-email digest    --date 2026-03-19 [--html [--open]]
   my-email show      --date 2026-03-19
+  my-email topics
 """
 
-import json
+from __future__ import annotations
+
 import logging
+import os
+import webbrowser
 from datetime import date as Date
+from typing import Any
 
 import click
 import structlog
@@ -26,12 +32,12 @@ from my_email.db.repository import (
     get_connection,
     init_db,
     get_unprocessed_messages,
-    save_summary,
     save_digest,
 )
 
 
 def _setup_logging() -> None:
+    """Configure structlog with the application log level."""
     structlog.configure(
         wrapper_class=structlog.make_filtering_bound_logger(
             getattr(logging, settings.log_level.upper(), logging.INFO)
@@ -40,7 +46,56 @@ def _setup_logging() -> None:
 
 
 def _today() -> str:
+    """Return today's date as YYYY-MM-DD string."""
     return Date.today().strftime("%Y-%m-%d")
+
+
+def _format_summary_display(summary: dict[str, Any]) -> list[str]:
+    """
+    Format a single email summary for terminal display.
+
+    Args:
+        summary: Email summary dict from DailyDigest.
+
+    Returns:
+        List of formatted lines for display.
+    """
+    lines: list[str] = []
+
+    rel = summary.get("relevance", "?").upper()
+    title = summary.get("title", "(unknown)")
+    org = summary.get("sender_org", "")
+    topics = ", ".join(summary.get("topics", []))
+    recv = summary.get("received_at", "")[:10]
+    summary_text = summary.get("summary", "")
+    key_points = summary.get("key_points", [])
+    action_items = summary.get("action_items", [])
+    people = summary.get("people_mentioned", [])
+    links = summary.get("links", [])
+
+    lines.append(f"[{rel}] {title}")
+    lines.append(f"  {org}  |  {recv}")
+    lines.append(f"  Topics: {topics}")
+    lines.append("")
+    lines.append("  Summary:")
+    lines.append(f"  {summary_text}")
+    lines.append("")
+    lines.append("  Key Points:")
+    for pt in key_points:
+        lines.append(f"    • {pt}")
+
+    if people:
+        lines.append(f"\n  People: {', '.join(people)}")
+
+    if links:
+        lines.append(f"  Links: {', '.join(links[:5])}" + ("..." if len(links) > 5 else ""))
+
+    if action_items:
+        lines.append("\n  ⚠️  Action Items:")
+        for item in action_items:
+            lines.append(f"    • {item}")
+
+    return lines
 
 
 @click.group()
@@ -78,9 +133,28 @@ def sync(full: bool) -> None:
 @cli.command()
 @click.option("--date", "target_date", default=None, help="YYYY-MM-DD (default: today)")
 @click.option("--limit", default=50, show_default=True, help="Max messages to process per run.")
-def summarize(target_date: str | None, limit: int) -> None:
-    """Run LLM summarization on unprocessed messages."""
-    from my_email.llm.summarizer import summarize_message
+@click.option("--no-filter", is_flag=True, help="Disable email filtering (keep starrocks, auto-replies).")
+@click.option("--no-aggregate", is_flag=True, help="Disable thread aggregation (process each message separately).")
+def summarize(target_date: str | None, limit: int, no_filter: bool, no_aggregate: bool) -> None:
+    """
+    Run LLM summarization on unprocessed messages.
+
+    By default, this command:
+    - Filters out StarRocks-related emails and auto-reply messages
+    - Aggregates emails in the same thread for unified summarization
+    - Uses thread-aware prompts for multi-message conversations
+
+    Use --no-filter to include all emails.
+    Use --no-aggregate to process each message independently.
+    """
+    from my_email.llm import (
+        EmailFilter,
+        ThreadAggregator,
+        summarize_message,
+        summarize_thread,
+        LLMSummarizationError,
+    )
+    from my_email.db.repository import save_summary, save_thread_summary
 
     if not target_date:
         target_date = _today()
@@ -93,25 +167,82 @@ def summarize(target_date: str | None, limit: int) -> None:
         conn.close()
         return
 
-    rows = rows[:limit]
-    click.echo(f"Summarizing {len(rows)} message(s) for {target_date}…")
+    # Convert rows to dicts for filtering/aggregation
+    messages = [dict(row) for row in rows]
+
+    # Step 1: Filter unwanted emails
+    filter_stats: dict[str, int] = {}
+    if not no_filter:
+        email_filter = EmailFilter(
+            exclude_starrocks=True,
+            exclude_auto_reply=True,
+            exclude_noreply=False,
+        )
+        messages, filter_stats = email_filter.filter_messages(messages)
+        if filter_stats:
+            click.echo(f"Filtered {sum(filter_stats.values())} emails: {filter_stats}")
+
+    if not messages:
+        click.echo(f"No messages remaining after filtering for {target_date}.")
+        conn.close()
+        return
+
+    # Step 2: Aggregate threads
+    aggregator = ThreadAggregator(
+        use_thread_id=True,
+        use_subject_similarity=True,
+        min_group_size=1,
+    )
+    aggregated = aggregator.aggregate(messages)
+
+    # Limit after aggregation
+    aggregated = aggregated[:limit]
+
+    # Count threads vs singles
+    thread_count = sum(1 for a in aggregated if a.get("is_thread"))
+    single_count = len(aggregated) - thread_count
+    click.echo(f"Summarizing {len(aggregated)} item(s) for {target_date} ({thread_count} threads, {single_count} singles)…")
 
     ok, fail = 0, 0
-    for row in rows:
+    for group in aggregated:
         try:
-            summary = summarize_message(
-                subject=row["subject"] or "",
-                sender=row["sender"] or "",
-                date=row["received_at"],
-                body=row["body_text"] or "",
-            )
-            save_summary(conn, row["id"], summary.model_dump_json(), settings.llm_model)
+            if group.get("is_thread"):
+                # Thread summarization
+                summary = summarize_thread(
+                    subject=group["base_subject"],
+                    message_count=group["message_count"],
+                    date_range=group["date_range"],
+                    combined_body=group["combined_body"],
+                )
+                save_thread_summary(
+                    conn,
+                    group["message_ids"],
+                    summary.model_dump_json(),
+                    settings.llm_model,
+                )
+                click.echo(f"  ✓ [{summary.relevance}] {summary.title[:70]} ({group['message_count']} msgs)")
+            else:
+                # Single message summarization
+                msg = group["messages"][0]
+                summary = summarize_message(
+                    subject=msg.get("subject", "") or "",
+                    sender=msg.get("sender", "") or "",
+                    date=msg.get("received_at", ""),
+                    body=msg.get("body_text", "") or "",
+                )
+                save_summary(conn, msg["id"], summary.model_dump_json(), settings.llm_model)
+                click.echo(f"  ✓ [{summary.relevance}] {summary.title[:70]}")
+
             conn.commit()
             ok += 1
-            click.echo(f"  ✓ [{summary.relevance}] {summary.title[:70]}")
+        except LLMSummarizationError as e:
+            fail += 1
+            ids = group.get("message_ids", ["?"])
+            click.echo(f"  ✗ {ids[0]}: {e}", err=True)
         except Exception as e:
             fail += 1
-            click.echo(f"  ✗ {row['id']}: {e}", err=True)
+            ids = group.get("message_ids", ["?"])
+            click.echo(f"  ✗ {ids[0]}: {e}", err=True)
 
     conn.close()
     click.echo(f"\nDone: {ok} ok, {fail} failed.")
@@ -122,11 +253,20 @@ def summarize(target_date: str | None, limit: int) -> None:
 @cli.command()
 @click.option("--date", "target_date", default=None, help="YYYY-MM-DD (default: today)")
 @click.option("--out", default=None, help="Write digest JSON to this file path.")
-@click.option("--output-dir", default=None, help="Write digest JSON to <dir>/digest-<date>.json.")
-def digest(target_date: str | None, out: str | None, output_dir: str | None) -> None:
+@click.option("--output-dir", default=None, help="Write JSON + HTML to <dir>/digest-<date>.*")
+@click.option("--html", "emit_html", is_flag=True, help="Also write an HTML digest file.")
+@click.option("--open", "open_browser", is_flag=True, help="Open the HTML file in a browser after writing.")
+def digest(
+    target_date: str | None,
+    out: str | None,
+    output_dir: str | None,
+    emit_html: bool,
+    open_browser: bool,
+) -> None:
     """Build and store the daily digest from summarized messages."""
-    import os
     from my_email.digest.builder import build_digest
+    from my_email.db.topic_repository import upsert_topic_tracks, get_active_topics
+    from my_email.digest.renderer import build_html_digest, TemplateError
 
     if not target_date:
         target_date = _today()
@@ -135,21 +275,83 @@ def digest(target_date: str | None, out: str | None, output_dir: str | None) -> 
     result = build_digest(conn, target_date)
     digest_json = result.model_dump_json(indent=2)
     save_digest(conn, target_date, result.model_dump_json())
+
+    # Upsert topic arcs — must happen before conn.close()
+    upsert_topic_tracks(conn, target_date, result.topic_clusters)
+
+    # Prefetch active topics for HTML render before closing conn
+    active_topics = get_active_topics(conn, target_date) if emit_html else []
+
     conn.commit()
     conn.close()
 
+    # Determine output paths
+    html_path: str | None = None
     if output_dir:
         os.makedirs(output_dir, exist_ok=True)
-        path = os.path.join(output_dir, f"digest-{target_date}.json")
-        with open(path, "w") as f:
+        json_path = os.path.join(output_dir, f"digest-{target_date}.json")
+        with open(json_path, "w") as f:
             f.write(digest_json)
-        click.echo(f"Digest written to {path}")
+        click.echo(f"Digest written to {json_path}")
+        if emit_html:
+            html_path = os.path.join(output_dir, f"digest-{target_date}.html")
     elif out:
         with open(out, "w") as f:
             f.write(digest_json)
         click.echo(f"Digest written to {out}")
+        if emit_html:
+            html_path = os.path.splitext(out)[0] + ".html"
     else:
         click.echo(digest_json)
+        if emit_html:
+            html_path = f"digest-{target_date}.html"
+
+    if emit_html and html_path:
+        try:
+            html = build_html_digest(result, active_topics)
+            with open(html_path, "w", encoding="utf-8") as f:
+                f.write(html)
+            click.echo(f"HTML digest written to {html_path}")
+            if open_browser:
+                webbrowser.open(f"file://{os.path.abspath(html_path)}")
+        except TemplateError as e:
+            click.echo(f"Warning: Could not generate HTML: {e}", err=True)
+
+
+# ── topics ────────────────────────────────────────────────────────────────────
+
+@cli.command()
+@click.option("--days", default=30, show_default=True, help="Look-back window in days.")
+@click.option("--top", default=20, show_default=True, help="Max topics to show.")
+@click.option("--date", "as_of_date", default=None, help="YYYY-MM-DD reference date (default: today)")
+def topics(days: int, top: int, as_of_date: str | None) -> None:
+    """Show ongoing topic threads with arc data and trend indicators."""
+    from my_email.db.topic_repository import get_active_topics
+
+    if not as_of_date:
+        as_of_date = _today()
+
+    conn = get_connection()
+    rows = get_active_topics(conn, as_of_date, window_days=days, top_n=top)
+    conn.close()
+
+    if not rows:
+        click.echo("No topics tracked yet. Run 'my-email digest' first.")
+        return
+
+    click.echo(f"\n{'='*72}")
+    click.echo(f"  Topic Arcs  (as of {as_of_date}, last {days} days)")
+    click.echo(f"{'='*72}")
+    click.echo(f"  {'TOPIC':<30} {'TREND':>5}  {'DAYS':>4}  {'TOTAL':>5}  {'PEAK':>5}  FIRST SEEN")
+    click.echo(f"  {'-'*30} {'-'*5}  {'-'*4}  {'-'*5}  {'-'*5}  {'-'*10}")
+
+    for row in rows:
+        click.echo(
+            f"  {row['topic'][:30]:<30} {row['trend_arrow']:>5}  "
+            f"{row['days_active']:>4}  {row['total_mentions']:>5}  "
+            f"{row['peak_count']:>5}  {row['first_seen_date']}"
+        )
+    click.echo()
 
 
 # ── show ──────────────────────────────────────────────────────────────────────
@@ -177,35 +379,9 @@ def show(target_date: str | None) -> None:
         click.echo(f"  Top topics: {', '.join(result.top_topics[:8])}")
     click.echo()
 
-    for s in result.summaries:
-        rel = s.get("relevance", "?").upper()
-        title = s.get("title", "(unknown)")
-        org = s.get("sender_org", "")
-        topics = ", ".join(s.get("topics", []))
-        recv = s.get("received_at", "")[:10]
-        summary = s.get("summary", "")
-        key_points = s.get("key_points", [])
-        action_items = s.get("action_items", [])
-        people = s.get("people_mentioned", [])
-        links = s.get("links", [])
-
-        click.echo(f"[{rel}] {title}")
-        click.echo(f"  {org}  |  {recv}")
-        click.echo(f"  Topics: {topics}")
-        click.echo()
-        click.echo(f"  Summary:")
-        click.echo(f"  {summary}")
-        click.echo()
-        click.echo(f"  Key Points:")
-        for pt in key_points:
-            click.echo(f"    • {pt}")
-        if people:
-            click.echo(f"\n  People: {', '.join(people)}")
-        if links:
-            click.echo(f"  Links: {', '.join(links[:5])}" + ("..." if len(links) > 5 else ""))
-        if action_items:
-            click.echo(f"\n  ⚠️  Action Items:")
-            for item in action_items:
-                click.echo(f"    • {item}")
+    for summary in result.summaries:
+        lines = _format_summary_display(summary)
+        for line in lines:
+            click.echo(line)
         click.echo()
         click.echo("-" * 60)

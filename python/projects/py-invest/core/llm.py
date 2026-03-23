@@ -1,10 +1,15 @@
-"""LLM client wrapper with multi-provider support."""
+"""LLM client wrapper using OpenAI SDK."""
 
+from __future__ import annotations
+
+import os
 from dataclasses import dataclass
+from functools import lru_cache
+from pathlib import Path
 from typing import Optional
 
-from langchain_anthropic import ChatAnthropic
-from langchain_core.language_models.chat_models import BaseChatModel
+from dotenv import load_dotenv
+from openai import AsyncOpenAI, OpenAI
 
 
 @dataclass
@@ -14,124 +19,143 @@ class LLMConfig:
     Attributes:
         api_key: API key for the LLM provider.
         base_url: Base URL for the API endpoint.
-        model_name: Model identifier (e.g., 'gpt-4o', 'deepseek-chat').
+        model_name: Model identifier (e.g., 'qwen-plus', 'gpt-4o').
         temperature: Sampling temperature (0.0-1.0).
         max_tokens: Maximum tokens in response.
         timeout: Request timeout in seconds.
-        max_retries: Maximum retry attempts.
     """
 
-    api_key: Optional[str] = None
-    base_url: Optional[str] = None
-    model_name: str = "gpt-4o"
+    api_key: str = ""
+    base_url: str = "https://api.openai.com/v1"
+    model_name: str = "qwen-plus"
     temperature: float = 0.3
     max_tokens: int = 4000
-    timeout: int = 60
-    max_retries: int = 3
+    timeout: int = 120
 
     @classmethod
     def from_env(cls) -> "LLMConfig":
-        """Load configuration from environment variables.
+        """Load configuration from ~/.env file.
 
         Returns:
             LLMConfig instance with values from environment.
         """
-        import os
+        env_path = Path.home() / ".env"
+        if env_path.exists():
+            load_dotenv(dotenv_path=env_path)
 
-        from dotenv import load_dotenv
-        load_dotenv()
         return cls(
-            api_key=os.getenv("ANTHROPIC_API_KEY"),
-            base_url=os.getenv("ANTHROPIC_BASE_URL"),
-            model_name=os.getenv("MODEL_NAME", "claude-sonnet-4-5"),
+            api_key=os.getenv("LLM_API_KEY", ""),
+            base_url=os.getenv("LLM_BASE_URL", "https://api.openai.com/v1"),
+            model_name=os.getenv("LLM_MODEL", "qwen-plus"),
             temperature=float(os.getenv("LLM_TEMPERATURE", "0.3")),
             max_tokens=int(os.getenv("LLM_MAX_TOKENS", "4000")),
+            timeout=int(os.getenv("LLM_TIMEOUT", "120")),
         )
 
 
-class LLMProvider:
-    """Abstract base class for LLM providers."""
-
-    def get_chat_model(self, config: LLMConfig) -> BaseChatModel:
-        """Get chat model instance.
-
-        Args:
-            config: LLM configuration.
-
-        Returns:
-            BaseChatModel instance.
-        """
-        raise NotImplementedError
-
-
-class AnthropicProvider(LLMProvider):
-    """Anthropic-compatible provider (Claude, Qwen Code, etc.)."""
-
-    def get_chat_model(self, config: LLMConfig) -> BaseChatModel:
-        """Create Anthropic-compatible chat model.
-
-        Args:
-            config: LLM configuration.
-
-        Returns:
-            ChatAnthropic instance.
-
-        Raises:
-            ValueError: If API key is not provided.
-        """
-        if not config.api_key:
-            raise ValueError("API key is required")
-
-        return ChatAnthropic(
-            api_key=config.api_key,
-            base_url=config.base_url,
-            model=config.model_name,
-            temperature=config.temperature,
-            max_tokens=config.max_tokens,
-            timeout=config.timeout,
-            max_retries=config.max_retries,
-        )
+@lru_cache(maxsize=1)
+def _get_cached_config() -> LLMConfig:
+    """Get cached LLM config."""
+    return LLMConfig.from_env()
 
 
 class LLMClient:
-    """LLM client for unified multi-model access.
+    """LLM client for OpenAI-compatible APIs.
 
-    This client provides a consistent interface for interacting with
-    various LLM providers through a unified API.
+    This client wraps the OpenAI SDK for use with various LLM providers
+    including Qwen (DashScope), Kimi, and standard OpenAI models.
 
     Example:
         >>> client = LLMClient()
-        >>> response = client.model.invoke([HumanMessage(content="Hello")])
+        >>> response = await client.chat("你好")
     """
 
     def __init__(self, config: Optional[LLMConfig] = None):
         """Initialize LLM client.
 
         Args:
-            config: Optional LLM configuration. Uses environment if not provided.
+            config: Optional LLM configuration. Uses ~/.env if not provided.
         """
-        self.config = config or LLMConfig.from_env()
-        self._model: Optional[BaseChatModel] = None
+        self.config = config or _get_cached_config()
+        self._sync_client: Optional[OpenAI] = None
+        self._async_client: Optional[AsyncOpenAI] = None
 
     @property
-    def model(self) -> BaseChatModel:
-        """Lazily load model instance.
+    def model(self) -> "ModelProperty":
+        """Get model property for langchain-like access.
 
         Returns:
-            BaseChatModel instance.
+            ModelProperty instance with invoke/ainvoke methods.
         """
-        if self._model is None:
-            provider = self._get_provider()
-            self._model = provider.get_chat_model(self.config)
-        return self._model
+        return ModelProperty(self)
 
-    def _get_provider(self) -> LLMProvider:
-        """Get provider instance based on configuration.
+    def _get_async_client(self) -> AsyncOpenAI:
+        """Get async OpenAI client.
 
         Returns:
-            LLMProvider instance.
+            AsyncOpenAI instance.
         """
-        return AnthropicProvider()
+        if self._async_client is None:
+            self._async_client = AsyncOpenAI(
+                api_key=self.config.api_key,
+                base_url=self.config.base_url,
+                timeout=self.config.timeout,
+            )
+        return self._async_client
+
+    def _get_sync_client(self) -> OpenAI:
+        """Get sync OpenAI client.
+
+        Returns:
+            OpenAI instance.
+        """
+        if self._sync_client is None:
+            self._sync_client = OpenAI(
+                api_key=self.config.api_key,
+                base_url=self.config.base_url,
+                timeout=self.config.timeout,
+            )
+        return self._sync_client
+
+    async def chat(self, messages: list[dict], **kwargs) -> str:
+        """Send chat completion request.
+
+        Args:
+            messages: List of message dicts with role/content.
+            **kwargs: Additional args for chat.completions.create.
+
+        Returns:
+            Response content string.
+        """
+        client = self._get_async_client()
+        response = await client.chat.completions.create(
+            model=self.config.model_name,
+            messages=messages,
+            max_tokens=self.config.max_tokens,
+            temperature=self.config.temperature,
+            **kwargs
+        )
+        return response.choices[0].message.content
+
+    def chat_sync(self, messages: list[dict], **kwargs) -> str:
+        """Send synchronous chat completion request.
+
+        Args:
+            messages: List of message dicts with role/content.
+            **kwargs: Additional args for chat.completions.create.
+
+        Returns:
+            Response content string.
+        """
+        client = self._get_sync_client()
+        response = client.chat.completions.create(
+            model=self.config.model_name,
+            messages=messages,
+            max_tokens=self.config.max_tokens,
+            temperature=self.config.temperature,
+            **kwargs
+        )
+        return response.choices[0].message.content
 
     def with_temperature(self, temperature: float) -> "LLMClient":
         """Create new client with specified temperature.
@@ -142,14 +166,13 @@ class LLMClient:
         Returns:
             New LLMClient instance.
         """
-        new_config = LLMConfig(
+        return LLMClient(LLMConfig(
             api_key=self.config.api_key,
             base_url=self.config.base_url,
             model_name=self.config.model_name,
             temperature=temperature,
             max_tokens=self.config.max_tokens,
-        )
-        return LLMClient(new_config)
+        ))
 
     def with_max_tokens(self, max_tokens: int) -> "LLMClient":
         """Create new client with specified max_tokens.
@@ -160,53 +183,102 @@ class LLMClient:
         Returns:
             New LLMClient instance.
         """
-        new_config = LLMConfig(
+        return LLMClient(LLMConfig(
             api_key=self.config.api_key,
             base_url=self.config.base_url,
             model_name=self.config.model_name,
             temperature=self.config.temperature,
             max_tokens=max_tokens,
-        )
-        return LLMClient(new_config)
+        ))
 
 
-@dataclass
-class LLMResponse:
-    """LLM response wrapper.
+class ModelProperty:
+    """Property wrapper for langchain-like model access."""
 
-    Attributes:
-        content: Response text content.
-        model: Model identifier.
-        usage: Token usage statistics.
-        finish_reason: Reason for generation stopping.
-    """
+    def __init__(self, client: LLMClient):
+        self.client = client
 
-    content: str
-    model: str
-    usage: dict
-    finish_reason: Optional[str] = None
-
-    @classmethod
-    def from_langchain(cls, response: any) -> "LLMResponse":
-        """Create from LangChain response.
+    def _convert_messages(self, messages: list) -> list[dict]:
+        """Convert langchain messages to OpenAI format.
 
         Args:
-            response: LangChain AIMessage response.
+            messages: List of langchain Message objects.
 
         Returns:
-            LLMResponse instance.
+            List of dicts with role/content in OpenAI format.
         """
-        usage_metadata = getattr(response, "usage_metadata", {})
-        return cls(
-            content=str(response.content),
-            model=getattr(response, "model", "unknown"),
-            usage={
-                "prompt_tokens": usage_metadata.get("input_token_count", 0),
-                "completion_tokens": usage_metadata.get("output_token_count", 0),
-                "total_tokens": usage_metadata.get("total_token_count", 0),
-            },
-            finish_reason=getattr(response, "response_metadata", {}).get("finish_reason"),
-        )
+        role_map = {
+            "human": "user",
+            "ai": "assistant",
+            "assistant": "assistant",
+            "system": "system",
+            "user": "user",
+        }
+        result = []
+        for m in messages:
+            msg_type = getattr(m, "type", "user")
+            role = role_map.get(msg_type, "user")
+            result.append({"role": role, "content": m.content})
+        return result
+
+    def invoke(self, messages: list) -> "AIMessage":
+        """Synchronous invoke (langchain compatible).
+
+        Args:
+            messages: List of langchain Message objects.
+
+        Returns:
+            AIMessage with response content.
+        """
+        msg_dicts = self._convert_messages(messages)
+        content = self.client.chat_sync(msg_dicts)
+        return AIMessage(content=content)
+
+    async def ainvoke(self, messages: list) -> "AIMessage":
+        """Async invoke (langchain compatible).
+
+        Args:
+            messages: List of langchain Message objects.
+
+        Returns:
+            AIMessage with response content.
+        """
+        msg_dicts = self._convert_messages(messages)
+        content = await self.client.chat(msg_dicts)
+        return AIMessage(content=content)
+
+
+class AIMessage:
+    """Simple AI message wrapper for langchain compatibility."""
+
+    def __init__(self, content: str):
+        self.content = content
+        self.type = "assistant"
+
+    def __repr__(self) -> str:
+        return f"AIMessage(content={self.content!r})"
+
+
+class HumanMessage:
+    """Human message wrapper for langchain compatibility."""
+
+    def __init__(self, content: str):
+        self.content = content
+        self.type = "human"
+
+    def __repr__(self) -> str:
+        return f"HumanMessage(content={self.content!r})"
+
+
+class SystemMessage:
+    """System message wrapper for langchain compatibility."""
+
+    def __init__(self, content: str):
+        self.content = content
+        self.type = "system"
+
+    def __repr__(self) -> str:
+        return f"SystemMessage(content={self.content!r})"
 
 
 async def create_llm_client(

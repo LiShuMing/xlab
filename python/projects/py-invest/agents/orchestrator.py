@@ -1,239 +1,16 @@
 """Agent orchestrator implementing ReAct pattern with LangGraph."""
 
+import asyncio
 import time
 from typing import Any, Optional
 
-from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
-from langgraph.graph import StateGraph, END
-from langgraph.graph.message import add_messages
-from typing_extensions import TypedDict, Annotated
-
-from core.llm import LLMClient, LLMConfig
+from core.llm import LLMClient, LLMConfig, HumanMessage, AIMessage, SystemMessage
 from core.logger import get_logger
 from agents.base import AgentState, ToolResult
+from modules.report_generator.types import Report
+from modules.report_generator.formatter import ReportFormatter, ReportFormat
 
 logger = get_logger(__name__)
-
-
-class LangGraphState(TypedDict):
-    """LangGraph state definition.
-
-    Attributes:
-        messages: Accumulated messages.
-        tool_calls: Tool call history.
-        tool_results: Tool execution results.
-        step_count: Current step count.
-    """
-
-    messages: Annotated[list, add_messages]
-    tool_calls: list[dict]
-    tool_results: list[str]
-    step_count: int
-
-
-class AgentOrchestrator:
-    """Agent orchestrator using LangGraph for ReAct pattern.
-
-    This orchestrator manages multi-step reasoning and tool execution
-    for stock analysis tasks.
-    """
-
-    def __init__(self, llm_config: Optional[LLMConfig] = None):
-        """Initialize orchestrator.
-
-        Args:
-            llm_config: Optional LLM configuration.
-        """
-        self.llm_client = LLMClient(llm_config)
-        self.tools = self._init_tools()
-        self.graph = self._build_graph()
-
-    def _init_tools(self) -> list:
-        """Initialize available tools.
-
-        Returns:
-            List of tool instances.
-        """
-        from agents.tools import (
-            QueryStockPriceTool,
-            QueryKLineDataTool,
-            QueryFinancialMetricsTool,
-            QueryMarketNewsTool,
-        )
-        return [
-            QueryStockPriceTool(),
-            QueryKLineDataTool(),
-            QueryFinancialMetricsTool(),
-            QueryMarketNewsTool(),
-        ]
-
-    def _get_system_prompt(self) -> str:
-        """Get system prompt for the agent.
-
-        Returns:
-            System prompt string.
-        """
-        return """You are a professional stock investment analysis assistant.
-
-Available tools:
-- query_stock_price: Get real-time stock price
-- query_kline_data: Get historical K-line data
-- query_financial_metrics: Get financial metrics
-- query_market_news: Get market news
-
-Your task is to:
-1. Get the stock's real-time price
-2. Get K-line data to understand recent trends
-3. Get financial metrics to assess company quality
-4. Get relevant news for market sentiment
-5. Generate comprehensive investment recommendations
-
-Call one tool at a time and decide the next step based on results."""
-
-    def _build_graph(self) -> StateGraph:
-        """Build LangGraph workflow.
-
-        Returns:
-            Compiled StateGraph.
-        """
-        builder = StateGraph(LangGraphState)
-
-        builder.add_node("agent", self._agent_node)
-        builder.add_node("tool_executor", self._tool_executor)
-
-        builder.set_entry_point("agent")
-
-        builder.add_conditional_edges(
-            "agent",
-            self._should_continue,
-            {
-                "continue": "tool_executor",
-                "end": END,
-            },
-        )
-        builder.add_edge("tool_executor", "agent")
-
-        return builder.compile()
-
-    def _agent_node(self, state: LangGraphState) -> dict:
-        """Agent node for LLM reasoning.
-
-        Args:
-            state: Current state.
-
-        Returns:
-            State updates.
-        """
-        messages = state["messages"]
-        response = self.llm_client.model.invoke(messages)
-
-        return {
-            "messages": [response],
-            "step_count": state.get("step_count", 0) + 1,
-        }
-
-    def _tool_executor(self, state: LangGraphState) -> dict:
-        """Tool executor node.
-
-        Args:
-            state: Current state.
-
-        Returns:
-            State updates with tool results.
-        """
-        last_message = state["messages"][-1]
-
-        if not hasattr(last_message, "tool_calls") or not last_message.tool_calls:
-            return {"tool_results": state.get("tool_results", [])}
-
-        tool_results = []
-        for tool_call in last_message.tool_calls:
-            tool_name = tool_call.get("name", "")
-            tool_args = tool_call.get("args", {})
-
-            tool = self._find_tool(tool_name)
-            if tool:
-                import asyncio
-
-                result = asyncio.run(tool.execute(tool_args))
-                tool_results.append(result)
-            else:
-                tool_results.append(f"Tool {tool_name} not found")
-
-        return {
-            "tool_results": tool_results,
-            "messages": [AIMessage(content="\n".join(tool_results))],
-        }
-
-    def _find_tool(self, name: str) -> Optional[Any]:
-        """Find tool by name.
-
-        Args:
-            name: Tool name.
-
-        Returns:
-            Tool instance or None.
-        """
-        for tool in self.tools:
-            if tool.name == name or tool.get_info().name == name:
-                return tool
-        return None
-
-    def _should_continue(self, state: LangGraphState) -> str:
-        """Determine if execution should continue.
-
-        Args:
-            state: Current state.
-
-        Returns:
-            'continue' or 'end'.
-        """
-        if state.get("step_count", 0) >= 10:
-            return "end"
-
-        last_message = state["messages"][-1]
-        if hasattr(last_message, "tool_calls") and last_message.tool_calls:
-            return "continue"
-
-        return "end"
-
-    async def analyze(self, stock_code: str, user_query: str) -> AgentState:
-        """Execute stock analysis.
-
-        Args:
-            stock_code: Stock code to analyze.
-            user_query: User's analysis request.
-
-        Returns:
-            AgentState with results.
-        """
-        start_time = time.time()
-        state = AgentState()
-
-        try:
-            system_prompt = self._get_system_prompt()
-            initial_messages = [
-                SystemMessage(content=system_prompt),
-                HumanMessage(content=f"Please analyze stock {stock_code}. {user_query}"),
-            ]
-
-            langgraph_state = LangGraphState(
-                messages=initial_messages,
-                tool_calls=[],
-                tool_results=[],
-                step_count=0,
-            )
-
-            final_state = self.graph.invoke(langgraph_state)
-
-            state.is_complete = True
-            state.final_response = final_state["messages"][-1].content
-
-            return state
-
-        except Exception as e:
-            logger.error(f"Analysis failed: {e}")
-            return state.fail(str(e))
 
 
 class SimpleAgentOrchestrator:
@@ -328,7 +105,8 @@ Analyze the stock thoroughly and provide investment recommendations."""
                     state.add_message("assistant", f"Collected {tool_name} data")
 
             report = await self._generate_report(stock_code, collected_data)
-            state.complete(report)
+            state.report = report
+            state.complete(ReportFormatter.format(report, ReportFormat.MARKDOWN))
 
         except Exception as e:
             state.fail(str(e))
@@ -349,54 +127,49 @@ Analyze the stock thoroughly and provide investment recommendations."""
                 return tool
         return None
 
-    async def _generate_report(self, stock_code: str, data: dict) -> str:
-        """Generate analysis report using LLM.
+    async def _generate_report(self, stock_code: str, data: dict) -> Report:
+        """Generate analysis report using multi-agent pipeline.
 
         Args:
             stock_code: Stock code.
             data: Collected tool data.
 
         Returns:
-            Formatted report string.
+            Report object.
         """
-        import time
+        from agents.specialist_agents import (
+            TechnicalAnalystAgent,
+            FundamentalAnalystAgent,
+            RiskOfficerAgent,
+            SectorStrategistAgent,
+        )
+        from agents.synthesis_agent import SynthesisAgent
 
-        raw_data_sections = []
-        if "query_stock_price" in data:
-            raw_data_sections.append(f"### Real-Time Price\n{data['query_stock_price']}")
-        if "query_kline_data" in data:
-            raw_data_sections.append(f"### K-Line Data\n{data['query_kline_data']}")
-        if "query_financial_metrics" in data:
-            raw_data_sections.append(f"### Financial Metrics\n{data['query_financial_metrics']}")
-        if "query_market_news" in data:
-            raw_data_sections.append(f"### Market News\n{data['query_market_news']}")
+        llm = self.llm_client
 
-        raw_data = "\n\n".join(raw_data_sections)
+        # Run four specialist agents in parallel
+        results = await asyncio.gather(
+            TechnicalAnalystAgent(stock_code, llm).analyze(data),
+            FundamentalAnalystAgent(stock_code, llm).analyze(data),
+            RiskOfficerAgent(stock_code, llm).analyze(data),
+            SectorStrategistAgent(stock_code, llm).analyze(data),
+            return_exceptions=True,
+        )
 
-        prompt = f"""You are a professional stock investment analyst. Based on the following data for stock {stock_code}, write a comprehensive investment analysis report in Chinese.
+        # Handle exceptions with defaults
+        from agents.specialist_agents import (
+            TechnicalOutput,
+            FundamentalOutput,
+            RiskOutput,
+            SectorOutput,
+        )
 
-The report must include:
-1. 行情概览 - current price, trend summary
-2. 技术分析 - K-line pattern analysis, support/resistance levels
-3. 基本面分析 - valuation (P/E, P/B), profitability, financial health
-4. 市场资讯 - relevant news impact
-5. 投资建议 - buy/hold/sell recommendation with reasoning and risk warnings
+        tech = results[0] if not isinstance(results[0], Exception) else TechnicalOutput()
+        fund = results[1] if not isinstance(results[1], Exception) else FundamentalOutput()
+        risk = results[2] if not isinstance(results[2], Exception) else RiskOutput()
+        sector = results[3] if not isinstance(results[3], Exception) else SectorOutput.with_llm_fallback(stock_code, llm)
 
-Write in Markdown format with clear sections. Be specific and data-driven.
-
---- RAW DATA ---
-{raw_data}
---- END DATA ---
-
-Now write the full analysis report:"""
-
-        from langchain_core.messages import HumanMessage
-        response = await self.llm_client.model.ainvoke([HumanMessage(content=prompt)])
-        llm_analysis = response.content
-
-        report = f"# {stock_code} 投资分析报告\n\n"
-        report += f"**生成时间**: {time.strftime('%Y-%m-%d %H:%M')}\n\n"
-        report += "---\n\n"
-        report += llm_analysis
+        # Synthesize into final report
+        report = await SynthesisAgent(stock_code, llm).synthesize(tech, fund, risk, sector, data)
 
         return report

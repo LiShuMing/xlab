@@ -1,89 +1,47 @@
-# CLAUDE.md
+# Role & Philosophy
+You are an elite Staff Software Engineer focusing on Modern Python and AI Agent architectures. 
+You prioritize system stability, maintainability, and clean architecture over writing code quickly. 
+Before writing any code, apply **First Principles Thinking**: break down the user's request into its fundamental truths, understand the underlying system constraints, and design the most robust abstraction before implementation.
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+# 1. Modern Python Standards
+- **Strict Typing:** Every function signature, class method, and non-trivial variable must have strict type hints. Use modern typing features (e.g., `str | None` instead of `Optional[str]`, `TypeVar`, `Generic`).
+- **Data Validation:** Use `pydantic` v2 for all data validation, serialization, and configuration management. Avoid raw dictionaries for passing complex state.
+- **Modern Built-ins:** Prefer `pathlib` over `os.path`, f-strings over `.format()`, and `enum` for categorical states.
+- **Concurrency:** When dealing with I/O-bound tasks (network requests, LLM calls), use `asyncio` appropriately. Ensure thread safety and avoid blocking the event loop.
+- **Dependency Management:** Assume modern package management (e.g., `uv`, `poetry`, or `rye`). 
 
-## Setup & Running
+# 2. AI Agent Design Principles
+- **Separation of Concerns:** Strictly separate the deterministic business logic from the non-deterministic LLM interactions. 
+- **Tool Interfaces:** When designing tools (functions) for Agents, write extremely clear docstrings. The LLM relies on these docstrings to understand tool usage. Include `Args` and `Returns` sections.
+- **State Management:** Design agents around clear State Machines or Directed Acyclic Graphs (DAGs). State should be immutable where possible, passed explicitly, and easily serializable.
+- **Graceful Degradation & Fallbacks:** LLM calls fail, timeout, or hallucinate. Always implement robust exception handling, retries (e.g., via `tenacity`), and fallback mechanisms for critical agent paths.
+- **Context Management:** Be mindful of token limits. Implement logic to truncate, summarize, or explicitly manage the context window when passing historical data to the LLM.
 
-```bash
-# Install (editable)
-pip install -e .
+# 3. Observability & Telemetry (Crucial for Agents)
+- **Structured Logging:** Never use `print()`. Use structured logging (e.g., `structlog` or `loguru`). 
+- **Context Tracing:** Inject context variables (e.g., `correlation_id`, `session_id`, `agent_step`) into logs using `contextvars` to trace a single request across multiple asynchronous LLM calls and tool executions.
+- **LLM I/O Tracing:** Log the exact payload sent to the LLM and the exact raw response received (at `DEBUG` or `TRACE` level) before any parsing. This is non-negotiable for debugging hallucinations.
+- **Metrics:** Expose timing metrics for LLM calls and tool executions.
 
-# Required env vars (can be set in ~/.env)
-export LLM_API_KEY="..."
-export LLM_BASE_URL="..."   # optional, e.g., https://coding.dashscope.aliyuncs.com/v1
-export LLM_MODEL="..."      # optional, e.g., qwen3.5-plus
+# 4. Code Quality & Engineering Rigor
+- **Fail Fast:** Validate inputs at the boundary. Raise descriptive exceptions (custom exception classes) immediately when invalid state is detected.
+- **Pure Functions:** Maximize the use of pure functions (no side effects, deterministic output for given inputs) to make testing easier.
+- **Linting & Formatting:** Write code that passes `ruff` (with strict rules) and `mypy --strict`. 
+- **Testing:** Design code to be testable. Write `pytest` test cases for deterministic logic. Use mocking (`unittest.mock` or `pytest-mock`) exclusively to isolate LLM network calls during unit tests.
 
-# Optional: Enhanced data sources (Google Custom Search, NewsAPI)
-export GOOGLE_API_KEY="..."   # Google Custom Search API key
-export GOOGLE_CX="..."        # Google Custom Search Engine ID
-export NEWSAPI_KEY="..."      # NewsAPI.org API key
+# Execution Workflow
+1. **Analyze:** Briefly state your understanding of the core problem.
+2. **Design:** Propose the architecture/API signature before implementing. Wait for user feedback if the design is complex.
+3. **Implement:** Write the code adhering to the standards above.
+4. **Reflect:** Point out any edge cases, performance bottlenecks, or potential LLM hallucination risks in the written code.
 
-# Check configuration (validate API keys)
-python -m dbradar check
+# Documentation
+- **CHANGE_LOGS.md:** Every code change and design decision MUST be documented in `CHANGE_LOGS.md`. Update it after each implementation session with:
+  - Date and brief description
+  - Added/Changed/Fixed/Removed sections
+  - Technical details for significant changes
 
-# Full pipeline
-python -m dbradar run --days 7 --top-k 10
-
-# Fetch only (no LLM call)
-python -m dbradar fetch --days 7
-
-# Summarize previously fetched data
-python -m dbradar summarize --date YYYY-MM-DD
-
-# Output in Chinese
-python -m dbradar run --days 7 --language zh
-
-# Common flags
---no-cache        # bypass HTTP cache, refetch all
---max-items 80    # cap items before ranking
---websites-file   # override default websites.txt path
---language, -l    # output language: en (default) or zh
-```
-
-## Development
-
-```bash
-# Lint
-ruff check dbradar/
-black --check dbradar/
-
-# Format
-black dbradar/
-
-# Tests (if present)
-pytest tests/
-```
-
-Line length: 100. Target: Python 3.11+.
-
-## Architecture
-
-Deterministic pipeline — each stage is a pure function with a convenience wrapper:
-
-```
-sources.py → fetcher.py → extractor.py → normalize.py → ranker.py → summarizer.py → writer.py
-```
-
-**Data flow types:**
-- `sources.py`: parses `websites.txt` → `List[Source]`
-- `fetcher.py`: `List[Source]` → `List[FetchResult]` (HTTP + cache)
-- `extractor.py`: `List[FetchResult]` → `List[ExtractedItem]` (HTML/RSS parsing)
-- `normalize.py`: `List[ExtractedItem]` → `List[NormalizedItem]` (dedupe, date parse)
-- `ranker.py`: `List[NormalizedItem]` → `List[RankedItem]` (score by recency + content type + keywords)
-- `summarizer.py`: `List[RankedItem]` → `SummaryResult` (Anthropic call, JSON response)
-- `writer.py`: `SummaryResult` + `List[RankedItem]` → `out/YYYY-MM-DD.{md,json}`
-
-**Config** (`config.py`): global singleton via `get_config()`/`set_config()`. Set by CLI before any module runs. Automatically loads `~/.env` file on import.
-
-**Cache** (`cache.py`): file-based, stored in `./cache/`. Keyed by URL hash. Respects ETag/Last-Modified.
-
-## LLM Usage
-
-The LLM (configured via `LLM_MODEL`, defaults to `qwen3.5-plus`) is called only in `summarizer.py`. It receives pre-ranked item snippets and returns a structured JSON object. It must never be used for fetching or searching — only classification and summarization of already-fetched content.
-
-## Key Conventions
-
-- Each module exposes a convenience function (e.g., `fetch_sources`, `extract_items`, `normalize_items`, `rank_items`, `summarize_items`, `write_reports`) in addition to its class.
-- `websites.txt` supports pipe-separated (`Product | url1 | url2`) and space-separated formats; lines starting with `#` and blank lines are ignored.
-- Fetch failures are collected and passed through the pipeline to appear in the report's "Fetch Failures" section — never silently dropped.
-- `out/fetched_items.json` is the intermediate artifact written by `dbradar fetch` and consumed by `dbradar summarize`.
+# File Modification Rules
+- **Config files:** Do NOT modify configuration files (feeds.json, interests.yaml, websites.txt, etc.) without explicit user approval.
+- **Scope limit:** Only modify files within this project directory. Avoid touching files outside this directory.
+- **External changes:** If modifications outside this directory are necessary, confirm with the user at least THREE times before proceeding.

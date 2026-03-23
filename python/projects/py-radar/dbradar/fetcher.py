@@ -1,14 +1,19 @@
 """Fetch content from URLs with caching and error handling."""
 
+from __future__ import annotations
+
 import re
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 import httpx
 from tqdm import tqdm
 
 from dbradar.cache import Cache, get_cache
 from dbradar.sources import Source
+
+if TYPE_CHECKING:
+    from dbradar.feeds import FeedSource
 
 
 @dataclass
@@ -22,6 +27,11 @@ class FetchResult:
     status_code: Optional[int]
     error_message: Optional[str] = None
     is_cached: bool = False
+    filter_tags: List[str] = None  # Tags for filtering articles
+
+    def __post_init__(self):
+        if self.filter_tags is None:
+            self.filter_tags = []
 
 
 class Fetcher:
@@ -213,6 +223,88 @@ class Fetcher:
             all_results.extend(results)
         return all_results
 
+    def fetch_feed(self, feed: FeedSource, use_cache: bool = True) -> FetchResult:
+        """
+        Fetch a single feed source.
+
+        Args:
+            feed: FeedSource object with title, url, and optional filter_tags.
+            use_cache: Whether to use cached content if available.
+
+        Returns:
+            FetchResult with the feed content and filter_tags.
+        """
+        # Filter URLs that don't need refresh
+        should_fetch = True
+        if use_cache:
+            should_fetch = self.cache.is_stale(feed.url)
+
+        # Use cached content for fresh entries
+        if not should_fetch:
+            entry = self.cache.get(feed.url)
+            if entry:
+                return FetchResult(
+                    url=feed.url,
+                    product=feed.title,
+                    content=entry.content,
+                    content_type="rss",  # Assume feeds are RSS/Atom
+                    status_code=entry.status_code,
+                    is_cached=True,
+                    filter_tags=feed.filter_tags,
+                )
+
+        # Fetch the feed
+        with httpx.Client(timeout=self.timeout) as client:
+            result = self._fetch_single(client, feed.url, product=feed.title)
+            # Add filter_tags to the result
+            result.filter_tags = feed.filter_tags
+            return result
+
+    def fetch_feeds(
+        self, feeds: List[FeedSource], use_cache: bool = True
+    ) -> List[FetchResult]:
+        """
+        Fetch content from multiple feed sources.
+
+        Args:
+            feeds: List of FeedSource objects.
+            use_cache: Whether to use cached content.
+
+        Returns:
+            List of all FetchResult objects with filter_tags.
+        """
+        all_results = []
+
+        # Determine which feeds need fetching
+        feeds_to_fetch = []
+        for feed in feeds:
+            if use_cache and not self.cache.is_stale(feed.url):
+                entry = self.cache.get(feed.url)
+                if entry:
+                    all_results.append(FetchResult(
+                        url=feed.url,
+                        product=feed.title,
+                        content=entry.content,
+                        content_type="rss",
+                        status_code=entry.status_code,
+                        is_cached=True,
+                        filter_tags=feed.filter_tags,
+                    ))
+                    continue
+            feeds_to_fetch.append(feed)
+
+        if not feeds_to_fetch:
+            return all_results
+
+        # Fetch remaining feeds
+        with httpx.Client(timeout=self.timeout) as client:
+            for feed in tqdm(feeds_to_fetch, desc="Fetching feeds"):
+                result = self._fetch_single(client, feed.url, product=feed.title)
+                result.filter_tags = feed.filter_tags
+                all_results.append(result)
+
+        return all_results
+
 
 def fetch_sources(sources: List[Source], use_cache: bool = True) -> List[FetchResult]:
     """
@@ -229,16 +321,42 @@ def fetch_sources(sources: List[Source], use_cache: bool = True) -> List[FetchRe
     return fetcher.fetch_all(sources, use_cache=use_cache)
 
 
+def fetch_feeds(feeds: List[FeedSource], use_cache: bool = True) -> List[FetchResult]:
+    """
+    Convenience function to fetch all feed sources.
+
+    Args:
+        feeds: List of FeedSource objects.
+        use_cache: Whether to use cached content.
+
+    Returns:
+        List of FetchResult objects with filter_tags.
+    """
+    fetcher = Fetcher()
+    return fetcher.fetch_feeds(feeds, use_cache=use_cache)
+
+
 if __name__ == "__main__":
     # Quick test
-    from dbradar.sources import get_sources
+    from dbradar.feeds import get_feeds
     from dbradar.config import get_config
 
     config = get_config()
     config.ensure_dirs()
 
-    sources = get_sources()
-    print(f"Found {len(sources)} sources")
-    results = fetch_sources(sources[:2], use_cache=False)
-    for r in results:
-        print(f"  {r.url}: {r.status_code} ({'cached' if r.is_cached else 'fetched'})")
+    # Try feeds.json first, fall back to websites.txt
+    feeds = get_feeds()
+    if feeds:
+        print(f"Found {len(feeds)} feed sources")
+        results = fetch_feeds(feeds[:3], use_cache=False)
+        for r in results:
+            print(f"  {r.product}: {r.status_code} ({'cached' if r.is_cached else 'fetched'})")
+            if r.filter_tags:
+                print(f"    Filter tags: {r.filter_tags}")
+    else:
+        from dbradar.sources import get_sources
+        sources = get_sources()
+        print(f"Found {len(sources)} sources (websites.txt)")
+        results = fetch_sources(sources[:2], use_cache=False)
+        for r in results:
+            print(f"  {r.url}: {r.status_code} ({'cached' if r.is_cached else 'fetched'})")

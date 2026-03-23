@@ -1,3 +1,13 @@
+"""
+Gmail OAuth2 authentication module.
+
+Handles the OAuth2 flow for Gmail API access:
+- First run: Opens browser for consent, stores token
+- Subsequent runs: Refreshes token silently
+"""
+
+from __future__ import annotations
+
 from pathlib import Path
 
 import structlog
@@ -7,14 +17,34 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 
 log = structlog.get_logger()
 
-SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
+# Gmail readonly scope - only need to read emails
+SCOPES: list[str] = ["https://www.googleapis.com/auth/gmail.readonly"]
+
+
+class AuthError(RuntimeError):
+    """Raised when authentication fails."""
+
+    def __init__(self, message: str, original_error: Exception | None = None) -> None:
+        super().__init__(message)
+        self.original_error = original_error
 
 
 def get_credentials(credentials_file: Path, token_file: Path) -> Credentials:
     """
     Load or refresh OAuth2 credentials.
+
     On first run, opens a local browser for the consent flow and writes token.json.
     Subsequent runs refresh silently via the stored refresh token.
+
+    Args:
+        credentials_file: Path to OAuth client secret JSON file.
+        token_file: Path to store/load OAuth token.
+
+    Returns:
+        Valid OAuth2 credentials.
+
+    Raises:
+        AuthError: If credentials file is missing or auth flow fails.
     """
     creds: Credentials | None = None
 
@@ -27,7 +57,7 @@ def get_credentials(credentials_file: Path, token_file: Path) -> Credentials:
             creds.refresh(Request())
         else:
             if not credentials_file.exists():
-                raise FileNotFoundError(
+                raise AuthError(
                     f"OAuth client secret not found: {credentials_file}\n"
                     "Download it from Google Cloud Console → APIs & Services → Credentials."
                 )

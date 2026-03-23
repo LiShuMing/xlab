@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Digest - {{ digest.date }}</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; display: flex; gap: 24px; }
+        .main { flex: 1; min-width: 0; }
+        .sidebar { width: 300px; flex-shrink: 0; }
+        @media (max-width: 900px) {
+            .container { flex-direction: column; }
+            .sidebar { width: 100%; }
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+        .header h1 { font-size: 28px; margin-bottom: 8px; }
+        .stats { display: flex; gap: 24px; margin-top: 12px; opacity: 0.9; }
+        .stat { text-align: center; }
+        .stat-value { font-size: 24px; font-weight: 600; }
+        .stat-label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+        .card-title { font-size: 18px; font-weight: 600; color: #1a1a1a; }
+        .relevance {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .relevance-high { background: #dcfce7; color: #166534; }
+        .relevance-medium { background: #fef3c7; color: #92400e; }
+        .relevance-low { background: #f3f4f6; color: #4b5563; }
+        .meta { font-size: 13px; color: #666; margin-bottom: 8px; }
+        .topics { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+        .topic {
+            background: #e0e7ff;
+            color: #3730a3;
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+        .summary { color: #444; margin-bottom: 12px; }
+        .key-points { list-style: none; }
+        .key-points li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 6px;
+            font-size: 14px;
+            color: #555;
+        }
+        .key-points li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+        }
+        .action-items {
+            background: #fef2f2;
+            border-left: 3px solid #ef4444;
+            padding: 12px 16px;
+            margin-top: 12px;
+            border-radius: 0 8px 8px 0;
+        }
+        .action-items h4 { color: #dc2626; font-size: 13px; margin-bottom: 8px; }
+        .action-items ul { margin-left: 16px; }
+        .action-items li { font-size: 13px; color: #7f1d1d; }
+        .sidebar-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .sidebar-title { font-size: 14px; font-weight: 600; color: #1a1a1a; margin-bottom: 12px; }
+        .topic-row { display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
+        .topic-row:last-child { border-bottom: none; }
+        .topic-name { flex: 1; font-size: 13px; color: #333; }
+        .topic-trend { font-size: 16px; margin-left: 8px; }
+        .topic-count { font-size: 12px; color: #888; margin-left: 8px; }
+        .footer { text-align: center; padding: 20px; color: #888; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="main">
+            <div class="header">
+                <h1>Daily Digest</h1>
+                <div>{{ digest.date }}</div>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value">{{ digest.total_emails }}</div>
+                        <div class="stat-label">Emails</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">{{ digest.high_relevance_count }}</div>
+                        <div class="stat-label">High Priority</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">{{ summaries|length }}</div>
+                        <div class="stat-label">Summaries</div>
+                    </div>
+                </div>
+            </div>
+
+            {% for summary in summaries %}
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{{ summary.title }}</div>
+                    <span class="relevance relevance-{{ summary.relevance }}">{{ summary.relevance }}</span>
+                </div>
+                <div class="meta">
+                    <strong>{{ summary.sender_org }}</strong>
+                    {% if summary.received_at %} • {{ summary.received_at[:10] }}{% endif %}
+                </div>
+                {% if summary.topics %}
+                <div class="topics">
+                    {% for topic in summary.topics[:6] %}
+                    <span class="topic">{{ topic }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <div class="summary">{{ summary.summary }}</div>
+                {% if summary.key_points %}
+                <ul class="key-points">
+                    {% for point in summary.key_points[:5] %}
+                    <li>{{ point }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% if summary.action_items %}
+                <div class="action-items">
+                    <h4>⚠️ Action Items</h4>
+                    <ul>
+                        {% for item in summary.action_items %}
+                        <li>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <div class="footer">
+                Generated by my-email • {{ digest.date }}
+            </div>
+        </div>
+
+        {% if active_topics %}
+        <div class="sidebar">
+            <div class="sidebar-card">
+                <div class="sidebar-title">📊 Topic Trends (30 days)</div>
+                {% for topic in active_topics[:15] %}
+                <div class="topic-row">
+                    <span class="topic-name">{{ topic.topic }}</span>
+                    <span class="topic-trend">{{ topic.trend_arrow }}</span>
+                    <span class="topic-count">{{ topic.total_mentions }}</span>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if digest.top_topics %}
+            <div class="sidebar-card">
+                <div class="sidebar-title">🔥 Top Topics Today</div>
+                <div class="topics">
+                    {% for topic in digest.top_topics[:10] %}
+                    <span class="topic">{{ topic }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
