@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2026-03-23] - Engineering Review Fixes
+
+### Fixed
+- **Fake Data Removal** (`modules/data_collector/news_collector.py`)
+  - Removed hardcoded fake news that was presented as real data
+  - `_fetch_macro_news()` now returns empty list with TODO for API integration
+
+- **Async LLM Calls** (`agents/specialist_agents.py`)
+  - Fixed `_parse_output()` to use `ainvoke()` instead of blocking `invoke()`
+  - Fixed `SectorOutput.with_llm_fallback()` to be async classmethod
+  - Prevents event loop blocking in parallel agent execution
+
+- **Missing Report Section** (`agents/synthesis_agent.py`)
+  - Added Scenario Analysis section (order=3) to report sections
+  - Bull/Base/Bear cases now appear in the correct order
+
+- **Hardcoded Chinese** (`agents/synthesis_agent.py`)
+  - Language instruction in prompt now respects `--en` flag
+  - Reports generated in correct language based on CLI option
+
+- **DRY Violation** (`agents/tools.py`)
+  - Fixed all 4 tools to use `self._collector` instead of creating new instances
+
+### Removed
+- **Dead Code**
+  - Removed `apps/web/` (unused TypeScript frontend)
+  - Removed `apps/api/` (unused FastAPI routes)
+  - Removed `storage/` (empty directory)
+  - Updated `pyproject.toml` package list
+
+### Added
+- `TODOS.md` - Tracking open items for LLM rate limiting, HTTPS migration, and test suite
+
 ## [2026-03-23] - Feature: Chinese Language Output
 
 ### Added

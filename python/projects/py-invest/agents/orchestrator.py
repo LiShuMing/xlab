@@ -169,7 +169,7 @@ Analyze the stock thoroughly and provide investment recommendations."""
         tech = results[0] if not isinstance(results[0], Exception) else TechnicalOutput()
         fund = results[1] if not isinstance(results[1], Exception) else FundamentalOutput()
         risk = results[2] if not isinstance(results[2], Exception) else RiskOutput()
-        sector = results[3] if not isinstance(results[3], Exception) else SectorOutput.with_llm_fallback(stock_code, llm)
+        sector = results[3] if not isinstance(results[3], Exception) else await SectorOutput.with_llm_fallback(stock_code, llm)
 
         # Synthesize into final report
         report = await SynthesisAgent(stock_code, llm, lang=self.lang).synthesize(tech, fund, risk, sector, data)

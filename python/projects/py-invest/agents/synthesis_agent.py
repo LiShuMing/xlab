@@ -26,6 +26,7 @@ class SynthesisAgent:
         "zh": {
             "investment_thesis": "投资论点",
             "price_target_methodology": "目标价与方法论",
+            "scenario_analysis": "情景分析",
             "technical_picture": "技术面分析",
             "fundamental_analysis": "基本面分析",
             "sector_comparables": "行业与可比公司",
@@ -36,6 +37,7 @@ class SynthesisAgent:
         "en": {
             "investment_thesis": "Investment Thesis",
             "price_target_methodology": "Price Target & Methodology",
+            "scenario_analysis": "Scenario Analysis",
             "technical_picture": "Technical Picture",
             "fundamental_analysis": "Fundamental Analysis",
             "sector_comparables": "Sector & Comparables",
@@ -78,6 +80,9 @@ class SynthesisAgent:
         Returns:
             Full synthesis prompt string.
         """
+
+        # Language instruction for the prompt
+        language_instruction = "Chinese" if self.lang == "zh" else "English"
 
         # Format specialist outputs as JSON for the LLM
         tech_json = json.dumps(
@@ -211,7 +216,7 @@ IMPORTANT RULES:
 - For sections 4-8, REPRODUCE the numbers and facts from the specialist JSON EXACTLY — do not invent new values
 - Present specialist data as readable prose, not JSON
 - Be specific and data-driven — avoid generic statements
-- Write in Chinese (except ticker symbols)
+- Write in {language_instruction}
 - Use Markdown formatting
 
 Return ONLY a JSON object with these fields (no markdown fences):
@@ -366,6 +371,13 @@ Return ONLY a JSON object with these fields (no markdown fences):
                         f"Methodology: {report_data.get('target_price_methodology', 'N/A')}\n\n"
                         f"Upside/Downside: {report_data.get('upside_pct', 'N/A')}%",
                 order=2,
+            ),
+            ReportSection(
+                title=self.titles["scenario_analysis"],
+                content=f"**Bull Case:** {report_data.get('bull_case', 'N/A')}\n\n"
+                        f"**Base Case:** {report_data.get('base_case', 'N/A')}\n\n"
+                        f"**Bear Case:** {report_data.get('bear_case', 'N/A')}",
+                order=3,
             ),
             ReportSection(
                 title=self.titles["technical_picture"],

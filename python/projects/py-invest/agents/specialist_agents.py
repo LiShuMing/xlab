@@ -82,7 +82,7 @@ class SectorOutput:
     catalysts: list[Catalyst] = field(default_factory=list)
 
     @classmethod
-    def with_llm_fallback(cls, stock_code: str, llm_client: LLMClient) -> "SectorOutput":
+    async def with_llm_fallback(cls, stock_code: str, llm_client: LLMClient) -> "SectorOutput":
         """Create sector output with LLM-estimated comps when AKShare unavailable."""
         prompt = f"""You are a sector analyst. Provide 2-3 comparable companies for {stock_code}.
 
@@ -95,7 +95,7 @@ Return ONLY a JSON array with this exact structure:
 Use real competitor names and approximate P/E ratios. Be specific."""
 
         try:
-            response = llm_client.model.invoke([HumanMessage(content=prompt)])
+            response = await llm_client.model.ainvoke([HumanMessage(content=prompt)])
             content = _strip_markdown_fences(response.content)
             comps_data = json.loads(content)
             comps = [
@@ -137,7 +137,7 @@ def _strip_markdown_fences(text: str) -> str:
     return re.sub(r"^```json\s*|\s*```$", "", text, flags=re.DOTALL).strip()
 
 
-def _parse_output(text: str, llm_client: LLMClient, retry_prompt: str = None) -> dict:
+async def _parse_output(text: str, llm_client: LLMClient, retry_prompt: str = None) -> dict:
     """Parse LLM output, stripping fences and retrying on parse error."""
     content = _strip_markdown_fences(text)
 
@@ -149,7 +149,7 @@ def _parse_output(text: str, llm_client: LLMClient, retry_prompt: str = None) ->
             retry_prompt = "Return ONLY the JSON object, no other text:"
 
         try:
-            response = llm_client.model.invoke([HumanMessage(content=retry_prompt)])
+            response = await llm_client.model.ainvoke([HumanMessage(content=retry_prompt)])
             content = _strip_markdown_fences(response.content)
             return json.loads(content)
         except Exception:
@@ -251,7 +251,7 @@ Return ONLY a JSON object (no markdown fences, no prose) with these exact fields
 Be specific. Use actual numbers from the data. Do not hedge with generic statements."""
 
         response = await self.llm_client.model.ainvoke([HumanMessage(content=prompt)])
-        parsed = _parse_output(
+        parsed = await _parse_output(
             response.content,
             self.llm_client,
             retry_prompt="Return ONLY the JSON object with the analysis fields, no other text:"

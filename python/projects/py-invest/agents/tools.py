@@ -51,7 +51,7 @@ class QueryStockPriceTool(BaseAgentTool):
 
         result = await self._collector.collect(stock_code=stock_code)
         if result.success:
-            return PriceCollector().format_markdown(result.data)
+            return self._collector.format_markdown(result.data)
         return ToolResult.fail(result.error or "Failed to fetch data", self.name).result
 
 
@@ -110,7 +110,7 @@ class QueryKLineDataTool(BaseAgentTool):
 
         result = await self._collector.collect(stock_code=stock_code, days=days, period=period)
         if result.success:
-            return KLineCollector().format_markdown(result.data)
+            return self._collector.format_markdown(result.data)
         return ToolResult.fail(result.error or "Failed to fetch data", self.name).result
 
 
@@ -154,7 +154,7 @@ class QueryFinancialMetricsTool(BaseAgentTool):
 
         result = await self._collector.collect(stock_code=stock_code)
         if result.success:
-            return FinancialCollector().format_markdown(result.data)
+            return self._collector.format_markdown(result.data)
         return ToolResult.fail(result.error or "Failed to fetch data", self.name).result
 
 
@@ -212,5 +212,5 @@ class QueryMarketNewsTool(BaseAgentTool):
 
         result = await self._collector.collect(stock_code=stock_code, limit=limit, days=days)
         if result.success:
-            return NewsCollector().format_markdown(result.data)
+            return self._collector.format_markdown(result.data)
         return ToolResult.fail(result.error or "Failed to fetch data", self.name).result
