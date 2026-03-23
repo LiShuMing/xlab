@@ -20,13 +20,15 @@ class SimpleAgentOrchestrator:
     analysis workflows.
     """
 
-    def __init__(self, llm_config: Optional[LLMConfig] = None):
+    def __init__(self, llm_config: Optional[LLMConfig] = None, lang: str = "zh"):
         """Initialize simplified orchestrator.
 
         Args:
             llm_config: Optional LLM configuration.
+            lang: Output language ("zh" for Chinese, "en" for English).
         """
         self.llm_client = LLMClient(llm_config)
+        self.lang = lang
         self.tools = self._init_tools()
 
     def _init_tools(self) -> list:
@@ -170,6 +172,6 @@ Analyze the stock thoroughly and provide investment recommendations."""
         sector = results[3] if not isinstance(results[3], Exception) else SectorOutput.with_llm_fallback(stock_code, llm)
 
         # Synthesize into final report
-        report = await SynthesisAgent(stock_code, llm).synthesize(tech, fund, risk, sector, data)
+        report = await SynthesisAgent(stock_code, llm, lang=self.lang).synthesize(tech, fund, risk, sector, data)
 
         return report

@@ -24,6 +24,14 @@ from dbradar.sources import get_sources
 from dbradar.summarizer import summarize_items
 from dbradar.writer import write_html_report, write_reports
 
+# Intelligence module imports
+from dbradar.intelligence import (
+    AnalysisMode,
+    AnalysisOptions,
+    IntelligenceReport,
+)
+from dbradar.intelligence.agent import IntelligenceAgent
+
 
 def _open_in_browser(path: Path) -> None:
     """
@@ -193,6 +201,30 @@ def cli(
     default=False,
     help="Only process new (unseen) articles. Track seen articles in cache.",
 )
+@click.option(
+    "--intelligence",
+    is_flag=True,
+    default=False,
+    help="Enable full intelligence analysis (trends + competition).",
+)
+@click.option(
+    "--trends",
+    is_flag=True,
+    default=False,
+    help="Enable trend detection analysis.",
+)
+@click.option(
+    "--analyze-competition",
+    is_flag=True,
+    default=False,
+    help="Enable competitive analysis.",
+)
+@click.option(
+    "--history-days",
+    default=14,
+    type=int,
+    help="Days of history for trend analysis (default: 14).",
+)
 @click.pass_obj
 def run(
     config: Config,
@@ -204,10 +236,38 @@ def run(
     html: bool,
     open_browser: bool,
     incremental: bool,
+    intelligence: bool,
+    trends: bool,
+    analyze_competition: bool,
+    history_days: int,
 ):
-    """Run the complete pipeline: fetch, extract, summarize, and write reports."""
+    """Run the complete pipeline: fetch, extract, summarize, and write reports.
+
+    Intelligence modes:
+    - Default: Basic summary only
+    - --trends: Summary + trend detection
+    - --analyze-competition: Summary + competitive analysis
+    - --intelligence: Full intelligence (trends + competition)
+    """
     # Set language in config
     config.language = language.lower()
+
+    # Determine analysis mode
+    if intelligence:
+        mode = AnalysisMode.INTELLIGENCE
+        mode_desc = "Intelligence (trends + competition)"
+    elif trends and analyze_competition:
+        mode = AnalysisMode.INTELLIGENCE
+        mode_desc = "Intelligence (trends + competition)"
+    elif trends:
+        mode = AnalysisMode.TRENDS
+        mode_desc = "Trends"
+    elif analyze_competition:
+        mode = AnalysisMode.COMPETITION
+        mode_desc = "Competition"
+    else:
+        mode = AnalysisMode.BASIC
+        mode_desc = "Basic"
 
     # Get interests and use_feeds from context
     interests: Optional[InterestsConfig] = getattr(config, "_interests", None)
@@ -220,6 +280,9 @@ def run(
     click.echo(f"Daily DB Radar - Starting at {datetime.now(timezone.utc).isoformat()}")
     click.echo(f"  Days: {days}, Max items: {max_items}, Top-K: {top_k}")
     click.echo(f"  Mode: {'Incremental (new articles only)' if incremental else 'Full scan'}")
+    click.echo(f"  Analysis: {mode_desc}")
+    if mode != AnalysisMode.BASIC:
+        click.echo(f"  History: {history_days} days for trend analysis")
     if use_feeds:
         click.echo(f"  Feeds file: {config.feeds_file}")
     else:
@@ -320,13 +383,54 @@ def run(
     click.echo(f"  Ranked {len(ranked)} items ({boosted_count} boosted)")
     click.echo("")
 
-    # Step 6: Generate summary
+    # Step 6: Generate summary with intelligence analysis
     click.echo("Step 6: Generating summary with LLM...")
-    summary = summarize_items(ranked, top_k=top_k, language=config.language)
-    click.echo(f"  Executive summary: {len(summary.executive_summary)} bullets")
-    click.echo(f"  Top updates: {len(summary.top_updates)} items")
-    click.echo(f"  Themes: {len(summary.themes)} items")
-    click.echo(f"  Action items: {len(summary.action_items)} items")
+
+    if mode == AnalysisMode.BASIC:
+        # Basic mode: use existing summarizer directly
+        from dbradar.summarizer import Summarizer
+        summarizer = Summarizer(
+            api_key=config.api_key,
+            base_url=config.base_url,
+            model=config.model,
+            language=config.language,
+        )
+        summary = summarizer.summarize(ranked, top_k=top_k)
+        summarizer.client.close()
+
+        click.echo(f"  Executive summary: {len(summary.executive_summary)} bullets")
+        click.echo(f"  Top updates: {len(summary.top_updates)} items")
+        click.echo(f"  Themes: {len(summary.themes)} items")
+        click.echo(f"  Action items: {len(summary.action_items)} items")
+    else:
+        # Intelligence mode: use IntelligenceAgent
+        agent = IntelligenceAgent(config=config)
+        options = AnalysisOptions(
+            mode=mode,
+            top_k=top_k,
+            history_days=history_days,
+            enable_trends=mode in (AnalysisMode.TRENDS, AnalysisMode.INTELLIGENCE),
+            enable_competition=mode in (AnalysisMode.COMPETITION, AnalysisMode.INTELLIGENCE),
+        )
+        report = agent.analyze(ranked, options)
+        agent.close()
+
+        click.echo(f"  Executive summary: {len(report.executive_summary)} bullets")
+        click.echo(f"  Top updates: {len(report.top_updates)} items")
+        click.echo(f"  Themes: {len(report.themes)} items")
+        click.echo(f"  Action items: {len(report.action_items)} items")
+        click.echo(f"  Tools used: {', '.join(report.tools_used)}")
+
+        # Convert IntelligenceReport to summary-compatible format for writer
+        # The writer expects a SummaryResult, so we create a wrapper
+        from dbradar.summarizer import SummaryResult
+        summary = SummaryResult(
+            executive_summary=report.executive_summary,
+            top_updates=report.top_updates,
+            release_notes=report.release_notes,
+            themes=report.themes,
+            action_items=report.action_items,
+        )
     click.echo("")
 
     # Step 7: Write reports

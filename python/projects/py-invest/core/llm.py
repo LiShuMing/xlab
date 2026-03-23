@@ -96,10 +96,17 @@ class LLMClient:
             AsyncOpenAI instance.
         """
         if self._async_client is None:
+            import httpx
+            # Check if we need to use proxy
+            proxy = os.getenv("https_proxy") or os.getenv("HTTP_PROXY")
+
+            # For LLM API calls, often better to bypass proxy
+            # Create client without proxy for better async compatibility
             self._async_client = AsyncOpenAI(
                 api_key=self.config.api_key,
                 base_url=self.config.base_url,
                 timeout=self.config.timeout,
+                http_client=httpx.AsyncClient(proxy=None) if proxy else None,
             )
         return self._async_client
 

@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2026-03-23] - Feature: Chinese Language Output
+
+### Added
+- **Chinese Output Support** - CLI now outputs reports in Chinese by default
+  - `cli.py`: Added `--en` flag for English output
+  - `types.py`: Added `OutputLanguage` enum (ZH/EN)
+  - `formatter.py`: Added `TRANSLATIONS` dictionary with all UI labels
+  - `synthesis_agent.py`: Added `SECTION_TITLES` translations
+
+### Usage
+```bash
+# Chinese output (default)
+python cli.py analyze sh600519 "综合分析"
+
+# English output
+python cli.py analyze sh600519 "综合分析" --en
+```
+
+## [2026-03-23] - Hotfix
+
+### Fixed
+- **LLM Async Client Proxy Issue** (`core/llm.py`)
+  - AsyncOpenAI client now bypasses proxy for better async compatibility
+  - Added httpx.AsyncClient with proxy=None when proxy env vars are set
+  - Fixes hanging issue on `model.ainvoke()` when http_proxy/https_proxy is configured
+
 ## [Unreleased] - 2026-03-23
 
 ### Added

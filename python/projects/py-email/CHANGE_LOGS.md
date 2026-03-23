@@ -2,6 +2,54 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-03-23 - Feature: Web Server Mode
+
+### Features
+
+#### Server Module (`src/my_email/server/`)
+- **Web interface** for browsing daily email digests
+  - `GET /` - Main page with date list and digest viewer
+  - `GET /api/dates` - JSON API listing all available digest dates
+  - `GET /api/digest/{date}` - Get HTML digest for a specific date
+  - `POST /api/generate/{date}` - Trigger sync+summarize+digest pipeline
+  - `GET /api/status/{date}` - Poll generation task status
+
+#### Background Task System
+- **Async pipeline** for delayed digest generation
+  - Incremental sync → Summarize → Build digest
+  - Task status tracking for polling
+  - Error handling with structured logging
+
+#### UI Features
+- Responsive sidebar with 30-day date list
+- Visual indicators: Ready/Missing/Empty states
+- "Generate" button for dates without digest
+- Loading spinner during background tasks
+- iframe-based HTML digest viewer
+
+### CLI Changes (`src/my_email/cli.py`)
+- **`server` command** - Start web server
+  - `--host` option (default: 127.0.0.1)
+  - `--port` option (default: 8080)
+  - `--reload` flag for development
+
+### Dependencies (`pyproject.toml`)
+- Added: `fastapi>=0.110`, `uvicorn>=0.29`
+
+### Usage
+```bash
+# Start server
+my-email server
+
+# With options
+my-email server --host 0.0.0.0 --port 3000
+
+# Development mode with auto-reload
+my-email server --reload
+```
+
+---
+
 ## 2026-03-23 - Bugfix: Missing Database Tables and HTML Template
 
 ### Bug Fixes
