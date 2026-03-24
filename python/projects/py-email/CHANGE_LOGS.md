@@ -2,6 +2,53 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-03-24 - Feature: Automatic Project Identification
+
+### Features
+
+#### Project Discovery (`src/my_email/project/`)
+- **Automatic project clustering** using Union-Find algorithm
+  - Groups emails by topic co-occurrence patterns
+  - Configurable thresholds: `min_emails` (default: 3), `co_occurrence_threshold` (default: 5)
+  - Hybrid approach: topic clustering + sender domain grouping
+- **Project models** (`models.py`):
+  - `Project`: id, name, keywords, sender_domains, email_count, first_seen, last_seen
+  - `ProjectAssignment`: message_id, project_id, confidence (0.0-1.0), reasons
+- **Email assignment** with weighted scoring:
+  - Topic overlap: 60% weight
+  - Domain match: 40% weight
+  - Confidence threshold: 0.3 minimum
+
+#### Database Schema (`src/my_email/db/models.py`)
+- **`message_topics`** - Junction table linking messages to topics
+- **`projects`** - Project clusters with metadata
+- **`email_projects`** - Email-to-project assignments with confidence scores
+
+#### Pipeline Integration (`src/my_email/db/repository.py`)
+- **Automatic topic extraction** - `save_summary()` and `save_thread_summary()` now populate `message_topics`
+- **Backfill support** - Migrate existing summaries to topic tracking
+
+#### CLI Commands (`src/my_email/cli.py`)
+- **`projects discover`** - Discover projects from email patterns
+  - `--min-emails` - Minimum emails per project
+  - `--threshold` - Co-occurrence threshold for topic linking
+  - `--backfill` - Populate message_topics from existing summaries
+- **`projects list`** - List all discovered projects
+- **`projects show <id>`** - Show emails for a specific project
+- **`projects backfill`** - Backfill message_topics from existing summaries
+
+### Tests
+- `tests/test_project.py` - Unit tests for slugify and assign_email
+- `tests/test_project_integration.py` - Integration tests for clustering, persistence, and pipeline
+
+### Technical Details
+- Union-Find with path compression for O(n²) topic clustering
+- Module-level functions with explicit `conn` parameter for transaction control
+- INSERT OR IGNORE for idempotent backfill operations
+- Foreign key constraints with CASCADE delete
+
+---
+
 ## 2026-03-23 - Feature: 中文输出 + 技术邮件过滤
 
 ### Features

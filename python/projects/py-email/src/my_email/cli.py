@@ -7,6 +7,7 @@ Commands:
   digest      Aggregate summaries into a daily digest JSON.
   show        Pretty-print the digest for a given date.
   topics      Show topic arc table (ongoing discussion threads).
+  projects    Discover and manage project-based email organization.
   server      Start web server to browse email digests.
 
 Typical daily workflow:
@@ -15,6 +16,11 @@ Typical daily workflow:
   my-email digest    --date 2026-03-19 [--html [--open]]
   my-email show      --date 2026-03-19
   my-email topics
+
+Project workflow:
+  my-email projects discover [--min-emails 3]
+  my-email projects list
+  my-email projects show <project-id> [--days 30]
 
 Server mode:
   my-email server --host 127.0.0.1 --port 8080
@@ -422,3 +428,239 @@ def server(host: str, port: int, reload: bool) -> None:
         port=port,
         reload=reload,
     )
+
+
+# ── projects ──────────────────────────────────────────────────────────────────
+
+@cli.group()
+def projects() -> None:
+    """
+    Discover and manage project-based email organization.
+
+    Projects are automatically discovered from topic co-occurrence
+    patterns in your emails, enabling a project-centric view of
+    email threads across time boundaries.
+
+    \b
+    Commands:
+      discover   Discover projects from email patterns
+      list       List all discovered projects
+      show       Show emails for a specific project
+      backfill   Backfill message_topics from existing summaries
+    """
+    pass
+
+
+@projects.command()
+@click.option("--min-emails", default=3, show_default=True, help="Minimum emails for a project.")
+@click.option("--threshold", default=5, show_default=True, help="Co-occurrence threshold for topic linking.")
+@click.option("--backfill", is_flag=True, help="Backfill message_topics from existing summaries first.")
+def discover(min_emails: int, threshold: int, backfill: bool) -> None:
+    """
+    Discover projects from email patterns.
+
+    Analyzes topic co-occurrence patterns to identify project clusters.
+    Re-running discovery will clear existing projects and re-cluster.
+
+    \b
+    Examples:
+      my-email projects discover
+      my-email projects discover --min-emails 5 --threshold 3
+      my-email projects discover --backfill  # For existing summaries
+    """
+    from my_email.project.clusterer import (
+        discover_projects as do_discover,
+        save_project,
+        clear_projects,
+        backfill_message_topics,
+    )
+
+    conn = get_connection()
+
+    # Backfill message_topics if requested
+    if backfill:
+        click.echo("Backfilling message_topics from existing summaries...")
+        count = backfill_message_topics(conn)
+        conn.commit()
+        click.echo(f"  Added {count} topic entries.")
+
+    # Clear existing projects
+    click.echo("Clearing existing projects...")
+    clear_projects(conn)
+
+    # Discover new projects
+    click.echo(f"Discovering projects (min_emails={min_emails}, threshold={threshold})...")
+    discovered = do_discover(conn, min_emails=min_emails, co_occurrence_threshold=threshold)
+
+    if not discovered:
+        click.echo("No projects discovered. Try lowering --min-emails or run more summarizations.")
+        conn.close()
+        return
+
+    # Save projects
+    for project in discovered:
+        save_project(conn, project)
+
+    conn.commit()
+
+    # Display results
+    click.echo(f"\nDiscovered {len(discovered)} projects:\n")
+    click.echo(f"  {'PROJECT':<25} {'EMAILS':>6} {'KEYWORDS':<40}")
+    click.echo(f"  {'-'*25} {'-'*6} {'-'*40}")
+
+    for project in discovered:
+        keywords_str = ", ".join(project.keywords[:3])
+        if len(project.keywords) > 3:
+            keywords_str += "..."
+        click.echo(f"  {project.id:<25} {project.email_count:>6} {keywords_str}")
+
+    conn.close()
+    click.echo("\nDone. Run 'my-email projects list' to see all projects.")
+
+
+@projects.command("list")
+@click.option("--min-emails", default=1, show_default=True, help="Minimum emails filter.")
+def list_projects_cmd(min_emails: int) -> None:
+    """
+    List all discovered projects.
+
+    \b
+    Examples:
+      my-email projects list
+      my-email projects list --min-emails 5
+    """
+    from my_email.project.clusterer import list_projects
+
+    conn = get_connection()
+    projects_list = list_projects(conn, min_emails=min_emails)
+    conn.close()
+
+    if not projects_list:
+        click.echo("No projects found. Run 'my-email projects discover' first.")
+        return
+
+    click.echo(f"\n{'='*80}")
+    click.echo(f"  Projects ({len(projects_list)} found)")
+    click.echo(f"{'='*80}")
+    click.echo(f"  {'ID':<25} {'NAME':<20} {'EMAILS':>6} {'DOMAINS':<20}")
+    click.echo(f"  {'-'*25} {'-'*20} {'-'*6} {'-'*20}")
+
+    for project in projects_list:
+        domains_str = ", ".join(project.sender_domains[:2])
+        if len(project.sender_domains) > 2:
+            domains_str += "..."
+        click.echo(f"  {project.id:<25} {project.name[:20]:<20} {project.email_count:>6} {domains_str}")
+
+    click.echo()
+
+
+@projects.command()
+@click.argument("project_id")
+@click.option("--days", default=30, show_default=True, help="Show emails from last N days.")
+@click.option("--all", "show_all", is_flag=True, help="Show all emails regardless of date.")
+def show_emails(project_id: str, days: int, show_all: bool) -> None:
+    """
+    Show emails for a specific project.
+
+    PROJECT_ID is the slugified project identifier (e.g., 'duckdb', 'apache-iceberg').
+
+    \b
+    Examples:
+      my-email projects show duckdb
+      my-email projects show apache-iceberg --days 7
+      my-email projects show my-project --all
+    """
+    from datetime import datetime, timedelta
+    from my_email.project.clusterer import get_project, get_project_emails
+
+    conn = get_connection()
+
+    # Verify project exists
+    project = get_project(conn, project_id)
+    if not project:
+        click.echo(f"Error: Project '{project_id}' not found.", err=True)
+        click.echo("Run 'my-email projects list' to see available projects.")
+        conn.close()
+        return
+
+    # Calculate date range
+    if show_all:
+        start_date = None
+    else:
+        start_date = (datetime.now() - timedelta(days=days)).strftime("%Y-%m-%d")
+
+    # Get emails
+    emails = get_project_emails(conn, project_id, start_date=start_date)
+
+    click.echo(f"\n{'='*80}")
+    click.echo(f"  Project: {project.name}")
+    click.echo(f"{'='*80}")
+    click.echo(f"  ID: {project.id}")
+    click.echo(f"  Emails: {project.email_count} total, {len(emails)} in view")
+    click.echo(f"  Keywords: {', '.join(project.keywords)}")
+    if project.sender_domains:
+        click.echo(f"  Domains: {', '.join(project.sender_domains)}")
+    click.echo(f"  First seen: {project.first_seen or 'N/A'}")
+    click.echo(f"  Last seen: {project.last_seen or 'N/A'}")
+    click.echo()
+
+    if not emails:
+        click.echo("  No emails in the specified date range.")
+        click.echo("  Use --all to see all emails for this project.")
+        conn.close()
+        return
+
+    click.echo(f"  {'SUBJECT':<50} {'DATE':>10}")
+    click.echo(f"  {'-'*50} {'-'*10}")
+
+    for email in emails:
+        subject = (email.get("subject") or "(no subject)")[:50]
+        recv = (email.get("received_at") or "")[:10]
+        click.echo(f"  {subject:<50} {recv:>10}")
+
+    conn.close()
+
+
+@projects.command()
+@click.option("--dry-run", is_flag=True, help="Show what would be backfilled without making changes.")
+def backfill(dry_run: bool) -> None:
+    """
+    Backfill message_topics from existing summaries.
+
+    This is useful for migrating existing data where summaries exist
+    but message_topics wasn't populated during the summarize step.
+
+    \b
+    Examples:
+      my-email projects backfill
+      my-email projects backfill --dry-run
+    """
+    from my_email.project.clusterer import backfill_message_topics
+
+    conn = get_connection()
+
+    if dry_run:
+        import json
+        cursor = conn.execute("SELECT message_id, summary_json FROM summaries")
+        count = 0
+        for row in cursor.fetchall():
+            try:
+                summary_data = json.loads(row[1])
+                topics = summary_data.get("topics", [])
+                count += len([t for t in topics if t])
+            except (json.JSONDecodeError, TypeError):
+                continue
+        click.echo(f"Dry run: would add {count} topic entries.")
+        conn.close()
+        return
+
+    click.echo("Backfilling message_topics from existing summaries...")
+    count = backfill_message_topics(conn)
+    conn.commit()
+    conn.close()
+    click.echo(f"Done. Added {count} topic entries.")
+
+
+def _conn(obj):
+    """Helper to get connection from context."""
+    return get_connection()

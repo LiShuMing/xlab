@@ -5,6 +5,7 @@ Provides low-level CRUD operations for messages, summaries, digests, and sync st
 All functions take an explicit sqlite3.Connection for transaction control.
 """
 
+import json
 import sqlite3
 from typing import Any
 
@@ -106,6 +107,8 @@ def save_summary(
     """
     Save a message summary and mark the message as processed.
 
+    Also populates message_topics table for project clustering.
+
     Args:
         conn: Database connection.
         message_id: Gmail message ID.
@@ -119,6 +122,20 @@ def save_summary(
     )
     conn.execute("UPDATE messages SET processed = 1 WHERE id = ?", (message_id,))
 
+    # Populate message_topics for project clustering
+    try:
+        summary_data = json.loads(summary_json)
+        topics = summary_data.get("topics", [])
+        for topic in topics:
+            if topic:  # Skip empty strings
+                conn.execute(
+                    """INSERT OR IGNORE INTO message_topics (message_id, topic)
+                       VALUES (?, ?)""",
+                    (message_id, topic),
+                )
+    except (json.JSONDecodeError, TypeError):
+        log.warning("repository.save_summary.topics_parse_error", message_id=message_id)
+
 
 def save_thread_summary(
     conn: sqlite3.Connection,
@@ -130,7 +147,8 @@ def save_thread_summary(
     Save a thread summary and mark all messages as processed.
 
     Stores the summary against the first message ID and marks all
-    provided message IDs as processed.
+    provided message IDs as processed. Also populates message_topics
+    for all messages in the thread.
 
     Args:
         conn: Database connection.
@@ -155,6 +173,21 @@ def save_thread_summary(
         f"UPDATE messages SET processed = 1 WHERE id IN ({placeholders})",
         message_ids,
     )
+
+    # Populate message_topics for all messages in the thread
+    try:
+        summary_data = json.loads(summary_json)
+        topics = summary_data.get("topics", [])
+        for topic in topics:
+            if topic:  # Skip empty strings
+                for msg_id in message_ids:
+                    conn.execute(
+                        """INSERT OR IGNORE INTO message_topics (message_id, topic)
+                           VALUES (?, ?)""",
+                        (msg_id, topic),
+                    )
+    except (json.JSONDecodeError, TypeError):
+        log.warning("repository.save_thread_summary.topics_parse_error", message_ids=message_ids)
 
 
 def get_summaries_for_date(conn: sqlite3.Connection, date: str) -> list[sqlite3.Row]:
