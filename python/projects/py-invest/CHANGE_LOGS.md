@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2026-03-24] - Fix: Daily Analysis Timeout & API Quota Issues
+
+### Fixed
+- **Rate Limiting Integration** (`agents/orchestrator.py`)
+  - Orchestrator now wraps `LLMClient` with `RateLimitedLLMClient`
+  - Set `max_concurrent=2` to limit parallel LLM calls per stock analysis
+  - Prevents timeout when 4 specialist agents run in parallel
+
+- **Timeout Configuration** (`scheduler/daily_job.py`)
+  - Increased `SINGLE_STOCK_TIMEOUT` from 120s to 300s (5 minutes)
+  - Reduced `MAX_CONCURRENT_ANALYSES` from 5 to 3 stocks
+  - Provides more time for multi-agent analysis pipeline to complete
+
+- **Batch Processing** (`scheduler/daily_job.py`)
+  - Added `STOCKS_PER_BATCH = 3` configuration
+  - Added `BATCH_DELAY_SECONDS = 3600` (1 hour) between batches
+  - Implemented `_analyze_batch()` helper function
+  - Modified `run_daily_analysis()` to process stocks in batches
+  - Dry-run mode processes only first batch for quick testing
+
+### Technical Details
+- Each stock analysis runs 4 specialist agents in parallel (Technical, Fundamental, Risk, Sector)
+- Each LLM call takes ~6-7 seconds, so 4 concurrent calls need ~25-30 seconds
+- With synthesis agent added, total time can exceed 120s
+- Rate limiting ensures controlled concurrency and prevents API quota exhaustion
+- Batch processing spreads 10 stocks across ~4 hours to stay within API quotas
+
+### Batch Schedule
+- Batch 1: Stocks 1-3 (TSLA, VOO, AAPL) - immediate
+- Batch 2: Stocks 4-6 (NVDA, BRK.B, AMZN) - +1 hour
+- Batch 3: Stocks 7-9 (GOOGL, TSM, MU) - +2 hours
+- Batch 4: Stock 10 (CRWV) - +3 hours
+- Email sent after all batches complete
+
 ## [2026-03-24] - User Configuration Setup
 
 ### Added

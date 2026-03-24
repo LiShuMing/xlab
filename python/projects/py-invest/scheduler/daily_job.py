@@ -24,10 +24,16 @@ from config.settings import load_config, AppConfig, StockConfig
 logger = get_logger("scheduler.daily_job")
 
 # Timeout for single stock analysis (seconds)
-SINGLE_STOCK_TIMEOUT = 120
+SINGLE_STOCK_TIMEOUT = 300
 
 # Maximum concurrent analyses
-MAX_CONCURRENT_ANALYSES = 5
+MAX_CONCURRENT_ANALYSES = 3
+
+# Batch processing configuration
+# Number of stocks per batch (to avoid API quota limits)
+STOCKS_PER_BATCH = 3
+# Delay between batches in seconds (1 hour = 3600 seconds)
+BATCH_DELAY_SECONDS = 3600
 
 
 @dataclass
@@ -203,7 +209,7 @@ async def run_daily_analysis(dry_run: bool = False) -> DailyJobResult:
     Main entry point for daily analysis. Orchestrates the full pipeline:
     1. Check trading day
     2. Load config
-    3. Analyze stocks in parallel
+    3. Analyze stocks in parallel (with batching for API quota management)
     4. Save reports
     5. Compare with yesterday
     6. Send email
@@ -252,76 +258,85 @@ async def run_daily_analysis(dry_run: bool = False) -> DailyJobResult:
     stock_dicts = [{"code": s.code, "name": s.name} for s in config.stocks]
     sync_stock_configs(stock_dicts)
 
-    # Step 3: Analyze stocks in parallel with timeout
-    async def analyze_with_timeout(stock: StockConfig) -> dict[str, Any]:
-        """Analyze stock with timeout wrapper."""
-        try:
-            return await asyncio.wait_for(
-                analyze_single_stock(stock.code, stock.name),
-                timeout=SINGLE_STOCK_TIMEOUT,
-            )
-        except asyncio.TimeoutError:
-            return {
-                "success": False,
-                "stock_code": stock.code,
-                "stock_name": stock.name,
-                "error": f"Timeout after {SINGLE_STOCK_TIMEOUT}s",
-            }
+    # Step 3: Analyze stocks in batches to manage API quota
+    all_successful_reports: list[dict[str, Any]] = []
+    all_failed_stocks: list[dict[str, str]] = []
 
-    # Run analyses with semaphore for concurrency control
-    semaphore = asyncio.Semaphore(MAX_CONCURRENT_ANALYSES)
+    # Split stocks into batches
+    stocks = config.stocks
+    total_batches = (len(stocks) + STOCKS_PER_BATCH - 1) // STOCKS_PER_BATCH
 
-    async def bounded_analyze(stock: StockConfig) -> dict[str, Any]:
-        async with semaphore:
-            return await analyze_with_timeout(stock)
+    for batch_idx in range(total_batches):
+        start_idx = batch_idx * STOCKS_PER_BATCH
+        end_idx = min(start_idx + STOCKS_PER_BATCH, len(stocks))
+        batch = stocks[start_idx:end_idx]
 
-    logger.info("Starting parallel analysis", stock_count=len(config.stocks))
-    analysis_results = await asyncio.gather(
-        *[bounded_analyze(stock) for stock in config.stocks],
-        return_exceptions=True,
-    )
+        logger.info(
+            "Processing batch",
+            batch_number=batch_idx + 1,
+            total_batches=total_batches,
+            stocks_in_batch=len(batch),
+            stock_codes=[s.code for s in batch],
+        )
 
-    # Process results
-    successful_reports: list[dict[str, Any]] = []
-    failed_stocks: list[dict[str, str]] = []
+        # Analyze this batch
+        batch_results = await _analyze_batch(batch)
 
-    for analysis_result in analysis_results:
-        if isinstance(analysis_result, Exception):
-            failed_stocks.append({
-                "stock_code": "unknown",
-                "error": str(analysis_result),
-            })
-            continue
+        # Collect results
+        for analysis_result in batch_results:
+            if isinstance(analysis_result, Exception):
+                all_failed_stocks.append({
+                    "stock_code": "unknown",
+                    "error": str(analysis_result),
+                })
+                continue
 
-        if analysis_result.get("success"):
-            report = analysis_result.get("report")
-            if report:
-                report_dict = _report_to_dict(report)
-                report_dict["stock_name"] = analysis_result.get("stock_name", "")
-                successful_reports.append(report_dict)
+            if analysis_result.get("success"):
+                report = analysis_result.get("report")
+                if report:
+                    report_dict = _report_to_dict(report)
+                    report_dict["stock_name"] = analysis_result.get("stock_name", "")
+                    all_successful_reports.append(report_dict)
 
-                # Step 4: Save report to storage
-                try:
-                    save_report(
-                        stock_code=analysis_result["stock_code"],
-                        report_date=today,
-                        analysis_json=json.dumps(report_dict, ensure_ascii=False),
-                    )
-                except Exception as e:
-                    logger.error(
-                        "Failed to save report",
-                        stock_code=analysis_result["stock_code"],
-                        error=str(e),
-                    )
-        else:
-            failed_stocks.append({
-                "stock_code": analysis_result.get("stock_code", "unknown"),
-                "error": analysis_result.get("error", "Unknown error"),
-            })
+                    # Save report to storage
+                    try:
+                        save_report(
+                            stock_code=analysis_result["stock_code"],
+                            report_date=today,
+                            analysis_json=json.dumps(report_dict, ensure_ascii=False),
+                        )
+                    except Exception as e:
+                        logger.error(
+                            "Failed to save report",
+                            stock_code=analysis_result["stock_code"],
+                            error=str(e),
+                        )
+            else:
+                all_failed_stocks.append({
+                    "stock_code": analysis_result.get("stock_code", "unknown"),
+                    "error": analysis_result.get("error", "Unknown error"),
+                })
 
-    result.stocks_analyzed = len(successful_reports)
-    result.stocks_failed = len(failed_stocks)
-    result.failed_stocks = failed_stocks
+        # If not the last batch, wait before processing next batch
+        if batch_idx < total_batches - 1:
+            if dry_run:
+                logger.info(
+                    "Dry run mode: skipping delay and remaining batches",
+                    processed=batch_idx + 1,
+                    total=total_batches,
+                )
+                break
+            else:
+                logger.info(
+                    "Waiting before next batch",
+                    delay_seconds=BATCH_DELAY_SECONDS,
+                    next_batch=batch_idx + 2,
+                )
+                await asyncio.sleep(BATCH_DELAY_SECONDS)
+
+    result.stocks_analyzed = len(all_successful_reports)
+    result.stocks_failed = len(all_failed_stocks)
+    result.failed_stocks = all_failed_stocks
 
     logger.info(
         "Analysis complete",
@@ -329,11 +344,11 @@ async def run_daily_analysis(dry_run: bool = False) -> DailyJobResult:
         failed=result.stocks_failed,
     )
 
-    # Step 5: Compare with yesterday
+    # Step 4: Compare with yesterday
     yesterday = today - timedelta(days=1)
     incremental_reports = []
 
-    for report_dict in successful_reports:
+    for report_dict in all_successful_reports:
         stock_code = report_dict.get("stock_code", "")
 
         # Get yesterday's report
@@ -361,11 +376,11 @@ async def run_daily_analysis(dry_run: bool = False) -> DailyJobResult:
         stocks_with_changes=result.changes_detected,
     )
 
-    # Step 6: Format email
+    # Step 5: Format email
     email_body = format_incremental_email(
         reports=incremental_reports,
         date_str=today.isoformat(),
-        failed_stocks=failed_stocks if failed_stocks else None,
+        failed_stocks=all_failed_stocks if all_failed_stocks else None,
     )
     email_subject = format_email_subject(incremental_reports, today.isoformat())
 
@@ -380,7 +395,7 @@ async def run_daily_analysis(dry_run: bool = False) -> DailyJobResult:
         result.success = True
         return result
 
-    # Step 7: Send email
+    # Step 6: Send email
     if not config.email.recipient or not config.email.sender:
         result.error = "Email not configured"
         logger.warning("Email not configured, skipping send")
@@ -415,6 +430,43 @@ async def run_daily_analysis(dry_run: bool = False) -> DailyJobResult:
 
     result.success = result.stocks_analyzed > 0 or result.error is None
     return result
+
+
+async def _analyze_batch(stocks: list[StockConfig]) -> list[dict[str, Any]]:
+    """Analyze a batch of stocks with timeout and concurrency control.
+
+    Args:
+        stocks: List of stock configs to analyze.
+
+    Returns:
+        List of analysis results.
+    """
+    async def analyze_with_timeout(stock: StockConfig) -> dict[str, Any]:
+        """Analyze stock with timeout wrapper."""
+        try:
+            return await asyncio.wait_for(
+                analyze_single_stock(stock.code, stock.name),
+                timeout=SINGLE_STOCK_TIMEOUT,
+            )
+        except asyncio.TimeoutError:
+            return {
+                "success": False,
+                "stock_code": stock.code,
+                "stock_name": stock.name,
+                "error": f"Timeout after {SINGLE_STOCK_TIMEOUT}s",
+            }
+
+    # Run analyses with semaphore for concurrency control
+    semaphore = asyncio.Semaphore(MAX_CONCURRENT_ANALYSES)
+
+    async def bounded_analyze(stock: StockConfig) -> dict[str, Any]:
+        async with semaphore:
+            return await analyze_with_timeout(stock)
+
+    return await asyncio.gather(
+        *[bounded_analyze(stock) for stock in stocks],
+        return_exceptions=True,
+    )
 
 
 async def process_pending_emails() -> int:

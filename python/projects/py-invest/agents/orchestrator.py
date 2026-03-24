@@ -4,7 +4,7 @@ import asyncio
 import time
 from typing import Any, Optional
 
-from core.llm import LLMClient, LLMConfig, HumanMessage, AIMessage, SystemMessage
+from core.llm import LLMClient, LLMConfig, HumanMessage, AIMessage, SystemMessage, RateLimitedLLMClient
 from core.logger import get_logger
 from agents.base import AgentState, ToolResult
 from modules.report_generator.types import Report
@@ -27,7 +27,9 @@ class SimpleAgentOrchestrator:
             llm_config: Optional LLM configuration.
             lang: Output language ("zh" for Chinese, "en" for English).
         """
-        self.llm_client = LLMClient(llm_config)
+        base_client = LLMClient(llm_config)
+        # Wrap with rate limiting to prevent timeout during parallel agent execution
+        self.llm_client = RateLimitedLLMClient.wrap(base_client, max_concurrent=2)
         self.lang = lang
         self.tools = self._init_tools()
 
