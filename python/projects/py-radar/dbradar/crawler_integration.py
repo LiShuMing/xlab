@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import List, Optional
 
-from dbradar.crawler import CrawledItem, SmartCrawler, crawl_non_rss_sources
+from dbradar.crawler import CrawledItem, SmartCrawler, crawl_non_rss_sources, URLNormalizer
 from dbradar.extractor import ExtractedItem
 from dbradar.fetcher import FetchResult
 
@@ -141,7 +141,7 @@ def extract_with_crawler(
         if is_rss:
             items = extractor.extract_rss_items(result)
             for item in items:
-                normalized_url = SmartCrawler.url_normalizer.normalize(item.url)
+                normalized_url = URLNormalizer.normalize(item.url)
                 if normalized_url not in seen_urls:
                     seen_urls.add(normalized_url)
                     all_items.append(item)
@@ -167,7 +167,7 @@ def extract_with_crawler(
 
             for crawled in crawled_items:
                 # Check for duplicates with RSS-extracted items
-                normalized_url = SmartCrawler.url_normalizer.normalize(crawled.url)
+                normalized_url = URLNormalizer.normalize(crawled.url)
                 if normalized_url in seen_urls:
                     print(f"  Skipping duplicate: {crawled.url}")
                     continue
