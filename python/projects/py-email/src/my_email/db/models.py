@@ -1,17 +1,7 @@
 """Database schema for email inbox MVP."""
 
+# Schema for new database creation (doesn't drop existing data)
 SCHEMA_SQL = """
--- Drop old tables (clean slate for MVP)
-DROP TABLE IF EXISTS messages;
-DROP TABLE IF EXISTS summaries;
-DROP TABLE IF EXISTS digests;
-DROP TABLE IF EXISTS topic_daily;
-DROP TABLE IF EXISTS topic_tracks;
-DROP TABLE IF EXISTS message_topics;
-DROP TABLE IF EXISTS projects;
-DROP TABLE IF EXISTS email_projects;
-DROP TABLE IF EXISTS sync_state;
-
 -- Messages table (simplified schema)
 CREATE TABLE IF NOT EXISTS messages (
     id           TEXT PRIMARY KEY,      -- Gmail message ID
@@ -42,4 +32,20 @@ INSERT OR IGNORE INTO settings (key, value) VALUES
     ('retention_days', '7'),
     ('auto_sync_interval_minutes', '30'),
     ('last_history_id', '');
+"""
+
+# One-time migration script (drops old tables)
+MIGRATION_SQL = """
+-- Drop old tables (run only during migration)
+DROP TABLE IF EXISTS messages;
+DROP TABLE IF EXISTS summaries;
+DROP TABLE IF EXISTS digests;
+DROP TABLE IF EXISTS topic_daily;
+DROP TABLE IF EXISTS topic_tracks;
+DROP TABLE IF EXISTS message_topics;
+DROP TABLE IF EXISTS projects;
+DROP TABLE IF EXISTS email_projects;
+DROP TABLE IF EXISTS sync_state;
+
+-- Then run SCHEMA_SQL
 """

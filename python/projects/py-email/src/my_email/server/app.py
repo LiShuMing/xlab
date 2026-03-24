@@ -36,7 +36,7 @@ from my_email.db.repository import (
     save_setting,
     update_message_state,
 )
-from my_email.scheduler.sync_task import run_sync, start_sync_scheduler
+from my_email.scheduler.sync_task import run_sync, start_sync_scheduler, start_summarization_worker
 from my_email.scheduler.cleanup_task import start_cleanup_scheduler
 
 log = structlog.get_logger()
@@ -68,14 +68,16 @@ async def lifespan(app: FastAPI):
     init_db()
     log.info("app.startup", db_path=str(settings.db_path))
 
-    # Start background schedulers (includes initial sync)
+    # Start background tasks
     sync_task = asyncio.create_task(start_sync_scheduler())
+    summary_task = asyncio.create_task(start_summarization_worker())
     cleanup_task = asyncio.create_task(start_cleanup_scheduler())
 
     yield
 
     # Cleanup
     sync_task.cancel()
+    summary_task.cancel()
     cleanup_task.cancel()
     log.info("app.shutdown")
 

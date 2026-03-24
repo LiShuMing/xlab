@@ -28,10 +28,11 @@ def get_connection() -> sqlite3.Connection:
     Returns:
         sqlite3.Connection: Connection with Row factory configured.
     """
-    conn = sqlite3.connect(settings.db_path)
+    conn = sqlite3.connect(settings.db_path, timeout=30.0)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode=WAL")
     conn.execute("PRAGMA foreign_keys=ON")
+    conn.execute("PRAGMA busy_timeout=30000")  # 30 second timeout
     return conn
 
 
