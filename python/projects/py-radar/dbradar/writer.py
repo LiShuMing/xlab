@@ -54,8 +54,6 @@ def detect_content_type(update: Dict[str, Any]) -> str:
 
 
 if TYPE_CHECKING:
-    from jinja2 import Environment
-
     from dbradar.intelligence.types import CompetitiveInsight, TrendResult
     from dbradar.interests import InterestsConfig
 
@@ -351,9 +349,13 @@ class Writer:
         ranked_items: List[RankedItem],
         interests: Optional[InterestsConfig] = None,
         filename: Optional[str] = None,
-    ) -> Path:
+    ) -> Optional[Path]:
         """
         Write report as HTML using Jinja2 template.
+
+        Note: Static HTML generation is deprecated. Web display is now handled
+        by Flask server (dbradar/server.py) which reads from JSON files directly.
+        This method returns None and does not generate HTML files.
 
         Args:
             report: The Report object containing summary data.
@@ -362,33 +364,11 @@ class Writer:
             filename: Optional output filename (defaults to {date}.html).
 
         Returns:
-            Path to the generated HTML file.
+            None (static HTML generation deprecated).
         """
-        if not filename:
-            filename = f"{report.date}.html"
-
-        path = self.output_dir / filename
-
-        # Get max score for normalization
-        max_score = max((r.score for r in ranked_items), default=1.0)
-
-        # Prepare template context
-        context = {
-            "report": report,
-            "ranked_items": ranked_items[:20],  # Top 20 for display
-            "max_score": max_score,
-            "interests": interests,
-            "language": self.language,
-            "t": self.t,
-        }
-
-        # Render template
-        env = _get_jinja_env()
-        template = env.get_template("briefing.html.j2")
-        html_content = template.render(**context)
-
-        path.write_text(html_content, encoding="utf-8")
-        return path
+        # Static HTML generation is deprecated - Flask server handles web display
+        # by reading from JSON files directly (dbradar/server.py)
+        return None
 
     def write_report(
         self,
@@ -491,20 +471,6 @@ def write_reports(
     return writer.write_report(summary, ranked_items, fetch_failures, date)
 
 
-def _get_jinja_env() -> Environment:
-    """
-    Get Jinja2 environment with lazy initialization.
-
-    Lazy initialization prevents import-time failures when templates
-    directory is missing or improperly packaged.
-    """
-    from jinja2 import Environment, FileSystemLoader, select_autoescape
-
-    template_dir = Path(__file__).parent / "templates"
-    return Environment(
-        loader=FileSystemLoader(str(template_dir)),
-        autoescape=select_autoescape(["html", "xml"]),
-    )
 
 
 def write_html_report(
@@ -514,9 +480,13 @@ def write_html_report(
     interests: Optional[InterestsConfig] = None,
     date: Optional[str] = None,
     language: str = "en",
-) -> Path:
+) -> Optional[Path]:
     """
     Convenience function to write HTML report only.
+
+    Note: Static HTML generation is deprecated. Web display is now handled
+    by Flask server (dbradar/server.py) which reads from JSON files directly.
+    This function returns None.
 
     Args:
         summary: SummaryResult from summarizer.
@@ -527,25 +497,7 @@ def write_html_report(
         language: Output language (en/zh).
 
     Returns:
-        Path to the generated HTML file.
+        None (static HTML generation deprecated).
     """
-    writer = Writer(output_dir, language=language)
-    report_date = date or datetime.now(timezone.utc).strftime("%Y-%m-%d")
-
-    report = Report(
-        date=report_date,
-        title=writer.t["title"].format(date=report_date),
-        executive_summary=summary.executive_summary,
-        top_updates=summary.top_updates,
-        release_notes=summary.release_notes,
-        themes=summary.themes,
-        action_items=summary.action_items,
-        fetch_failures=[],
-        metadata={
-            "total_items_collected": len(ranked_items),
-            "top_items_count": len(summary.top_updates),
-            "language": language,
-        },
-    )
-
-    return writer.write_html(report, ranked_items, interests)
+    # Static HTML generation deprecated - Flask server handles web display
+    return None

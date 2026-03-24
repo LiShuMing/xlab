@@ -82,6 +82,31 @@ def cmd_version(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_daily(args: argparse.Namespace) -> int:
+    """Handle the 'daily' command - run daily analysis and send email."""
+    from scheduler.daily_job import run_daily_analysis
+
+    result = asyncio.run(run_daily_analysis(dry_run=args.dry_run))
+
+    if result.success:
+        if result.error == "Not a trading day":
+            print(f"Skipping: {result.error}")
+            return 0
+
+        print(f"Analysis complete: {result.stocks_analyzed} stocks analyzed")
+        if result.stocks_failed > 0:
+            print(f"  Failed: {result.stocks_failed} stocks")
+        print(f"Changes detected: {result.changes_detected} stocks with significant changes")
+        if args.dry_run:
+            print("Email: DRY RUN (not sent)")
+        else:
+            print(f"Email sent: {result.email_sent}")
+        return 0
+    else:
+        print(f"Analysis failed: {result.error}", file=sys.stderr)
+        return 1
+
+
 def main() -> int:
     """Main entry point for the CLI."""
     parser = argparse.ArgumentParser(
@@ -93,6 +118,8 @@ Examples:
   %(prog)s analyze sh600519 "综合分析"
   %(prog)s analyze AAPL "估值分析" -v
   %(prog)s analyze 00700.HK "技术分析"
+  %(prog)s daily                  # Run daily analysis and send email
+  %(prog)s daily --dry-run        # Print email without sending
   %(prog)s version
         """
     )
@@ -133,6 +160,19 @@ Examples:
         help="Show version info"
     )
     version_parser.set_defaults(func=cmd_version)
+
+    # daily command
+    daily_parser = subparsers.add_parser(
+        "daily",
+        help="Run daily analysis and send email",
+        description="Run daily stock analysis for configured stocks and send email report"
+    )
+    daily_parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Print email content without sending"
+    )
+    daily_parser.set_defaults(func=cmd_daily)
 
     # Parse and execute
     args = parser.parse_args()

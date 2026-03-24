@@ -2,6 +2,128 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2026-03-24] - User Configuration Setup
+
+### Added
+- **User Stock Configuration** (`~/.py-invest/config.yaml`)
+  - Configured 10 US stocks: TSLA, VOO, AAPL, NVDA, BRK.B, AMZN, GOOGL, TSM, MU, CRWV
+  - Email settings: ming.moriarty@gmail.com (sender and recipient)
+  - SMTP: Gmail (smtp.gmail.com:587)
+  - Password loaded from `GMAIL_APP_PASSWORD` environment variable in `~/.env`
+
+### Configuration Details
+```yaml
+stocks:
+  - code: TSLA / VOO / AAPL / NVDA / BRK.B
+  - code: AMZN / GOOGL / TSM / MU / CRWV
+
+email:
+  sender: ming.moriarty@gmail.com
+  recipient: ming.moriarty@gmail.com
+  smtp_host: smtp.gmail.com
+  smtp_port: 587
+```
+
+## [2026-03-24] - Feature: Test Suite (Phase 5)
+
+### Added
+- **Test Files** (`tests/`):
+  - `tests/test_comparator.py`: Unit tests for diff comparator (22 tests)
+  - `tests/test_repository.py`: Unit tests for storage repository (15 tests)
+  - `tests/test_daily_job.py`: Tests for scheduler module (10 tests)
+
+- **Comparator Tests** (`test_comparator.py`):
+  - Tests for `Change` and `IncrementalReport` dataclasses
+  - Tests for `compare_reports()` function
+  - Price change threshold tests (2% trigger)
+  - PE/PB ratio change tests (5% trigger)
+  - Rating and target price change detection
+  - New news item detection with deduplication
+  - Support/resistance break detection
+  - Edge cases: missing data, zero prices, None values
+
+- **Repository Tests** (`test_repository.py`):
+  - Module structure verification
+  - Dataclass `from_row()` factory method tests
+  - Function signature validation
+  - Database path verification
+
+- **Scheduler Tests** (`test_daily_job.py`):
+  - Trading day detection (weekend vs weekday)
+  - `DailyJobResult` dataclass tests
+  - Non-trading day skip logic
+  - Module integration tests
+
+- **Test Coverage**:
+  - 47 tests passing
+  - Core comparison logic fully covered
+  - Edge cases tested for robustness
+
+## [2026-03-24] - Feature: Daily Job Scheduler (Phase 4)
+
+### Added
+- **Scheduler Module** (`scheduler/`) - Main orchestration for daily stock analysis
+  - `scheduler/daily_job.py`: Main orchestration logic
+  - `scheduler/__init__.py`: Module exports
+
+- **Trading Day Detection**:
+  - `is_trading_day(date)`: Checks if a date is a trading day
+  - Uses `chinese_calendar` package for Chinese holiday detection
+  - Falls back to weekday check if package not installed
+  - Excludes weekend make-up workdays (Chinese stock market rule)
+
+- **Daily Job Functions**:
+  - `run_daily_analysis(dry_run)`: Main entry point for daily analysis
+  - `analyze_single_stock(stock_code, stock_name)`: Analyze single stock with timeout
+  - `process_pending_emails()`: Send pending emails from retry queue
+
+- **DailyJobResult Dataclass**:
+  - success, stocks_analyzed, stocks_failed, changes_detected
+  - email_sent, error, failed_stocks
+
+- **CLI Daily Command**:
+  - `py-invest daily`: Run daily analysis and send email
+  - `py-invest daily --dry-run`: Print email without sending
+  - Graceful error handling with informative output
+
+- **Orchestration Flow**:
+  1. Check if today is a trading day
+  2. Load config and stock list from `~/.py-invest/config.yaml`
+  3. Run analysis for each stock in parallel (max 5 concurrent)
+  4. Save reports to storage (`~/.py-invest/data.db`)
+  5. Compare with yesterday using `diff.comparator`
+  6. Format incremental email using `diff.formatter`
+  7. Send email using `notifier.email_sender`
+
+- **Error Handling**:
+  - Single stock timeout: Skip and continue, note in email
+  - All stocks fail: Return error with details
+  - Email send fails: Saved to pending_emails for retry
+
+- **Configuration**:
+  - `SINGLE_STOCK_TIMEOUT = 120` (seconds)
+  - `MAX_CONCURRENT_ANALYSES = 5`
+
+- **Dependency** (`pyproject.toml`):
+  - Added `chinesecalendar>=4.0.0` for Chinese holiday detection
+  - Added `scheduler` to build packages
+
+### Usage
+```bash
+# Run daily analysis and send email
+python cli.py daily
+
+# Dry run - print email without sending
+python cli.py daily --dry-run
+```
+
+### Technical Details
+- Parallel execution with `asyncio.gather()` and semaphore for concurrency control
+- Timeout wrapper using `asyncio.wait_for()` for individual stock analysis
+- Uses `json.dumps(ensure_ascii=False)` for Chinese text in reports
+- Database initialized on each run via `init_db()`
+- Stock configs synced from config.yaml to database
+
 ## [2026-03-24] - Feature: Email Sender with Retry Logic (Phase 3)
 
 ### Added

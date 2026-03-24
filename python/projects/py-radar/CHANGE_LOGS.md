@@ -2,6 +2,76 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2026-03-24] - Web UI Enhancement & Incremental Mode
+
+### Added
+
+#### Web UI Redesign (`dbradar/web/templates/index.html`)
+- **Date-grouped layout**: News organized by date (今天/昨天/3月22日 周日)
+- **Pagination**: Each page shows 3 days, with navigation controls
+- **Hacker News style**: Orange header, clean link list design
+- **Rich link display**:
+  - Chinese title with original English title below
+  - Content type tags (发布/基准测试/博客/新闻/教程)
+  - Product tags and technology tags
+  - Summary excerpt (up to 600 characters)
+  - Additional sources indicator
+
+#### Server Updates (`dbradar/server.py`)
+- **Pagination support**: `/page/<n>` routes for browsing historical reports
+- **Date display**: "今天", "昨天", or "3月22日 周日" format
+- **Content type detection**: Auto-detect release/benchmark/blog/news/tutorial
+- **Tag extraction**: Extract relevant tags from content (Parquet, OLAP, 性能, etc.)
+
+#### CLI Improvements (`dbradar/cli.py`)
+- **Increased defaults**: `--max-items 150`, `--top-k 25` (from 80/10)
+- **Incremental mode fix**: Always mark articles as seen in both modes
+- **Language support**: `--language zh` for Chinese output
+
+#### Data Sources (`feeds.json`)
+- **Expanded from 23 to 46 RSS sources**:
+  - Vendor blogs: Timescale, ClickHouse, MongoDB, Redis, Snowflake, Databricks, etc.
+  - Industry newsletters: PostgreSQL Weekly, DB Weekly, Data Engineering Weekly
+  - Tech blogs: Uber, Netflix, Meta, Google Cloud
+  - Community aggregation: Hacker News, Reddit r/Database, Lobste.rs
+
+#### Automation (`scripts/cron_fetch.sh`)
+- **Cron script for scheduled fetching**
+- **Usage**: `0 8 * * * /path/to/scripts/cron_fetch.sh`
+- **Logging**: Output to `logs/fetch.log`
+
+#### Writer Updates (`dbradar/writer.py`)
+- **`original_title` field**: Preserves original English title
+- **`published_date` field**: Article publication date
+- **`content_type` field**: Auto-detected content type
+- **`detect_content_type()` function**: Classifies articles
+
+#### Configuration (`dbradar/config.py`)
+- **LLM timeout increased**: 120s → 300s for better reliability
+
+### Changed
+- Summary now combines `what_changed` + `why_it_matters` + `evidence`
+- Template path uses absolute path for reliability
+
+### Usage
+
+```bash
+# Run with new defaults
+python -m dbradar run --html --language zh
+
+# Incremental mode (only new articles)
+python -m dbradar run --html --language zh --incremental
+
+# Start web server
+python -m dbradar serve --port 8080
+
+# Setup daily cron job
+crontab -e
+# Add: 0 8 * * * cd /path/to/py-radar && python -m dbradar run --html --language zh --incremental
+```
+
+---
+
 ## [2026-03-23] - Web Server for Viewing Reports
 
 ### Added

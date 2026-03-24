@@ -1,92 +1,21 @@
 """
 Backward compatibility layer for the legacy API.
 
-Provides the old `predict` and `predict_no_ui_long_connection` functions
-that are used throughout the codebase, but implemented using the new
-modern provider architecture.
+Uses OpenAI SDK with configuration from ~/.env (LLM_BASE_URL, LLM_API_KEY, LLM_MODEL).
 """
-
 from __future__ import annotations
 
 import asyncio
-from typing import Any, AsyncGenerator, Callable, Dict, List, Optional
+from typing import Any, AsyncGenerator, Dict, List, Optional
 
 from loguru import logger
 
-from .core import ChatConfig, LLMFactory, Message, Role
 
-
-class ConversationHistory:
-    """Helper class to manage conversation history."""
-    
-    def __init__(self, system_prompt: str = ""):
-        self.messages: List[Message] = []
-        self.system_prompt = system_prompt
-        if system_prompt:
-            self.messages.append(Message.system(system_prompt))
-    
-    def add_user_message(self, content: str) -> None:
-        """Add a user message to the history."""
-        self.messages.append(Message.user(content))
-    
-    def add_assistant_message(self, content: str) -> None:
-        """Add an assistant message to the history."""
-        self.messages.append(Message.assistant(content))
-    
-    def to_list(self) -> List[Message]:
-        """Get messages as a list."""
-        return self.messages.copy()
-
-
-def _get_api_key(llm_kwargs: Dict[str, Any]) -> Optional[str]:
-    """
-    Extract API key from llm_kwargs or environment.
-    
-    Priority:
-    1. api_key in llm_kwargs
-    2. LLM_API_KEY from ~/.env (unified key)
-    3. Provider-specific env var
-    4. Generic API_KEY env var
-    """
+def _get_model(llm_kwargs: Dict[str, Any]) -> str:
+    """Get model from llm_kwargs or ~/.env"""
     import os
-    
-    # Check for explicit api_key
-    if "api_key" in llm_kwargs:
-        return llm_kwargs["api_key"]
-    
-    # Check for unified LLM_API_KEY from ~/.env (highest priority)
-    llm_api_key = os.getenv("LLM_API_KEY")
-    if llm_api_key:
-        return llm_api_key
-    
-    # Check provider-specific keys
-    model = llm_kwargs.get("llm_model", "")
-    
-    if "claude" in model.lower():
-        return os.getenv("ANTHROPIC_API_KEY")
-    
-    if "qwen" in model.lower():
-        return os.getenv("QWEN_API_KEY") or os.getenv("DASHSCOPE_API_KEY")
-    
-    # Default to OpenAI
-    return os.getenv("OPENAI_API_KEY")
-
-
-def _get_base_url(llm_kwargs: Dict[str, Any]) -> Optional[str]:
-    """Get custom base URL if configured."""
-    import os
-    
-    # Check for LLM_BASE_URL from ~/.env (highest priority)
-    base_url = os.getenv("LLM_BASE_URL")
-    if base_url:
-        return base_url
-    
-    # Fallback to Qwen custom base URL
-    model = llm_kwargs.get("llm_model", "")
-    if "qwen" in model.lower():
-        return os.getenv("QWEN_BASE_URL")
-    
-    return None
+    # Priority: llm_kwargs > LLM_MODEL env
+    return llm_kwargs.get("llm_model") or os.getenv("LLM_MODEL", "gpt-4o-mini")
 
 
 async def _async_predict(
@@ -97,68 +26,65 @@ async def _async_predict(
     stream: bool = True,
 ) -> AsyncGenerator[str, None]:
     """
-    Async implementation of predict.
-    
-    Yields response chunks for streaming or complete response for non-streaming.
+    Async implementation using OpenAI SDK directly.
+    Configuration loaded from ~/.env (LLM_BASE_URL, LLM_API_KEY, LLM_MODEL).
     """
-    import os
-    model = llm_kwargs.get("llm_model", "gpt-3.5-turbo")
-    base_url = _get_base_url(llm_kwargs)
-    
     try:
-        # If LLM_BASE_URL is set, force using OpenAI provider with custom endpoint
-        if os.getenv("LLM_BASE_URL"):
-            from .providers import OpenAIProvider
-            provider = OpenAIProvider(
-                model=model,
-                api_key=_get_api_key(llm_kwargs),
-                base_url=base_url,
-            )
-        else:
-            # Use default provider selection
-            provider = LLMFactory.create(
-                model=model,
-                api_key=_get_api_key(llm_kwargs),
-                base_url=base_url,
-            )
-    except Exception as e:
-        logger.error(f"Failed to create provider for {model}: {e}")
-        yield f"[Error] Failed to initialize {model}: {e}"
-        return
-    
-    # Build conversation
-    conv = ConversationHistory(system_prompt=system_prompt)
-    
-    # Add history (alternating user/assistant)
-    for i, msg in enumerate(history):
-        if i % 2 == 0:
-            conv.add_user_message(msg)
-        else:
-            conv.add_assistant_message(msg)
-    
-    # Add current input
-    conv.add_user_message(inputs)
-    
-    # Create config
-    config = ChatConfig(
-        temperature=llm_kwargs.get("temperature", 0.7),
-        top_p=llm_kwargs.get("top_p", 1.0),
-        max_tokens=llm_kwargs.get("max_tokens"),
-        stream=stream,
-        timeout=llm_kwargs.get("timeout", 60.0),
-    )
-    
-    try:
+        # Import here to avoid circular dependency
+        import sys
+        import os
+        
+        # Add project root to path if needed
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        if project_root not in sys.path:
+            sys.path.insert(0, project_root)
+        
+        from config_new import get_openai_client, LLM_MODEL, LLM_TIMEOUT
+        
+        client = get_openai_client()
+        model = _get_model(llm_kwargs)
+        
+        # Build messages
+        messages = []
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+        
+        # Add history (alternating user/assistant)
+        for i, msg in enumerate(history):
+            role = "user" if i % 2 == 0 else "assistant"
+            messages.append({"role": role, "content": msg})
+        
+        # Add current input
+        messages.append({"role": "user", "content": inputs})
+        
+        # Stream response
         if stream:
-            # Stream response
+            response = client.chat.completions.create(
+                model=model,
+                messages=messages,
+                temperature=llm_kwargs.get("temperature", 0.7),
+                top_p=llm_kwargs.get("top_p", 1.0),
+                max_tokens=llm_kwargs.get("max_tokens"),
+                stream=True,
+                timeout=LLM_TIMEOUT,
+            )
+            
             full_response = ""
-            async for chunk in provider.chat_stream(conv.to_list(), config):
-                full_response += chunk
-                yield full_response
+            for chunk in response:
+                if chunk.choices and chunk.choices[0].delta.content:
+                    full_response += chunk.choices[0].delta.content
+                    yield full_response
         else:
-            # Non-streaming
-            response = await provider.chat(conv.to_list(), config)
-            yield response.message.content
+            response = client.chat.completions.create(
+                model=model,
+                messages=messages,
+                temperature=llm_kwargs.get("temperature", 0.7),
+                top_p=llm_kwargs.get("top_p", 1.0),
+                max_tokens=llm_kwargs.get("max_tokens"),
+                stream=False,
+                timeout=LLM_TIMEOUT,
+            )
+            yield response.choices[0].message.content
             
     except Exception as e:
         logger.error(f"Prediction error: {e}")
@@ -174,30 +100,14 @@ def predict(
     system_prompt: str = "",
     stream: bool = True,
     additional_fn: Optional[str] = None,
-) -> Any:
+):
     """
     Legacy predict function - single-threaded with UI updates.
-    
-    This is the main entry point for normal conversations with UI.
-    Not suitable for multi-threaded plugin usage.
-    
-    Args:
-        inputs: User input text
-        llm_kwargs: LLM configuration (model, temperature, etc.)
-        plugin_kwargs: Plugin-specific arguments
-        chatbot: Chatbot UI instance
-        history: Conversation history as list of strings
-        system_prompt: System prompt text
-        stream: Whether to stream the response
-        additional_fn: Additional function to apply
-        
-    Yields:
-        Updated chatbot state
+    Uses OpenAI SDK with ~/.env configuration.
     """
     history = history or []
     
-    # Import UI update functions
-    from toolbox import update_ui, update_ui_latest_msg
+    from toolbox import update_ui
     
     if chatbot is None:
         raise ValueError("chatbot instance required for predict()")
@@ -218,10 +128,8 @@ def predict(
     try:
         asyncio.set_event_loop(loop)
         
-        # Get the async generator
         async_gen = _async_predict(inputs, llm_kwargs, history, system_prompt, stream)
         
-        # Consume the generator
         response_text = ""
         while True:
             try:
@@ -253,31 +161,17 @@ def predict_no_ui_long_connection(
 ) -> str:
     """
     Legacy predict function - for multi-threaded plugin usage.
-    
-    This function is designed for function plugins that need to call
-    LLMs in separate threads. It returns the complete response as a string.
-    
-    Args:
-        inputs: User input text
-        llm_kwargs: LLM configuration
-        history: Conversation history
-        sys_prompt: System prompt
-        observe_window: Optional list for observing progress [content, timestamp]
-        console_silence: Whether to suppress console output
-        
-    Returns:
-        Complete LLM response as string
+    Uses OpenAI SDK with ~/.env configuration.
     """
     import time
     
     history = history or []
     observe_window = observe_window or []
     
-    watch_dog_patience = 5  # Seconds before watchdog timeout
+    watch_dog_patience = 5
     response = ""
     last_update = time.time()
     
-    # Run async prediction
     loop = asyncio.new_event_loop()
     try:
         asyncio.set_event_loop(loop)
@@ -314,5 +208,7 @@ def predict_no_ui_long_connection(
 
 # Convenience function for getting available models
 def get_available_models() -> List[str]:
-    """Get list of all available models."""
-    return LLMFactory.list_supported_models()
+    """Get list of available models from config."""
+    import os
+    model = os.getenv("LLM_MODEL", "gpt-4o-mini")
+    return [model]

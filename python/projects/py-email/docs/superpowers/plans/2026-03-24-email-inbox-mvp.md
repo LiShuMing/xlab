@@ -41,7 +41,31 @@ tests/
 ├── test_models.py
 ├── test_repository.py
 ├── test_sync.py
-└── test_api.py
+├── test_api.py
+├── test_scheduler.py
+└── test_integration.py
+```
+
+---
+
+## Task 0: Backup Existing Data
+
+**Files:**
+- None (bash command only)
+
+- [ ] **Step 1: Backup existing database**
+
+```bash
+cp data/my_email.db data/my_email.db.backup
+```
+
+Expected: Backup file created at `data/my_email.db.backup`
+
+- [ ] **Step 2: Commit**
+
+```bash
+git add -A
+git commit -m "chore: backup database before MVP migration" || echo "Nothing to commit"
 ```
 
 ---
@@ -250,6 +274,41 @@ def test_cleanup_old_messages(db):
     remaining = db.execute("SELECT id FROM messages").fetchall()
     assert len(remaining) == 1
     assert remaining[0]["id"] == "new"
+
+def test_get_message_counts(db):
+    """Get message counts."""
+    db.execute("""INSERT INTO messages (id, thread_id, received_at, msg_state, relevance)
+                  VALUES ('msg-1', 't1', '2026-03-24T10:00:00Z', 'read', 'low')""")
+    db.execute("""INSERT INTO messages (id, thread_id, received_at, msg_state, relevance)
+                  VALUES ('msg-2', 't1', '2026-03-24T10:00:00Z', 'unread', 'high')""")
+    db.execute("""INSERT INTO messages (id, thread_id, received_at, msg_state, relevance)
+                  VALUES ('msg-3', 't1', '2026-03-24T10:00:00Z', 'unread', 'medium')""")
+
+    counts = get_message_counts(db)
+    assert counts["total"] == 3
+    assert counts["unread"] == 2
+    assert counts["high_relevance"] == 1
+
+def test_save_summary(db):
+    """Save summary and extract relevance."""
+    db.execute("""INSERT INTO messages (id, thread_id, received_at) VALUES ('msg-1', 't1', '2026-03-24T10:00:00Z')""")
+
+    summary_json = '{"summary": "Test summary", "relevance": "high", "key_points": ["point1"]}'
+    save_summary(db, "msg-1", summary_json)
+
+    row = db.execute("SELECT summary_json, relevance FROM messages WHERE id = 'msg-1'").fetchone()
+    assert row["summary_json"] == summary_json
+    assert row["relevance"] == "high"
+
+def test_save_summary_invalid_json(db):
+    """Save summary with invalid JSON logs warning but doesn't crash."""
+    db.execute("""INSERT INTO messages (id, thread_id, received_at) VALUES ('msg-1', 't1', '2026-03-24T10:00:00Z')""")
+
+    # Should not raise
+    save_summary(db, "msg-1", "not valid json")
+
+    row = db.execute("SELECT summary_json FROM messages WHERE id = 'msg-1'").fetchone()
+    assert row["summary_json"] is None
 ```
 
 - [ ] **Step 2: Run tests to verify they fail**
@@ -608,8 +667,9 @@ git commit -m "refactor(llm): simplify EmailSummary model"
 # src/my_email/scheduler/sync_task.py
 """Background auto-sync task."""
 
+from __future__ import annotations
+
 import asyncio
-from datetime import datetime
 
 import structlog
 
@@ -660,8 +720,10 @@ async def run_initial_sync() -> None:
 # src/my_email/scheduler/cleanup_task.py
 """Background cleanup task."""
 
+from __future__ import annotations
+
 import asyncio
-from datetime import datetime, time
+from datetime import datetime, timedelta
 
 import structlog
 
@@ -673,8 +735,7 @@ log = structlog.get_logger()
 def seconds_until_midnight() -> int:
     """Calculate seconds until next midnight."""
     now = datetime.now()
-    tomorrow = now.replace(hour=0, minute=0, second=0, microsecond=0)
-    tomorrow = tomorrow.replace(day=now.day + 1)
+    tomorrow = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
     return int((tomorrow - now).total_seconds())
 
 
@@ -693,6 +754,55 @@ async def cleanup_scheduler() -> None:
             log.error("scheduler.cleanup_error", error=str(e))
         finally:
             conn.close()
+```
+
+- [ ] **Step 2.5: Create test for seconds_until_midnight**
+
+```python
+# tests/test_scheduler.py
+"""Tests for scheduler module."""
+
+from datetime import datetime, timedelta
+from unittest.mock import patch
+
+from my_email.scheduler.cleanup_task import seconds_until_midnight
+
+
+def test_seconds_until_midnight_normal():
+    """Calculate seconds until midnight."""
+    # Mock a specific time: 2026-03-24 15:30:00
+    mock_now = datetime(2026, 3, 24, 15, 30, 0)
+    with patch("my_email.scheduler.cleanup_task.datetime") as mock_dt:
+        mock_dt.now.return_value = mock_now
+        mock_dt.side_effect = lambda *args, **kwargs: datetime(*args, **kwargs)
+
+        result = seconds_until_midnight()
+        # Should be 8.5 hours = 30600 seconds
+        assert 30000 < result < 31000
+
+
+def test_seconds_until_midnight_month_boundary():
+    """Test seconds_until_midnight at month boundary (Jan 31 -> Feb 1)."""
+    mock_now = datetime(2026, 1, 31, 23, 0, 0)
+    with patch("my_email.scheduler.cleanup_task.datetime") as mock_dt:
+        mock_dt.now.return_value = mock_now
+        mock_dt.side_effect = lambda *args, **kwargs: datetime(*args, **kwargs)
+
+        result = seconds_until_midnight()
+        # Should be 1 hour = 3600 seconds
+        assert result == 3600
+
+
+def test_seconds_until_midnight_year_boundary():
+    """Test seconds_until_midnight at year boundary (Dec 31 -> Jan 1)."""
+    mock_now = datetime(2026, 12, 31, 23, 0, 0)
+    with patch("my_email.scheduler.cleanup_task.datetime") as mock_dt:
+        mock_dt.now.return_value = mock_now
+        mock_dt.side_effect = lambda *args, **kwargs: datetime(*args, **kwargs)
+
+        result = seconds_until_midnight()
+        # Should be 1 hour = 3600 seconds
+        assert result == 3600
 ```
 
 - [ ] **Step 3: Create __init__.py**
@@ -804,6 +914,41 @@ def test_put_settings(client, db):
 
     value = db.execute("SELECT value FROM settings WHERE key = 'retention_days'").fetchone()
     assert value["value"] == "14"
+
+def test_put_settings_validation_retention(client):
+    """PUT /api/settings validates retention_days bounds."""
+    # Too low
+    resp = client.put("/api/settings", json={"retention_days": "0"})
+    assert resp.status_code == 400
+
+    # Too high
+    resp = client.put("/api/settings", json={"retention_days": "366"})
+    assert resp.status_code == 400
+
+    # Valid
+    resp = client.put("/api/settings", json={"retention_days": "30"})
+    assert resp.status_code == 200
+
+def test_put_settings_validation_interval(client):
+    """PUT /api/settings validates auto_sync_interval_minutes bounds."""
+    # Too low
+    resp = client.put("/api/settings", json={"auto_sync_interval_minutes": "4"})
+    assert resp.status_code == 400
+
+    # Too high
+    resp = client.put("/api/settings", json={"auto_sync_interval_minutes": "1441"})
+    assert resp.status_code == 400
+
+    # Valid
+    resp = client.put("/api/settings", json={"auto_sync_interval_minutes": "60"})
+    assert resp.status_code == 200
+
+def test_post_sync(client):
+    """POST /api/sync triggers background sync."""
+    resp = client.post("/api/sync")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["status"] == "sync_started"
 ```
 
 - [ ] **Step 2: Run tests to verify they fail**
@@ -823,6 +968,8 @@ import asyncio
 import json
 import sqlite3
 from contextlib import asynccontextmanager
+from datetime import datetime, timedelta
+from pathlib import Path
 from typing import Annotated, Any
 
 import structlog
@@ -841,7 +988,7 @@ from my_email.scheduler import sync_scheduler, run_initial_sync, cleanup_schedul
 
 log = structlog.get_logger()
 
-_TEMPLATE_DIR = settings.db_path.parent / "server" / "templates"
+_TEMPLATE_DIR = Path(__file__).parent / "templates"
 _jinja_env = Environment(loader=FileSystemLoader(str(_TEMPLATE_DIR)))
 
 
@@ -850,10 +997,17 @@ _jinja_env = Environment(loader=FileSystemLoader(str(_TEMPLATE_DIR)))
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup and shutdown tasks."""
-    init_db()
+    try:
+        init_db()
+    except Exception as e:
+        log.error("lifespan.init_db_failed", error=str(e))
+        raise
 
-    # Run initial sync in background
-    asyncio.create_task(run_initial_sync())
+    # Run initial sync in background (errors logged in sync_task.py)
+    try:
+        asyncio.create_task(run_initial_sync())
+    except Exception as e:
+        log.warning("lifespan.initial_sync_failed", error=str(e))
 
     # Start background schedulers
     sync_task = asyncio.create_task(sync_scheduler())
@@ -1152,3 +1306,16 @@ Open: http://localhost:8080
 - [ ] Auto-syncs on startup and at interval
 - [ ] Cleans up old messages daily
 - [ ] Settings page to configure retention and interval
+
+---
+
+## GSTACK REVIEW REPORT
+
+| Review | Trigger | Why | Runs | Status | Findings |
+|--------|---------|-----|------|--------|----------|
+| CEO Review | `/plan-ceo-review` | Scope & strategy | 0 | — | — |
+| Codex Review | `/codex review` | Independent 2nd opinion | 0 | — | — |
+| Eng Review | `/plan-eng-review` | Architecture & tests (required) | 2 | CLEAR | 2 issues, 0 critical gaps |
+| Design Review | `/plan-design-review` | UI/UX gaps | 0 | — | — |
+
+**VERDICT:** ENG CLEARED — ready to implement

@@ -43,6 +43,7 @@ dependencies = [
     "pyyaml>=6.0.0",
     "structlog>=24.1.0",
     "tenacity>=8.2.0",
+    "chinesecalendar>=4.0.0",
 ]
 
 [project.optional-dependencies]
@@ -63,7 +64,7 @@ build-backend = "hatchling.build"
 py-invest = "cli:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["modules", "agents", "core", "config"]
+packages = ["modules", "agents", "core", "config", "storage", "diff", "notifier", "scheduler"]
 
 [tool.ruff]
 line-length = 100

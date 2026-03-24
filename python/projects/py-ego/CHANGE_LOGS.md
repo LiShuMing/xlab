@@ -1,5 +1,90 @@
 # py-ego Change Logs
 
+## 2026-03-24 - Feature: Backend Core Implementation (Phase 1 Complete)
+
+### Summary
+Implemented the FastAPI backend for the WeChat mini program with authentication, records API, and chat functionality.
+
+### Project Structure
+
+```
+py-ego-miniapp/
+├── app/
+│   ├── __init__.py
+│   ├── main.py                 # FastAPI app entry
+│   ├── config.py               # Pydantic Settings
+│   ├── database.py             # SQLAlchemy async engine
+│   ├── dependencies.py         # DI: get_db, get_redis, get_current_user
+│   ├── models/                 # SQLAlchemy ORM models
+│   │   ├── user.py             # User, WechatSession
+│   │   ├── record.py           # DailyRecord
+│   │   ├── profile.py          # UserProfile
+│   │   └── chat.py             # ChatSession, ChatMessage
+│   ├── schemas/                # Pydantic request/response
+│   │   ├── auth.py             # LoginRequest, TokenResponse
+│   │   ├── record.py           # RecordCreate, RecordResponse
+│   │   └── chat.py             # SessionCreate, MessageCreate
+│   ├── api/                    # API routes
+│   │   ├── auth.py             # POST /login, /refresh
+│   │   ├── records.py          # CRUD /records
+│   │   └── chat.py             # Chat sessions & messages
+│   ├── services/               # Business logic
+│   │   ├── auth_service.py     # WeChat login, JWT
+│   │   ├── record_service.py   # Record CRUD
+│   │   └── chat_service.py     # Chat logic
+│   └── utils/
+│       ├── jwt_handler.py      # JWT encode/decode
+│       └── exceptions.py       # Custom exceptions
+└── tests/                      # 40 tests, all passing
+```
+
+### API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | /api/auth/login | WeChat login, returns JWT |
+| POST | /api/auth/refresh | Refresh access token |
+| POST | /api/records | Create daily record |
+| GET | /api/records | List records (paginated) |
+| GET | /api/records/timeline | Monthly timeline view |
+| GET | /api/records/{id} | Get single record |
+| DELETE | /api/records/{id} | Delete record |
+| POST | /api/chat/sessions | Create chat session |
+| GET | /api/chat/sessions | List chat sessions |
+| PATCH | /api/chat/sessions/{id} | End session |
+| DELETE | /api/chat/sessions/{id} | Delete session |
+| POST | /api/chat/sessions/{id}/messages | Send message |
+| GET | /api/chat/sessions/{id}/messages | List messages |
+
+### Key Features
+
+1. **WeChat Authentication** - OAuth login with JWT tokens
+2. **Record Management** - CRUD for daily records (text/voice/photo)
+3. **Chat System** - Sessions and messages (basic echo response)
+4. **User Isolation** - All data scoped to authenticated user
+
+### Test Results
+- 40/40 tests passing
+- Server starts correctly
+- Health endpoint returns `{"status": "ok"}`
+
+### Commits
+- `dfe61c7` feat(backend): project setup with FastAPI and configuration
+- `598697c` feat(backend): add SQLAlchemy models for user, record, profile, chat
+- `...` feat(backend): add Pydantic schemas for API request/response
+- `...` feat(backend): add JWT handler and custom exceptions
+- `2761248` feat(backend): add auth service with WeChat login support
+- `...` feat(backend): add auth API routes and FastAPI app entry
+- `...` feat(backend): add records API with CRUD operations
+- `...` feat(backend): add chat API with sessions and messages
+
+### Next Steps (Phase 2)
+- LLM integration for intelligent chat responses
+- Memory store with pgvector for semantic search
+- Role system integration from py-ego
+
+---
+
 ## 2026-03-23 - Feature: English Comments & Command History
 
 ### Summary

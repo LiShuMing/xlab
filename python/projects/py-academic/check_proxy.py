@@ -226,10 +226,14 @@ def warm_up_modules():
     from toolbox import ProxyNetworkActivate
     from request_llms.bridge_all import model_info
     with ProxyNetworkActivate("Warmup_Modules"):
-        enc = model_info["gpt-3.5-turbo"]['tokenizer']
-        enc.encode("模块预热", disallowed_special=())
-        enc = model_info["gpt-4"]['tokenizer']
-        enc.encode("模块预热", disallowed_special=())
+        # Try to warm up tokenizer if available
+        for model_key in ["gpt-3.5-turbo", "gpt-4"]:
+            try:
+                enc = model_info.get(model_key, {}).get('tokenizer')
+                if enc:
+                    enc.encode("模块预热", disallowed_special=())
+            except Exception as e:
+                logger.debug(f'预热 {model_key} tokenizer 失败: {e}')
         try_warm_up_vectordb()
 
 
