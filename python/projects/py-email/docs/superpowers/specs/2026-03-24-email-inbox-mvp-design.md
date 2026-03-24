@@ -54,9 +54,25 @@ CREATE INDEX idx_messages_relevance ON messages(relevance);
 ```
 
 **msg_state 状态：**
-- `'unread'` — Gmail 未读 / 未处理
-- `'read'` — Gmail 已读 / 已处理
-- `'starred'` — 标星（可扩展）
+- `'unread'` — Gmail 未读，系统未处理
+- `'read'` — Gmail 已读 或 系统已处理（两者之一即标记为 read）
+- `'starred'` — Gmail 标星
+
+**relevance 字段：**
+- 由 AI 在生成摘要时自动判断
+- 值：`'high'`（高重要性）、`'medium'`（中等）、`'low'`（低）、`'skip'`（跳过，非技术邮件）
+- 判断依据：发件人重要性、主题相关性、内容技术深度
+
+**summary_json 结构：**
+```json
+{
+  "title": "邮件标题",
+  "summary": "一句话摘要（100字以内）",
+  "key_points": ["要点1", "要点2"],
+  "topics": ["关键词1", "关键词2"],
+  "relevance": "high",
+  "sender_org": "发件人组织"
+}
 
 ### settings 表
 
@@ -68,8 +84,9 @@ CREATE TABLE IF NOT EXISTS settings (
 ```
 
 **默认设置：**
-- `retention_days`: 7
-- `auto_sync_interval_minutes`: 30
+- `retention_days`: 7（范围：1-365）
+- `auto_sync_interval_minutes`: 30（范围：5-1440）
+- `last_history_id`: 空（首次同步后填充）
 
 ## Architecture
 
@@ -144,6 +161,44 @@ src/my_email/
 }
 ```
 
+### PATCH /api/messages/{id}
+
+**请求体：**
+```json
+{
+  "msg_state": "read"
+}
+```
+
+**可更新字段：**
+- `msg_state`: `'read'` | `'starred'`
+
+**响应：**
+```json
+{
+  "id": "msg-xxx",
+  "msg_state": "read"
+}
+```
+
+### 错误响应格式
+
+所有 API 错误返回统一格式：
+```json
+{
+  "error": "错误描述",
+  "code": "ERROR_CODE",
+  "details": {}
+}
+```
+
+**常见错误码：**
+- `NOT_FOUND`: 资源不存在
+- `VALIDATION_ERROR`: 参数校验失败
+- `SYNC_FAILED`: 同步失败
+- `RATE_LIMITED`: 请求过于频繁
+```
+
 ## Frontend Design
 
 ### 收件箱主页面
@@ -195,17 +250,40 @@ Server 启动
 
 ```python
 def sync_messages():
-    last_history_id = get_last_history_id()
-    new_messages = gmail_api.fetch_since(last_history_id)
+    last_history_id = get_setting('last_history_id')
 
-    for msg in new_messages:
+    # 尝试增量同步
+    if last_history_id:
+        try:
+            new_messages = gmail_api.fetch_since(last_history_id)
+            return process_messages(new_messages)
+        except HistoryIdTooOldError:
+            log.warning("sync.history_id_expired")
+
+    # 回退到全量同步最近 N 天
+    days = get_setting('retention_days', default=7)
+    new_messages = gmail_api.fetch_recent(days=days)
+    return process_messages(new_messages)
+
+def process_messages(messages):
+    for msg in messages:
         save_message(msg)
         summary = llm_summarize(msg.body_text)
         save_summary(msg.id, summary)
 
+    # 同步未读状态
     unread_ids = gmail_api.get_unread_ids()
     update_msg_state(unread_ids)
+
+    # 更新 history_id
+    save_setting('last_history_id', gmail_api.get_current_history_id())
 ```
+
+**LLM 配置：**
+- 提供商：通过 `~/.env` 配置（支持 OpenAI、Azure、本地模型）
+- 模型：从环境变量 `LLM_MODEL` 读取，默认 `gpt-4o-mini`
+- Token 限制：单封邮件正文截断至 8000 字符，摘要输出限制 500 字符
+- 超时处理：30 秒超时，失败后重试 2 次，仍失败则 `summary_json` 为空
 
 ### 自动清理
 
@@ -220,16 +298,57 @@ def cleanup_old_messages():
     )
 ```
 
+### 后台任务框架
+
+使用 FastAPI lifespan + asyncio 实现，无需额外依赖：
+
+```python
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # 启动时执行一次同步
+    await run_initial_sync()
+
+    # 启动后台任务
+    sync_task = asyncio.create_task(sync_scheduler())
+    cleanup_task = asyncio.create_task(cleanup_scheduler())
+
+    yield
+
+    # 关闭时取消任务
+    sync_task.cancel()
+    cleanup_task.cancel()
+
+async def sync_scheduler():
+    """每 N 分钟执行一次同步"""
+    while True:
+        interval = get_setting('auto_sync_interval_minutes', default=30)
+        await asyncio.sleep(interval * 60)
+        await sync_messages()
+
+async def cleanup_scheduler():
+    """每日凌晨执行清理"""
+    while True:
+        await asyncio.sleep(seconds_until_midnight())
+        cleanup_old_messages()
+```
+
 ## Implementation Phases
 
 ### Phase 1: 数据模型重构
 - 重写 `models.py` schema
 - 更新 `repository.py` 数据访问层
-- 数据迁移（删除旧表，创建新表）
+- **数据迁移策略**：
+  - 备份现有数据库：`cp my_email.db my_email.db.backup`
+  - 删除所有旧表（messages, summaries, digests, topic_*, projects 等）
+  - 创建新表结构
+  - 首次启动时从 Gmail 重新同步
 
 ### Phase 2: Gmail 同步重构
 - 修改 `sync.py` 支持 `msg_state` 同步
 - 增量同步逻辑优化
+- **大邮件处理**：正文截断至 8000 字符，超出部分丢弃
 
 ### Phase 3: 后端 API
 - 重写 `app.py` 路由
