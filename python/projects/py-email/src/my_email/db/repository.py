@@ -1,12 +1,16 @@
 """
-Database repository layer.
+Database repository layer for email inbox MVP.
 
-Provides low-level CRUD operations for messages, summaries, digests, and sync state.
+Provides CRUD operations for messages and settings.
 All functions take an explicit sqlite3.Connection for transaction control.
 """
 
+from __future__ import annotations
+
 import json
+import re
 import sqlite3
+from datetime import datetime, timedelta
 from typing import Any
 
 import structlog
@@ -19,7 +23,7 @@ log = structlog.get_logger()
 
 def get_connection() -> sqlite3.Connection:
     """
-    Create a new database connection with WAL mode and foreign keys enabled.
+    Create database connection with WAL mode.
 
     Returns:
         sqlite3.Connection: Connection with Row factory configured.
@@ -43,15 +47,31 @@ def init_db() -> None:
 
 # ── messages ──────────────────────────────────────────────────────────────────
 
+
 class MessageData(dict):
     """Typed dict for message insertion data."""
+
     id: str
     thread_id: str
     subject: str | None
     sender: str | None
+    sender_email: str | None
     received_at: str
-    labels: str | None
     body_text: str | None
+
+
+def _extract_email(sender: str | None) -> str | None:
+    """Extract email address from sender string like 'Name <email@example.com>'."""
+    if not sender:
+        return None
+    match = re.search(r"<([^>]+)>", sender)
+    if match:
+        return match.group(1)
+    # If no angle brackets, check if it looks like an email
+    if "@" in sender and not sender.startswith("<"):
+        # Could be just the email without name
+        return sender.strip()
+    return None
 
 
 def upsert_message(conn: sqlite3.Connection, msg: MessageData) -> bool:
@@ -68,209 +88,236 @@ def upsert_message(conn: sqlite3.Connection, msg: MessageData) -> bool:
     cur = conn.execute("SELECT 1 FROM messages WHERE id = ?", (msg["id"],))
     if cur.fetchone():
         return False
+
+    # Extract sender_email if not provided
+    sender_email = msg.get("sender_email")
+    if not sender_email:
+        sender_email = _extract_email(msg.get("sender"))
+
     conn.execute(
-        """INSERT INTO messages (id, thread_id, subject, sender, received_at, labels, body_text)
-           VALUES (:id, :thread_id, :subject, :sender, :received_at, :labels, :body_text)""",
-        msg,
+        """INSERT INTO messages (id, thread_id, subject, sender, sender_email, received_at, body_text)
+           VALUES (?, ?, ?, ?, ?, ?, ?)""",
+        (
+            msg["id"],
+            msg.get("thread_id"),
+            msg.get("subject"),
+            msg.get("sender"),
+            sender_email,
+            msg.get("received_at"),
+            msg.get("body_text"),
+        ),
     )
     return True
 
 
-def get_unprocessed_messages(
-    conn: sqlite3.Connection, date: str | None = None
+def get_messages(
+    conn: sqlite3.Connection,
+    state: str | None = None,
+    relevance: str | None = None,
+    days: int | None = None,
+    page: int = 1,
+    size: int = 50,
+    current_date: str | None = None,
 ) -> list[sqlite3.Row]:
     """
-    Fetch unprocessed messages, optionally filtered by date.
+    Fetch messages with optional filters and pagination.
+
+    Messages are ordered by priority:
+    1. Unread messages (msg_state = 'unread')
+    2. High relevance messages
+    3. Other messages
+    Each group sorted by received_at descending.
 
     Args:
         conn: Database connection.
-        date: Optional YYYY-MM-DD date filter.
+        state: Filter by msg_state ('unread', 'read', 'starred').
+        relevance: Filter by relevance ('high', 'medium', 'low').
+        days: Only messages from last N days.
+        page: Page number (1-indexed).
+        size: Page size.
+        current_date: Reference date for days filter (YYYY-MM-DD).
 
     Returns:
-        List of message rows ordered by received_at.
+        List of message rows.
     """
-    if date:
-        return conn.execute(
-            "SELECT * FROM messages WHERE processed = 0 AND received_at LIKE ? ORDER BY received_at",
-            (f"{date}%",),
-        ).fetchall()
+    conditions = []
+    params: list[Any] = []
+
+    if state:
+        conditions.append("msg_state = ?")
+        params.append(state)
+
+    if relevance:
+        conditions.append("relevance = ?")
+        params.append(relevance)
+
+    if days:
+        ref_date = current_date or datetime.utcnow().strftime("%Y-%m-%d")
+        cutoff = (
+            datetime.strptime(ref_date, "%Y-%m-%d") - timedelta(days=days)
+        ).strftime("%Y-%m-%d")
+        conditions.append("received_at >= ?")
+        params.append(cutoff)
+
+    where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
+
+    # Priority ordering: unread first, then high relevance, then by date
+    offset = (page - 1) * size
+
     return conn.execute(
-        "SELECT * FROM messages WHERE processed = 0 ORDER BY received_at"
+        f"""SELECT * FROM messages
+           {where_clause}
+           ORDER BY
+             CASE msg_state WHEN 'unread' THEN 0 ELSE 1 END,
+             CASE relevance WHEN 'high' THEN 0 WHEN 'medium' THEN 1 ELSE 2 END,
+             received_at DESC
+           LIMIT ? OFFSET ?""",
+        params + [size, offset],
     ).fetchall()
 
 
-# ── summaries ─────────────────────────────────────────────────────────────────
-
-def save_summary(
-    conn: sqlite3.Connection, message_id: str, summary_json: str, model: str
-) -> None:
+def get_message_by_id(conn: sqlite3.Connection, message_id: str) -> sqlite3.Row | None:
     """
-    Save a message summary and mark the message as processed.
-
-    Also populates message_topics table for project clustering.
+    Fetch a single message by ID.
 
     Args:
         conn: Database connection.
         message_id: Gmail message ID.
-        summary_json: Serialized EmailSummary JSON.
-        model: LLM model identifier.
-    """
-    conn.execute(
-        """INSERT OR REPLACE INTO summaries (message_id, summary_json, model)
-           VALUES (?, ?, ?)""",
-        (message_id, summary_json, model),
-    )
-    conn.execute("UPDATE messages SET processed = 1 WHERE id = ?", (message_id,))
-
-    # Populate message_topics for project clustering
-    try:
-        summary_data = json.loads(summary_json)
-        topics = summary_data.get("topics", [])
-        for topic in topics:
-            if topic:  # Skip empty strings
-                conn.execute(
-                    """INSERT OR IGNORE INTO message_topics (message_id, topic)
-                       VALUES (?, ?)""",
-                    (message_id, topic),
-                )
-    except (json.JSONDecodeError, TypeError):
-        log.warning("repository.save_summary.topics_parse_error", message_id=message_id)
-
-
-def save_thread_summary(
-    conn: sqlite3.Connection,
-    message_ids: list[str],
-    summary_json: str,
-    model: str,
-) -> None:
-    """
-    Save a thread summary and mark all messages as processed.
-
-    Stores the summary against the first message ID and marks all
-    provided message IDs as processed. Also populates message_topics
-    for all messages in the thread.
-
-    Args:
-        conn: Database connection.
-        message_ids: List of Gmail message IDs in the thread.
-        summary_json: Serialized EmailSummary JSON.
-        model: LLM model identifier.
-    """
-    if not message_ids:
-        return
-
-    # Store summary against first message
-    first_id = message_ids[0]
-    conn.execute(
-        """INSERT OR REPLACE INTO summaries (message_id, summary_json, model)
-           VALUES (?, ?, ?)""",
-        (first_id, summary_json, model),
-    )
-
-    # Mark all messages in the thread as processed
-    placeholders = ",".join("?" * len(message_ids))
-    conn.execute(
-        f"UPDATE messages SET processed = 1 WHERE id IN ({placeholders})",
-        message_ids,
-    )
-
-    # Populate message_topics for all messages in the thread
-    try:
-        summary_data = json.loads(summary_json)
-        topics = summary_data.get("topics", [])
-        for topic in topics:
-            if topic:  # Skip empty strings
-                for msg_id in message_ids:
-                    conn.execute(
-                        """INSERT OR IGNORE INTO message_topics (message_id, topic)
-                           VALUES (?, ?)""",
-                        (msg_id, topic),
-                    )
-    except (json.JSONDecodeError, TypeError):
-        log.warning("repository.save_thread_summary.topics_parse_error", message_ids=message_ids)
-
-
-def get_summaries_for_date(conn: sqlite3.Connection, date: str) -> list[sqlite3.Row]:
-    """
-    Fetch all summaries for a given date with message metadata.
-
-    Args:
-        conn: Database connection.
-        date: YYYY-MM-DD date string.
 
     Returns:
-        List of summary rows joined with message metadata.
+        Message row with body_text, or None if not found.
     """
     return conn.execute(
-        """SELECT s.id, s.message_id, s.summary_json, s.model, s.created_at,
-                  m.subject, m.sender, m.received_at
-           FROM summaries s
-           JOIN messages m ON m.id = s.message_id
-           WHERE m.received_at LIKE ?
-           ORDER BY m.received_at""",
-        (f"{date}%",),
-    ).fetchall()
-
-
-# ── digests ───────────────────────────────────────────────────────────────────
-
-def save_digest(conn: sqlite3.Connection, date: str, digest_json: str) -> None:
-    """
-    Save a daily digest.
-
-    Args:
-        conn: Database connection.
-        date: YYYY-MM-DD date string.
-        digest_json: Serialized DailyDigest JSON.
-    """
-    conn.execute(
-        "INSERT OR REPLACE INTO digests (date, digest_json) VALUES (?, ?)",
-        (date, digest_json),
-    )
-
-
-def get_digest(conn: sqlite3.Connection, date: str) -> sqlite3.Row | None:
-    """
-    Fetch a digest by date.
-
-    Args:
-        conn: Database connection.
-        date: YYYY-MM-DD date string.
-
-    Returns:
-        Digest row or None if not found.
-    """
-    return conn.execute(
-        "SELECT * FROM digests WHERE date = ?", (date,)
+        "SELECT * FROM messages WHERE id = ?", (message_id,)
     ).fetchone()
 
 
-# ── sync state ────────────────────────────────────────────────────────────────
-
-def get_sync_state(conn: sqlite3.Connection) -> dict[str, Any] | None:
+def update_message_state(
+    conn: sqlite3.Connection, message_id: str, new_state: str
+) -> bool:
     """
-    Get the current Gmail sync state.
+    Update the msg_state of a message.
+
+    Args:
+        conn: Database connection.
+        message_id: Gmail message ID.
+        new_state: New state ('read' or 'starred').
+
+    Returns:
+        True if updated, False if message not found.
+    """
+    cur = conn.execute(
+        "UPDATE messages SET msg_state = ? WHERE id = ?", (new_state, message_id)
+    )
+    return cur.rowcount > 0
+
+
+def get_message_counts(conn: sqlite3.Connection) -> dict[str, int]:
+    """
+    Get message counts for display.
 
     Args:
         conn: Database connection.
 
     Returns:
-        Dict with history_id and last_sync, or None if no state.
+        Dict with 'total', 'unread', 'high_relevance' counts.
     """
-    row = conn.execute("SELECT * FROM sync_state WHERE id = 1").fetchone()
-    return dict(row) if row else None
+    total = conn.execute("SELECT COUNT(*) FROM messages").fetchone()[0]
+    unread = conn.execute(
+        "SELECT COUNT(*) FROM messages WHERE msg_state = 'unread'"
+    ).fetchone()[0]
+    high_relevance = conn.execute(
+        "SELECT COUNT(*) FROM messages WHERE relevance = 'high'"
+    ).fetchone()[0]
+
+    return {"total": total, "unread": unread, "high_relevance": high_relevance}
 
 
-def save_sync_state(conn: sqlite3.Connection, history_id: str, last_sync: str) -> None:
+def cleanup_old_messages(
+    conn: sqlite3.Connection,
+    retention_days: int = 7,
+    current_date: str | None = None,
+) -> int:
     """
-    Save the Gmail sync state.
+    Delete messages older than retention period.
 
     Args:
         conn: Database connection.
-        history_id: Gmail history ID for incremental sync.
-        last_sync: ISO-8601 UTC timestamp of last sync.
+        retention_days: Number of days to keep.
+        current_date: Reference date (YYYY-MM-DD), defaults to today.
+
+    Returns:
+        Number of deleted messages.
+    """
+    ref_date = current_date or datetime.utcnow().strftime("%Y-%m-%d")
+    cutoff = (
+        datetime.strptime(ref_date, "%Y-%m-%d") - timedelta(days=retention_days)
+    ).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    cur = conn.execute(
+        "DELETE FROM messages WHERE received_at < ?", (cutoff,)
+    )
+    return cur.rowcount
+
+
+def save_summary(
+    conn: sqlite3.Connection, message_id: str, summary_json: str
+) -> None:
+    """
+    Save AI summary for a message and extract relevance.
+
+    Args:
+        conn: Database connection.
+        message_id: Gmail message ID.
+        summary_json: Serialized summary JSON.
+    """
+    relevance = None
+    try:
+        summary_data = json.loads(summary_json)
+        relevance = summary_data.get("relevance")
+    except (json.JSONDecodeError, TypeError):
+        log.warning(
+            "repository.save_summary.parse_error",
+            message_id=message_id,
+        )
+
+    conn.execute(
+        "UPDATE messages SET summary_json = ?, relevance = ? WHERE id = ?",
+        (summary_json if relevance else None, relevance, message_id),
+    )
+
+
+# ── settings ──────────────────────────────────────────────────────────────────
+
+
+def get_setting(
+    conn: sqlite3.Connection, key: str, default: str | None = None
+) -> str | None:
+    """
+    Get a setting value.
+
+    Args:
+        conn: Database connection.
+        key: Setting key.
+        default: Default value if not found.
+
+    Returns:
+        Setting value or default.
+    """
+    row = conn.execute("SELECT value FROM settings WHERE key = ?", (key,)).fetchone()
+    return row["value"] if row else default
+
+
+def save_setting(conn: sqlite3.Connection, key: str, value: str) -> None:
+    """
+    Save or update a setting.
+
+    Args:
+        conn: Database connection.
+        key: Setting key.
+        value: Setting value.
     """
     conn.execute(
-        "INSERT OR REPLACE INTO sync_state (id, history_id, last_sync) VALUES (1, ?, ?)",
-        (history_id, last_sync),
+        "INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)",
+        (key, value),
     )

@@ -1,43 +1,35 @@
 """
-Database layer.
+Database layer for email inbox MVP.
 
-Provides repositories for messages, summaries, digests, and topic tracking.
+Provides repository for messages and settings.
 """
 
 from my_email.db.repository import (
     MessageData,
+    cleanup_old_messages,
     get_connection,
-    get_digest,
-    get_summaries_for_date,
-    get_sync_state,
-    get_unprocessed_messages,
+    get_message_by_id,
+    get_message_counts,
+    get_messages,
+    get_setting,
     init_db,
-    save_digest,
+    save_setting,
     save_summary,
-    save_sync_state,
-    save_thread_summary,
+    update_message_state,
     upsert_message,
-)
-from my_email.db.topic_repository import (
-    TopicTrend,
-    get_active_topics,
-    upsert_topic_tracks,
 )
 
 __all__ = [
     "MessageData",
+    "cleanup_old_messages",
     "get_connection",
+    "get_message_by_id",
+    "get_message_counts",
+    "get_messages",
+    "get_setting",
     "init_db",
-    "upsert_message",
-    "get_unprocessed_messages",
+    "save_setting",
     "save_summary",
-    "save_thread_summary",
-    "get_summaries_for_date",
-    "save_digest",
-    "get_digest",
-    "get_sync_state",
-    "save_sync_state",
-    "upsert_topic_tracks",
-    "get_active_topics",
-    "TopicTrend",
+    "update_message_state",
+    "upsert_message",
 ]
