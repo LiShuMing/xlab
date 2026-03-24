@@ -2,14 +2,20 @@
 
 from __future__ import annotations
 
+import asyncio
+import logging
 import os
-from dataclasses import dataclass
+import time
+from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 from dotenv import load_dotenv
 from openai import AsyncOpenAI, OpenAI
+from openai import RateLimitError as OpenAIRateLimitError
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -197,6 +203,236 @@ class LLMClient:
             temperature=self.config.temperature,
             max_tokens=max_tokens,
         ))
+
+
+@dataclass
+class RateLimitStats:
+    """Statistics for rate-limited client.
+
+    Attributes:
+        total_requests: Total number of requests made.
+        total_tokens: Total tokens used (if tracked).
+        rate_limit_retries: Number of rate limit retries.
+        max_concurrent_reached: Times semaphore was fully utilized.
+    """
+    total_requests: int = 0
+    total_tokens: int = 0
+    rate_limit_retries: int = 0
+    max_concurrent_reached: int = 0
+
+
+class RateLimitedLLMClient:
+    """Wraps LLMClient with concurrency control and retry logic.
+
+    This wrapper provides:
+    - Semaphore-based concurrency limiting
+    - Token usage tracking (optional)
+    - Exponential backoff retry for 429 rate limit errors
+
+    Example:
+        >>> client = LLMClient()
+        >>> rate_limited = RateLimitedLLMClient.wrap(client, max_concurrent=5)
+        >>> response = await rate_limited.chat([{"role": "user", "content": "Hello"}])
+    """
+
+    def __init__(
+        self,
+        client: LLMClient,
+        max_concurrent: int = 5,
+        max_retries: int = 3,
+        base_delay: float = 1.0,
+        max_delay: float = 60.0,
+        track_tokens: bool = True,
+    ):
+        """Initialize rate-limited wrapper.
+
+        Args:
+            client: The underlying LLMClient to wrap.
+            max_concurrent: Maximum concurrent API calls.
+            max_retries: Maximum retry attempts for 429 errors.
+            base_delay: Base delay for exponential backoff (seconds).
+            max_delay: Maximum delay for exponential backoff (seconds).
+            track_tokens: Whether to track token usage.
+        """
+        self._client = client
+        self._semaphore = asyncio.Semaphore(max_concurrent)
+        self._max_concurrent = max_concurrent
+        self._max_retries = max_retries
+        self._base_delay = base_delay
+        self._max_delay = max_delay
+        self._track_tokens = track_tokens
+        self._stats = RateLimitStats()
+        self._lock = asyncio.Lock()
+
+    @classmethod
+    def wrap(
+        cls,
+        client: LLMClient,
+        max_concurrent: int = 5,
+        **kwargs,
+    ) -> "RateLimitedLLMClient":
+        """Create a rate-limited wrapper around an LLMClient.
+
+        Args:
+            client: The LLMClient to wrap.
+            max_concurrent: Maximum concurrent API calls.
+            **kwargs: Additional arguments passed to __init__.
+
+        Returns:
+            RateLimitedLLMClient instance.
+        """
+        return cls(client, max_concurrent=max_concurrent, **kwargs)
+
+    @property
+    def config(self) -> LLMConfig:
+        """Access the underlying client's config."""
+        return self._client.config
+
+    @property
+    def model(self) -> "ModelProperty":
+        """Access the underlying client's model property."""
+        return self._client.model
+
+    @property
+    def stats(self) -> RateLimitStats:
+        """Get current rate limit statistics."""
+        return self._stats
+
+    async def _update_stats(self, **kwargs) -> None:
+        """Thread-safe stats update."""
+        async with self._lock:
+            for key, value in kwargs.items():
+                if hasattr(self._stats, key):
+                    current = getattr(self._stats, key)
+                    setattr(self._stats, key, current + value)
+
+    async def chat(self, messages: list[dict], **kwargs) -> str:
+        """Send chat completion request with rate limiting.
+
+        This method wraps the underlying client's chat() with:
+        - Concurrency control via semaphore
+        - Retry logic for 429 errors with exponential backoff
+
+        Args:
+            messages: List of message dicts with role/content.
+            **kwargs: Additional args for chat.completions.create.
+
+        Returns:
+            Response content string.
+
+        Raises:
+            RateLimitError: If max retries exceeded for rate limiting.
+            Exception: Other exceptions from the underlying client.
+        """
+        async with self._semaphore:
+            # Track if we're at max capacity
+            if self._semaphore.locked():
+                await self._update_stats(max_concurrent_reached=1)
+
+            last_exception = None
+
+            for attempt in range(self._max_retries + 1):
+                try:
+                    await self._update_stats(total_requests=1)
+
+                    response = await self._client.chat(messages, **kwargs)
+
+                    # Track tokens if response provides them
+                    if self._track_tokens and hasattr(response, 'usage'):
+                        tokens = getattr(response.usage, 'total_tokens', 0)
+                        await self._update_stats(total_tokens=tokens)
+
+                    return response
+
+                except OpenAIRateLimitError as e:
+                    last_exception = e
+                    await self._update_stats(rate_limit_retries=1)
+
+                    if attempt < self._max_retries:
+                        delay = min(
+                            self._base_delay * (2 ** attempt),
+                            self._max_delay
+                        )
+                        logger.warning(
+                            f"Rate limit hit, retrying in {delay:.1f}s "
+                            f"(attempt {attempt + 1}/{self._max_retries})"
+                        )
+                        await asyncio.sleep(delay)
+                    else:
+                        logger.error(
+                            f"Max retries ({self._max_retries}) exceeded for rate limit"
+                        )
+                        raise
+
+                except Exception:
+                    # Non-rate-limit errors pass through immediately
+                    raise
+
+            # Should not reach here, but just in case
+            if last_exception:
+                raise last_exception
+            raise RuntimeError("Unexpected state in rate-limited chat")
+
+    def chat_sync(self, messages: list[dict], **kwargs) -> str:
+        """Synchronous chat - passes through without rate limiting.
+
+        Note: Rate limiting is primarily for async concurrent calls.
+        For sync usage, implement external throttling if needed.
+
+        Args:
+            messages: List of message dicts with role/content.
+            **kwargs: Additional args for chat.completions.create.
+
+        Returns:
+            Response content string.
+        """
+        return self._client.chat_sync(messages, **kwargs)
+
+    def with_temperature(self, temperature: float) -> "RateLimitedLLMClient":
+        """Create new rate-limited client with specified temperature.
+
+        Args:
+            temperature: New temperature value.
+
+        Returns:
+            New RateLimitedLLMClient instance wrapping new LLMClient.
+        """
+        new_client = self._client.with_temperature(temperature)
+        return RateLimitedLLMClient(
+            client=new_client,
+            max_concurrent=self._max_concurrent,
+            max_retries=self._max_retries,
+            base_delay=self._base_delay,
+            max_delay=self._max_delay,
+            track_tokens=self._track_tokens,
+        )
+
+    def with_max_tokens(self, max_tokens: int) -> "RateLimitedLLMClient":
+        """Create new rate-limited client with specified max_tokens.
+
+        Args:
+            max_tokens: New max tokens value.
+
+        Returns:
+            New RateLimitedLLMClient instance wrapping new LLMClient.
+        """
+        new_client = self._client.with_max_tokens(max_tokens)
+        return RateLimitedLLMClient(
+            client=new_client,
+            max_concurrent=self._max_concurrent,
+            max_retries=self._max_retries,
+            base_delay=self._base_delay,
+            max_delay=self._max_delay,
+            track_tokens=self._track_tokens,
+        )
+
+    def __repr__(self) -> str:
+        """String representation."""
+        return (
+            f"RateLimitedLLMClient("
+            f"max_concurrent={self._max_concurrent}, "
+            f"stats={self._stats})"
+        )
 
 
 class ModelProperty:

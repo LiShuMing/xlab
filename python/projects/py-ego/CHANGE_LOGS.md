@@ -237,3 +237,340 @@ Refactored the entire codebase to align with CLAUDE.md standards.
 ### Test Results
 - 17/17 tests passing
 - Application starts correctly
+
+---
+
+## 2026-03-24 - Design: WeChat Mini Program Architecture
+
+### Summary
+Designed a WeChat mini program for daily recording and AI-powered psychological Q&A, based on existing py-ego codebase.
+
+### Requirements Summary
+
+| Dimension | Decision |
+|-----------|----------|
+| Product Type | Public-facing product |
+| Core Features | Daily recording + Smart Q&A (equal priority) |
+| Record Types | Voice, photo, text (3 input types) |
+| Backend | Hybrid approach, reuse py-ego core logic |
+| Cloud Provider | Alibaba Cloud (RDS PostgreSQL + OSS + Redis) |
+| Frontend | Uni-app (Vue syntax) |
+| Business Model | TBD, architecture extensible |
+
+### Architecture: Monolith + Modular Design
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                 WeChat Mini Program (Uni-app)           │
+└─────────────────────────────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────┐
+│                   API Gateway (Nginx)                    │
+└─────────────────────────────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────┐
+│              FastAPI Backend Service                     │
+│  ┌─────────────┬─────────────┬─────────────┬──────────┐ │
+│  │ User Module │ Record      │ Chat        │ File     │ │
+│  │ (WeChat)    │ (Voice/Photo│ (LLM+Memory)│ (OSS)    │ │
+│  └─────────────┴─────────────┴─────────────┴──────────┘ │
+│  ┌─────────────────────────────────────────────────────┐│
+│  │  Reuse py-ego Core Layer                            ││
+│  │  - MemoryStore (adapted for multi-user)             ││
+│  │  - RoleManager / ChatService                        ││
+│  │  - Embeddings                                       ││
+│  └─────────────────────────────────────────────────────┘│
+└─────────────────────────────────────────────────────────┘
+                            │
+        ┌───────────────────┼───────────────────┐
+        ▼                   ▼                   ▼
+┌───────────────┐   ┌───────────────┐   ┌───────────────┐
+│ PostgreSQL    │   │ Redis         │   │ OSS           │
+│ + pgvector    │   │ (cache)       │   │ (files)       │
+└───────────────┘   └───────────────┘   └───────────────┘
+```
+
+### Database Schema
+
+```sql
+-- Users
+CREATE TABLE users (
+    id UUID PRIMARY KEY,
+    openid VARCHAR NOT NULL UNIQUE,  -- WeChat openid
+    nickname VARCHAR,
+    avatar_url VARCHAR,
+    created_at TIMESTAMP DEFAULT NOW(),
+    last_active_at TIMESTAMP
+);
+
+-- User profiles (layered: global + role-specific)
+CREATE TABLE user_profiles (
+    id UUID PRIMARY KEY,
+    user_id UUID REFERENCES users(id),
+    role_id VARCHAR DEFAULT 'therapist',
+    global_profile TEXT,
+    role_profiles JSONB,
+    updated_at TIMESTAMP
+);
+
+-- Daily records
+CREATE TABLE daily_records (
+    id UUID PRIMARY KEY,
+    user_id UUID REFERENCES users(id),
+    content_type VARCHAR(10),  -- 'text', 'voice', 'photo'
+    content TEXT,
+    media_url VARCHAR,
+    record_date DATE,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Semantic memories (with vectors)
+CREATE EXTENSION pgvector;
+
+CREATE TABLE memories (
+    id UUID PRIMARY KEY,
+    user_id UUID REFERENCES users(id),
+    record_id UUID REFERENCES daily_records(id),
+    content TEXT,
+    embedding vector(512),
+    source_type VARCHAR(10),  -- 'record', 'chat'
+    created_at TIMESTAMP
+);
+
+-- Chat sessions
+CREATE TABLE chat_sessions (
+    id UUID PRIMARY KEY,
+    user_id UUID REFERENCES users(id),
+    role_id VARCHAR,
+    started_at TIMESTAMP,
+    ended_at TIMESTAMP
+);
+
+-- Chat messages
+CREATE TABLE chat_messages (
+    id UUID PRIMARY KEY,
+    session_id UUID REFERENCES chat_sessions(id),
+    role VARCHAR(10),  -- 'user', 'assistant'
+    content TEXT,
+    created_at TIMESTAMP
+);
+```
+
+### API Design
+
+```
+/api/auth
+├── POST /login          # WeChat login, return JWT
+└── POST /refresh        # Refresh token
+
+/api/records
+├── POST /               # Create record (text/voice/photo)
+├── GET /                # List records (paginated, by date)
+├── GET /{id}            # Get record detail
+├── DELETE /{id}         # Delete record
+└── GET /timeline        # Timeline view
+
+/api/chat
+├── POST /sessions       # Create new session
+├── GET /sessions        # List sessions
+├── POST /sessions/{id}/messages  # Send message, get reply
+├── GET /sessions/{id}/messages   # Get message history
+└── DELETE /sessions/{id}         # Delete session
+
+/api/roles
+├── GET /                # List available roles
+├── GET /current         # Get current role
+└── PUT /current         # Switch role
+
+/api/profile
+├── GET /                # Get current profile
+└── PUT /                # Update profile
+```
+
+### Backend Structure
+
+```
+py-ego-miniapp/
+├── app/
+│   ├── main.py
+│   ├── config.py
+│   ├── dependencies.py
+│   ├── api/                    # API routes
+│   │   ├── auth.py
+│   │   ├── records.py
+│   │   ├── chat.py
+│   │   ├── roles.py
+│   │   └── profile.py
+│   ├── models/                 # SQLAlchemy models
+│   ├── schemas/                # Pydantic schemas
+│   ├── services/               # Business logic
+│   │   ├── auth_service.py
+│   │   ├── record_service.py
+│   │   ├── chat_service.py
+│   │   ├── memory_service.py
+│   │   └── role_service.py
+│   ├── core/                   # Reused from py-ego
+│   │   ├── embeddings.py
+│   │   ├── memory_store.py     # Adapted: multi-user support
+│   │   ├── llm_client.py
+│   │   └── role.py
+│   └── utils/
+│       ├── oss_client.py
+│       └── jwt_handler.py
+├── alembic/
+├── tests/
+└── requirements.txt
+```
+
+### Mini Program Frontend Structure
+
+```
+miniprogram/
+├── src/
+│   ├── App.vue
+│   ├── main.js
+│   ├── pages.json
+│   ├── pages/
+│   │   ├── index/        # Home (quick record)
+│   │   ├── record/       # Record page
+│   │   ├── chat/         # Chat page
+│   │   ├── timeline/     # Timeline view
+│   │   ├── profile/      # Profile center
+│   │   └── role/         # Role selection
+│   ├── components/
+│   │   ├── NavBar.vue
+│   │   ├── RecordCard.vue
+│   │   ├── ChatBubble.vue
+│   │   └── VoiceInput.vue
+│   ├── api/              # API requests
+│   ├── store/            # Vuex modules
+│   └── utils/
+└── package.json
+```
+
+### Vector Storage: PostgreSQL pgvector
+
+Chosen over FAISS for:
+- Simpler architecture (no extra component)
+- Natural user isolation (WHERE user_id = ?)
+- Hybrid queries (filter + vector search)
+- Alibaba Cloud RDS support
+- Acceptable performance for MVP (millions of vectors)
+
+```python
+# core/memory_store.py (adapted)
+class MemoryStore:
+    def __init__(self, db: Session, user_id: str):
+        self._db = db
+        self._user_id = user_id
+
+    def add(self, text: str, source_type: str = "record") -> Memory:
+        embedding = get_embedding(text)
+        memory = Memory(
+            user_id=self._user_id,
+            content=text,
+            embedding=embedding,
+            source_type=source_type,
+        )
+        self._db.add(memory)
+        self._db.commit()
+        return memory
+
+    def query(self, query_text: str, k: int = 5) -> list[Memory]:
+        query_embedding = get_embedding(query_text)
+        return self._db.query(Memory).filter(
+            Memory.user_id == self._user_id
+        ).order_by(
+            Memory.embedding.cosine_distance(query_embedding)
+        ).limit(k).all()
+```
+
+### Deployment: MVP Stage
+
+```
+┌─────────────────────────────────────────┐
+│              Nginx (HTTPS)               │
+└─────────────────┬───────────────────────┘
+                  ▼
+┌─────────────────────────────────────────┐
+│         ECS (2vCPU 4GB)                 │
+│         FastAPI (single instance)       │
+└─────────────────┬───────────────────────┘
+                  │
+    ┌─────────────┼─────────────┐
+    ▼             ▼             ▼
+┌────────┐  ┌────────┐  ┌────────┐
+│ RDS    │  │ Redis  │  │  OSS   │
+│ (basic)│  │ (1GB)  │  │ (pay)  │
+└────────┘  └────────┘  └────────┘
+
+Estimated Cost: ~400 RMB/month (MVP)
+```
+
+### Security & Compliance
+
+**Authentication:**
+- WeChat OAuth login (no password storage)
+- JWT access token (2 hours expiry)
+- Refresh token (7 days, stored in Redis)
+
+**Data Security:**
+- User data isolation (mandatory user_id filter)
+- HTTPS everywhere
+- Private OSS access (signed URLs)
+
+**Rate Limiting:**
+- 100 requests/minute per user (Redis counter)
+
+**Compliance:**
+- Privacy policy on first login
+- User data export/delete endpoints
+- Content moderation (WeChat API)
+
+### Voice Input Flow (Simplified)
+
+Uses WeChat built-in speech recognition (同声传译插件):
+1. User presses and speaks
+2. Plugin returns transcribed text directly
+3. No backend voice service needed
+4. Original voice file optional (user choice)
+
+### Design Decisions
+
+1. **Monolith over microservices** - Simpler for MVP, can split later
+2. **pgvector over FAISS** - One less component, natural user isolation
+3. **Uni-app over native** - Vue syntax, cross-platform, faster development
+4. **WeChat voice recognition** - No extra cost, simpler flow
+5. **Alibaba Cloud** - Good integration with WeChat ecosystem in China
+
+### Next Steps
+
+1. Set up project structure
+2. Implement backend core (auth, user, records)
+3. Implement chat service with memory
+4. Build mini program UI
+5. Deploy to Alibaba Cloud
+
+### Spec Review Fixes (2026-03-24)
+
+Addressed issues from code review:
+
+**Critical Fixes:**
+1. Added `wechat_sessions` table for storing session_key
+2. Added standard error response format with error codes
+3. Added `PATCH /api/chat/sessions/{id}` for ending sessions
+4. Added `deleted_at` field to users table for soft delete
+
+**Major Fixes:**
+1. Added embedding model/dimension configuration in env vars
+2. Added photo upload API (`POST /api/upload/presign`, `POST /api/upload/confirm`)
+3. Added `has_more` field to chat messages pagination
+4. Fixed rate limiter race condition with atomic `incr` operation
+
+**Minor Fixes:**
+1. Changed role icons from emoji to string identifiers
+2. Added `has_more` field for message pagination
+
+---

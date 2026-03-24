@@ -368,12 +368,14 @@ def run(
         original_count = len(normalized)
         normalized = seen_tracker.filter_new(normalized)
         click.echo(f"  New articles: {len(normalized)} / {original_count}")
-        # Mark all seen articles to update their last_seen timestamp
-        if normalized:
-            seen_tracker.mark_seen_batch([
-                {"url": item.url, "title": item.title, "published_at": item.published_at}
-                for item in normalized
-            ])
+
+    # Always mark articles as seen (both incremental and full mode)
+    if normalized:
+        seen_tracker = get_seen_tracker()
+        seen_tracker.mark_seen_batch([
+            {"url": item.url, "title": item.title, "published_at": item.published_at}
+            for item in normalized
+        ])
     click.echo("")
 
     # Step 5: Rank items

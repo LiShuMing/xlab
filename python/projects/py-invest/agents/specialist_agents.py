@@ -1,12 +1,13 @@
 """Specialist analyst agents for perspective-decomposed investment analysis."""
 
 import json
-import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Optional
 
 from core.llm import LLMClient, HumanMessage
+
+from agents.utils import format_relevant_data, parse_llm_json, strip_markdown_fences
 
 
 # =============================================================================
@@ -96,7 +97,7 @@ Use real competitor names and approximate P/E ratios. Be specific."""
 
         try:
             response = await llm_client.model.ainvoke([HumanMessage(content=prompt)])
-            content = _strip_markdown_fences(response.content)
+            content = strip_markdown_fences(response.content)
             comps_data = json.loads(content)
             comps = [
                 ComparableCompany(
@@ -130,67 +131,6 @@ Use real competitor names and approximate P/E ratios. Be specific."""
 # =============================================================================
 # Base Specialist Agent
 # =============================================================================
-
-
-def _strip_markdown_fences(text: str) -> str:
-    """Strip markdown JSON fences from text."""
-    return re.sub(r"^```json\s*|\s*```$", "", text, flags=re.DOTALL).strip()
-
-
-async def _parse_output(text: str, llm_client: LLMClient, retry_prompt: str = None) -> dict:
-    """Parse LLM output, stripping fences and retrying on parse error."""
-    content = _strip_markdown_fences(text)
-
-    try:
-        return json.loads(content)
-    except json.JSONDecodeError:
-        # Retry once
-        if retry_prompt is None:
-            retry_prompt = "Return ONLY the JSON object, no other text:"
-
-        try:
-            response = await llm_client.model.ainvoke([HumanMessage(content=retry_prompt)])
-            content = _strip_markdown_fences(response.content)
-            return json.loads(content)
-        except Exception:
-            return {}
-
-
-def format_relevant_data(
-    data: dict,
-    keys: list[str],
-    max_chars: int = 3000
-) -> str:
-    """Format relevant data from collected data dict.
-
-    Args:
-        data: Full collected data dict.
-        keys: Keys to extract and format.
-        max_chars: Maximum character limit.
-
-    Returns:
-        Formatted string of relevant data.
-    """
-    result_parts = []
-
-    for key in keys:
-        if key in data:
-            value = data[key]
-            # Convert to string if needed
-            if hasattr(value, 'content'):
-                value_str = str(value.content) if value.content else ""
-            else:
-                value_str = str(value) if value else ""
-
-            result_parts.append(f"{key}:\n{value_str}")
-
-    result = "\n\n".join(result_parts)
-
-    # Truncate if needed
-    if len(result) > max_chars:
-        result = result[:max_chars] + "...[truncated]"
-
-    return result
 
 
 class BaseSpecialistAgent(ABC):
@@ -251,7 +191,7 @@ Return ONLY a JSON object (no markdown fences, no prose) with these exact fields
 Be specific. Use actual numbers from the data. Do not hedge with generic statements."""
 
         response = await self.llm_client.model.ainvoke([HumanMessage(content=prompt)])
-        parsed = await _parse_output(
+        parsed = await parse_llm_json(
             response.content,
             self.llm_client,
             retry_prompt="Return ONLY the JSON object with the analysis fields, no other text:"

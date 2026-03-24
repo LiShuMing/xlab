@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>项目列表 - my-email</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        header p {
+            opacity: 0.9;
+        }
+        .nav {
+            margin-bottom: 20px;
+        }
+        .nav a {
+            color: #667eea;
+            text-decoration: none;
+            margin-right: 20px;
+        }
+        .nav a:hover {
+            text-decoration: underline;
+        }
+        .actions {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #5a6fd6;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .stat-card h3 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        .project-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        .project-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+        }
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        .project-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        .project-id {
+            font-size: 12px;
+            color: #999;
+            font-family: monospace;
+        }
+        .project-count {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .project-keywords {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+        .keyword {
+            background: #f0f0f0;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #666;
+        }
+        .project-domains {
+            font-size: 13px;
+            color: #888;
+        }
+        .project-domains span {
+            color: #667eea;
+        }
+        .project-dates {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 10px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 12px;
+        }
+        .empty-state h2 {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .empty-state p {
+            color: #999;
+        }
+        #loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="nav">
+            <a href="/">📅 日报</a>
+            <a href="/projects">📁 项目</a>
+        </nav>
+
+        <header>
+            <h1>📁 项目列表</h1>
+            <p>基于主题共现自动发现的邮件项目</p>
+        </header>
+
+        <div class="stats">
+            <div class="stat-card">
+                <h3>项目总数</h3>
+                <div class="value">{{ projects|length }}</div>
+            </div>
+            <div class="stat-card">
+                <h3>邮件总数</h3>
+                <div class="value">{% set total = projects|sum(attribute='email_count') %}{{ total }}</div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="btn btn-primary" onclick="discoverProjects()">🔄 重新发现项目</button>
+        </div>
+
+        <div id="loading">
+            <div class="spinner"></div>
+            <p>正在发现项目...</p>
+        </div>
+
+        {% if projects %}
+        <div class="projects-grid">
+            {% for project in projects %}
+            <a href="/projects/{{ project.id }}" class="project-card">
+                <div class="project-header">
+                    <div>
+                        <div class="project-name">{{ project.name }}</div>
+                        <div class="project-id">{{ project.id }}</div>
+                    </div>
+                    <div class="project-count">{{ project.email_count }} 封邮件</div>
+                </div>
+                <div class="project-keywords">
+                    {% for keyword in project.keywords[:5] %}
+                    <span class="keyword">{{ keyword }}</span>
+                    {% endfor %}
+                </div>
+                {% if project.sender_domains %}
+                <div class="project-domains">
+                    📧 <span>{{ project.sender_domains|join(', ') }}</span>
+                </div>
+                {% endif %}
+                {% if project.first_seen %}
+                <div class="project-dates">
+                    📅 {{ project.first_seen }} ~ {{ project.last_seen }}
+                </div>
+                {% endif %}
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h2>暂无项目</h2>
+            <p>点击"重新发现项目"按钮自动识别邮件中的项目</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        async function discoverProjects() {
+            const loading = document.getElementById('loading');
+            loading.style.display = 'block';
+
+            try {
+                const response = await fetch('/api/projects/discover?min_emails=2&threshold=2', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+
+                if (data.status === 'completed') {
+                    alert(`发现完成！\n项目: ${data.projects_found}\n邮件分配: ${data.emails_assigned}\n主题回填: ${data.topics_backfilled}`);
+                    location.reload();
+                } else {
+                    alert('发现失败: ' + JSON.stringify(data));
+                }
+            } catch (error) {
+                alert('请求失败: ' + error.message);
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

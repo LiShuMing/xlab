@@ -6,6 +6,8 @@ Endpoints:
 - GET /api/dates : List all available digest dates
 - GET /api/digest/{date} : Get HTML digest for a date
 - POST /api/generate/{date} : Trigger sync+summarize for a date
+- GET /projects : Project list view
+- GET /projects/{project_id} : Single project detail view
 """
 
 from __future__ import annotations
@@ -503,6 +505,127 @@ async def get_task_status(target_date: str):
     """
     task_info = _task_status.get(target_date, {"status": "not_started"})
     return {"date": target_date, **task_info}
+
+
+# ── Projects routes ────────────────────────────────────────────────────────────
+
+@app.get("/projects", response_class=HTMLResponse)
+async def projects_list(request: Request):
+    """
+    Show all discovered projects.
+    """
+    try:
+        from jinja2 import Environment, FileSystemLoader
+    except ImportError:
+        raise HTTPException(status_code=500, detail="jinja2 not installed")
+
+    from my_email.project.clusterer import list_projects
+
+    conn = get_connection()
+    projects = list_projects(conn, min_emails=1)
+    conn.close()
+
+    env = Environment(loader=FileSystemLoader(str(_TEMPLATE_DIR)), autoescape=True)
+    template = env.get_template("projects.html.j2")
+    html = template.render(projects=projects)
+
+    return HTMLResponse(content=html)
+
+
+@app.get("/projects/{project_id}", response_class=HTMLResponse)
+async def project_detail(project_id: str, request: Request):
+    """
+    Show emails for a specific project.
+    """
+    try:
+        from jinja2 import Environment, FileSystemLoader
+    except ImportError:
+        raise HTTPException(status_code=500, detail="jinja2 not installed")
+
+    from my_email.project.clusterer import get_project, get_project_emails
+    import json
+
+    conn = get_connection()
+    project = get_project(conn, project_id)
+
+    if not project:
+        conn.close()
+        raise HTTPException(status_code=404, detail=f"Project '{project_id}' not found")
+
+    # Get emails for the last 30 days
+    from datetime import datetime, timedelta
+    start_date = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
+    emails = get_project_emails(conn, project_id, start_date=start_date)
+    conn.close()
+
+    # Parse summary_json for each email
+    for email in emails:
+        if email.get("summary_json"):
+            try:
+                email["summary"] = json.loads(email["summary_json"])
+            except json.JSONDecodeError:
+                email["summary"] = None
+        else:
+            email["summary"] = None
+
+    env = Environment(loader=FileSystemLoader(str(_TEMPLATE_DIR)), autoescape=True)
+    template = env.get_template("project_detail.html.j2")
+    html = template.render(project=project, emails=emails)
+
+    return HTMLResponse(content=html)
+
+
+@app.post("/api/projects/discover")
+async def api_projects_discover(min_emails: int = 2, threshold: int = 2):
+    """
+    Trigger project discovery.
+    """
+    from my_email.project.clusterer import (
+        discover_projects,
+        save_project,
+        save_assignment,
+        clear_projects,
+        backfill_message_topics,
+    )
+    from my_email.project.models import ProjectAssignment
+
+    conn = get_connection()
+
+    # Backfill message_topics
+    backfill_count = backfill_message_topics(conn)
+    conn.commit()
+
+    # Clear existing projects
+    clear_projects(conn)
+
+    # Discover new projects
+    projects, project_messages = discover_projects(
+        conn, min_emails=min_emails, co_occurrence_threshold=threshold
+    )
+
+    # Save projects and assignments
+    assignment_count = 0
+    for project in projects:
+        save_project(conn, project)
+        for msg_id in project_messages.get(project.id, set()):
+            assignment = ProjectAssignment(
+                message_id=msg_id,
+                project_id=project.id,
+                confidence=1.0,
+                reasons=["cluster membership"],
+            )
+            save_assignment(conn, assignment)
+            assignment_count += 1
+
+    conn.commit()
+    conn.close()
+
+    return {
+        "status": "completed",
+        "projects_found": len(projects),
+        "emails_assigned": assignment_count,
+        "topics_backfilled": backfill_count,
+    }
 
 
 def create_app() -> FastAPI:

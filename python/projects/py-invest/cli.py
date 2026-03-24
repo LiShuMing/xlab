@@ -5,6 +5,7 @@ import argparse
 import asyncio
 import sys
 from datetime import datetime
+from typing import Optional
 
 
 async def analyze_stock(

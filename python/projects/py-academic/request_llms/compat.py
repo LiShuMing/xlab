@@ -44,17 +44,23 @@ def _get_api_key(llm_kwargs: Dict[str, Any]) -> Optional[str]:
     
     Priority:
     1. api_key in llm_kwargs
-    2. Provider-specific env var
-    3. Generic API_KEY env var
+    2. LLM_API_KEY from ~/.env (unified key)
+    3. Provider-specific env var
+    4. Generic API_KEY env var
     """
-    model = llm_kwargs.get("llm_model", "")
+    import os
     
     # Check for explicit api_key
     if "api_key" in llm_kwargs:
         return llm_kwargs["api_key"]
     
+    # Check for unified LLM_API_KEY from ~/.env (highest priority)
+    llm_api_key = os.getenv("LLM_API_KEY")
+    if llm_api_key:
+        return llm_api_key
+    
     # Check provider-specific keys
-    import os
+    model = llm_kwargs.get("llm_model", "")
     
     if "claude" in model.lower():
         return os.getenv("ANTHROPIC_API_KEY")
@@ -68,11 +74,15 @@ def _get_api_key(llm_kwargs: Dict[str, Any]) -> Optional[str]:
 
 def _get_base_url(llm_kwargs: Dict[str, Any]) -> Optional[str]:
     """Get custom base URL if configured."""
-    model = llm_kwargs.get("llm_model", "")
-    
     import os
     
-    # Check for Qwen custom base URL
+    # Check for LLM_BASE_URL from ~/.env (highest priority)
+    base_url = os.getenv("LLM_BASE_URL")
+    if base_url:
+        return base_url
+    
+    # Fallback to Qwen custom base URL
+    model = llm_kwargs.get("llm_model", "")
     if "qwen" in model.lower():
         return os.getenv("QWEN_BASE_URL")
     
@@ -91,15 +101,26 @@ async def _async_predict(
     
     Yields response chunks for streaming or complete response for non-streaming.
     """
+    import os
     model = llm_kwargs.get("llm_model", "gpt-3.5-turbo")
+    base_url = _get_base_url(llm_kwargs)
     
     try:
-        # Create provider instance
-        provider = LLMFactory.create(
-            model=model,
-            api_key=_get_api_key(llm_kwargs),
-            base_url=_get_base_url(llm_kwargs),
-        )
+        # If LLM_BASE_URL is set, force using OpenAI provider with custom endpoint
+        if os.getenv("LLM_BASE_URL"):
+            from .providers import OpenAIProvider
+            provider = OpenAIProvider(
+                model=model,
+                api_key=_get_api_key(llm_kwargs),
+                base_url=base_url,
+            )
+        else:
+            # Use default provider selection
+            provider = LLMFactory.create(
+                model=model,
+                api_key=_get_api_key(llm_kwargs),
+                base_url=base_url,
+            )
     except Exception as e:
         logger.error(f"Failed to create provider for {model}: {e}")
         yield f"[Error] Failed to initialize {model}: {e}"

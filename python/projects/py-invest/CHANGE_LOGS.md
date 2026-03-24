@@ -2,6 +2,247 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2026-03-24] - Feature: Email Sender with Retry Logic (Phase 3)
+
+### Added
+- **Notifier Module** (`notifier/`) - Email sending with SMTP and retry logic
+  - `notifier/email_sender.py`: EmailSender class with Gmail SMTP support
+  - `notifier/__init__.py`: Module exports
+
+- **EmailConfig Dataclass**:
+  - `smtp_host`, `smtp_port`, `sender`, `password`, `recipient`
+  - `from_env()` class method loads from `GMAIL_APP_PASSWORD` and `EMAIL_RECIPIENT` env vars
+
+- **EmailSender Class**:
+  - `send()`: Send email with retry logic, saves to pending_emails on failure
+  - `send_with_retry()`: Exponential backoff retry (3 retries, 5-minute intervals)
+  - `test_connection()`: Test SMTP connection without sending
+  - `send_pending_emails()`: Process failed emails from retry queue
+  - Supports both HTML and plain text emails via MIMEMultipart
+
+- **Error Handling**:
+  - `SMTPAuthenticationError`: Log and save to pending_emails
+  - `SMTPException`: Log and save to pending_emails
+  - `socket.timeout`/`ConnectionError`: Retry with backoff
+  - All failures logged via `log_email()` to email_logs table
+
+- **Retry Configuration**:
+  - `DEFAULT_MAX_RETRIES = 3`
+  - `RETRY_DELAY_SECONDS = 300` (5 minutes)
+  - `RETRY_BACKOFF_MULTIPLIER = 2` (exponential backoff)
+
+### Technical Details
+- Uses Python's built-in `smtplib` with STARTTLS for Gmail
+- Async-compatible via `run_in_executor()` for SMTP operations
+- Integrates with storage module for retry queue and logging
+- Default Gmail SMTP: `smtp.gmail.com:587`
+
+### Usage
+```python
+from notifier import EmailConfig, EmailSender
+
+# From environment variables
+config = EmailConfig.from_env()
+
+# Or manually
+config = EmailConfig(
+    smtp_host="smtp.gmail.com",
+    smtp_port=587,
+    sender="your@gmail.com",
+    password="your_app_password",
+    recipient="recipient@example.com"
+)
+
+sender = EmailSender(config)
+
+# Test connection
+if sender.test_connection():
+    # Send email
+    await sender.send_with_retry(
+        subject="Daily Stock Analysis",
+        body="Plain text body",
+        html_body="<html>HTML body</html>"
+    )
+
+# Retry pending emails
+successful, failed = await sender.send_pending_emails()
+```
+
+## [2026-03-24] - Feature: Diff Module for Incremental Reporting (Phase 2)
+
+### Added
+- **Diff Module** (`diff/`) - Incremental report comparison and email formatting
+  - `diff/comparator.py`: Comparison logic with threshold-based change detection
+  - `diff/formatter.py`: Email formatting with English language output
+  - `diff/__init__.py`: Module exports
+
+- **Dataclasses for Change Detection**:
+  - `Change`: field, old_value, new_value, change_pct, triggers_analysis, details
+  - `IncrementalReport`: stock_code, stock_name, is_first_run, changes, report_data
+
+- **Threshold Configuration**:
+  - Price change: >2% triggers detailed analysis
+  - PE/PB change: >5% triggers detailed analysis
+  - Rating/Confidence: Any change triggers detailed analysis
+  - News: New items (deduplicated by title + hour) trigger analysis
+  - Support/Resistance: Any breakout/breakdown triggers analysis
+
+- **Comparator Functions**:
+  - `compare_reports(today, yesterday)`: Main comparison function
+  - `_check_price_change()`: Compare prices against threshold
+  - `_check_rating_change()`: Detect rating/confidence changes
+  - `_check_target_price_change()`: Track target price updates
+  - `_check_news_change()`: Find new news items (deduplicated)
+  - `_check_pe_pb_change()`: Valuation ratio changes
+  - `_check_support_resistance_break()`: Technical breakout detection
+
+- **Formatter Functions**:
+  - `format_incremental_email(reports, date_str)`: Format multiple reports as email
+  - `format_single_stock(report)`: Format single stock changes
+  - `format_change(change)`: Format individual change
+  - `format_email_subject(reports, date_str)`: Generate email subject line
+
+### Technical Details
+- First run handling: Returns all current state as "changes" when no yesterday data
+- News deduplication: Uses title + hour as deduplication key
+- Supports both raw_data access and Report section access
+- Structured logging with `structlog` for debugging
+
+### Usage
+```python
+from diff import compare_reports, format_incremental_email, format_email_subject
+
+# Compare today vs yesterday
+incremental = compare_reports(today_report, yesterday_report)
+
+# Check for significant changes
+if incremental.has_significant_changes:
+    email_body = format_incremental_email([incremental], "2024-03-24")
+    subject = format_email_subject([incremental], "2024-03-24")
+```
+
+## [2026-03-24] - Feature: SQLite Storage Layer (Phase 1)
+
+### Added
+- **Storage Module** (`storage/`) - SQLite-based persistence for Daily Stock Analysis system
+  - `storage/models.py`: Database models and initialization
+  - `storage/repository.py`: CRUD operations for reports, emails, configs
+  - `storage/__init__.py`: Module exports
+
+- **Database Tables**:
+  - `daily_reports`: Stock analysis reports by code and date (UNIQUE constraint)
+  - `stock_configs`: Active stock configurations synced from config.yaml
+  - `pending_emails`: Retry queue for failed email sends
+  - `email_logs`: Optional debugging logs for email sends
+
+- **Dataclasses for Typed Access**:
+  - `DailyReport`: id, stock_code, report_date, analysis_json, created_at
+  - `StockConfig`: stock_code, stock_name, is_active, created_at
+  - `PendingEmail`: id, recipient, subject, body, retry_count
+  - `EmailLog`: id, recipient, subject, stock_count, status, error_message
+
+- **Repository Functions**:
+  - `save_report()`: Insert or replace daily report
+  - `get_report()`: Get specific report by stock and date
+  - `get_latest_report()`: Get most recent report for a stock
+  - `save_pending_email()`: Add to retry queue
+  - `get_pending_emails()`: Get all pending emails under retry limit
+  - `delete_pending_email()`: Remove from queue
+  - `increment_retry_count()`: Update retry count
+  - `log_email()`: Log email send attempt
+  - `sync_stock_configs()`: Sync from config.yaml
+
+### Technical Details
+- Database location: `~/.py-invest/data.db`
+- Explicit error handling for `sqlite3.OperationalError` on all write operations
+- Indexes on `stock_code`, `report_date`, `retry_count`, `sent_at` for query performance
+- `init_db()` creates tables and indexes if not exist
+
+### Usage
+```python
+from storage import init_db, save_report, get_latest_report
+
+init_db()  # Initialize database
+save_report('sh600519', date.today(), json.dumps(analysis))
+report = get_latest_report('sh600519')
+```
+
+## [2026-03-24] - Feature: Configuration Module for Daily Stock Analysis
+
+### Added
+- **Configuration Module** (`config/settings.py`) - YAML-based configuration loader
+  - `CONFIG_PATH` points to `~/.py-invest/config.yaml`
+  - `load_config()` loads YAML with environment variable override for sensitive values
+  - Dataclasses for typed access: `StockConfig`, `EmailConfig`, `AnalysisConfig`, `AppConfig`
+  - `ConfigError` exception with helpful error messages for missing/invalid config
+
+- **Security Enhancement** - `GMAIL_APP_PASSWORD` environment variable override
+  - Email password is loaded from `GMAIL_APP_PASSWORD` env var if set
+  - Avoids storing Gmail App Password in plaintext in config.yaml
+
+- **Dependency** (`pyproject.toml`)
+  - Added `pyyaml>=6.0.0` for YAML parsing
+  - Added `config` to build packages
+
+### Config File Schema
+```yaml
+stocks:
+  - code: sh600519
+    name: Guizhou Moutai
+email:
+  smtp_host: smtp.gmail.com
+  smtp_port: 587
+  sender: your_email@gmail.com
+  recipient: your_email@gmail.com
+analysis:
+  start_time: "07:30"
+  timezone: "Asia/Shanghai"
+```
+
+### Usage
+```python
+from config import load_config, CONFIG_PATH
+
+config = load_config()
+for stock in config.stocks:
+    print(f"{stock.code}: {stock.name}")
+```
+
+## [2026-03-24] - Feature: Rate-Limited LLM Client
+
+### Added
+- **RateLimitedLLMClient** (`core/llm.py`) - Wrapper class for concurrency control and retry logic
+  - Semaphore-based concurrency limiting (default max 5 concurrent calls)
+  - Token usage tracking via `RateLimitStats` dataclass
+  - Exponential backoff retry for 429 rate limit errors
+  - `wrap(client)` class method for easy instantiation
+  - Transparent delegation to underlying `LLMClient` methods
+
+### Technical Details
+- `RateLimitStats` dataclass tracks: `total_requests`, `total_tokens`, `rate_limit_retries`, `max_concurrent_reached`
+- Retry configuration: `max_retries=3`, `base_delay=1.0s`, `max_delay=60.0s`
+- `with_temperature()` and `with_max_tokens()` return new `RateLimitedLLMClient` instances
+
+### Rationale
+The Daily Stock Analysis system proposes 40 concurrent LLM calls (10 stocks × 4 specialists).
+Without rate limiting, this could exhaust API quota, hit provider limits (429 errors), or
+generate unexpected costs. This wrapper provides controlled concurrency for safe parallel execution.
+
+## [2026-03-24] - Refactor: Extract Helper Functions to utils.py
+
+### Changed
+- **DRY Compliance** (`agents/specialist_agents.py`)
+  - Extracted `_strip_markdown_fences()` to `agents/utils.py` as `strip_markdown_fences()`
+  - Extracted `_parse_output()` to `agents/utils.py` as `parse_llm_json()`
+  - Extracted `format_relevant_data()` to `agents/utils.py`
+  - Updated imports to use centralized utilities
+
+### Added
+- **agents/utils.py** - Centralized helper functions for agents module
+  - `strip_markdown_fences(text)` - Strip markdown JSON fences from text
+  - `parse_llm_json(text, llm_client, retry_prompt)` - Parse LLM JSON with retry
+  - `format_relevant_data(data, keys, max_chars)` - Format relevant data from dict
+
 ## [2026-03-23] - Engineering Review Fixes
 
 ### Fixed

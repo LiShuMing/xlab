@@ -11,7 +11,11 @@ from flask import Flask, abort, jsonify, render_template
 
 from dbradar.config import get_config
 
-app = Flask(__name__, template_folder="web/templates", static_folder="web/static")
+# 使用绝对路径
+_TEMPLATE_DIR = Path(__file__).parent / "web" / "templates"
+_STATIC_DIR = Path(__file__).parent / "web" / "static"
+
+app = Flask(__name__, template_folder=str(_TEMPLATE_DIR), static_folder=str(_STATIC_DIR))
 
 # 每页显示的天数
 DAYS_PER_PAGE = 3

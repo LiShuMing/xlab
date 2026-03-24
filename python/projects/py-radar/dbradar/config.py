@@ -49,7 +49,7 @@ class Config:
         self.api_key = api_key or os.environ.get("LLM_API_KEY", "")
         self.base_url = base_url or os.environ.get("LLM_BASE_URL", None)
         self.model = model or os.environ.get("LLM_MODEL", "qwen3.5-plus")
-        self.timeout = int(os.environ.get("LLM_TIMEOUT", "120"))
+        self.timeout = int(os.environ.get("LLM_TIMEOUT", "300"))
         self.cache_dir = cache_dir or Path("cache")
         self.output_dir = output_dir or Path("out")
         # Support both old website_file and new feeds_file
