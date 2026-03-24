@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DB Radar - 数据库行业每日速递</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Verdana, Geneva, sans-serif;
+            font-size: 10pt;
+            background: #f6f6ef;
+            color: #828282;
+            line-height: 1.5;
+        }
+        a { text-decoration: none; }
+        a:visited { color: #828282; }
+
+        .header {
+            background: #ff6600;
+            padding: 2px 4px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-inner {
+            max-width: 85%;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header a { color: #000; }
+        .header .logo { font-weight: bold; font-size: 14pt; color: #000; }
+        .header .tagline { font-size: 9pt; color: #333; }
+
+        .container { max-width: 85%; margin: 10px auto; }
+
+        .date-group { margin-bottom: 30px; }
+        .date-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 2px solid #ff6600;
+            margin-bottom: 10px;
+        }
+        .date-header h2 { font-size: 12pt; color: #333; font-weight: 600; }
+        .date-header .count {
+            font-size: 9pt;
+            color: #828282;
+            background: #f0f0f0;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .news-list {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+        }
+        .news-item { padding: 10px 15px; border-bottom: 1px solid #eee; }
+        .news-item:last-child { border-bottom: none; }
+
+        .title-row { display: flex; align-items: flex-start; gap: 5px; }
+        .rank { color: #828282; font-size: 10pt; min-width: 20px; padding-top: 2px; }
+        .title-content { flex: 1; }
+        .cn-title { color: #333; font-size: 11pt; font-weight: 600; margin-bottom: 3px; line-height: 1.4; }
+        .link-row { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+        .title-link { color: #000; font-size: 10pt; }
+        .title-link:hover { text-decoration: underline; }
+        .site { font-size: 9pt; color: #828282; }
+        .more-sources {
+            font-size: 8pt;
+            color: #ff6600;
+            background: #fff3e0;
+            padding: 1px 4px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .meta-row {
+            margin-left: 25px;
+            margin-top: 6px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            align-items: center;
+        }
+        .type-tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 8pt; font-weight: 500; }
+        .type-tag.type-release { background: #e8f5e9; color: #2e7d32; }
+        .type-tag.type-benchmark { background: #fff3e0; color: #e65100; }
+        .type-tag.type-blog { background: #e3f2fd; color: #1565c0; }
+        .type-tag.type-news { background: #fce4ec; color: #c2185b; }
+        .type-tag.type-tutorial { background: #f3e5f5; color: #7b1fa2; }
+        .type-tag.type-other { background: #f5f5f5; color: #666; }
+        .product-tag { display: inline-block; background: #e3f2fd; color: #1565c0; padding: 2px 8px; border-radius: 3px; font-size: 8pt; font-weight: 500; }
+        .tech-tag { display: inline-block; background: #f5f5f5; color: #666; padding: 2px 6px; border-radius: 3px; font-size: 8pt; }
+        .date-tag { font-size: 8pt; color: #999; }
+
+        .summary-row {
+            margin-left: 25px;
+            margin-top: 8px;
+            padding: 10px 12px;
+            background: #fafafa;
+            border-left: 3px solid #ff6600;
+            border-radius: 0 4px 4px 0;
+            font-size: 10pt;
+            color: #444;
+            line-height: 1.7;
+        }
+
+        .sources-row { margin-left: 25px; margin-top: 6px; font-size: 9pt; }
+        .sources-label { color: #666; }
+        .source-link { color: #ff6600; margin-left: 5px; }
+        .source-link:hover { text-decoration: underline; }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            padding: 20px 0;
+        }
+        .pagination a, .pagination span { padding: 8px 16px; border-radius: 4px; font-size: 10pt; }
+        .pagination a { background: #fff; border: 1px solid #ddd; color: #333; }
+        .pagination a:hover { background: #ff6600; color: #fff; border-color: #ff6600; }
+        .pagination .current { background: #ff6600; color: #fff; border: 1px solid #ff6600; }
+        .pagination .disabled { background: #f5f5f5; color: #ccc; border: 1px solid #eee; cursor: not-allowed; }
+
+        .footer { text-align: center; padding: 20px; font-size: 9pt; }
+        .footer a { color: #828282; }
+        .error-box { background: #fff3f3; border: 1px solid #ffcdd2; padding: 20px; text-align: center; color: #c62828; border-radius: 4px; }
+        .empty-date { text-align: center; padding: 30px; color: #828282; background: #fff; border-radius: 4px; }
+
+        @media (max-width: 768px) {
+            .container, .header-inner { max-width: 95%; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-inner">
+            <div class="header-left">
+                <a href="/" class="logo">DB Radar</a>
+                <span class="tagline">数据库行业每日速递</span>
+            </div>
+            <nav>
+                <a href="/api/news">API</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        {% if error %}
+        <div class="error-box">{{ error }}</div>
+        {% elif date_groups %}
+            {% for group in date_groups %}
+            <div class="date-group">
+                <div class="date-header">
+                    <h2>{{ group.date_display }}</h2>
+                    <span class="count">{{ group.total }} 条更新</span>
+                </div>
+
+                {% if group.news_items %}
+                <div class="news-list">
+                    {% for item in group.news_items %}
+                    <div class="news-item">
+                        <div class="title-row">
+                            <span class="rank">{{ item.id }}.</span>
+                            <div class="title-content">
+                                <div class="cn-title">{{ item.title }}</div>
+                                <div class="link-row">
+                                    <a href="{{ item.url }}" class="title-link" target="_blank">{{ item.original_title }}</a>
+                                    {% if item.site %}
+                                    <span class="site">({{ item.site }})</span>
+                                    {% endif %}
+                                    {% if item.other_sources and item.other_sources|length > 0 %}
+                                    <span class="more-sources" title="共 {{ item.other_sources|length + 1 }} 个来源">+{{ item.other_sources|length }} 来源</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="meta-row">
+                            {% if item.content_type %}
+                            <span class="type-tag type-{{ item.content_type }}">{{ item.content_type_cn }}</span>
+                            {% endif %}
+                            {% if item.product %}
+                            <span class="product-tag">{{ item.product }}</span>
+                            {% endif %}
+                            {% for tag in item.tags[:3] %}
+                            <span class="tech-tag">{{ tag }}</span>
+                            {% endfor %}
+                            {% if item.published_date %}
+                            <span class="date-tag">{{ item.published_date }}</span>
+                            {% endif %}
+                        </div>
+
+                        {% if item.summary %}
+                        <div class="summary-row">{{ item.summary }}</div>
+                        {% endif %}
+
+                        {% if item.other_sources and item.other_sources|length > 0 %}
+                        <div class="sources-row">
+                            <span class="sources-label">📎 其他来源：</span>
+                            {% for src in item.other_sources[:2] %}
+                            <a href="{{ src.url }}" target="_blank" class="source-link">{{ src.site }}</a>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-date">当日暂无更新</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            {% if not single_date %}
+            <div class="pagination">
+                {% if has_prev %}
+                <a href="/page/{{ prev_page }}">← 上一页</a>
+                {% else %}
+                <span class="disabled">← 上一页</span>
+                {% endif %}
+
+                <span class="current">第 {{ current_page }} / {{ total_pages }} 页</span>
+
+                {% if has_next %}
+                <a href="/page/{{ next_page }}">下一页 →</a>
+                {% else %}
+                <span class="disabled">下一页 →</span>
+                {% endif %}
+            </div>
+            {% endif %}
+
+        {% else %}
+        <div class="error-box">暂无数据</div>
+        {% endif %}
+    </main>
+
+    <footer class="footer">
+        DB Radar · 数据库行业每日速递 · <a href="/">首页</a> · <a href="/api/news">API</a>
+    </footer>
+</body>
+</html>

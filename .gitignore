@@ -40,8 +40,8 @@ verify_avx512bw_g++
 .vscode
 # generated files
 *.json
-*.html
 tags
+tags.*
 .DS_Store
 logs
 .pyc
