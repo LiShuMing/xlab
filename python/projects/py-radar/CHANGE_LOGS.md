@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2026-03-24] - URL Fix for Relative Links
+
+### Fixed
+- **Relative URL Handling**: Fixed issue where relative URLs from RSS feeds and crawled pages
+  were stored without converting to absolute URLs
+  - `crawler.py`: `get_canonical_url()` now resolves relative canonical URLs against the original URL
+  - `extractor.py`: `extract_rss_items()` converts relative link URLs to absolute using `urljoin()`
+  - `extractor.py`: `_extract_list_items()` improved relative URL handling with `urljoin()`
+- **Impact**: Links like `/blog/article/` now correctly resolve to `https://example.com/blog/article/`
+
 ## [2026-03-24] - Smart Crawler for Non-RSS Sources
 
 ### Added

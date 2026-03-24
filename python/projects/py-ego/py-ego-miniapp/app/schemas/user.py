@@ -9,4 +9,5 @@ class UserResponse(BaseModel):
     id: UUID
     nickname: str | None = None
     avatar_url: str | None = None
+    current_role_id: str = "therapist"
     created_at: datetime

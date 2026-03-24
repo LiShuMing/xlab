@@ -126,12 +126,20 @@ class URLNormalizer:
 
     @classmethod
     def get_canonical_url(cls, url: str, html_content: str) -> str:
-        """Extract canonical URL from HTML if available."""
+        """Extract canonical URL from HTML if available.
+
+        Always returns an absolute URL. If the canonical link is relative,
+        it will be resolved against the original URL.
+        """
         try:
             soup = BeautifulSoup(html_content, 'lxml')
             canonical = soup.find('link', rel='canonical')
             if canonical and canonical.get('href'):
-                return canonical['href']
+                canonical_href = canonical['href']
+                # If canonical is relative, resolve it against the original URL
+                if canonical_href.startswith('/'):
+                    return urljoin(url, canonical_href)
+                return canonical_href
         except Exception:
             pass
         return url

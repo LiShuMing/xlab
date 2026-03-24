@@ -107,6 +107,113 @@ def cmd_daily(args: argparse.Namespace) -> int:
         return 1
 
 
+def cmd_task_add(args: argparse.Namespace) -> int:
+    """Handle the 'task add' command - add analysis tasks."""
+    from storage import init_db, save_analysis_task, get_active_stocks, sync_stock_configs
+    from config.settings import load_config
+
+    init_db()
+
+    # Sync stocks from config to get names
+    try:
+        config = load_config()
+        stock_dicts = [{"code": s.code, "name": s.name} for s in config.stocks]
+        sync_stock_configs(stock_dicts)
+    except Exception:
+        pass  # Config might not exist
+
+    # Build stock name map
+    stock_names = {s.stock_code: s.stock_name for s in get_active_stocks()}
+
+    added = 0
+    for code in args.codes:
+        name = stock_names.get(code, "")
+        task_id = save_analysis_task(stock_code=code, stock_name=name, priority=args.priority)
+        print(f"Added task #{task_id}: {code}" + (f" ({name})" if name else ""))
+        added += 1
+
+    print(f"\nTotal tasks added: {added}")
+    return 0
+
+
+def cmd_task_list(args: argparse.Namespace) -> int:
+    """Handle the 'task list' command - list analysis tasks."""
+    from storage import init_db, get_pending_tasks
+
+    init_db()
+
+    tasks = get_pending_tasks(limit=args.limit)
+
+    if not tasks:
+        print("No pending tasks")
+        return 0
+
+    print(f"Pending tasks ({len(tasks)}):\n")
+    for task in tasks:
+        name = f" ({task.stock_name})" if task.stock_name else ""
+        print(f"  #{task.id}: {task.stock_code}{name} [priority={task.priority}]")
+
+    return 0
+
+
+def cmd_worker_run(args: argparse.Namespace) -> int:
+    """Handle the 'worker run' command - run the analysis worker."""
+    from scheduler.worker import run_worker
+
+    print("Starting analysis worker...")
+    if args.once:
+        print("Running once (processing pending tasks)")
+    else:
+        print("Running in continuous mode (Ctrl+C to stop)")
+
+    results = asyncio.run(run_worker(once=args.once, max_tasks=args.max_tasks))
+
+    if results:
+        successful = sum(1 for r in results if r.success)
+        failed = len(results) - successful
+        print(f"\nWorker complete: {successful} succeeded, {failed} failed")
+    else:
+        print("No tasks processed")
+
+    return 0
+
+
+def cmd_sender_run(args: argparse.Namespace) -> int:
+    """Handle the 'sender run' command - run the email sender."""
+    from notifier import EmailSender, EmailConfig
+    from config.settings import load_config
+
+    try:
+        config = load_config()
+    except Exception as e:
+        print(f"Failed to load config: {e}", file=sys.stderr)
+        return 1
+
+    if not config.email.recipient:
+        print("No recipient configured", file=sys.stderr)
+        return 1
+
+    email_config = EmailConfig(
+        smtp_host=config.email.smtp_host,
+        smtp_port=config.email.smtp_port,
+        sender=config.email.sender,
+        password=config.email.password,
+        recipient=config.email.recipient,
+    )
+
+    sender = EmailSender(email_config)
+
+    print("Processing pending emails...")
+    successful, failed = asyncio.run(sender.send_pending_emails())
+
+    print(f"Sent: {successful} emails")
+    if failed > 0:
+        print(f"Failed: {failed} emails")
+        return 1
+
+    return 0
+
+
 def main() -> int:
     """Main entry point for the CLI."""
     parser = argparse.ArgumentParser(
@@ -120,6 +227,10 @@ Examples:
   %(prog)s analyze 00700.HK "技术分析"
   %(prog)s daily                  # Run daily analysis and send email
   %(prog)s daily --dry-run        # Print email without sending
+  %(prog)s task add AAPL TSLA     # Add analysis tasks
+  %(prog)s task list              # List pending tasks
+  %(prog)s worker --once          # Process pending tasks once
+  %(prog)s sender                 # Send pending emails
   %(prog)s version
         """
     )
@@ -174,12 +285,86 @@ Examples:
     )
     daily_parser.set_defaults(func=cmd_daily)
 
+    # task command group
+    task_parser = subparsers.add_parser(
+        "task",
+        help="Manage analysis tasks",
+        description="Add, list, or manage background analysis tasks"
+    )
+    task_subparsers = task_parser.add_subparsers(dest="task_command", help="Task commands")
+
+    # task add
+    task_add_parser = task_subparsers.add_parser(
+        "add",
+        help="Add analysis tasks",
+        description="Add one or more stocks to the analysis queue"
+    )
+    task_add_parser.add_argument(
+        "codes",
+        nargs="+",
+        help="Stock ticker symbols (e.g., AAPL TSLA NVDA)"
+    )
+    task_add_parser.add_argument(
+        "-p", "--priority",
+        type=int,
+        default=0,
+        help="Task priority (higher = more urgent)"
+    )
+    task_add_parser.set_defaults(func=cmd_task_add)
+
+    # task list
+    task_list_parser = task_subparsers.add_parser(
+        "list",
+        help="List pending tasks",
+        description="Show pending analysis tasks"
+    )
+    task_list_parser.add_argument(
+        "-l", "--limit",
+        type=int,
+        default=20,
+        help="Maximum number of tasks to show"
+    )
+    task_list_parser.set_defaults(func=cmd_task_list)
+
+    # worker command
+    worker_parser = subparsers.add_parser(
+        "worker",
+        help="Run background analysis worker",
+        description="Process analysis tasks from the queue"
+    )
+    worker_parser.add_argument(
+        "--once",
+        action="store_true",
+        help="Run once and exit (default: continuous)"
+    )
+    worker_parser.add_argument(
+        "--max-tasks",
+        type=int,
+        default=10,
+        help="Maximum tasks to process per run"
+    )
+    worker_parser.set_defaults(func=cmd_worker_run)
+
+    # sender command
+    sender_parser = subparsers.add_parser(
+        "sender",
+        help="Run email sender",
+        description="Send pending emails from the queue"
+    )
+    sender_parser.set_defaults(func=cmd_sender_run)
+
     # Parse and execute
     args = parser.parse_args()
 
     if not args.command:
         parser.print_help()
         return 1
+
+    # Handle task subcommand
+    if args.command == "task":
+        if not hasattr(args, "task_command") or not args.task_command:
+            task_parser.print_help()
+            return 1
 
     return args.func(args)
 

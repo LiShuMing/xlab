@@ -780,3 +780,4 @@ Please generate a comprehensive investment analysis report following the 8-secti
         
         response = llm.invoke(messages)
         return response.content
+

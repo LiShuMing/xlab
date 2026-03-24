@@ -93,6 +93,7 @@
         .tag-low { background: #e0e7ff; color: #4f46e5; }
         .tag-unread { background: #dbeafe; color: #2563eb; }
         .tag-starred { background: #fef9c3; color: #ca8a04; }
+        .tag-thread { background: #e0e7ff; color: #4f46e5; }
 
         /* Message Body */
         .message-body {
@@ -161,6 +162,7 @@
                 <div class="message-summary">{{ (msg.summary_json | from_json).summary | default('') }}</div>
                 {% endif %}
                 <div class="message-tags">
+                    {% if msg.thread_count and msg.thread_count > 1 %}<span class="tag tag-thread">{{ msg.thread_count }} messages</span>{% endif %}
                     {% if msg.msg_state == 'unread' %}<span class="tag tag-unread">unread</span>{% endif %}
                     {% if msg.msg_state == 'starred' %}<span class="tag tag-starred">starred</span>{% endif %}
                     {% if msg.relevance == 'high' %}<span class="tag tag-high">high priority</span>{% endif %}
@@ -231,6 +233,7 @@
                     </div>
                     ${msg.summary ? `<div class="message-summary">${escapeHtml(msg.summary)}</div>` : ''}
                     <div class="message-tags">
+                        ${msg.thread_count ? '<span class="tag tag-thread">' + msg.thread_count + ' messages</span>' : ''}
                         ${msg.msg_state === 'unread' ? '<span class="tag tag-unread">unread</span>' : ''}
                         ${msg.msg_state === 'starred' ? '<span class="tag tag-starred">starred</span>' : ''}
                         ${msg.relevance === 'high' ? '<span class="tag tag-high">high priority</span>' : ''}

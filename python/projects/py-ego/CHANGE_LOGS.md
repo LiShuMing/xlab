@@ -1,5 +1,82 @@
 # py-ego Change Logs
 
+## 2026-03-24 - Feature: Role System Integration (Phase 3 Complete)
+
+### Summary
+Integrated the py-ego role system into the FastAPI backend, providing personalized AI personas with distinct personalities, knowledge bases, and speaking styles.
+
+### New Components
+
+**Role Module (`app/core/`)**
+| File | Lines | Purpose |
+|------|-------|---------|
+| `role.py` | 450 | Role models with 4 predefined personas (therapist, researcher, learner, philosopher) |
+
+**Role Service (`app/services/`)**
+| File | Lines | Purpose |
+|------|-------|---------|
+| `role_service.py` | 60 | Role management service with system prompt generation |
+
+**Role API (`app/api/`)**
+| File | Lines | Purpose |
+|------|-------|---------|
+| `roles.py` | 115 | API endpoints for listing roles and getting role details |
+
+**Role Schemas (`app/schemas/`)**
+| File | Lines | Purpose |
+|------|-------|---------|
+| `role.py` | 85 | Pydantic models for role request/response validation |
+
+### Updated Components
+
+| File | Changes |
+|------|---------|
+| `app/api/__init__.py` | Added roles_router to API router |
+| `app/schemas/__init__.py` | Exported RoleResponse and RoleDetailResponse |
+| `app/services/chat_service.py` | Integrated role_service; uses role-specific system prompts based on session.role_id |
+
+### Predefined Roles
+
+| ID | Name | Icon | Description |
+|----|------|------|-------------|
+| therapist | 心理陪护师 | 🧠 | 专业的心理陪护，擅长认知行为疗法、情绪识别和情感共情 |
+| researcher | 研究员 | 🔬 | 深入研究主题，生成研究报告和分析洞察 |
+| learner | 学习者 | 📚 | 学习新技能，规划学习路径，巩固知识体系 |
+| philosopher | 哲学家 | 🤔 | 思考人生终极问题，提供深刻的人生洞见 |
+
+### Role System Features
+
+1. **Personality System** - Background, traits, speaking style, catchphrases
+2. **Knowledge Base** - Domain expertise, key concepts, classic quotes, references
+3. **Example Dialogues** - Few-shot examples showing each role's speaking style
+4. **Dynamic System Prompts** - Full prompt built from role configuration + memory context
+
+### API Endpoints
+
+```
+GET /api/roles              # List all roles (summary)
+GET /api/roles/{role_id}    # Get role details (full configuration)
+```
+
+### Integration with Chat
+
+When a user sends a message in a chat session:
+1. ChatService retrieves the session's `role_id`
+2. RoleService builds the full system prompt with personality + knowledge + memory context
+3. LLM receives the role-specific prompt for personalized responses
+
+### Test Results
+- 48/48 tests passing (40 existing + 8 new role tests)
+- Role API endpoints verified
+- Chat integration tested
+
+### Next Steps (Phase 4)
+- User role preference (current_role_id in User model)
+- Role switching API
+- Relationship memory for long-term user context
+
+---
+
 ## 2026-03-24 - Feature: Intelligence Layer Implementation (Phase 2 Complete)
 
 ### Summary

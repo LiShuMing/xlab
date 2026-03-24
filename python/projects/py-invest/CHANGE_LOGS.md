@@ -2,6 +2,149 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2026-03-24] - Feature: Professional Investment Report Framework
+
+### Changed
+- **Synthesis Agent** (`agents/synthesis_agent.py`)
+  - Upgraded to 8-section professional report framework based on py-lab/stock_module.py
+  - New sections: Company Overview, Macro & Sector Context, Technical Analysis, Financial Health, Multi-Lens Investment Case, Risk Matrix, Position Sizing, Overall Recommendation
+  - Added multi-perspective analysis: Buffett, Duan Yongping, Trader, Quant viewpoints
+  - Risk Matrix with table format (Risk Type, Description, Probability, Impact, Mitigation)
+  - Position Sizing with $30,000 portfolio calculations
+  - Real-time price data integration ($250.35 for AAPL as of analysis time)
+  - Precise target price and stop-loss calculations
+
+- **Tools** (`agents/tools.py`)
+  - Updated all tools to return ToolResult objects with metadata containing raw_data
+  - Enables structured data extraction for synthesis agent
+
+- **Orchestrator** (`agents/orchestrator.py`)
+  - Updated to handle ToolResult objects from tools
+  - Properly stores both markdown result and raw_data for downstream processing
+
+### Added
+- **Professional Report Content**
+  - 52-week price position calculation
+  - Moving average distance analysis
+  - DCF valuation range
+  - Risk/Reward ratio calculation
+  - Share count calculation for position sizing
+  - Sector comparables with P/E ratios
+
+### Email Design Features
+- **Gradient Header**: Purple gradient with stock name/code
+- **Rating Card**: Dynamic colors (Buy=green, Hold=yellow, Sell=red)
+- **Target Price**: Large, prominent display
+- **Scenario Analysis**: Three-column Bull/Base/Bear layout
+- **Card Sections**: Rounded corners, subtle shadows
+- **Responsive**: Works on mobile and desktop email clients
+
+## [2026-03-24] - Feature: Background Task System & HTML Email Templates
+
+### Added
+- **Background Task System** - Decoupled analysis from email sending via database queue
+  - `storage/models.py`: Added `AnalysisTask` dataclass for task tracking
+  - `storage/repository.py`: Added task CRUD functions (`save_analysis_task`, `get_pending_tasks`, `update_task_status`, etc.)
+  - `scheduler/worker.py`: New `AnalysisWorker` class for background processing
+  - Extended `pending_emails` table with `html_body` and `task_id` columns
+
+- **HTML Email Templates** (`notifier/email_templates.py`)
+  - `format_stock_report_html()`: Professional HTML formatting for single stock reports
+  - `format_daily_summary_html()`: Multi-stock summary email template
+  - Modern design with gradient header, rating color coding, card-based layout
+  - Fully inline CSS for email client compatibility
+  - Supports both Chinese and English output
+
+- **CLI Commands**
+  - `py-invest task add CODE [CODE...]`: Add stocks to analysis queue
+  - `py-invest task list`: List pending tasks
+  - `py-invest worker --once`: Process pending tasks once
+  - `py-invest sender`: Send pending emails from queue
+
+### Database Schema Changes
+- **analysis_tasks table**: Track background analysis tasks
+  - `id`, `stock_code`, `stock_name`, `status`, `priority`
+  - `created_at`, `started_at`, `completed_at`, `error_message`
+- **pending_emails table**: Added `html_body` and `task_id` columns
+
+### Email Design Features
+- **Gradient Header**: Purple gradient with stock name/code
+- **Rating Card**: Dynamic colors (Buy=green, Hold=yellow, Sell=red)
+- **Target Price**: Large, prominent display
+- **Scenario Analysis**: Three-column Bull/Base/Bear layout
+- **Card Sections**: Rounded corners, subtle shadows
+- **Responsive**: Works on mobile and desktop email clients
+
+### Architecture
+```
+[Producer]                    [Worker]                      [Sender]
+    |                             |                             |
+    v                             v                             v
+analysis_tasks ──> 执行分析 ──> daily_reports ──> pending_emails ──> 发送邮件
+(SQLite)                        (SQLite)         (SQLite)         (SMTP)
+```
+
+### Usage
+```bash
+# Add analysis tasks (immediate return)
+py-invest task add AAPL TSLA NVDA
+
+# Process tasks in background
+py-invest worker --once
+
+# Send pending emails
+py-invest sender
+```
+
+### Cron Deployment
+```cron
+# Every weekday at 7:30 AM
+30 7 * * 1-5 cd /path/to/py-invest && py-invest worker --once
+
+# Every 5 minutes for email sending
+*/5 * * * * cd /path/to/py-invest && py-invest sender
+```
+
+## [2026-03-24] - Performance: Parallel Data Collection & Rate Limiter Fix
+
+### Changed
+- **Parallel Data Collection** (`agents/orchestrator.py`)
+  - Changed sequential tool execution to parallel using `asyncio.gather()`
+  - Data collection time reduced from ~20s to ~5s
+  - Added detailed timing logs for each specialist agent
+
+- **Rate Limiter Model Property** (`core/llm.py`)
+  - Fixed `RateLimitedLLMClient.model` to return `ModelProperty(self)` instead of `self._client.model`
+  - Previously, specialist agents bypassed rate limiting by calling `model.ainvoke()`
+  - Now all LLM calls go through rate-limited `chat()` method
+
+- **Increased Max Tokens** (`core/llm.py`)
+  - Changed `LLMConfig.max_tokens` default from 4000 to 8000
+  - Synthesis reports require more tokens for 9-section output
+  - Prevents truncation and potential retries
+
+- **Concurrency Limit** (`agents/orchestrator.py`)
+  - Increased `max_concurrent` from 2 to 4 for parallel specialist agents
+  - Allows all 4 agents (Technical, Fundamental, Risk, Sector) to run truly parallel
+
+### Performance Impact
+- Data collection: ~20s → ~5s (75% faster)
+- Specialist analysis: runs in parallel (max ~115s for 4 agents)
+- Note: Synthesis step remains slow (~360s) due to long prompt and model speed
+
+## [2026-03-24] - Fix: Config Module dotenv Loading
+
+### Fixed
+- **Environment Variable Loading** (`config/settings.py`)
+  - Added `dotenv` import and `load_dotenv()` call to automatically load `~/.env`
+  - Previously, `GMAIL_APP_PASSWORD` was not loaded unless environment was pre-configured
+  - Now config module self-contained: importing `config` auto-loads credentials
+
+### Technical Details
+- `load_dotenv(Path.home() / ".env", override=True)` ensures env vars are available
+- Email password now correctly retrieved via `os.getenv("GMAIL_APP_PASSWORD")`
+- Tested with email sender - SMTP authentication now works
+
 ## [2026-03-24] - Fix: Daily Analysis Timeout & API Quota Issues
 
 ### Fixed

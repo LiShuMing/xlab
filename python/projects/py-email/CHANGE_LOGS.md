@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-03-24 - Feature: Thread Merging and Unified Summary
+
+### Features
+
+#### Thread Merging (`src/my_email/db/repository.py`)
+- **`thread_subject` field** - Normalized subject (without Re:/Fwd: prefixes) stored in database
+- **`upsert_message()`** - Automatically computes thread_subject during message insertion
+- **`get_unsummarized_threads()`** - Groups messages by thread_subject for batch summarization
+- **`save_thread_summary()`** - Saves same summary for all messages in a thread
+
+#### Thread-Aware Summarization (`src/my_email/scheduler/sync_task.py`)
+- **Automatic thread detection** - Messages with same normalized subject are grouped
+- **Unified summaries** - Single LLM call generates summary for entire thread
+- **Thread prompts** - Uses specialized prompts for thread analysis:
+  - Discussion evolution
+  - Key decisions and consensus
+  - Action items across participants
+
+#### UI Updates (`src/my_email/server/templates/inbox.html.j2`)
+- **Thread count badge** - Shows "N messages" for threads with multiple messages
+- **Thread styling** - New `.tag-thread` CSS class
+
+#### Blocked Senders (`src/my_email/gmail/sync.py`)
+- **Auto-filter notifications** - Blocks notification emails from:
+  - `notifications@github.com`, `noreply@github.com`
+  - `no-reply@accounts.google.com`, `no-reply@google.com`
+  - Wildcard patterns: `noreply@*`, `no-reply@*`, `bounce@*`
+- **Configurable** - `BLOCKED_SENDERS` set can be extended
+
+### Database Schema (`src/my_email/db/models.py`)
+- Added `thread_subject TEXT` column to messages table
+- Index on `thread_subject` for efficient grouping
+
+---
+
 ## 2026-03-24 - Feature: Automatic Project Identification
 
 ### Features

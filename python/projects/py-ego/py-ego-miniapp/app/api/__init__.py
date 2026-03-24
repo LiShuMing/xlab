@@ -9,10 +9,12 @@ from fastapi import APIRouter
 from app.api.auth import router as auth_router
 from app.api.chat import router as chat_router
 from app.api.records import router as records_router
+from app.api.roles import router as roles_router
 
 api_router = APIRouter(prefix="/api")
 api_router.include_router(auth_router)
 api_router.include_router(records_router)
 api_router.include_router(chat_router)
+api_router.include_router(roles_router)
 
 __all__ = ["api_router"]

@@ -153,6 +153,7 @@ async def list_messages(
                     "msg_state": msg["msg_state"],
                     "relevance": msg["relevance"],
                     "summary": json.loads(msg["summary_json"]).get("summary") if msg["summary_json"] else None,
+                    "thread_count": msg["thread_count"] if msg["thread_count"] and msg["thread_count"] > 1 else None,
                 }
                 for msg in messages
             ],

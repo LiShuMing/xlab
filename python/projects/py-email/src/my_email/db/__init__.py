@@ -12,9 +12,11 @@ from my_email.db.repository import (
     get_message_counts,
     get_messages,
     get_setting,
+    get_unsummarized_threads,
     init_db,
     save_setting,
     save_summary,
+    save_thread_summary,
     update_message_state,
     upsert_message,
 )
@@ -27,9 +29,11 @@ __all__ = [
     "get_message_counts",
     "get_messages",
     "get_setting",
+    "get_unsummarized_threads",
     "init_db",
     "save_setting",
     "save_summary",
+    "save_thread_summary",
     "update_message_state",
     "upsert_message",
 ]

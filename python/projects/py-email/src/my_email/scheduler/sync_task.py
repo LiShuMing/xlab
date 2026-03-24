@@ -13,13 +13,16 @@ from my_email.db.repository import (
     get_setting,
     save_setting,
     save_summary,
+    save_thread_summary,
+    get_unsummarized_threads,
 )
 from my_email.gmail.sync import build_service, sync_messages
-from my_email.llm.summarizer import summarize_message
+from my_email.llm.summarizer import summarize_message, summarize_thread
+from my_email.llm.thread_aggregator import ThreadAggregator
 
 log = structlog.get_logger()
 
-# Max messages to summarize per batch
+# Max threads to summarize per batch
 SUMMARY_BATCH_SIZE = 5
 
 
@@ -136,34 +139,61 @@ def _run_summarization_batch_sync(limit: int = SUMMARY_BATCH_SIZE) -> int:
     """Synchronous version for thread pool execution."""
     db_conn = get_connection()
     try:
-        cursor = db_conn.execute(
-            """SELECT id, subject, sender, received_at, body_text
-               FROM messages
-               WHERE summary_json IS NULL AND body_text IS NOT NULL
-               ORDER BY received_at DESC
-               LIMIT ?""",
-            (limit,),
-        )
-        rows = cursor.fetchall()
+        # Get thread groups for summarization
+        thread_groups = get_unsummarized_threads(db_conn, limit=limit)
 
-        if not rows:
+        if not thread_groups:
             return 0
 
         summarized = 0
-        for row in rows:
+        aggregator = ThreadAggregator()
+
+        for group in thread_groups:
+            messages = group["messages"]
             try:
-                summary = summarize_message(
-                    subject=row["subject"],
-                    sender=row["sender"],
-                    date=row["received_at"],
-                    body=row["body_text"][:8000],
-                )
-                save_summary(db_conn, row["id"], json.dumps(summary.model_dump()))
+                if len(messages) == 1:
+                    # Single message - use regular summarization
+                    msg = messages[0]
+                    summary = summarize_message(
+                        subject=msg["subject"],
+                        sender=msg["sender"],
+                        date=msg["received_at"],
+                        body=msg["body_text"][:8000],
+                    )
+                    save_summary(db_conn, msg["id"], json.dumps(summary.model_dump()))
+                    summarized += 1
+                    log.info("sync_task.summarized", id=msg["id"])
+                else:
+                    # Multiple messages - use thread summarization
+                    # Use the aggregator to format the thread body
+                    aggregated = aggregator.aggregate(messages)[0]
+                    summary = summarize_thread(
+                        subject=aggregated["base_subject"],
+                        message_count=aggregated["message_count"],
+                        date_range=aggregated["date_range"],
+                        combined_body=aggregated["combined_body"],
+                    )
+                    # Save the same summary for all messages in the thread
+                    updated = save_thread_summary(
+                        db_conn,
+                        aggregated["message_ids"],
+                        json.dumps(summary.model_dump()),
+                    )
+                    summarized += updated
+                    log.info(
+                        "sync_task.thread_summarized",
+                        thread_subject=aggregated["base_subject"][:60],
+                        message_count=aggregated["message_count"],
+                        updated=updated,
+                    )
+
                 db_conn.commit()
-                summarized += 1
-                log.info("sync_task.summarized", id=row["id"])
             except Exception as e:
-                log.warning("sync_task.summarize_error", id=row["id"], error=str(e))
+                log.warning(
+                    "sync_task.summarize_error",
+                    thread_subject=group["thread_subject"][:60],
+                    error=str(e),
+                )
 
         return summarized
     finally:

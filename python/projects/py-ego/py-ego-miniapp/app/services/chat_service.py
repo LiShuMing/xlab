@@ -18,10 +18,11 @@ from app.core.llm_client import LLMClient
 from app.models import ChatMessage, ChatSession, User
 from app.schemas import MessageCreate, SessionCreate
 from app.services.memory_service import MemoryService
+from app.services.role_service import role_service
 from app.utils import NotFoundException
 
 
-# Default system prompt for the AI assistant
+# Default system prompt for the AI assistant (fallback when no role is specified)
 DEFAULT_SYSTEM_PROMPT = """你是一个温暖、专业的AI助手，专注于帮助用户记录生活、整理思绪和提供情感支持。
 
 你的特点：
@@ -259,13 +260,21 @@ class ChatService:
         """
         messages: list[dict[str, str]] = []
 
-        # Add system prompt with memories
-        system_prompt = DEFAULT_SYSTEM_PROMPT
+        # Get session to determine role
+        session = await self.get_session(session_id)
+
+        # Build memory context for relationship context
+        memory_context = ""
         if memories:
             memory_context = "\n\n相关记忆:\n" + "\n".join(
                 f"- {m.content}" for m in memories
             )
-            system_prompt += memory_context
+
+        # Get role-specific system prompt
+        system_prompt = role_service.get_system_prompt(
+            session.role_id,
+            relationship_context=memory_context,
+        )
 
         messages.append({"role": "system", "content": system_prompt})
 

@@ -61,7 +61,24 @@ def init_db() -> None:
                 recipient TEXT NOT NULL,
                 subject TEXT NOT NULL,
                 body TEXT NOT NULL,
-                retry_count INTEGER DEFAULT 0
+                retry_count INTEGER DEFAULT 0,
+                html_body TEXT,
+                task_id INTEGER
+            )
+        """)
+
+        # Analysis tasks table - for background processing
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS analysis_tasks (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                stock_code TEXT NOT NULL,
+                stock_name TEXT,
+                status TEXT DEFAULT 'pending',
+                priority INTEGER DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                started_at TIMESTAMP,
+                completed_at TIMESTAMP,
+                error_message TEXT
             )
         """)
 
@@ -91,6 +108,20 @@ def init_db() -> None:
             CREATE INDEX IF NOT EXISTS idx_email_logs_sent_at
             ON email_logs(sent_at DESC)
         """)
+        cursor.execute("""
+            CREATE INDEX IF NOT EXISTS idx_analysis_tasks_status
+            ON analysis_tasks(status, priority DESC)
+        """)
+
+        # Migration: Add html_body and task_id columns to pending_emails if they don't exist
+        cursor.execute("PRAGMA table_info(pending_emails)")
+        columns = {row[1] for row in cursor.fetchall()}
+        if "html_body" not in columns:
+            cursor.execute("ALTER TABLE pending_emails ADD COLUMN html_body TEXT")
+            logger.info("Added html_body column to pending_emails")
+        if "task_id" not in columns:
+            cursor.execute("ALTER TABLE pending_emails ADD COLUMN task_id INTEGER")
+            logger.info("Added task_id column to pending_emails")
 
         conn.commit()
         logger.info("Database initialized successfully")
@@ -168,25 +199,41 @@ class PendingEmail:
     subject: str
     body: str
     retry_count: int = 0
+    html_body: Optional[str] = None
+    task_id: Optional[int] = None
 
     @classmethod
     def from_row(cls, row: tuple) -> "PendingEmail":
         """Create PendingEmail from database row.
 
         Args:
-            row: Tuple from database query (id, created_at, recipient, subject, body, retry_count)
+            row: Tuple from database query (id, created_at, recipient, subject, body, retry_count, html_body, task_id)
 
         Returns:
             PendingEmail instance
         """
-        return cls(
-            id=row[0],
-            created_at=datetime.fromisoformat(row[1]) if row[1] and isinstance(row[1], str) else row[1],
-            recipient=row[2],
-            subject=row[3],
-            body=row[4],
-            retry_count=row[5] if row[5] is not None else 0,
-        )
+        # Handle both old schema (6 columns) and new schema (8 columns)
+        if len(row) >= 8:
+            return cls(
+                id=row[0],
+                created_at=datetime.fromisoformat(row[1]) if row[1] and isinstance(row[1], str) else row[1],
+                recipient=row[2],
+                subject=row[3],
+                body=row[4],
+                retry_count=row[5] if row[5] is not None else 0,
+                html_body=row[6],
+                task_id=row[7],
+            )
+        else:
+            # Legacy format (6 columns)
+            return cls(
+                id=row[0],
+                created_at=datetime.fromisoformat(row[1]) if row[1] and isinstance(row[1], str) else row[1],
+                recipient=row[2],
+                subject=row[3],
+                body=row[4],
+                retry_count=row[5] if row[5] is not None else 0,
+            )
 
 
 @dataclass
@@ -219,4 +266,53 @@ class EmailLog:
             stock_count=row[4] if row[4] is not None else 0,
             status=row[5],
             error_message=row[6],
+        )
+
+
+@dataclass
+class AnalysisTask:
+    """Analysis task for background processing.
+
+    Attributes:
+        id: Task ID (auto-generated).
+        stock_code: Stock ticker symbol.
+        stock_name: Stock display name.
+        status: Task status (pending, running, completed, failed).
+        priority: Task priority (higher = more urgent).
+        created_at: Task creation timestamp.
+        started_at: Task start timestamp.
+        completed_at: Task completion timestamp.
+        error_message: Error message if failed.
+    """
+
+    id: Optional[int]
+    stock_code: str
+    stock_name: Optional[str] = None
+    status: str = "pending"
+    priority: int = 0
+    created_at: Optional[datetime] = None
+    started_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+    error_message: Optional[str] = None
+
+    @classmethod
+    def from_row(cls, row: tuple) -> "AnalysisTask":
+        """Create AnalysisTask from database row.
+
+        Args:
+            row: Tuple from database query.
+
+        Returns:
+            AnalysisTask instance
+        """
+        return cls(
+            id=row[0],
+            stock_code=row[1],
+            stock_name=row[2],
+            status=row[3] if row[3] else "pending",
+            priority=row[4] if row[4] is not None else 0,
+            created_at=datetime.fromisoformat(row[5]) if row[5] and isinstance(row[5], str) else row[5],
+            started_at=datetime.fromisoformat(row[6]) if row[6] and isinstance(row[6], str) else row[6],
+            completed_at=datetime.fromisoformat(row[7]) if row[7] and isinstance(row[7], str) else row[7],
+            error_message=row[8],
         )

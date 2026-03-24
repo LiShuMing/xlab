@@ -429,6 +429,7 @@ class EmailSender:
             success = await self.send(
                 subject=email.subject,
                 body=email.body,
+                html_body=email.html_body,
                 recipient=email.recipient,
             )
 

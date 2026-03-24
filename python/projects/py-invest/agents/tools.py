@@ -36,23 +36,28 @@ class QueryStockPriceTool(BaseAgentTool):
             ],
         )
 
-    async def execute(self, arguments: dict[str, Any]) -> str:
+    async def execute(self, arguments: dict[str, Any]) -> ToolResult:
         """Execute price query.
 
         Args:
             arguments: Tool arguments with stock_code.
 
         Returns:
-            Formatted price data or error message.
+            ToolResult with price data in metadata and markdown in result.
         """
         stock_code = arguments.get("stock_code", "")
         if not stock_code:
-            return ToolResult.fail("Stock code is required", self.name).result
+            return ToolResult.fail("Stock code is required", self.name)
 
         result = await self._collector.collect(stock_code=stock_code)
-        if result.success:
-            return self._collector.format_markdown(result.data)
-        return ToolResult.fail(result.error or "Failed to fetch data", self.name).result
+        if result.success and result.data:
+            markdown = self._collector.format_markdown(result.data)
+            return ToolResult.ok(
+                result=markdown,
+                tool_name=self.name,
+                metadata={"raw_data": result.data},
+            )
+        return ToolResult.fail(result.error or "Failed to fetch data", self.name)
 
 
 class QueryKLineDataTool(BaseAgentTool):
@@ -95,23 +100,28 @@ class QueryKLineDataTool(BaseAgentTool):
             ],
         )
 
-    async def execute(self, arguments: dict[str, Any]) -> str:
+    async def execute(self, arguments: dict[str, Any]) -> ToolResult:
         """Execute K-line query.
 
         Args:
             arguments: Tool arguments.
 
         Returns:
-            Formatted K-line data or error message.
+            ToolResult with K-line data.
         """
         stock_code = arguments.get("stock_code", "")
         days = arguments.get("days", 90)
         period = arguments.get("period", "day")
 
         result = await self._collector.collect(stock_code=stock_code, days=days, period=period)
-        if result.success:
-            return self._collector.format_markdown(result.data)
-        return ToolResult.fail(result.error or "Failed to fetch data", self.name).result
+        if result.success and result.data:
+            markdown = self._collector.format_markdown(result.data)
+            return ToolResult.ok(
+                result=markdown,
+                tool_name=self.name,
+                metadata={"raw_data": result.data},
+            )
+        return ToolResult.fail(result.error or "Failed to fetch data", self.name)
 
 
 class QueryFinancialMetricsTool(BaseAgentTool):
@@ -139,23 +149,28 @@ class QueryFinancialMetricsTool(BaseAgentTool):
             ],
         )
 
-    async def execute(self, arguments: dict[str, Any]) -> str:
+    async def execute(self, arguments: dict[str, Any]) -> ToolResult:
         """Execute financial metrics query.
 
         Args:
             arguments: Tool arguments with stock_code.
 
         Returns:
-            Formatted financial data or error message.
+            ToolResult with financial data.
         """
         stock_code = arguments.get("stock_code", "")
         if not stock_code:
-            return ToolResult.fail("Stock code is required", self.name).result
+            return ToolResult.fail("Stock code is required", self.name)
 
         result = await self._collector.collect(stock_code=stock_code)
-        if result.success:
-            return self._collector.format_markdown(result.data)
-        return ToolResult.fail(result.error or "Failed to fetch data", self.name).result
+        if result.success and result.data:
+            markdown = self._collector.format_markdown(result.data)
+            return ToolResult.ok(
+                result=markdown,
+                tool_name=self.name,
+                metadata={"raw_data": result.data},
+            )
+        return ToolResult.fail(result.error or "Failed to fetch data", self.name)
 
 
 class QueryMarketNewsTool(BaseAgentTool):
@@ -197,20 +212,25 @@ class QueryMarketNewsTool(BaseAgentTool):
             ],
         )
 
-    async def execute(self, arguments: dict[str, Any]) -> str:
+    async def execute(self, arguments: dict[str, Any]) -> ToolResult:
         """Execute news query.
 
         Args:
             arguments: Tool arguments.
 
         Returns:
-            Formatted news data or error message.
+            ToolResult with news data.
         """
         stock_code = arguments.get("stock_code")
         limit = arguments.get("limit", 20)
         days = arguments.get("days", 7)
 
         result = await self._collector.collect(stock_code=stock_code, limit=limit, days=days)
-        if result.success:
-            return self._collector.format_markdown(result.data)
-        return ToolResult.fail(result.error or "Failed to fetch data", self.name).result
+        if result.success and result.data:
+            markdown = self._collector.format_markdown(result.data)
+            return ToolResult.ok(
+                result=markdown,
+                tool_name=self.name,
+                metadata={"raw_data": result.data},
+            )
+        return ToolResult.fail(result.error or "Failed to fetch data", self.name)

@@ -29,7 +29,8 @@ class SimpleAgentOrchestrator:
         """
         base_client = LLMClient(llm_config)
         # Wrap with rate limiting to prevent timeout during parallel agent execution
-        self.llm_client = RateLimitedLLMClient.wrap(base_client, max_concurrent=2)
+        # Allow 4 concurrent calls for parallel specialist agents
+        self.llm_client = RateLimitedLLMClient.wrap(base_client, max_concurrent=4)
         self.lang = lang
         self.tools = self._init_tools()
 
@@ -88,29 +89,50 @@ Analyze the stock thoroughly and provide investment recommendations."""
         Returns:
             AgentState with results.
         """
+        start_time = time.time()
         state = AgentState()
         state.add_message("user", f"Please analyze stock {stock_code}. {user_query}")
 
         collected_data = {}
 
         try:
-            tool_order = [
+            # Collect data in parallel for better performance
+            tool_calls = [
                 ("query_stock_price", {"stock_code": stock_code}),
                 ("query_kline_data", {"stock_code": stock_code, "days": 30}),
                 ("query_financial_metrics", {"stock_code": stock_code}),
                 ("query_market_news", {"stock_code": stock_code, "limit": 5}),
             ]
 
-            for tool_name, args in tool_order:
+            # Execute all tools in parallel
+            async def execute_tool(tool_name: str, args: dict):
                 tool = self._find_tool(tool_name)
                 if tool:
                     result = await tool.execute(args)
+                    # ToolResult object with metadata containing raw_data
+                    return tool_name, result
+                return tool_name, None
+
+            results = await asyncio.gather(
+                *[execute_tool(name, args) for name, args in tool_calls]
+            )
+
+            for tool_name, result in results:
+                if result and hasattr(result, 'success') and result.success:
+                    # Store both the markdown result and raw_data from metadata
                     collected_data[tool_name] = result
                     state.add_message("assistant", f"Collected {tool_name} data")
+                elif result:
+                    # Store failed result too
+                    collected_data[tool_name] = result
+
+            logger.info(f"Data collection completed in {time.time() - start_time:.2f}s")
 
             report = await self._generate_report(stock_code, collected_data)
             state.report = report
             state.complete(ReportFormatter.format(report, ReportFormat.MARKDOWN))
+
+            logger.info(f"Total analysis completed in {time.time() - start_time:.2f}s")
 
         except Exception as e:
             state.fail(str(e))
@@ -152,13 +174,24 @@ Analyze the stock thoroughly and provide investment recommendations."""
         llm = self.llm_client
 
         # Run four specialist agents in parallel
+        start = time.time()
+        logger.info("Starting parallel specialist analysis...")
+
+        async def timed_analyze(agent_cls, name):
+            t0 = time.time()
+            result = await agent_cls(stock_code, llm).analyze(data)
+            logger.info(f"{name} completed in {time.time() - t0:.1f}s")
+            return result
+
         results = await asyncio.gather(
-            TechnicalAnalystAgent(stock_code, llm).analyze(data),
-            FundamentalAnalystAgent(stock_code, llm).analyze(data),
-            RiskOfficerAgent(stock_code, llm).analyze(data),
-            SectorStrategistAgent(stock_code, llm).analyze(data),
+            timed_analyze(TechnicalAnalystAgent, "TechnicalAgent"),
+            timed_analyze(FundamentalAnalystAgent, "FundamentalAgent"),
+            timed_analyze(RiskOfficerAgent, "RiskAgent"),
+            timed_analyze(SectorStrategistAgent, "SectorAgent"),
             return_exceptions=True,
         )
+
+        logger.info(f"All specialists completed in {time.time() - start:.1f}s")
 
         # Handle exceptions with defaults
         from agents.specialist_agents import (
@@ -174,6 +207,8 @@ Analyze the stock thoroughly and provide investment recommendations."""
         sector = results[3] if not isinstance(results[3], Exception) else await SectorOutput.with_llm_fallback(stock_code, llm)
 
         # Synthesize into final report
+        t0 = time.time()
         report = await SynthesisAgent(stock_code, llm, lang=self.lang).synthesize(tech, fund, risk, sector, data)
+        logger.info(f"Synthesis completed in {time.time() - t0:.1f}s")
 
         return report

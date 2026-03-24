@@ -12,6 +12,10 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+from dotenv import load_dotenv
+
+# Load environment variables from ~/.env
+load_dotenv(Path.home() / ".env", override=True)
 
 
 # Configuration file path

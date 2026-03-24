@@ -1,10 +1,13 @@
 from datetime import datetime
 from uuid import UUID
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class SessionCreate(BaseModel):
-    role_id: str = "therapist"
+    role_id: str | None = Field(
+        default=None,
+        description="Role ID for the session. If not provided, uses user's current_role_id."
+    )
 
 
 class SessionResponse(BaseModel):

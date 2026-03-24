@@ -3,6 +3,7 @@ from app.schemas.auth import LoginRequest, TokenResponse, RefreshRequest, Refres
 from app.schemas.user import UserResponse
 from app.schemas.record import RecordCreate, RecordResponse, ContentType
 from app.schemas.chat import SessionCreate, SessionResponse, MessageCreate, MessageResponse, ChatReply
+from app.schemas.role import RoleResponse, RoleDetailResponse
 
 __all__ = [
     "ErrorResponse",
@@ -21,4 +22,6 @@ __all__ = [
     "MessageCreate",
     "MessageResponse",
     "ChatReply",
+    "RoleResponse",
+    "RoleDetailResponse",
 ]

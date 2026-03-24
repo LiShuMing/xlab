@@ -35,7 +35,7 @@ class LLMConfig:
     base_url: str = "https://api.openai.com/v1"
     model_name: str = "qwen-plus"
     temperature: float = 0.3
-    max_tokens: int = 4000
+    max_tokens: int = 8000  # Increased from 4000 for synthesis reports
     timeout: int = 120
 
     @classmethod
@@ -290,8 +290,15 @@ class RateLimitedLLMClient:
 
     @property
     def model(self) -> "ModelProperty":
-        """Access the underlying client's model property."""
-        return self._client.model
+        """Get model property that uses rate-limited chat.
+
+        Returns a ModelProperty that calls this RateLimitedLLMClient's
+        rate-limited chat() method, not the underlying client's.
+
+        Returns:
+            ModelProperty instance with rate-limited invoke/ainvoke.
+        """
+        return ModelProperty(self)
 
     @property
     def stats(self) -> RateLimitStats:

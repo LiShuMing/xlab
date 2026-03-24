@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from html import unescape
 from typing import List, Optional
-from urllib.parse import urlparse
+from urllib.parse import urljoin, urlparse
 
 import feedparser
 from bs4 import BeautifulSoup
@@ -102,9 +102,15 @@ class Extractor:
             elif hasattr(entry, "summary"):
                 html_content = entry.summary
 
+            # Get the link and ensure it's absolute
+            link = entry.get("link", result.url)
+            # Resolve relative URLs against the feed URL
+            if link.startswith('/'):
+                link = urljoin(result.url, link)
+
             items.append(
                 ExtractedItem(
-                    url=entry.get("link", result.url),
+                    url=link,
                     product=result.product,
                     title=unescape(entry.get("title", "")).strip(),
                     content=self._html_to_text(html_content),
@@ -195,9 +201,9 @@ class Extractor:
                 continue
 
             href = link["href"]
-            if not href.startswith("http"):
-                parsed = urlparse(result.url)
-                href = f"{parsed.scheme}://{parsed.netloc}{href}"
+            # Resolve relative URLs properly
+            if not href.startswith(('http://', 'https://')):
+                href = urljoin(result.url, href)
 
             content_type = self._classify_content(title, tag.get_text())
 

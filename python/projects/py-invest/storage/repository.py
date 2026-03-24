@@ -6,6 +6,7 @@ from typing import Optional
 
 from core.logger import get_logger
 from storage.models import (
+    AnalysisTask,
     DailyReport,
     EmailLog,
     PendingEmail,
@@ -295,13 +296,21 @@ def get_active_stocks() -> list[StockConfig]:
 # =============================================================================
 
 
-def save_pending_email(recipient: str, subject: str, body: str) -> int:
+def save_pending_email(
+    recipient: str,
+    subject: str,
+    body: str,
+    html_body: Optional[str] = None,
+    task_id: Optional[int] = None,
+) -> int:
     """Add an email to the pending queue.
 
     Args:
         recipient: Email recipient address.
         subject: Email subject.
-        body: Email body content.
+        body: Email body content (plain text).
+        html_body: Optional HTML version of email body.
+        task_id: Optional reference to analysis task.
 
     Returns:
         The row ID of the inserted record.
@@ -315,10 +324,10 @@ def save_pending_email(recipient: str, subject: str, body: str) -> int:
     try:
         cursor.execute(
             """
-            INSERT INTO pending_emails (recipient, subject, body)
-            VALUES (?, ?, ?)
+            INSERT INTO pending_emails (recipient, subject, body, html_body, task_id)
+            VALUES (?, ?, ?, ?, ?)
             """,
-            (recipient, subject, body),
+            (recipient, subject, body, html_body, task_id),
         )
         conn.commit()
         row_id = cursor.lastrowid
@@ -356,7 +365,7 @@ def get_pending_emails(max_retries: int = 3) -> list[PendingEmail]:
     try:
         cursor.execute(
             """
-            SELECT id, created_at, recipient, subject, body, retry_count
+            SELECT id, created_at, recipient, subject, body, retry_count, html_body, task_id
             FROM pending_emails
             WHERE retry_count < ?
             ORDER BY created_at ASC
@@ -537,5 +546,227 @@ def get_recent_email_logs(limit: int = 100) -> list[EmailLog]:
         rows = cursor.fetchall()
         return [EmailLog.from_row(tuple(row)) for row in rows]
 
+    finally:
+        conn.close()
+
+
+# =============================================================================
+# Analysis Tasks CRUD
+# =============================================================================
+
+
+def save_analysis_task(
+    stock_code: str,
+    stock_name: Optional[str] = None,
+    priority: int = 0,
+) -> int:
+    """Create a new analysis task.
+
+    Args:
+        stock_code: Stock ticker symbol.
+        stock_name: Stock display name.
+        priority: Task priority (higher = more urgent).
+
+    Returns:
+        The row ID of the inserted record.
+
+    Raises:
+        sqlite3.OperationalError: If database write fails.
+    """
+    conn = _get_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(
+            """
+            INSERT INTO analysis_tasks (stock_code, stock_name, priority)
+            VALUES (?, ?, ?)
+            """,
+            (stock_code, stock_name, priority),
+        )
+        conn.commit()
+        row_id = cursor.lastrowid
+        logger.info(
+            "Saved analysis task",
+            stock_code=stock_code,
+            row_id=row_id,
+        )
+        return row_id
+
+    except sqlite3.OperationalError as e:
+        logger.error(
+            "Failed to save analysis task",
+            stock_code=stock_code,
+            error=str(e),
+        )
+        raise
+    finally:
+        conn.close()
+
+
+def get_pending_tasks(limit: int = 10) -> list[AnalysisTask]:
+    """Get pending analysis tasks ordered by priority.
+
+    Args:
+        limit: Maximum number of tasks to return.
+
+    Returns:
+        List of AnalysisTask objects.
+    """
+    conn = _get_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(
+            """
+            SELECT id, stock_code, stock_name, status, priority,
+                   created_at, started_at, completed_at, error_message
+            FROM analysis_tasks
+            WHERE status = 'pending'
+            ORDER BY priority DESC, created_at ASC
+            LIMIT ?
+            """,
+            (limit,),
+        )
+        rows = cursor.fetchall()
+        return [AnalysisTask.from_row(tuple(row)) for row in rows]
+
+    finally:
+        conn.close()
+
+
+def update_task_status(
+    task_id: int,
+    status: str,
+    error_message: Optional[str] = None,
+) -> bool:
+    """Update analysis task status.
+
+    Args:
+        task_id: Task ID.
+        status: New status (pending, running, completed, failed).
+        error_message: Error message if failed.
+
+    Returns:
+        True if updated, False if not found.
+
+    Raises:
+        sqlite3.OperationalError: If database write fails.
+    """
+    conn = _get_connection()
+    cursor = conn.cursor()
+
+    try:
+        # Build update query based on status
+        if status == "running":
+            cursor.execute(
+                """
+                UPDATE analysis_tasks
+                SET status = ?, started_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+                """,
+                (status, task_id),
+            )
+        elif status in ("completed", "failed"):
+            cursor.execute(
+                """
+                UPDATE analysis_tasks
+                SET status = ?, completed_at = CURRENT_TIMESTAMP, error_message = ?
+                WHERE id = ?
+                """,
+                (status, error_message, task_id),
+            )
+        else:
+            cursor.execute(
+                """
+                UPDATE analysis_tasks
+                SET status = ?
+                WHERE id = ?
+                """,
+                (status, task_id),
+            )
+
+        updated = cursor.rowcount > 0
+        conn.commit()
+        if updated:
+            logger.info(
+                "Updated task status",
+                task_id=task_id,
+                status=status,
+            )
+        return updated
+
+    except sqlite3.OperationalError as e:
+        logger.error(
+            "Failed to update task status",
+            task_id=task_id,
+            error=str(e),
+        )
+        raise
+    finally:
+        conn.close()
+
+
+def get_task_by_id(task_id: int) -> Optional[AnalysisTask]:
+    """Get an analysis task by ID.
+
+    Args:
+        task_id: Task ID.
+
+    Returns:
+        AnalysisTask if found, None otherwise.
+    """
+    conn = _get_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(
+            """
+            SELECT id, stock_code, stock_name, status, priority,
+                   created_at, started_at, completed_at, error_message
+            FROM analysis_tasks
+            WHERE id = ?
+            """,
+            (task_id,),
+        )
+        row = cursor.fetchone()
+        if row:
+            return AnalysisTask.from_row(tuple(row))
+        return None
+
+    finally:
+        conn.close()
+
+
+def cleanup_completed_tasks(days: int = 7) -> int:
+    """Delete completed/failed tasks older than specified days.
+
+    Args:
+        days: Number of days to keep completed tasks.
+
+    Returns:
+        Number of deleted tasks.
+    """
+    conn = _get_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(
+            """
+            DELETE FROM analysis_tasks
+            WHERE status IN ('completed', 'failed')
+            AND completed_at < datetime('now', ?)
+            """,
+            (f"-{days} days",),
+        )
+        deleted = cursor.rowcount
+        conn.commit()
+        if deleted > 0:
+            logger.info("Cleaned up old tasks", count=deleted)
+        return deleted
+
+    except sqlite3.OperationalError as e:
+        logger.error("Failed to cleanup tasks", error=str(e))
+        raise
     finally:
         conn.close()

@@ -17,6 +17,7 @@ class User(Base, TimestampMixin):
         openid: WeChat unique user identifier.
         nickname: User's display name.
         avatar_url: URL to user's avatar image.
+        current_role_id: The user's preferred AI role (default: 'therapist').
         last_active_at: Timestamp of last user activity.
         deleted_at: Soft delete timestamp (None if active).
 
@@ -41,6 +42,11 @@ class User(Base, TimestampMixin):
     )
     nickname = Column(String(100))
     avatar_url = Column(String(500))
+    current_role_id = Column(
+        String(50),
+        default="therapist",
+        nullable=False,
+    )
     last_active_at = Column(DateTime)
     deleted_at = Column(DateTime, nullable=True)
 
