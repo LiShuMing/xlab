@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Email Inbox</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.5;
+        }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .header h1 { font-size: 24px; }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .card h2 { font-size: 18px; margin-bottom: 20px; }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        .form-group .hint {
+            margin-top: 5px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+        }
+        .btn-primary { background: #0066cc; color: white; }
+        .btn-secondary { background: #e0e0e0; color: #333; }
+
+        .alert {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .alert-success { background: #d4edda; color: #155724; }
+        .alert-error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚙️ Settings</h1>
+            <a href="/" class="btn btn-secondary">Back to Inbox</a>
+        </div>
+
+        <div class="alert alert-success" id="success-msg"></div>
+        <div class="alert alert-error" id="error-msg"></div>
+
+        <form id="settings-form">
+            <div class="card">
+                <h2>Sync Settings</h2>
+
+                <div class="form-group">
+                    <label for="sync-interval">Auto Sync Interval (minutes)</label>
+                    <input type="number" id="sync-interval" name="auto_sync_interval_minutes"
+                           value="{{ sync_interval }}" min="5" max="1440">
+                    <div class="hint">How often to check for new emails (5-1440 minutes)</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Storage Settings</h2>
+
+                <div class="form-group">
+                    <label for="retention">Email Retention (days)</label>
+                    <input type="number" id="retention" name="retention_days"
+                           value="{{ retention_days }}" min="1" max="365">
+                    <div class="hint">Emails older than this will be automatically deleted (1-365 days)</div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" class="btn btn-primary">Save Settings</button>
+                <a href="/" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('settings-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const syncInterval = parseInt(document.getElementById('sync-interval').value);
+            const retention = parseInt(document.getElementById('retention').value);
+
+            const successMsg = document.getElementById('success-msg');
+            const errorMsg = document.getElementById('error-msg');
+            successMsg.style.display = 'none';
+            errorMsg.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/settings', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        auto_sync_interval_minutes: syncInterval,
+                        retention_days: retention
+                    })
+                });
+
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.detail || 'Failed to save settings');
+                }
+
+                successMsg.textContent = 'Settings saved successfully!';
+                successMsg.style.display = 'block';
+            } catch (err) {
+                errorMsg.textContent = 'Error: ' + err.message;
+                errorMsg.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

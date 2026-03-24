@@ -1,638 +1,260 @@
 """
-FastAPI web application for browsing email digests.
+FastAPI web application for email inbox MVP.
 
 Endpoints:
-- GET / : Main page with date list and digest viewer
-- GET /api/dates : List all available digest dates
-- GET /api/digest/{date} : Get HTML digest for a date
-- POST /api/generate/{date} : Trigger sync+summarize for a date
-- GET /projects : Project list view
-- GET /projects/{project_id} : Single project detail view
+- GET / : Main inbox page
+- GET /settings : Settings page
+- GET /api/messages : List messages
+- GET /api/messages/{id} : Get message details
+- PATCH /api/messages/{id} : Update message state
+- POST /api/sync : Trigger sync
+- GET /api/settings : Get settings
+- PUT /api/settings : Update settings
 """
 
 from __future__ import annotations
 
-import asyncio
 import json
 import sqlite3
-from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
-from datetime import date as Date, timedelta
 from pathlib import Path
 from typing import Any
 
 import structlog
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 
 from my_email.config import settings
-from my_email.db.repository import get_connection, init_db, get_digest
+from my_email.db.repository import (
+    cleanup_old_messages,
+    get_connection,
+    get_message_by_id,
+    get_message_counts,
+    get_messages,
+    get_setting,
+    init_db,
+    save_setting,
+    update_message_state,
+)
+from my_email.scheduler.sync_task import run_sync, start_sync_scheduler
+from my_email.scheduler.cleanup_task import start_cleanup_scheduler
 
 log = structlog.get_logger()
 
 _TEMPLATE_DIR = Path(__file__).parent / "templates"
-
-# Background task status tracking
-_task_status: dict[str, dict[str, Any]] = {}
-
-# Thread pool for background processing
-_executor = ThreadPoolExecutor(max_workers=3, thread_name_prefix="email-worker")
+templates = Jinja2Templates(directory=str(_TEMPLATE_DIR))
 
 
-def _get_all_digest_dates(conn: sqlite3.Connection) -> list[str]:
-    """
-    Fetch all dates that have a stored digest.
-
-    Args:
-        conn: Database connection.
-
-    Returns:
-        List of date strings in YYYY-MM-DD format, most recent first.
-    """
-    rows = conn.execute(
-        "SELECT date FROM digests ORDER BY date DESC"
-    ).fetchall()
-    return [row["date"] for row in rows]
+# Add custom filters
+def from_json(value):
+    """Parse JSON string to dict."""
+    if not value:
+        return {}
+    return json.loads(value)
 
 
-def _get_messages_count_for_date(conn: sqlite3.Connection, target_date: str) -> int:
-    """
-    Count messages for a specific date.
-
-    Args:
-        conn: Database connection.
-        target_date: YYYY-MM-DD date string.
-
-    Returns:
-        Number of messages received on that date.
-    """
-    row = conn.execute(
-        "SELECT COUNT(*) as cnt FROM messages WHERE received_at LIKE ?",
-        (f"{target_date}%",),
-    ).fetchone()
-    return row["cnt"] if row else 0
-
-
-def _get_processed_count_for_date(conn: sqlite3.Connection, target_date: str) -> int:
-    """
-    Count processed messages for a specific date.
-
-    Args:
-        conn: Database connection.
-        target_date: YYYY-MM-DD date string.
-
-    Returns:
-        Number of processed messages for that date.
-    """
-    row = conn.execute(
-        """SELECT COUNT(*) as cnt FROM messages
-           WHERE received_at LIKE ? AND processed = 1""",
-        (f"{target_date}%",),
-    ).fetchone()
-    return row["cnt"] if row else 0
-
-
-def _run_sync_summarize_sync(target_date: str) -> dict[str, Any]:
-    """
-    Synchronous version: Run sync and summarize for a specific date.
-
-    This runs in a thread pool worker.
-
-    Args:
-        target_date: YYYY-MM-DD date string.
-
-    Returns:
-        Dict with status and counts.
-    """
-    from my_email.gmail.sync import incremental_sync
-    from my_email.db.repository import get_sync_state, save_summary, save_thread_summary, get_connection
-    from my_email.llm import (
-        EmailFilter,
-        ThreadAggregator,
-        summarize_message,
-        summarize_thread,
-        LLMSummarizationError,
-    )
-
-    result: dict[str, Any] = {
-        "date": target_date,
-        "sync_count": 0,
-        "summarize_ok": 0,
-        "summarize_fail": 0,
-        "error": None,
-    }
-
-    try:
-        conn = get_connection()
-
-        # Step 1: Run incremental sync
-        state = get_sync_state(conn)
-        if state:
-            sync_count, _ = incremental_sync(conn)
-            result["sync_count"] = sync_count
-            log.info("server.background_sync_done", date=target_date, count=sync_count)
-
-        # Step 2: Get unprocessed messages for the date
-        rows = conn.execute(
-            "SELECT * FROM messages WHERE processed = 0 AND received_at LIKE ? ORDER BY received_at",
-            (f"{target_date}%",),
-        ).fetchall()
-        messages = [dict(row) for row in rows]
-
-        if not messages:
-            log.info("server.no_messages_to_summarize", date=target_date)
-            conn.close()
-            return result
-
-        # Step 3: Filter and aggregate
-        email_filter = EmailFilter(
-            exclude_starrocks=True,
-            exclude_auto_reply=True,
-            exclude_noreply=False,
-        )
-        messages, _ = email_filter.filter_messages(messages)
-
-        if messages:
-            aggregator = ThreadAggregator(
-                use_thread_id=True,
-                use_subject_similarity=True,
-                min_group_size=1,
-            )
-            aggregated = aggregator.aggregate(messages)
-
-            # Step 4: Summarize
-            for group in aggregated:
-                try:
-                    if group.get("is_thread"):
-                        summary = summarize_thread(
-                            subject=group["base_subject"],
-                            message_count=group["message_count"],
-                            date_range=group["date_range"],
-                            combined_body=group["combined_body"],
-                        )
-                        save_thread_summary(
-                            conn,
-                            group["message_ids"],
-                            summary.model_dump_json(),
-                            settings.llm_model,
-                        )
-                    else:
-                        msg = group["messages"][0]
-                        summary = summarize_message(
-                            subject=msg.get("subject", "") or "",
-                            sender=msg.get("sender", "") or "",
-                            date=msg.get("received_at", ""),
-                            body=msg.get("body_text", "") or "",
-                        )
-                        save_summary(conn, msg["id"], summary.model_dump_json(), settings.llm_model)
-
-                    conn.commit()
-                    result["summarize_ok"] += 1
-                except LLMSummarizationError as e:
-                    result["summarize_fail"] += 1
-                    log.error("server.summarize_error", error=str(e))
-
-        conn.close()
-        log.info("server.background_task_done", **result)
-
-    except Exception as e:
-        result["error"] = str(e)
-        log.error("server.background_task_failed", date=target_date, error=str(e))
-
-    return result
-
-
-def _build_digest_for_date_sync(target_date: str) -> bool:
-    """
-    Synchronous version: Build digest for a date after summarization.
-
-    Args:
-        target_date: YYYY-MM-DD date string.
-
-    Returns:
-        True if digest was built successfully.
-    """
-    from my_email.digest.builder import build_digest
-    from my_email.db.repository import save_digest, get_connection
-    from my_email.db.topic_repository import upsert_topic_tracks
-
-    try:
-        conn = get_connection()
-        result = build_digest(conn, target_date)
-
-        if result.total_emails == 0:
-            conn.close()
-            return False
-
-        save_digest(conn, target_date, result.model_dump_json())
-        upsert_topic_tracks(conn, target_date, result.topic_clusters)
-        conn.commit()
-        conn.close()
-        return True
-    except Exception as e:
-        log.error("server.build_digest_error", date=target_date, error=str(e))
-        return False
-
-
-def _process_single_date(target_date: str) -> None:
-    """
-    Process a single date: sync + summarize + digest.
-    Runs in thread pool.
-    """
-    from my_email.db.repository import get_connection, get_digest
-
-    # Check if already has digest
-    conn = get_connection()
-    digest_row = get_digest(conn, date=target_date)
-    processed = conn.execute(
-        "SELECT COUNT(*) as cnt FROM messages WHERE received_at LIKE ? AND processed = 1",
-        (f"{target_date}%",),
-    ).fetchone()
-    total = conn.execute(
-        "SELECT COUNT(*) as cnt FROM messages WHERE received_at LIKE ?",
-        (f"{target_date}%",),
-    ).fetchone()
-    conn.close()
-
-    # Skip if already has digest
-    if digest_row:
-        log.info("server.auto_process_skip", date=target_date, reason="has_digest")
-        _task_status[target_date] = {"status": "completed", "reason": "already_has_digest"}
-        return
-
-    # Skip if no messages
-    if total["cnt"] == 0:
-        log.info("server.auto_process_skip", date=target_date, reason="no_messages")
-        _task_status[target_date] = {"status": "skipped", "reason": "no_messages"}
-        return
-
-    # Skip if all already processed but no digest (will build digest)
-    if processed["cnt"] > 0 and processed["cnt"] == total["cnt"]:
-        log.info("server.auto_process_building_digest", date=target_date)
-        _task_status[target_date] = {"status": "running", "step": "building_digest"}
-        ok = _build_digest_for_date_sync(target_date)
-        if ok:
-            _task_status[target_date] = {"status": "completed"}
-        else:
-            _task_status[target_date] = {"status": "no_data"}
-        return
-
-    # Need to run full pipeline
-    log.info("server.auto_process_running", date=target_date, messages=total["cnt"], processed=processed["cnt"])
-    _task_status[target_date] = {"status": "running", "step": "sync"}
-
-    result = _run_sync_summarize_sync(target_date)
-    _task_status[target_date]["sync_result"] = result
-
-    if result.get("error"):
-        _task_status[target_date]["status"] = "failed"
-        _task_status[target_date]["error"] = result["error"]
-        return
-
-    ok = _build_digest_for_date_sync(target_date)
-    if ok:
-        _task_status[target_date]["status"] = "completed"
-    else:
-        _task_status[target_date]["status"] = "no_data"
-
-
-def _process_multiple_dates(dates: list[str]) -> None:
-    """
-    Process multiple dates in parallel using thread pool.
-    """
-    log.info("server.parallel_process_start", dates=dates, workers=_executor._max_workers)
-
-    futures = []
-    for date_str in dates:
-        if _task_status.get(date_str, {}).get("status") == "running":
-            continue
-        _task_status[date_str] = {"status": "pending"}
-        future = _executor.submit(_process_single_date, date_str)
-        futures.append((date_str, future))
-
-    # Wait for all to complete (non-blocking for web server)
-    for date_str, future in futures:
-        try:
-            future.result(timeout=600)  # 10 min timeout per date
-        except Exception as e:
-            log.error("server.parallel_process_error", date=date_str, error=str(e))
-            _task_status[date_str] = {"status": "failed", "error": str(e)}
-
-    log.info("server.parallel_process_done")
+templates.env.filters["from_json"] = from_json
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Initialize database and auto-process last 7 days on startup."""
+    """Initialize database and start background tasks."""
+    # Initialize database
     init_db()
+    log.info("app.startup", db_path=str(settings.db_path))
 
-    # Schedule background processing (non-blocking)
-    async def schedule_processing() -> None:
-        await asyncio.sleep(1)  # Wait for server to be ready
+    # Run initial sync
+    try:
+        await run_sync()
+    except Exception as e:
+        log.warning("app.initial_sync_failed", error=str(e))
 
-        dates_to_process = []
-        for i in range(7):
-            d = Date.today() - timedelta(days=i)
-            date_str = d.strftime("%Y-%m-%d")
-            dates_to_process.append(date_str)
+    # Start background schedulers
+    sync_task = __import__("asyncio").create_task(start_sync_scheduler())
+    cleanup_task = __import__("asyncio").create_task(start_cleanup_scheduler())
 
-        # Run in thread pool (non-blocking for asyncio)
-        loop = asyncio.get_event_loop()
-        await loop.run_in_executor(_executor, _process_multiple_dates, dates_to_process)
-
-    asyncio.create_task(schedule_processing())
     yield
 
-    # Cleanup on shutdown
-    _executor.shutdown(wait=False)
+    # Cleanup
+    sync_task.cancel()
+    cleanup_task.cancel()
+    log.info("app.shutdown")
 
 
-app = FastAPI(
-    title="my-email digest viewer",
-    description="Web interface for browsing daily email digests",
-    version="0.1.0",
-    lifespan=lifespan,
-)
+app = FastAPI(title="Email Inbox MVP", lifespan=lifespan)
+
+
+# ── Page Routes ───────────────────────────────────────────────────────────────
 
 
 @app.get("/", response_class=HTMLResponse)
-async def index(request: Request):
-    """
-    Main page showing all digest dates with viewer.
-    Defaults to showing last 7 days.
-    """
+async def inbox_page(request: Request):
+    """Main inbox page."""
+    conn = get_connection()
     try:
-        from jinja2 import Environment, FileSystemLoader
-    except ImportError:
-        raise HTTPException(status_code=500, detail="jinja2 not installed")
-
-    conn = get_connection()
-    dates = _get_all_digest_dates(conn)
-    conn.close()
-
-    today = Date.today().strftime("%Y-%m-%d")
-
-    # Generate date list for the past 7 days (changed from 30)
-    available_dates: list[dict[str, Any]] = []
-    for i in range(7):
-        d = Date.today() - timedelta(days=i)
-        date_str = d.strftime("%Y-%m-%d")
-
-        conn = get_connection()
-        has_digest = date_str in dates
-        msg_count = _get_messages_count_for_date(conn, date_str)
-        processed_count = _get_processed_count_for_date(conn, date_str)
-        conn.close()
-
-        task_info = _task_status.get(date_str, {})
-
-        available_dates.append({
-            "date": date_str,
-            "has_digest": has_digest,
-            "msg_count": msg_count,
-            "processed_count": processed_count,
-            "is_today": date_str == today,
-            "task_status": task_info.get("status") if task_info else None,
-        })
-
-    env = Environment(loader=FileSystemLoader(str(_TEMPLATE_DIR)), autoescape=True)
-    template = env.get_template("index.html.j2")
-    html = template.render(
-        dates=available_dates,
-        today=today,
-    )
-
-    return HTMLResponse(content=html)
-
-
-@app.get("/api/dates")
-async def list_dates():
-    """
-    List all dates with digests.
-    """
-    conn = get_connection()
-    dates = _get_all_digest_dates(conn)
-    conn.close()
-    return {"dates": dates}
-
-
-@app.get("/api/digest/{target_date}", response_class=HTMLResponse)
-async def get_digest_html(target_date: str):
-    """
-    Get HTML digest for a specific date.
-
-    If no digest exists but there are messages, triggers generation.
-    """
-    from my_email.digest.builder import build_digest
-    from my_email.db.topic_repository import get_active_topics
-    from my_email.digest.renderer import build_html_digest, TemplateError
-
-    conn = get_connection()
-
-    # Check for existing digest
-    digest_row = get_digest(conn, target_date)
-
-    if digest_row:
-        # Digest exists - build HTML from stored data
-        from my_email.digest.builder import DailyDigest
-
-        digest_data = json.loads(digest_row["digest_json"])
-        digest = DailyDigest(**digest_data)
-        active_topics = get_active_topics(conn, target_date)
-        conn.close()
-
-        try:
-            html = build_html_digest(digest, active_topics)
-            return HTMLResponse(content=html)
-        except TemplateError as e:
-            raise HTTPException(status_code=500, detail=str(e))
-
-    # No digest - check if we have messages
-    msg_count = _get_messages_count_for_date(conn, target_date)
-    processed_count = _get_processed_count_for_date(conn, target_date)
-    conn.close()
-
-    if msg_count == 0:
-        raise HTTPException(status_code=404, detail=f"No messages for {target_date}")
-
-    if processed_count == 0:
-        # Have unprocessed messages - return loading state
-        return HTMLResponse(
-            content=f"""
-            <div style="text-align: center; padding: 40px;">
-                <h2>Generating digest for {target_date}...</h2>
-                <p>Found {msg_count} unprocessed messages.</p>
-                <p>Use: <code>my-email summarize --date {target_date}</code></p>
-            </div>
-            """,
-            status_code=202,
+        counts = get_message_counts(conn)
+        messages = get_messages(conn)
+        return templates.TemplateResponse(
+            "inbox.html.j2",
+            {
+                "request": request,
+                "messages": messages,
+                "counts": counts,
+            },
         )
+    finally:
+        conn.close()
 
-    # Have processed messages but no digest - build it
+
+@app.get("/settings", response_class=HTMLResponse)
+async def settings_page(request: Request):
+    """Settings page."""
+    conn = get_connection()
     try:
-        digest = build_digest(get_connection(), target_date)
-        active_topics = get_active_topics(get_connection(), target_date)
-        html = build_html_digest(digest, active_topics)
-        return HTMLResponse(content=html)
-    except TemplateError as e:
+        retention_days = int(get_setting(conn, "retention_days", default="7"))
+        sync_interval = int(get_setting(conn, "auto_sync_interval_minutes", default="30"))
+        return templates.TemplateResponse(
+            "settings.html.j2",
+            {
+                "request": request,
+                "retention_days": retention_days,
+                "sync_interval": sync_interval,
+            },
+        )
+    finally:
+        conn.close()
+
+
+# ── API Routes ────────────────────────────────────────────────────────────────
+
+
+@app.get("/api/messages")
+async def list_messages(
+    state: str | None = Query(None, description="Filter by state: unread, read, starred, all"),
+    relevance: str | None = Query(None, description="Filter by relevance: high, medium, low"),
+    days: int | None = Query(None, description="Messages from last N days"),
+    page: int = Query(1, ge=1, description="Page number"),
+    size: int = Query(50, ge=1, le=100, description="Page size"),
+):
+    """List messages with optional filters."""
+    conn = get_connection()
+    try:
+        messages = get_messages(conn, state=state, relevance=relevance, days=days, page=page, size=size)
+        counts = get_message_counts(conn)
+
+        return {
+            "total": counts["total"],
+            "unread_count": counts["unread"],
+            "high_relevance_count": counts["high_relevance"],
+            "messages": [
+                {
+                    "id": msg["id"],
+                    "subject": msg["subject"],
+                    "sender": msg["sender"],
+                    "sender_email": msg["sender_email"],
+                    "received_at": msg["received_at"],
+                    "msg_state": msg["msg_state"],
+                    "relevance": msg["relevance"],
+                    "summary": json.loads(msg["summary_json"]).get("summary") if msg["summary_json"] else None,
+                }
+                for msg in messages
+            ],
+        }
+    finally:
+        conn.close()
+
+
+@app.get("/api/messages/{message_id}")
+async def get_message(message_id: str):
+    """Get message details with full body."""
+    conn = get_connection()
+    try:
+        msg = get_message_by_id(conn, message_id)
+        if not msg:
+            raise HTTPException(status_code=404, detail="Message not found")
+
+        return {
+            "id": msg["id"],
+            "thread_id": msg["thread_id"],
+            "subject": msg["subject"],
+            "sender": msg["sender"],
+            "sender_email": msg["sender_email"],
+            "received_at": msg["received_at"],
+            "body_text": msg["body_text"],
+            "msg_state": msg["msg_state"],
+            "relevance": msg["relevance"],
+            "summary": json.loads(msg["summary_json"]) if msg["summary_json"] else None,
+        }
+    finally:
+        conn.close()
+
+
+@app.patch("/api/messages/{message_id}")
+async def patch_message(message_id: str, body: dict[str, str]):
+    """Update message state."""
+    if "msg_state" not in body:
+        raise HTTPException(status_code=400, detail="msg_state is required")
+
+    new_state = body["msg_state"]
+    if new_state not in ("read", "starred"):
+        raise HTTPException(status_code=400, detail="msg_state must be 'read' or 'starred'")
+
+    conn = get_connection()
+    try:
+        if not update_message_state(conn, message_id, new_state):
+            raise HTTPException(status_code=404, detail="Message not found")
+        conn.commit()
+        return {"id": message_id, "msg_state": new_state}
+    finally:
+        conn.close()
+
+
+@app.post("/api/sync")
+async def trigger_sync():
+    """Manually trigger sync."""
+    try:
+        result = await run_sync()
+        return result
+    except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/api/generate/{target_date}")
-async def generate_digest(target_date: str, background_tasks: BackgroundTasks):
-    """
-    Trigger sync + summarize + digest generation for a date.
-
-    Returns immediately with task status. Check status via /api/status/{date}.
-    """
-    # Check if already running
-    task_info = _task_status.get(target_date, {})
-    if task_info.get("status") == "running":
-        return {"status": "already_running", "date": target_date}
-
-    # Trigger background task in thread pool
-    _task_status[target_date] = {"status": "pending"}
-    _executor.submit(_process_single_date, target_date)
-
-    return {"status": "started", "date": target_date}
-
-
-@app.get("/api/status/{target_date}")
-async def get_task_status(target_date: str):
-    """
-    Get the status of a generation task.
-    """
-    task_info = _task_status.get(target_date, {"status": "not_started"})
-    return {"date": target_date, **task_info}
-
-
-# ── Projects routes ────────────────────────────────────────────────────────────
-
-@app.get("/projects", response_class=HTMLResponse)
-async def projects_list(request: Request):
-    """
-    Show all discovered projects.
-    """
-    try:
-        from jinja2 import Environment, FileSystemLoader
-    except ImportError:
-        raise HTTPException(status_code=500, detail="jinja2 not installed")
-
-    from my_email.project.clusterer import list_projects
-
+@app.get("/api/settings")
+async def get_settings():
+    """Get current settings."""
     conn = get_connection()
-    projects = list_projects(conn, min_emails=1)
-    conn.close()
-
-    env = Environment(loader=FileSystemLoader(str(_TEMPLATE_DIR)), autoescape=True)
-    template = env.get_template("projects.html.j2")
-    html = template.render(projects=projects)
-
-    return HTMLResponse(content=html)
-
-
-@app.get("/projects/{project_id}", response_class=HTMLResponse)
-async def project_detail(project_id: str, request: Request):
-    """
-    Show emails for a specific project.
-    """
     try:
-        from jinja2 import Environment, FileSystemLoader
-    except ImportError:
-        raise HTTPException(status_code=500, detail="jinja2 not installed")
-
-    from my_email.project.clusterer import get_project, get_project_emails
-    import json
-
-    conn = get_connection()
-    project = get_project(conn, project_id)
-
-    if not project:
+        return {
+            "retention_days": int(get_setting(conn, "retention_days", default="7")),
+            "auto_sync_interval_minutes": int(get_setting(conn, "auto_sync_interval_minutes", default="30")),
+        }
+    finally:
         conn.close()
-        raise HTTPException(status_code=404, detail=f"Project '{project_id}' not found")
-
-    # Get emails for the last 30 days
-    from datetime import datetime, timedelta
-    start_date = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
-    emails = get_project_emails(conn, project_id, start_date=start_date)
-    conn.close()
-
-    # Parse summary_json for each email
-    for email in emails:
-        if email.get("summary_json"):
-            try:
-                email["summary"] = json.loads(email["summary_json"])
-            except json.JSONDecodeError:
-                email["summary"] = None
-        else:
-            email["summary"] = None
-
-    env = Environment(loader=FileSystemLoader(str(_TEMPLATE_DIR)), autoescape=True)
-    template = env.get_template("project_detail.html.j2")
-    html = template.render(project=project, emails=emails)
-
-    return HTMLResponse(content=html)
 
 
-@app.post("/api/projects/discover")
-async def api_projects_discover(min_emails: int = 2, threshold: int = 2):
-    """
-    Trigger project discovery.
-    """
-    from my_email.project.clusterer import (
-        discover_projects,
-        save_project,
-        save_assignment,
-        clear_projects,
-        backfill_message_topics,
-    )
-    from my_email.project.models import ProjectAssignment
-
+@app.put("/api/settings")
+async def update_settings(body: dict[str, int]):
+    """Update settings."""
     conn = get_connection()
+    try:
+        if "retention_days" in body:
+            days = body["retention_days"]
+            if not 1 <= days <= 365:
+                raise HTTPException(status_code=400, detail="retention_days must be between 1 and 365")
+            save_setting(conn, "retention_days", str(days))
 
-    # Backfill message_topics
-    backfill_count = backfill_message_topics(conn)
-    conn.commit()
+        if "auto_sync_interval_minutes" in body:
+            interval = body["auto_sync_interval_minutes"]
+            if not 5 <= interval <= 1440:
+                raise HTTPException(status_code=400, detail="auto_sync_interval_minutes must be between 5 and 1440")
+            save_setting(conn, "auto_sync_interval_minutes", str(interval))
 
-    # Clear existing projects
-    clear_projects(conn)
-
-    # Discover new projects
-    projects, project_messages = discover_projects(
-        conn, min_emails=min_emails, co_occurrence_threshold=threshold
-    )
-
-    # Save projects and assignments
-    assignment_count = 0
-    for project in projects:
-        save_project(conn, project)
-        for msg_id in project_messages.get(project.id, set()):
-            assignment = ProjectAssignment(
-                message_id=msg_id,
-                project_id=project.id,
-                confidence=1.0,
-                reasons=["cluster membership"],
-            )
-            save_assignment(conn, assignment)
-            assignment_count += 1
-
-    conn.commit()
-    conn.close()
-
-    return {
-        "status": "completed",
-        "projects_found": len(projects),
-        "emails_assigned": assignment_count,
-        "topics_backfilled": backfill_count,
-    }
-
-
-def create_app() -> FastAPI:
-    """
-    Factory function to create the FastAPI application.
-
-    Returns:
-        Configured FastAPI application instance.
-    """
-    return app
+        conn.commit()
+        return {
+            "retention_days": int(get_setting(conn, "retention_days", default="7")),
+            "auto_sync_interval_minutes": int(get_setting(conn, "auto_sync_interval_minutes", default="30")),
+        }
+    finally:
+        conn.close()
