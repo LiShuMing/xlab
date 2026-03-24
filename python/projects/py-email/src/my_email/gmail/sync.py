@@ -32,6 +32,59 @@ from my_email.parser.cleaner import clean_email_body
 log = structlog.get_logger()
 
 
+# ── blocked senders (auto-generated notifications) ─────────────────────────────
+
+BLOCKED_SENDERS = {
+    # GitHub notifications
+    "notifications@github.com",
+    "noreply@github.com",
+    # Google
+    "no-reply@accounts.google.com",
+    "no-reply@google.com",
+    "noreply@google.com",
+    # Common noreply addresses
+    "noreply@*",
+    "no-reply@*",
+    "donotreply@*",
+    "do-not-reply@*",
+    # Newsletter/bulk senders
+    "bounce@*",
+    "bounces@*",
+}
+
+
+def _is_blocked_sender(sender_email: str | None) -> bool:
+    """
+    Check if sender should be filtered out (auto-generated notifications).
+
+    Args:
+        sender_email: Email address to check.
+
+    Returns:
+        True if sender should be blocked.
+    """
+    if not sender_email:
+        return False
+
+    sender_lower = sender_email.lower()
+
+    for blocked in BLOCKED_SENDERS:
+        if blocked.startswith("*@"):
+            # Wildcard domain match
+            domain = blocked[1:]  # @domain.com
+            if sender_lower.endswith(domain):
+                return True
+        elif blocked.endswith("@*"):
+            # Wildcard local part match
+            local = blocked[:-1]  # noreply@
+            if sender_lower.startswith(local):
+                return True
+        elif sender_lower == blocked:
+            return True
+
+    return False
+
+
 # ── custom exceptions ─────────────────────────────────────────────────────────
 
 
@@ -263,6 +316,13 @@ def _ingest_refs(
             ).execute()
 
             msg = _parse_message(raw)
+
+            # Filter out blocked senders (auto-generated notifications)
+            if _is_blocked_sender(msg.get("sender_email")):
+                skipped += 1
+                log.debug("gmail.sync.blocked", id=msg["id"], sender=msg.get("sender_email"))
+                continue
+
             if upsert_message(db_conn, msg):
                 synced += 1
                 log.info("gmail.sync.inserted", id=msg["id"], subject=msg["subject"][:80])
