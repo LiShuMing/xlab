@@ -225,6 +225,12 @@ def cli(
     type=int,
     help="Days of history for trend analysis (default: 14).",
 )
+@click.option(
+    "--no-crawler",
+    is_flag=True,
+    default=False,
+    help="Disable smart crawler for non-RSS sources.",
+)
 @click.pass_obj
 def run(
     config: Config,
@@ -240,6 +246,7 @@ def run(
     trends: bool,
     analyze_competition: bool,
     history_days: int,
+    no_crawler: bool,
 ):
     """Run the complete pipeline: fetch, extract, summarize, and write reports.
 
@@ -329,8 +336,23 @@ def run(
 
     # Step 3: Extract items from web sources
     click.echo("Step 3: Extracting items...")
-    items = extract_items(results)
-    click.echo(f"  Extracted {len(items)} items from web sources")
+
+    # Use smart crawler for non-RSS sources to avoid duplicates
+    if not no_crawler:
+        try:
+            from dbradar.crawler_integration import extract_with_crawler, dedupe_extracted_items
+
+            items = extract_with_crawler(results, enable_crawler=True)
+            items = dedupe_extracted_items(items)
+            click.echo(f"  Extracted {len(items)} items from web sources (with smart crawler)")
+        except Exception as e:
+            # Fallback to original extraction if crawler fails
+            click.echo(f"  Crawler failed ({e}), falling back to standard extraction")
+            items = extract_items(results)
+            click.echo(f"  Extracted {len(items)} items from web sources")
+    else:
+        items = extract_items(results)
+        click.echo(f"  Extracted {len(items)} items from web sources (crawler disabled)")
 
     # Step 3b: Fetch from enhanced sources (Google Search, NewsAPI)
     click.echo("Step 3b: Fetching from enhanced sources...")

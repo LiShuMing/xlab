@@ -2,6 +2,72 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2026-03-24] - Smart Crawler for Non-RSS Sources
+
+### Added
+
+#### Smart Crawler (`dbradar/crawler.py`)
+- **URL Normalization**: Removes tracking parameters, normalizes domains, handles trailing slashes
+  - `URLNormalizer.normalize()`: Consistent URL format for deduplication
+  - `URLNormalizer.get_canonical_url()`: Extracts canonical URL from HTML
+- **Content Fingerprinting**: MD5-based content hashing for duplicate detection
+  - `ContentFingerprinter.fingerprint()`: Generates content hash from first 200 chars
+  - Prevents duplicate articles with slightly different URLs
+- **Domain-Specific Rules**: Configurable crawl rules per domain
+  - `CrawlRule`: Include/exclude patterns, CSS selectors, pagination settings
+  - Pre-configured rules for ClickHouse Blog, GitHub Releases
+- **Smart Article Extraction**:
+  - Link extraction from blog index pages
+  - Article content extraction with multiple fallback selectors
+  - Date extraction from various HTML formats
+  - Author and metadata extraction
+
+#### Crawler Integration (`dbradar/crawler_integration.py`)
+- **`extract_with_crawler()`**: Main entry point combining RSS and crawler extraction
+  - Processes RSS feeds first
+  - Crawls non-RSS sources for additional articles
+  - Cross-deduplicates between RSS and crawled content
+- **`dedupe_extracted_items()`**: Standalone deduplication using URL + content fingerprint
+- **`CrawlerAdapter`**: Converts `CrawledItem` to `ExtractedItem`
+  - Content type classification (release/benchmark/tutorial/blog)
+  - Confidence scoring based on content quality
+
+#### CLI Updates (`dbradar/cli.py`)
+- **New flag**: `--no-crawler` to disable smart crawler
+- **Default behavior**: Crawler enabled for all non-RSS sources
+- **Fallback**: Automatically falls back to standard extraction if crawler fails
+
+### Technical Details
+
+#### Deduplication Strategy
+1. **URL Normalization**: `https://example.com/post/?utm_source=feed` → `https://example.com/post/`
+2. **Canonical URL Extraction**: Uses `<link rel="canonical">` when available
+3. **Content Fingerprinting**: First 200 chars of normalized title + content
+4. **Cross-Source Deduplication**: RSS items and crawled items deduplicated together
+
+#### Crawl Flow
+```
+1. Fetch feed/source URL
+2. Check if RSS/Atom → Parse with feedparser
+3. If HTML → Crawl for article links
+   a. Extract article links using domain-specific selectors
+   b. Normalize and filter URLs (exclude pagination, tags, etc.)
+   c. Crawl each article page
+   d. Extract content, date, author
+   e. Generate content fingerprint
+   f. Skip if fingerprint already seen
+4. Merge RSS + crawled items
+5. Final deduplication pass
+```
+
+### Benefits
+- **Eliminates duplicates**: Same article from RSS and HTML crawl deduplicated
+- **Better coverage**: Crawls article pages even when RSS is incomplete
+- **Cleaner URLs**: Removes tracking parameters for consistent storage
+- **Domain-aware**: Custom rules for specific sites (ClickHouse, GitHub, etc.)
+
+---
+
 ## [2026-03-24] - Web UI Enhancement & Incremental Mode
 
 ### Added

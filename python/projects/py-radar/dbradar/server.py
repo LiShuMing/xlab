@@ -151,6 +151,11 @@ def format_date(date_str: str) -> str:
 
         dt = datetime.fromisoformat(date_str.replace("Z", "+00:00"))
         now = datetime.now(timezone.utc)
+
+        # Ensure both datetimes are offset-aware
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+
         diff_days = (now - dt).days
 
         if diff_days == 0:
