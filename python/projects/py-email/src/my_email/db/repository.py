@@ -39,10 +39,12 @@ def init_db() -> None:
     """Initialize the database schema. Creates parent directories if needed."""
     settings.db_path.parent.mkdir(parents=True, exist_ok=True)
     conn = get_connection()
-    conn.executescript(SCHEMA_SQL)
-    conn.commit()
-    conn.close()
-    log.info("db.initialized", path=str(settings.db_path))
+    try:
+        conn.executescript(SCHEMA_SQL)
+        conn.commit()
+        log.info("db.initialized", path=str(settings.db_path))
+    finally:
+        conn.close()
 
 
 # ── messages ──────────────────────────────────────────────────────────────────

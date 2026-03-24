@@ -23,8 +23,6 @@ from typing import Any
 import structlog
 from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import HTMLResponse, JSONResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 
 from my_email.config import settings
 from my_email.db.repository import (
@@ -44,10 +42,9 @@ from my_email.scheduler.cleanup_task import start_cleanup_scheduler
 log = structlog.get_logger()
 
 _TEMPLATE_DIR = Path(__file__).parent / "templates"
-templates = Jinja2Templates(directory=str(_TEMPLATE_DIR))
 
 
-# Add custom filters
+# Add custom Jinja2 filter
 def from_json(value):
     """Parse JSON string to dict."""
     if not value:
@@ -55,25 +52,25 @@ def from_json(value):
     return json.loads(value)
 
 
-templates.env.filters["from_json"] = from_json
+# Create Jinja2 environment
+from jinja2 import Environment, FileSystemLoader
+
+jinja_env = Environment(loader=FileSystemLoader(str(_TEMPLATE_DIR)))
+jinja_env.filters["from_json"] = from_json
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Initialize database and start background tasks."""
+    import asyncio
+
     # Initialize database
     init_db()
     log.info("app.startup", db_path=str(settings.db_path))
 
-    # Run initial sync
-    try:
-        await run_sync()
-    except Exception as e:
-        log.warning("app.initial_sync_failed", error=str(e))
-
-    # Start background schedulers
-    sync_task = __import__("asyncio").create_task(start_sync_scheduler())
-    cleanup_task = __import__("asyncio").create_task(start_cleanup_scheduler())
+    # Start background schedulers (includes initial sync)
+    sync_task = asyncio.create_task(start_sync_scheduler())
+    cleanup_task = asyncio.create_task(start_cleanup_scheduler())
 
     yield
 
@@ -96,14 +93,12 @@ async def inbox_page(request: Request):
     try:
         counts = get_message_counts(conn)
         messages = get_messages(conn)
-        return templates.TemplateResponse(
-            "inbox.html.j2",
-            {
-                "request": request,
-                "messages": messages,
-                "counts": counts,
-            },
-        )
+        template = jinja_env.get_template("inbox.html.j2")
+        return HTMLResponse(template.render(
+            request=request,
+            messages=messages,
+            counts=counts,
+        ))
     finally:
         conn.close()
 
@@ -115,14 +110,12 @@ async def settings_page(request: Request):
     try:
         retention_days = int(get_setting(conn, "retention_days", default="7"))
         sync_interval = int(get_setting(conn, "auto_sync_interval_minutes", default="30"))
-        return templates.TemplateResponse(
-            "settings.html.j2",
-            {
-                "request": request,
-                "retention_days": retention_days,
-                "sync_interval": sync_interval,
-            },
-        )
+        template = jinja_env.get_template("settings.html.j2")
+        return HTMLResponse(template.render(
+            request=request,
+            retention_days=retention_days,
+            sync_interval=sync_interval,
+        ))
     finally:
         conn.close()
 

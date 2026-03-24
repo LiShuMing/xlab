@@ -78,7 +78,14 @@ async def start_sync_scheduler() -> None:
     Start the periodic sync scheduler.
 
     Runs sync every auto_sync_interval_minutes (from settings).
+    Performs an initial sync immediately on startup.
     """
+    # Run initial sync immediately
+    try:
+        await run_sync()
+    except Exception as e:
+        log.error("sync_scheduler.initial_error", error=str(e))
+
     while True:
         try:
             db_conn = get_connection()

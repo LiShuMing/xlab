@@ -1,12 +1,12 @@
 """
-Web server module for browsing email digests.
+Web server module for Email Inbox MVP.
 
 Provides a web interface to:
-- Browse all available digest dates
-- View HTML digest for a specific date
-- Trigger sync+summarize for dates without digest
+- Browse and manage emails
+- View message details with AI summaries
+- Configure sync and retention settings
 """
 
-from my_email.server.app import create_app
+from my_email.server.app import app
 
-__all__ = ["create_app"]
+__all__ = ["app"]
