@@ -1,5 +1,76 @@
 # py-ego Change Logs
 
+## 2026-03-24 - Feature: Intelligence Layer Implementation (Phase 2 Complete)
+
+### Summary
+Implemented LLM integration, semantic memory with pgvector, and memory-aware chat responses for the FastAPI backend.
+
+### New Components
+
+**Core Module (`app/core/`)**
+| File | Lines | Purpose |
+|------|-------|---------|
+| `__init__.py` | 15 | Package exports |
+| `llm_client.py` | 130 | Async LLM client with httpx, OpenAI-compatible API |
+| `embeddings.py` | 154 | Async embedding generation with sentence-transformers fallback |
+
+**Memory System**
+| File | Lines | Purpose |
+|------|-------|---------|
+| `models/memory.py` | 60 | Memory ORM model with pgvector Vector(512) column |
+| `services/memory_service.py` | 130 | Memory operations: add, search (cosine similarity), delete |
+
+**Updated Services**
+| File | Changes |
+|------|---------|
+| `services/chat_service.py` | Integrated LLMClient and MemoryService; sends messages now generate AI responses with memory context |
+| `services/record_service.py` | Creates memory entries when records are created; deletes memories when records are deleted |
+
+### Key Features
+
+1. **LLM Integration** - Async chat completions with proper error handling and fallback responses
+2. **Semantic Memory** - pgvector-based storage with 512-dim embeddings (BAAI/bge-small-zh-v1.5)
+3. **Memory-Aware Chat** - Retrieves relevant memories (k=5) for context in AI responses
+4. **Automatic Memory Creation** - Records and chat conversations automatically stored as memories
+
+### Architecture
+
+```
+User Message
+    │
+    ▼
+┌─────────────────┐
+│  ChatService    │
+│  - Store msg    │
+│  - Search mem   │
+│  - Build ctx    │
+└────────┬────────┘
+         │
+    ┌────┴────┐
+    ▼         ▼
+┌───────┐  ┌──────────┐
+│  LLM  │  │ Memory   │
+│Client │  │ Service  │
+└───┬───┘  └────┬─────┘
+    │           │
+    ▼           ▼
+┌───────┐  ┌──────────┐
+│ LLM   │  │ pgvector │
+│ API   │  │ (cosine) │
+└───────┘  └──────────┘
+```
+
+### Test Results
+- 40/40 tests passing
+- Fixed test assertions (401 vs 403 for unauthorized access)
+
+### Next Steps (Phase 3)
+- Role system integration from py-ego core
+- Role-specific system prompts and personalities
+- Relationship memory for long-term user context
+
+---
+
 ## 2026-03-24 - Feature: Backend Core Implementation (Phase 1 Complete)
 
 ### Summary

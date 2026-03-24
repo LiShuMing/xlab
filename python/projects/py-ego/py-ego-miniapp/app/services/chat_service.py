@@ -2,9 +2,11 @@
 
 This module provides the ChatService class that handles:
 - Creating and managing chat sessions
-- Sending and receiving messages
+- Sending and receiving messages with LLM integration
+- Semantic memory retrieval for context-aware responses
 - Paginated message retrieval
 """
+from __future__ import annotations
 
 from datetime import datetime
 from uuid import UUID
@@ -12,23 +14,40 @@ from uuid import UUID
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.llm_client import LLMClient
 from app.models import ChatMessage, ChatSession, User
 from app.schemas import MessageCreate, SessionCreate
+from app.services.memory_service import MemoryService
 from app.utils import NotFoundException
 
 
+# Default system prompt for the AI assistant
+DEFAULT_SYSTEM_PROMPT = """你是一个温暖、专业的AI助手，专注于帮助用户记录生活、整理思绪和提供情感支持。
+
+你的特点：
+- 善于倾听，理解用户的情绪和感受
+- 回答简洁、真诚，避免说教
+- 能够记住用户之前分享的内容，建立连贯的对话
+- 用中文回复用户
+
+在回复时，请参考相关的记忆来提供个性化的回应。"""
+
+
 class ChatService:
-    """Service handling chat session and message operations.
+    """Service handling chat session and message operations with LLM integration.
 
     This service manages all chat-related operations for users:
     - Create and manage chat sessions
-    - Send and receive messages
-    - Retrieve messages with pagination
+    - Send messages and generate AI responses using LLM
+    - Retrieve relevant memories for context-aware responses
+    - Paginated message retrieval
     - Delete sessions
 
     Attributes:
         _db: SQLAlchemy async session for database operations.
         _user: The authenticated user performing operations.
+        _llm_client: Async LLM client for generating responses.
+        _memory_service: Service for semantic memory operations.
     """
 
     def __init__(self, db: AsyncSession, user: User):
@@ -40,6 +59,8 @@ class ChatService:
         """
         self._db = db
         self._user = user
+        self._llm_client = LLMClient()
+        self._memory_service = MemoryService(db, user)
 
     async def create_session(self, data: SessionCreate) -> ChatSession:
         """Create a new chat session.
@@ -151,10 +172,10 @@ class ChatService:
         session_id: UUID,
         data: MessageCreate,
     ) -> tuple[str, int]:
-        """Send a message and get a reply.
+        """Send a message and get an AI reply.
 
-        Stores the user message and generates a reply.
-        Currently returns an echo response; LLM integration to be added.
+        Stores the user message, retrieves relevant memories for context,
+        generates an AI response using the LLM, and stores the reply.
 
         Args:
             session_id: UUID of the session to send the message to.
@@ -163,14 +184,14 @@ class ChatService:
         Returns:
             tuple[str, int]: A tuple containing:
                 - str: The assistant's reply.
-                - int: Number of memories used (0 for now).
+                - int: Number of memories used for context.
 
         Raises:
             NotFoundException: If the session doesn't exist or doesn't belong
                               to the current user.
         """
         # Verify session exists
-        await self.get_session(session_id)
+        session = await self.get_session(session_id)
 
         # Store user message
         user_msg = ChatMessage(
@@ -179,10 +200,25 @@ class ChatService:
             content=data.content,
         )
         self._db.add(user_msg)
+        await self._db.commit()
 
-        # TODO: Call LLM service for actual reply
-        # For now, return a placeholder response
-        reply = f"[Echo] {data.content}"
+        # Search for relevant memories
+        memories = await self._memory_service.search_memories(data.content, k=5)
+        memories_used = len(memories)
+
+        # Build conversation context
+        messages = await self._build_context(session_id, data.content, memories)
+
+        # Generate AI response
+        try:
+            reply = await self._llm_client.chat_completion(
+                messages,
+                temperature=0.8,
+                max_tokens=2048,
+            )
+        except Exception:
+            # Fallback response if LLM fails
+            reply = "抱歉，我暂时无法回应。请稍后再试。"
 
         # Store assistant message
         assistant_msg = ChatMessage(
@@ -191,10 +227,83 @@ class ChatService:
             content=reply,
         )
         self._db.add(assistant_msg)
-
         await self._db.commit()
 
-        return reply, 0  # reply, memories_used
+        # Store this conversation as memory
+        memory_content = f"用户说: {data.content}\n助手回复: {reply}"
+        await self._memory_service.add_memory(
+            content=memory_content,
+            source_type="chat",
+        )
+
+        return reply, memories_used
+
+    async def _build_context(
+        self,
+        session_id: UUID,
+        current_message: str,
+        memories: list,
+    ) -> list[dict[str, str]]:
+        """Build the conversation context for the LLM.
+
+        Constructs a message list including system prompt, relevant memories,
+        and recent conversation history.
+
+        Args:
+            session_id: UUID of the current session.
+            current_message: The user's current message.
+            memories: List of relevant Memory objects.
+
+        Returns:
+            list[dict[str, str]]: List of message dicts for the LLM.
+        """
+        messages: list[dict[str, str]] = []
+
+        # Add system prompt with memories
+        system_prompt = DEFAULT_SYSTEM_PROMPT
+        if memories:
+            memory_context = "\n\n相关记忆:\n" + "\n".join(
+                f"- {m.content}" for m in memories
+            )
+            system_prompt += memory_context
+
+        messages.append({"role": "system", "content": system_prompt})
+
+        # Add recent conversation history (last 10 messages)
+        recent_messages = await self._get_recent_messages(session_id, limit=10)
+        for msg in reversed(recent_messages):  # Oldest first
+            messages.append({
+                "role": msg.role,
+                "content": msg.content,
+            })
+
+        # Add current message (if not already in history)
+        if not recent_messages or recent_messages[0].content != current_message:
+            messages.append({"role": "user", "content": current_message})
+
+        return messages
+
+    async def _get_recent_messages(
+        self,
+        session_id: UUID,
+        limit: int = 10,
+    ) -> list[ChatMessage]:
+        """Get recent messages from a session.
+
+        Args:
+            session_id: UUID of the session.
+            limit: Maximum number of messages to retrieve.
+
+        Returns:
+            list[ChatMessage]: Recent messages, newest first.
+        """
+        result = await self._db.execute(
+            select(ChatMessage)
+            .where(ChatMessage.session_id == session_id)
+            .order_by(ChatMessage.created_at.desc())
+            .limit(limit)
+        )
+        return list(result.scalars().all())
 
     async def get_messages(
         self,

@@ -13,7 +13,7 @@ class TestRecordsAPIUnauthorized:
     def test_list_records_unauthorized(self) -> None:
         """Test that listing records requires authentication."""
         response = client.get("/api/records")
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     def test_create_record_unauthorized(self) -> None:
         """Test that creating records requires authentication."""
@@ -21,22 +21,22 @@ class TestRecordsAPIUnauthorized:
             "/api/records",
             json={"content_type": "text", "content": "test content"},
         )
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     def test_get_record_unauthorized(self) -> None:
         """Test that getting a record requires authentication."""
         response = client.get("/api/records/00000000-0000-0000-0000-000000000000")
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     def test_delete_record_unauthorized(self) -> None:
         """Test that deleting a record requires authentication."""
         response = client.delete("/api/records/00000000-0000-0000-0000-000000000000")
-        assert response.status_code == 403
+        assert response.status_code == 401
 
     def test_timeline_unauthorized(self) -> None:
         """Test that timeline requires authentication."""
         response = client.get("/api/records/timeline?month=2026-03")
-        assert response.status_code == 403
+        assert response.status_code == 401
 
 
 class TestRecordsAPIRoutes:

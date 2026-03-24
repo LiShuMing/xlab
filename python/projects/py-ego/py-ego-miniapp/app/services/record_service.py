@@ -16,6 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import DailyRecord, User
 from app.schemas import RecordCreate
+from app.services.memory_service import MemoryService
 from app.utils import NotFoundException
 
 
@@ -47,7 +48,8 @@ class RecordService:
         """Create a new daily record.
 
         Creates a record of the specified content type (text, voice, or photo)
-        associated with the current user.
+        associated with the current user. Also creates a memory entry for
+        semantic search if the record has text content.
 
         Args:
             data: Record creation data containing content_type, content,
@@ -65,6 +67,16 @@ class RecordService:
         self._db.add(record)
         await self._db.commit()
         await self._db.refresh(record)
+
+        # Create memory for text content
+        if data.content:
+            memory_service = MemoryService(self._db, self._user)
+            await memory_service.add_memory(
+                content=data.content,
+                source_type="record",
+                source_id=record.id,
+            )
+
         return record
 
     async def get_records(
@@ -139,6 +151,7 @@ class RecordService:
         """Delete a record.
 
         Removes a record from the database after verifying ownership.
+        Also deletes associated memories.
 
         Args:
             record_id: UUID of the record to delete.
@@ -148,6 +161,11 @@ class RecordService:
                               to the current user.
         """
         record = await self.get_record(record_id)
+
+        # Delete associated memories
+        memory_service = MemoryService(self._db, self._user)
+        await memory_service.delete_memories_for_record(record_id)
+
         await self._db.delete(record)
         await self._db.commit()
 
