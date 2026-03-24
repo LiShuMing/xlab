@@ -11,6 +11,48 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional
 from dbradar.ranker import RankedItem
 from dbradar.summarizer import SummaryResult
 
+
+def detect_content_type(update: Dict[str, Any]) -> str:
+    """Detect content type from update data.
+
+    Args:
+        update: Update dictionary with title, sources, product, etc.
+
+    Returns:
+        Content type string: 'release', 'benchmark', 'blog', 'news', 'tutorial', 'other'
+    """
+    title = update.get("title", "").lower()
+    original_title = update.get("original_title", "").lower()
+    sources = update.get("sources", [])
+    url = sources[0] if sources else ""
+    what_changed = " ".join(update.get("what_changed", [])).lower()
+
+    combined = f"{title} {original_title} {what_changed} {url}".lower()
+
+    # Release notes
+    if any(kw in combined for kw in ["release", "version", "v1.", "v2.", "v3.", "发布", "版本更新"]):
+        if "/release" in url or "/blog/release" in url or "release_notes" in url:
+            return "release"
+
+    # Benchmark
+    if any(kw in combined for kw in ["benchmark", "性能测试", "performance test", "吞吐", "latency", "qps", "throughput"]):
+        return "benchmark"
+
+    # Tutorial
+    if any(kw in combined for kw in ["how to", "tutorial", "guide", "入门", "教程", "指南", "getting started"]):
+        return "tutorial"
+
+    # News
+    if any(kw in combined for kw in ["announce", "launch", "发布", "announce", "introduc"]):
+        return "news"
+
+    # Blog (default for blog domains)
+    if "/blog/" in url or "blog." in url:
+        return "blog"
+
+    return "other"
+
+
 if TYPE_CHECKING:
     from jinja2 import Environment
 
@@ -377,11 +419,42 @@ class Writer:
         """
         report_date = date or datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
+        # Build URL to original title mapping from ranked_items
+        url_to_original = {}
+        url_to_date = {}
+        for item in ranked_items:
+            if item.item.url:
+                url_to_original[item.item.url] = item.item.title
+                if item.item.published_at:
+                    url_to_date[item.item.url] = item.item.published_at
+
+        # Add original_title and published_date to each top_update
+        enriched_updates = []
+        for update in summary.top_updates:
+            enriched = dict(update)
+            # Try to find original title and date by URL match
+            sources = update.get("sources", [])
+            original_title = None
+            published_date = None
+            for src in sources:
+                if src in url_to_original:
+                    original_title = url_to_original[src]
+                    if src in url_to_date:
+                        published_date = url_to_date[src]
+                    break
+            enriched["original_title"] = original_title or update.get("title", "")
+            if published_date:
+                enriched["published_date"] = published_date
+
+            # Detect content type
+            enriched["content_type"] = detect_content_type(enriched)
+            enriched_updates.append(enriched)
+
         report = Report(
             date=report_date,
             title=self.t["title"].format(date=report_date),
             executive_summary=summary.executive_summary,
-            top_updates=summary.top_updates,
+            top_updates=enriched_updates,
             release_notes=summary.release_notes,
             themes=summary.themes,
             action_items=summary.action_items,

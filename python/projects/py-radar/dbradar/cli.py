@@ -157,13 +157,13 @@ def cli(
 )
 @click.option(
     "--max-items",
-    default=80,
+    default=150,
     type=int,
     help="Maximum number of items to process",
 )
 @click.option(
     "--top-k",
-    default=10,
+    default=25,
     type=int,
     help="Number of top items to include in summary",
 )

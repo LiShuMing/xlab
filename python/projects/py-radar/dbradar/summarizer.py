@@ -125,6 +125,7 @@ Generate a JSON object with the following structure (NO markdown code blocks, ju
 7. {executive_summary_desc}
 8. {action_items_desc}
 9. {themes_desc}
+10. **IMPORTANT**: Include ALL meaningful updates in top_updates, not just the most important ones. Aim for comprehensive coverage. Include updates even if they seem minor but are from key products.
 
 ## {current_date_title}
 {datetime.now(timezone.utc).strftime("%Y-%m-%d")}
