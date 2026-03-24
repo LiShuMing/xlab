@@ -114,18 +114,60 @@ async def run_sync(db_conn: sqlite3.Connection | None = None) -> dict:
 
 async def start_summarization_worker() -> None:
     """Background worker that continuously summarizes messages."""
+    # Wait a bit before starting summarization (let server start first)
+    await asyncio.sleep(10)
+
     while True:
         try:
-            summarized = await run_summarization_batch()
+            # Run summarization in a thread pool to not block
+            summarized = await asyncio.get_event_loop().run_in_executor(
+                None, lambda: _run_summarization_batch_sync()
+            )
             if summarized == 0:
-                # No messages to summarize, wait longer
                 await asyncio.sleep(60)
             else:
-                # Processed some, continue with short delay
                 await asyncio.sleep(2)
         except Exception as e:
             log.error("summarization_worker.error", error=str(e))
             await asyncio.sleep(30)
+
+
+def _run_summarization_batch_sync(limit: int = SUMMARY_BATCH_SIZE) -> int:
+    """Synchronous version for thread pool execution."""
+    db_conn = get_connection()
+    try:
+        cursor = db_conn.execute(
+            """SELECT id, subject, sender, received_at, body_text
+               FROM messages
+               WHERE summary_json IS NULL AND body_text IS NOT NULL
+               ORDER BY received_at DESC
+               LIMIT ?""",
+            (limit,),
+        )
+        rows = cursor.fetchall()
+
+        if not rows:
+            return 0
+
+        summarized = 0
+        for row in rows:
+            try:
+                summary = summarize_message(
+                    subject=row["subject"],
+                    sender=row["sender"],
+                    date=row["received_at"],
+                    body=row["body_text"][:8000],
+                )
+                save_summary(db_conn, row["id"], json.dumps(summary.model_dump()))
+                db_conn.commit()
+                summarized += 1
+                log.info("sync_task.summarized", id=row["id"])
+            except Exception as e:
+                log.warning("sync_task.summarize_error", id=row["id"], error=str(e))
+
+        return summarized
+    finally:
+        db_conn.close()
 
 
 async def start_sync_scheduler() -> None:
