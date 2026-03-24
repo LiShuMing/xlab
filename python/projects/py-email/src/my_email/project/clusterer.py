@@ -35,7 +35,7 @@ def discover_projects(
     conn: sqlite3.Connection,
     min_emails: int = 3,
     co_occurrence_threshold: int = 5,
-) -> list[Project]:
+) -> tuple[list[Project], dict[str, set[str]]]:
     """
     Discover projects from topic co-occurrence patterns.
 
@@ -50,7 +50,9 @@ def discover_projects(
             Higher values (5+) prevent giant clusters from forming.
 
     Returns:
-        List of discovered Project objects, sorted by email count.
+        Tuple of:
+        - List of discovered Project objects, sorted by email count.
+        - Dict mapping project_id to set of message_ids in that project.
     """
     # Step 1: Load topic-to-message mappings and sender info
     topic_messages: dict[str, set[str]] = defaultdict(set)
@@ -74,7 +76,7 @@ def discover_projects(
             message_orgs[msg_id] = domain
 
     if not topic_messages:
-        return []
+        return [], {}
 
     # Step 2: Build co-occurrence graph using Union-Find
     topics = list(topic_messages.keys())
@@ -104,6 +106,7 @@ def discover_projects(
 
     # Step 4: Build projects from clusters
     projects: list[Project] = []
+    project_messages: dict[str, set[str]] = {}  # project_id -> message_ids
     used_slugs: dict[str, int] = {}
 
     for root_topic, cluster_topics in clusters.items():
@@ -123,7 +126,10 @@ def discover_projects(
         for msg_id in cluster_messages:
             sender = message_senders.get(msg_id, "")
             if "@" in sender:
+                # Handle "Name <email@domain.com>" format
                 domain = sender.split("@")[1].lower()
+                # Remove trailing > if present
+                domain = domain.rstrip(">")
                 domains.add(domain)
 
         # Calculate date range
@@ -152,8 +158,9 @@ def discover_projects(
                 last_seen=last_seen,
             )
         )
+        project_messages[project_id] = cluster_messages
 
-    return sorted(projects, key=lambda p: -p.email_count)
+    return sorted(projects, key=lambda p: -p.email_count), project_messages
 
 
 def assign_email(

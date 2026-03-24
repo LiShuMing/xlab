@@ -85,8 +85,9 @@ class TestDiscoverProjects:
 
     def test_discover_projects_empty_db(self, temp_db):
         """Empty database returns no projects."""
-        result = discover_projects(temp_db)
-        assert result == []
+        projects, messages = discover_projects(temp_db)
+        assert projects == []
+        assert messages == {}
 
     def test_discover_projects_single_cluster(self, temp_db):
         """All topics cluster into single project."""
@@ -107,21 +108,21 @@ class TestDiscoverProjects:
                 )
         temp_db.commit()
 
-        result = discover_projects(temp_db, min_emails=3, co_occurrence_threshold=3)
+        projects, project_messages = discover_projects(temp_db, min_emails=3, co_occurrence_threshold=3)
 
-        assert len(result) == 1
-        assert result[0].email_count == 5
-        assert set(result[0].keywords) >= {"project-a", "feature-x", "release"}
+        assert len(projects) == 1
+        assert projects[0].email_count == 5
+        assert set(projects[0].keywords) >= {"project-a", "feature-x", "release"}
 
     def test_discover_projects_multiple_clusters(self, populated_db):
         """Disconnected topics form separate projects."""
-        result = discover_projects(populated_db, min_emails=3, co_occurrence_threshold=3)
+        projects, project_messages = discover_projects(populated_db, min_emails=3, co_occurrence_threshold=3)
 
         # Should get at least one project
-        assert len(result) >= 1
+        assert len(projects) >= 1
 
         # Each project should have distinct sender domains
-        for project in result:
+        for project in projects:
             assert project.email_count >= 3
 
     def test_discover_projects_min_emails_filter(self, temp_db):
@@ -139,9 +140,9 @@ class TestDiscoverProjects:
                 )
         temp_db.commit()
 
-        result = discover_projects(temp_db, min_emails=3, co_occurrence_threshold=1)
+        projects, project_messages = discover_projects(temp_db, min_emails=3, co_occurrence_threshold=1)
 
-        assert result == []
+        assert projects == []
 
     def test_discover_projects_co_occurrence_threshold(self, temp_db):
         """Threshold controls clustering strictness."""
@@ -169,11 +170,11 @@ class TestDiscoverProjects:
         temp_db.commit()
 
         # With threshold 2, topics share only 1 message, should not link
-        result = discover_projects(temp_db, min_emails=1, co_occurrence_threshold=2)
+        projects, project_messages = discover_projects(temp_db, min_emails=1, co_occurrence_threshold=2)
 
         # topic-a and topic-b should NOT be in same cluster (only share msg-1)
         # Each topic cluster has only 2 messages
-        for project in result:
+        for project in projects:
             assert project.email_count >= 2
 
     def test_discover_projects_first_last_seen(self, temp_db):
@@ -189,11 +190,11 @@ class TestDiscoverProjects:
             )
         temp_db.commit()
 
-        result = discover_projects(temp_db, min_emails=3, co_occurrence_threshold=1)
+        projects, project_messages = discover_projects(temp_db, min_emails=3, co_occurrence_threshold=1)
 
-        assert len(result) == 1
-        assert result[0].first_seen == "2026-03-10"
-        assert result[0].last_seen == "2026-03-14"
+        assert len(projects) == 1
+        assert projects[0].first_seen == "2026-03-10"
+        assert projects[0].last_seen == "2026-03-14"
 
 
 # ── integration: persistence ───────────────────────────────────────────────────

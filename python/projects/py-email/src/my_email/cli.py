@@ -471,9 +471,11 @@ def discover(min_emails: int, threshold: int, backfill: bool) -> None:
     from my_email.project.clusterer import (
         discover_projects as do_discover,
         save_project,
+        save_assignment,
         clear_projects,
         backfill_message_topics,
     )
+    from my_email.project.models import ProjectAssignment
 
     conn = get_connection()
 
@@ -490,16 +492,28 @@ def discover(min_emails: int, threshold: int, backfill: bool) -> None:
 
     # Discover new projects
     click.echo(f"Discovering projects (min_emails={min_emails}, threshold={threshold})...")
-    discovered = do_discover(conn, min_emails=min_emails, co_occurrence_threshold=threshold)
+    discovered, project_messages = do_discover(conn, min_emails=min_emails, co_occurrence_threshold=threshold)
 
     if not discovered:
         click.echo("No projects discovered. Try lowering --min-emails or run more summarizations.")
         conn.close()
         return
 
-    # Save projects
+    # Save projects and assign emails
+    assignment_count = 0
     for project in discovered:
         save_project(conn, project)
+
+        # Assign all messages in this project's cluster
+        for msg_id in project_messages.get(project.id, set()):
+            assignment = ProjectAssignment(
+                message_id=msg_id,
+                project_id=project.id,
+                confidence=1.0,  # High confidence for cluster membership
+                reasons=["cluster membership"],
+            )
+            save_assignment(conn, assignment)
+            assignment_count += 1
 
     conn.commit()
 
@@ -515,7 +529,8 @@ def discover(min_emails: int, threshold: int, backfill: bool) -> None:
         click.echo(f"  {project.id:<25} {project.email_count:>6} {keywords_str}")
 
     conn.close()
-    click.echo("\nDone. Run 'my-email projects list' to see all projects.")
+    click.echo(f"\nDone. Discovered {len(discovered)} projects with {assignment_count} email assignments.")
+    click.echo("Run 'my-email projects list' to see all projects.")
 
 
 @projects.command("list")
@@ -554,11 +569,11 @@ def list_projects_cmd(min_emails: int) -> None:
     click.echo()
 
 
-@projects.command()
+@projects.command("show")
 @click.argument("project_id")
 @click.option("--days", default=30, show_default=True, help="Show emails from last N days.")
 @click.option("--all", "show_all", is_flag=True, help="Show all emails regardless of date.")
-def show_emails(project_id: str, days: int, show_all: bool) -> None:
+def show_project_emails(project_id: str, days: int, show_all: bool) -> None:
     """
     Show emails for a specific project.
 
