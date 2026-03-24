@@ -1,6 +1,6 @@
 from datetime import date, datetime
 from uuid import UUID
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from enum import Enum
 
 
@@ -17,12 +17,11 @@ class RecordCreate(BaseModel):
 
 
 class RecordResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
     content_type: str
     content: str | None = None
     media_url: str | None = None
     record_date: date
     created_at: datetime
-
-    class Config:
-        from_attributes = True

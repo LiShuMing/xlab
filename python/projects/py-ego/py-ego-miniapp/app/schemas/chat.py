@@ -1,6 +1,6 @@
 from datetime import datetime
 from uuid import UUID
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class SessionCreate(BaseModel):
@@ -8,13 +8,12 @@ class SessionCreate(BaseModel):
 
 
 class SessionResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
     role_id: str
     started_at: datetime
     ended_at: datetime | None = None
-
-    class Config:
-        from_attributes = True
 
 
 class MessageCreate(BaseModel):
@@ -22,13 +21,12 @@ class MessageCreate(BaseModel):
 
 
 class MessageResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: UUID
     role: str
     content: str
     created_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 class ChatReply(BaseModel):
