@@ -2,272 +2,258 @@
 
 All notable changes to this project will be documented in this file.
 
-## [2026-03-31] - P0: Harness Engineering Standards Implementation
+## [2026-03-29] - Service Restart and OSS Sync Issue
 
-### Added
+### Issue Summary
+Restarted py-radar service and synced latest data from OSS.
 
-#### Circuit Breaker Pattern (Rule 3.3)
-- **New module `dbradar/circuit_breaker.py`**:
-  - `get_llm_circuit_breaker()` - Singleton circuit breaker for LLM API calls
-  - `with_circuit_breaker` decorator for automatic protection
-  - `CircuitBreakerListener` for logging state changes
-  - `get_circuit_breaker_status()` for health checks
-  - Configurable via `CIRCUIT_BREAKER_FAILURE_THRESHOLD` and `CIRCUIT_BREAKER_RECOVERY_TIMEOUT`
-- **Integration in `dbradar/summarizer.py`**:
-  - Circuit breaker protection on `_call_llm()` method
-  - Graceful handling when circuit is open (returns informative error message)
+### Problems Encountered
 
-#### External Prompt Management (Rule 4.1)
-- **New directory `dbradar/prompts/`**:
-  - `summarize_v1.txt` - Main summarization prompt template
-  - `translate_main_v1.txt` - Main translation prompt
-  - `translate_update_v1.txt` - Individual update translation prompt
-  - `translate_release_v1.txt` - Release note translation prompt
-  - `registry.yaml` - Prompt version tracking and metadata
-- **New module `dbradar/prompt_loader.py`**:
-  - `PromptLoader` class for loading prompts from external files
-  - Variable substitution using `{{variable}}` syntax
-  - Version tracking for A/B testing
-  - Hot-reloading support via `reload_registry()`
-  - `load_prompt()` convenience function
-- **Updated `dbradar/summarizer.py`**:
-  - All prompts now loaded from external files
-  - Prompt version logged for observability
+#### 1. systemctl restart hangs indefinitely
+- **Symptom**: `sudo systemctl restart py-radar` command times out/never returns
+- **Cause**: Unknown systemd issue causing the command to block
+- **Solution**: Kill the hanging process and use manual gunicorn startup instead
 
-#### Connection Pooling (Rule 6.1)
-- **New module `dbradar/http_client.py`**:
-  - `LLMHttpClient` singleton with `httpx.AsyncClient`
-  - Connection limits via `httpx.Limits`
-  - Semaphore-based concurrency control
-  - HTTP/2 support enabled
-  - Configurable via `HTTP_MAX_CONNECTIONS`, `HTTP_MAX_KEEPALIVE`, `HTTP_TIMEOUT`
-- **Updated `dbradar/summarizer.py`**:
-  - New `_call_llm_async()` method using async HTTP client
-  - Sync `_call_llm()` wrapper for backward compatibility
-  - Falls back to sync client when called from running event loop
+#### 2. Missing virtual environment
+- **Symptom**: `venv/bin/activate` not found in py-radar directory
+- **Cause**: Virtual environment was never created in the source directory
+- **Solution**: Created new venv: `python3 -m venv venv`
 
-#### Pydantic Settings (Rule 7.1)
-- **Updated `dbradar/config.py`**:
-  - New `Settings` class using `pydantic_settings.BaseSettings`
-  - Type-safe configuration with validation
-  - `SecretStr` for API keys (auto-masking in logs)
-  - Environment variable and `~/.env` file support
-  - Configurable circuit breaker, connection pooling, and LLM settings
-  - Backward-compatible `Config` class wrapping `Settings`
-  - `get_settings()` cached singleton accessor
+#### 3. Missing dependencies
+- **Symptom**: `ModuleNotFoundError` for oss2, duckdb, etc.
+- **Solution**: Install all dependencies: `pip install -r requirements.txt`
 
-### Changed
+### Working Commands
 
-#### Dependencies
-- Added `pybreaker>=1.0.0` for circuit breaker pattern
-- Added `pydantic>=2.0.0` and `pydantic-settings>=2.0.0` for settings management
-- Updated `tenacity>=8.0.0` for retry logic
+```bash
+# Create virtual environment
+cd /home/admin/work/services/py-radar
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 
-#### Error Handling
-- Added `CircuitBreakerOpenError` handling in summarizer
-- Returns graceful error message when LLM API is unavailable
+# Sync data from OSS
+python -m dbradar sync pull-import
 
-### Technical Details
-
-```python
-# Circuit breaker usage
-from dbradar.circuit_breaker import get_circuit_breaker_status
-status = get_circuit_breaker_status()
-# {'name': 'llm_api_circuit_breaker', 'state': 'closed', 'failure_count': 0, ...}
-
-# Prompt loading
-from dbradar.prompt_loader import load_prompt
-prompt = load_prompt("summarize", variables={"item_count": 5, ...})
-
-# Pydantic settings
-from dbradar.config import get_settings
-settings = get_settings()
-api_key = settings.get_api_key()  # Returns plain string, never log this
+# Manual service start (when systemctl fails)
+/home/admin/.venv/bin/gunicorn \
+  --bind 127.0.0.1:5000 \
+  --workers 2 --threads 2 --worker-class gthread \
+  --timeout 60 \
+  --access-logfile /home/admin/work/services/data/py-radar/logs/access.log \
+  --error-logfile /home/admin/work/services/data/py-radar/logs/error.log \
+  --daemon \
+  "dbradar.server:app"
 ```
+
+### Lessons Learned
+- When systemd commands hang, check for existing stuck processes with `ps aux | grep systemctl`
+- The py-radar service can be started manually with gunicorn as a fallback
+- Always verify virtual environment exists before running Python commands
 
 ---
 
-## [2026-03-29] - P0: Observability & Telemetry (structlog)
+## [2026-03-29] - Service Port Conflict Resolution
 
-### Added
+### Issue Summary
+Multiple gunicorn processes were running simultaneously, causing port 5000 conflicts and service instability.
 
-#### Structured Logging Configuration (`dbradar/logging_config.py`)
-- **Created comprehensive logging configuration for AI Agent observability**
-- **Context variable support** (`correlation_id`):
-  - `ContextVar` for request tracing across async boundaries (Rule 2.3)
-  - `CorrelationIdContext` context manager for automatic cleanup
-  - `set_correlation_id()` / `get_correlation_id()` helper functions
-- **Processors configured**:
-  - `TimeStamper(fmt="iso")` - ISO format timestamps
-  - `add_log_level` - Log level inclusion
-  - `add_correlation_id` - Custom processor for context propagation
-  - `PositionalArgumentsFormatter` - Format positional args
-  - `CallsiteParameterAdder` - File, function, line number
-  - `ConsoleRenderer(colors=True)` / `JSONRenderer` - Output formats
-- **Configuration modes**:
-  - Development: Colored console output
-  - Production: JSON format for log aggregation
+### Problems Identified
 
-#### Enhanced Summarizer with Structured Logging
-- **Added LLM I/O tracing** (Rule 2.2) in `dbradar/summarizer.py`:
-  - `llm_request` - Logs model, max_tokens, prompt_tokens, URL
-  - `llm_response` - Logs latency_ms, token usage, finish_reason
-- **Operation lifecycle logging**:
-  - `summarize_empty_items` - Empty input handling
-  - `prompt_built` - Prompt construction success
-  - `validation_success` / `validation_failed` / `validation_repaired`
-  - `summarize_success` - Summary generation metrics
-  - `json_extraction_failed` - JSON parsing errors
-  - `validation_failed` - Pydantic validation errors
-  - `llm_http_error` - HTTP-level errors with status codes
-  - `summarize_failed` - General error handling
-- **Translation operation logging**:
-  - `translation_started` - Translation request initiated
-  - `translating_top_updates` / `translating_release_notes`
-  - `translation_success` / `translation_failed`
+#### 1. Multiple Gunicorn Instances
+- **Symptom**: Port 5000 already in use errors in logs
+- **Cause**: Previous gunicorn processes were not properly terminated
+- **Impact**: New service instances couldn't bind to the port
 
-#### Logger Instance Management
-- **Per-class logger binding** in `Summarizer.__init__`:
-  ```python
-  self.logger = get_logger(__name__).bind(model=self.model, language=self.language)
-  ```
-- **Per-method context binding**:
-  ```python
-  log = self.logger.bind(item_count=len(items), top_k=top_k, correlation_id=cid)
-  ```
+#### 2. Environment Variables Not Set
+- **Symptom**: Service may use wrong data directory
+- **Solution**: Set DATA_DIR, OUTPUT_DIR, CACHE_DIR before starting gunicorn
 
-### Technical Details
+### Fix Steps
 
-```python
-# Example log output (development mode)
-2026-03-29T12:34:56.789Z [info] summarize_success
-    item_count=10 top_k=10 latency_ms=2345.67
-    summary_count=5 update_count=8 theme_count=4
-    had_validation_errors=False correlation_id=req-abc123
+```bash
+# Step 1: Kill all existing gunicorn processes
+kill -9 $(pgrep -f "gunicorn.*dbradar")
 
-# Example log output (JSON mode)
-{"timestamp": "2026-03-29T12:34:56.789Z", "level": "info",
- "event": "llm_response", "latency_ms": 2345.67,
- "prompt_tokens": 1500, "completion_tokens": 800,
- "finish_reason": "stop", "correlation_id": "req-abc123"}
+# Step 2: Verify no processes remain
+ps aux | grep gunicorn | grep -v grep
+
+# Step 3: Start service with correct environment
+cd /home/admin/work/services/py-radar
+export DATA_DIR=/home/admin/work/services/py-radar/data
+export OUTPUT_DIR=/home/admin/work/services/py-radar/out
+export CACHE_DIR=/home/admin/work/services/py-radar/cache
+source venv/bin/activate
+gunicorn --bind 127.0.0.1:5000 \
+  --workers 2 --threads 2 --worker-class gthread \
+  --timeout 60 \
+  --access-logfile /home/admin/work/services/data/py-radar/logs/access.log \
+  --error-logfile /home/admin/work/services/data/py-radar/logs/error.log \
+  --daemon \
+  --pid /tmp/py-radar.pid \
+  "dbradar.server:app"
+
+# Step 4: Verify service is accessible
+# Via Nginx:
+curl http://localhost/radar/
+
+# Direct access:
+curl http://127.0.0.1:5000/
 ```
 
-### Dependencies
-- Added `structlog>=24.1.0` to requirements.txt
+### Verification
+- ✅ Service responds on `http://127.0.0.1:5000/`
+- ✅ Nginx proxy `http://localhost/radar/` works correctly
+- ✅ No port conflict errors in logs
 
-### Usage Example
+### Lessons Learned
+- Always check for existing processes before starting new service instance
+- Use `kill -9` to force terminate stuck gunicorn processes
+- Verify service through both direct access and Nginx proxy
+- Setting environment variables (DATA_DIR, OUTPUT_DIR, CACHE_DIR) is essential
 
-```python
-from dbradar.logging_config import (
-    configure_logging, get_logger,
-    CorrelationIdContext, set_correlation_id
-)
+---
 
-# Configure logging
-configure_logging(log_level="DEBUG", json_format=False)
+## [2026-03-29] - DuckDB Concurrency Lock Fix
 
-# Method 1: Context manager
-with CorrelationIdContext("req-123"):
-    logger = get_logger(__name__)
-    logger.info("processing_started", items=10)
+### Issue Summary
+API endpoints returning 500 Internal Server Error due to DuckDB file lock conflicts.
 
-# Method 2: Manual set/reset
-token = set_correlation_id("req-456")
-try:
-    logger.info("processing_started", items=10)
-finally:
-    correlation_id.reset(token)
+### Root Cause
+- Multiple gunicorn worker processes trying to access the same DuckDB file simultaneously
+- DuckDB allows only single writer - concurrent access causes `IOException: Could not set lock on file`
+- Error message: `Conflicting lock is held in /usr/bin/python3.12 (PID XXXX)`
+
+### Solution
+Reduce gunicorn workers from 2 to 1, increase threads to handle concurrency:
+
+```bash
+# Before (causes lock conflicts):
+--workers 2 --threads 2
+
+# After (works correctly):
+--workers 1 --threads 4
 ```
 
-## [2026-03-29] - P0: Structured Output Validation (Pydantic)
+### Complete Working Startup Command
 
-### Added
-
-#### Pydantic Models (`dbradar/models.py`)
-- **Created comprehensive Pydantic models for LLM output validation**
-- **Models**:
-  - `SummaryOutput` - Root model for summary response validation
-  - `TopUpdate` - Individual update entry with field validators
-  - `ReleaseNote` - Release note entry validation
-  - `TranslationOutput` - Translation response model
-  - `TranslatedUpdate` / `TranslatedReleaseNote` - Translation helpers
-- **Validation features**:
-  - Non-empty string validation for lists
-  - Max 5 bullets constraint for executive_summary
-  - Automatic repair for invalid entries
-
-#### Enhanced Summarizer (`dbradar/summarizer.py`)
-- **Refactored to use Pydantic validation** (Harness Engineering Rule 1.1)
-- **New validation methods**:
-  - `_extract_json_from_response()` - Robust JSON extraction with regex
-  - `_validate_and_parse_output()` - Pydantic model validation with repair
-  - `_repair_output()` - Automatic repair of invalid LLM outputs
-- **New exception types**:
-  - `JSONExtractionError` - Failed JSON extraction
-  - `ValidationFailedError` - Validation with error details
-- **Validation features**:
-  - Markdown code block extraction (```json, ```)
-  - Bracket matching for nested JSON
-  - Automatic repair with defaults
-  - Validation error tracking in SummaryResult
-- **Translation models** now use Pydantic validation:
-  - `_translate_to_chinese()` uses TranslationOutput
-  - `_translate_update_to_chinese()` uses TranslatedUpdate
-  - `_translate_release_note_to_chinese()` uses TranslatedReleaseNote
-
-### Changed
-
-#### SummaryResult Dataclass
-- Added `validation_errors: Optional[List[str]]` field
-- Tracks validation issues for debugging and monitoring
-
-### Technical Details
-
-```python
-# Before: Manual dict access
-parsed_data = json.loads(json_text)
-result = SummaryResult(
-    executive_summary=parsed_data.get("executive_summary", []),
-    ...
-)
-
-# After: Pydantic validation
-parsed_data = self._extract_json_from_response(raw_text)
-result = self._validate_and_parse_output(parsed_data, raw_text)
+```bash
+cd /home/admin/work/services/py-radar
+export DATA_DIR=/home/admin/work/services/py-radar/data
+export OUTPUT_DIR=/home/admin/work/services/py-radar/out
+export CACHE_DIR=/home/admin/work/services/py-radar/cache
+source venv/bin/activate
+gunicorn --bind 127.0.0.1:5000 \
+  --workers 1 \
+  --threads 4 \
+  --worker-class gthread \
+  --timeout 60 \
+  --access-logfile /home/admin/work/services/data/py-radar/logs/access.log \
+  --error-logfile /home/admin/work/services/data/py-radar/logs/error.log \
+  --daemon \
+  --pid /tmp/py-radar.pid \
+  "dbradar.server:app"
 ```
 
-### Benefits
-- **Type safety**: Runtime validation prevents malformed data propagation
-- **Better error messages**: Clear validation errors with field paths
-- **Automatic repair**: Graceful degradation with default values
-- **Maintainability**: Single source of truth for output schema
+### Verification Results
+- ✅ `curl http://localhost/radar/` → 200
+- ✅ `curl http://localhost/radar/api/stats` → 200
+- ✅ `curl http://localhost/radar/api/items` → 200
+- ✅ No DuckDB lock errors in logs
 
-## [2026-03-29] - Harness Engineering Standards Documentation
+### Lessons Learned
+- DuckDB does not support multiple concurrent writers
+- For Flask + DuckDB, use single worker with multiple threads
+- Alternative: Use read-only mode for queries, single writer for updates
+- Always test API endpoints after service restart, not just the home page
 
-### Added
+---
 
-#### Engineering Standards (RULE.md)
-- **Created comprehensive AI Agent engineering standards document**
-- **8 major rule categories** covering:
-  1. **Structured Output Validation** - Pydantic requirements for LLM outputs
-  2. **Observability & Telemetry** - structlog, context tracing, LLM I/O logging
-  3. **Error Handling & Resilience** - tenacity retry patterns, circuit breaker
-  4. **Prompt Engineering** - external prompt management, version tracking
-  5. **Testing & Evaluation** - deterministic evaluation datasets, quality metrics
-  6. **Performance & Resource Management** - connection pooling, caching strategies
-  7. **Configuration Management** - Pydantic Settings, dependency injection
-  8. **Documentation Requirements** - CHANGE_LOGS.md compliance checklist
+## [2026-03-29] - Systemd Configuration Fix (Final)
 
-#### Agent Guidelines (AGENTS.md)
-- **Created AI Agent onboarding document**
-- **Mandatory reading order**: RULE.md → CLAUDE.md → CHANGE_LOGS.md → README.md
-- **Compliance checklist** for verifying RULE.md adherence
-- **Prohibited actions** list for agent constraints
-- **Communication style guidelines**
+### Issue Summary
+Systemd service configuration was using wrong data directory path and multiple workers.
 
-### References
-- Inspired by OpenAI's "Harness Engineering: Optimizing LLM Testing at Scale"
-- Aligns with existing CLAUDE.md modern Python standards
+### Configuration Changes
+
+Updated `/etc/systemd/system/py-radar.service`:
+
+```diff
+# Data directory (fixed path)
+- Environment="DATA_DIR=/home/admin/work/services/data/py-radar"
++ Environment="DATA_DIR=/home/admin/work/services/py-radar/data"
+
+# Workers (fixed DuckDB lock issue)
+- --workers 2
+- --threads 2
++ --workers 1
++ --threads 4
+```
+
+### Complete Fixed Configuration
+
+```ini
+[Unit]
+Description=py-radar Service
+After=network.target
+
+[Service]
+Type=simple
+User=admin
+Group=admin
+WorkingDirectory=/home/admin/work/services/py-radar
+Environment="PATH=/home/admin/work/services/py-radar/venv/bin"
+Environment="PYTHONUNBUFFERED=1"
+Environment="DATA_DIR=/home/admin/work/services/py-radar/data"
+Environment="OUTPUT_DIR=/home/admin/work/services/py-radar/out"
+Environment="CACHE_DIR=/home/admin/work/services/py-radar/cache"
+EnvironmentFile=-/home/admin/.env
+ExecStart=/home/admin/work/services/py-radar/venv/bin/gunicorn \
+    --bind 127.0.0.1:5000 \
+    --workers 1 \
+    --threads 4 \
+    --worker-class gthread \
+    --timeout 60 \
+    --access-logfile /home/admin/work/services/data/py-radar/logs/access.log \
+    --error-logfile /home/admin/work/services/data/py-radar/logs/error.log \
+    --capture-output \
+    "dbradar.server:app"
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+```
+
+### Activation Steps
+
+After updating the service file, reload and restart:
+
+```bash
+# Reload systemd to pick up new configuration
+sudo systemctl daemon-reload
+
+# Restart service with new configuration
+sudo systemctl restart py-radar
+
+# Verify new configuration is active
+ps aux | grep gunicorn | grep -v grep
+# Should show: --workers 1 --threads 4
+```
+
+### Final Verification
+- ✅ All endpoints return 200
+- ✅ API stats: 1621 items in database
+- ✅ No DuckDB lock errors
+- ✅ Service auto-restart enabled
+- ✅ Configuration: `--workers 1 --threads 4`
+
+### Lessons Learned
+- Systemd service file must use correct data directory path
+- DuckDB requires single worker configuration
+- Use `--threads 4` to handle concurrent requests with single worker
+- **Must run `systemctl daemon-reload` after editing service file**
+- Test all API endpoints after configuration changes
 
 ## [2026-03-25] - OSS Sync Implementation
 

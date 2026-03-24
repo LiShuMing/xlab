@@ -22,9 +22,11 @@ log "========== 开始定时抓取 =========="
 # 进入项目目录
 cd "${PROJECT_DIR}"
 
-# 激活虚拟环境（如果存在）
-if [ -d ".venv" ]; then
-    source .venv/bin/activate
+# 激活虚拟环境（使用 ~/.venv）
+if [ -d "$HOME/.venv" ]; then
+    source "$HOME/.venv/bin/activate"
+elif [ -d "venv" ]; then
+    source venv/bin/activate
 fi
 
 # 运行抓取命令

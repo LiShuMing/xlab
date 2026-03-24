@@ -44,7 +44,7 @@ class Fetcher:
     def __init__(
         self,
         cache: Optional[Cache] = None,
-        timeout: float = 30.0,
+        timeout: float = 10.0,
     ):
         self.cache = cache or get_cache()
         self.timeout = timeout
@@ -196,11 +196,25 @@ class Fetcher:
         if not urls_to_fetch:
             return results
 
-        # Fetch remaining URLs
+        # Fetch remaining URLs with individual timeout handling
         with httpx.Client(timeout=self.timeout) as client:
             for url in tqdm(urls_to_fetch, desc=f"Fetching {source.product}"):
-                result = self._fetch_single(client, url, product=source.product)
-                results.append(result)
+                try:
+                    result = self._fetch_single(client, url, product=source.product)
+                    results.append(result)
+                except Exception as e:
+                    # Log and skip URLs that cause errors
+                    tqdm.write(f"  [SKIP] {url[:60]}... ({type(e).__name__})")
+                    results.append(
+                        FetchResult(
+                            url=url,
+                            product=source.product,
+                            content="",
+                            content_type="error",
+                            status_code=None,
+                            error_message=f"{type(e).__name__}: {str(e)[:50]}",
+                        )
+                    )
 
         return results
 

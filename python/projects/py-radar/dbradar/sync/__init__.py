@@ -20,6 +20,7 @@ __all__ = [
     "upload_sync_file",
     "download_sync_file",
     "list_sync_files",
+    "get_latest_sync_metadata",
     "import_incremental",
     "validate_checksum",
 ]
