@@ -6,6 +6,7 @@ import json
 import shutil
 import subprocess
 from datetime import datetime, timezone
+from typing import Optional
 from pathlib import Path
 from typing import Optional
 
@@ -21,8 +22,9 @@ from dbradar.normalize import NormalizedItem, normalize_items
 from dbradar.ranker import RankedItem, rank_items
 from dbradar.seen_tracker import SeenTracker, get_seen_tracker
 from dbradar.sources import get_sources
-from dbradar.summarizer import summarize_items
+from dbradar.summarizer import summarize_items, Summarizer, SummaryResult
 from dbradar.writer import write_html_report, write_reports
+from dbradar.storage import DuckDBStore, StorageItem
 
 # Intelligence module imports
 from dbradar.intelligence import (
@@ -521,17 +523,27 @@ def run(
     "--incremental",
     "-i",
     is_flag=True,
+    default=True,
+    help="Only process new (unseen) articles (default: True)",
+)
+@click.option(
+    "--full",
+    "-f",
+    is_flag=True,
     default=False,
-    help="Only process new (unseen) articles",
+    help="Process all articles, ignoring seen status (disables incremental)",
 )
 @click.pass_obj
-def fetch(config: Config, days: int, no_cache: bool, language: str, incremental: bool):
+def fetch(config: Config, days: int, no_cache: bool, language: str, incremental: bool, full: bool):
     """Fetch content from sources without generating summary."""
     # Get interests and use_feeds from context
     interests: Optional[InterestsConfig] = getattr(config, "_interests", None)
     use_feeds: bool = getattr(config, "_use_feeds", False)
 
-    click.echo(f"Fetching sources (days={days}, incremental={incremental})...")
+    # --full flag disables incremental mode
+    is_incremental = incremental and not full
+
+    click.echo(f"Fetching sources (days={days}, incremental={is_incremental})...")
 
     if use_feeds:
         feeds = get_feeds()
@@ -569,20 +581,55 @@ def fetch(config: Config, days: int, no_cache: bool, language: str, incremental:
     normalized = normalize_items(items)
 
     # Filter to new articles (incremental mode)
-    if incremental:
+    if is_incremental:
         seen_tracker = get_seen_tracker()
         original_count = len(normalized)
         normalized = seen_tracker.filter_new(normalized)
         click.echo(f"New articles: {len(normalized)} / {original_count}")
-        # Mark all new articles as seen
-        if normalized:
-            seen_tracker.mark_seen_batch([
-                {"url": item.url, "title": item.title, "published_at": item.published_at}
-                for item in normalized
-            ])
+
+    # Always mark articles as seen (both incremental and full mode)
+    if normalized:
+        seen_tracker = get_seen_tracker()
+        seen_tracker.mark_seen_batch([
+            {"url": item.url, "title": item.title, "published_at": item.published_at}
+            for item in normalized
+        ])
 
     ranked = rank_items(normalized, days=days, interests=interests)
 
+    # Save to DuckDB storage
+    click.echo("Saving to DuckDB storage...")
+    store = DuckDBStore(config.output_dir.parent / "data")
+
+    storage_items = []
+    for r in ranked:
+        # Parse published_at date
+        pub_date = None
+        if r.item.published_at:
+            try:
+                pub_date = datetime.fromisoformat(r.item.published_at.replace("Z", "+00:00")).date()
+            except (ValueError, AttributeError):
+                pass
+
+        item = StorageItem(
+            id=store._generate_id(r.item.url),
+            url=r.item.url,
+            title=r.item.title,
+            original_title=r.item.title,  # Will be updated by summarizer
+            published_date=pub_date,
+            product=r.item.product,
+            content_type=r.item.content_type if hasattr(r.item, 'content_type') else 'blog',
+            summary="",  # Will be filled by summarizer
+            tags=[],
+            sources=r.item.sources if hasattr(r.item, 'sources') else [r.item.url],
+        )
+        storage_items.append(item)
+
+    inserted = store.insert(storage_items)
+    store.close()
+    click.echo(f"  Saved {inserted} items to DuckDB")
+
+    # Also save to JSON for backward compatibility
     output_file = config.output_dir / "fetched_items.json"
     output_file.write_text(
         json.dumps(
@@ -593,14 +640,16 @@ def fetch(config: Config, days: int, no_cache: bool, language: str, incremental:
                     "url": r.item.url,
                     "date": r.item.published_at,
                     "score": r.score,
-                    "new": incremental,
+                    "new": is_incremental,
                 }
                 for r in ranked
             ],
             indent=2,
         )
     )
-    click.echo(f"Saved {len(ranked)} items to {output_file}")
+    click.echo(f"  Saved {len(ranked)} items to JSON (backup)")
+    click.echo("")
+    click.echo(f"Done! Fetched {len(ranked)} items.")
 
 
 @cli.command()
@@ -673,6 +722,268 @@ def summarize(config: Config, date: Optional[str], top_k: int, language: str):
     click.echo(f"Summary written to:")
     click.echo(f"  Markdown: {md_path}")
     click.echo(f"  JSON: {json_path}")
+
+
+@cli.command()
+@click.option(
+    "--days",
+    default=30,
+    type=int,
+    help="Number of days to look back for bootstrap (default: 30)",
+)
+@click.option(
+    "--max-items",
+    default=500,
+    type=int,
+    help="Maximum number of items to collect",
+)
+@click.option(
+    "--summarize-days",
+    default=7,
+    type=int,
+    help="Only generate LLM summary for items within last N days (default: 7)",
+)
+@click.option(
+    "--language",
+    "-l",
+    default="zh",
+    type=click.Choice(["en", "zh"], case_sensitive=False),
+    help="Output language (en=English, zh=中文)",
+)
+@click.option(
+    "--no-cache",
+    is_flag=True,
+    default=False,
+    help="Skip using cached content",
+)
+@click.pass_obj
+def bootstrap(
+    config: Config,
+    days: int,
+    max_items: int,
+    summarize_days: int,
+    language: str,
+    no_cache: bool,
+):
+    """Bootstrap mode: collect all items without ranking, group by date.
+
+    This mode is designed for initial content population:
+    - Collects all items without score-based filtering
+    - Groups items by their published date
+    - Only generates LLM summaries for recent items (last N days)
+    - Items without dates are placed in today's report
+    """
+    config.language = language.lower()
+
+    # Get interests and use_feeds from context
+    interests: Optional[InterestsConfig] = getattr(config, "_interests", None)
+    use_feeds: bool = getattr(config, "_use_feeds", False)
+
+    click.echo(f"Bootstrap Mode - Starting at {datetime.now(timezone.utc).isoformat()}")
+    click.echo(f"  Days: {days}, Max items: {max_items}")
+    click.echo(f"  LLM summary for last {summarize_days} days only")
+    click.echo("")
+
+    # Step 1: Load sources
+    click.echo("Step 1: Loading sources...")
+    if use_feeds:
+        feeds = get_feeds()
+        click.echo(f"  Found {len(feeds)} feed sources")
+    else:
+        sources = get_sources()
+        click.echo(f"  Found {len(sources)} sources")
+    click.echo("")
+
+    # Step 2: Fetch content
+    click.echo("Step 2: Fetching content...")
+    fetch_failures = []
+    if use_feeds:
+        results = fetch_feeds(feeds, use_cache=not no_cache)
+    else:
+        results = fetch_sources(sources, use_cache=not no_cache)
+    success_count = sum(1 for r in results if r.status_code and r.status_code < 400)
+    click.echo(f"  Fetched {success_count}/{len(results)} sources successfully")
+    for r in results:
+        if r.status_code and r.status_code >= 400:
+            fetch_failures.append({"url": r.url, "reason": f"HTTP {r.status_code}"})
+        elif r.error_message:
+            fetch_failures.append({"url": r.url, "reason": r.error_message})
+    click.echo(f"  {len(fetch_failures)} failures")
+    click.echo("")
+
+    # Step 3: Extract items
+    click.echo("Step 3: Extracting items...")
+    items = extract_items(results)
+
+    # Fetch from enhanced sources
+    enhanced_mgr = get_enhanced_sources()
+    configured = enhanced_mgr.get_configured_sources()
+    if configured:
+        if use_feeds:
+            products = [f.title for f in feeds]
+        else:
+            products = [s.product for s in sources]
+        enhanced_items = enhanced_mgr.fetch_all(
+            products=products,
+            days=days,
+            max_items_per_source=20,
+        )
+        enhanced_mgr.close()
+        if enhanced_items:
+            enhanced_extracted = extract_items_from_enhanced(enhanced_items)
+            items.extend(enhanced_extracted)
+            click.echo(f"  Added {len(enhanced_extracted)} items from enhanced sources")
+
+    click.echo(f"  Total extracted: {len(items)} items")
+    click.echo("")
+
+    # Step 4: Normalize and deduplicate
+    click.echo("Step 4: Normalizing and deduplicating...")
+    normalized = normalize_items(items)
+    click.echo(f"  After deduplication: {len(normalized)} unique items")
+    click.echo("")
+
+    # Step 5: Group items by date
+    click.echo("Step 5: Grouping items by date...")
+    from collections import defaultdict
+    from datetime import timedelta
+
+    today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    cutoff_date = datetime.now(timezone.utc) - timedelta(days=summarize_days)
+
+    # Group items by their published date
+    date_groups: Dict[str, List[NormalizedItem]] = defaultdict(list)
+    no_date_items: List[NormalizedItem] = []
+
+    for item in normalized:
+        if item.published_at:
+            try:
+                dt = datetime.fromisoformat(item.published_at.replace("Z", "+00:00"))
+                date_str = dt.strftime("%Y-%m-%d")
+                date_groups[date_str].append(item)
+            except (ValueError, AttributeError):
+                no_date_items.append(item)
+        else:
+            no_date_items.append(item)
+
+    # Items without dates go to today
+    if no_date_items:
+        date_groups[today_str].extend(no_date_items)
+        click.echo(f"  {len(no_date_items)} items without date -> placed in today ({today_str})")
+
+    click.echo(f"  Grouped into {len(date_groups)} date files")
+    for date_str in sorted(date_groups.keys(), reverse=True):
+        click.echo(f"    {date_str}: {len(date_groups[date_str])} items")
+    click.echo("")
+
+    # Step 6: Generate reports for each date
+    click.echo("Step 6: Generating reports by date...")
+
+    from dbradar.summarizer import Summarizer, SummaryResult
+    from dbradar.writer import Writer
+
+    writer = Writer(config.output_dir, language=config.language)
+
+    # Initialize summarizer (only used for recent items)
+    summarizer = None
+    if config.api_key:
+        summarizer = Summarizer(
+            api_key=config.api_key,
+            base_url=config.base_url,
+            model=config.model,
+            language=config.language,
+        )
+
+    generated_dates = []
+    for date_str in sorted(date_groups.keys(), reverse=True):
+        items_for_date = date_groups[date_str]
+
+        # Check if this date needs LLM summary
+        try:
+            date_dt = datetime.strptime(date_str, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+            needs_summary = (datetime.now(timezone.utc) - date_dt).days <= summarize_days
+        except ValueError:
+            needs_summary = False
+
+        # Create ranked items (without actual ranking/scoring)
+        ranked_items = []
+        for i, item in enumerate(items_for_date):
+            from dbradar.ranker import RankedItem
+            ranked_items.append(
+                RankedItem(
+                    item=item,
+                    score=0.5,  # Neutral score
+                    rank=i + 1,
+                    reasons=[],
+                )
+            )
+
+        # Generate summary only for recent dates
+        if needs_summary and summarizer:
+            click.echo(f"  {date_str}: {len(items_for_date)} items - generating LLM summary...")
+            try:
+                summary = summarizer.summarize(ranked_items, top_k=min(25, len(ranked_items)))
+            except Exception as e:
+                click.echo(f"    Warning: LLM summary failed: {e}")
+                # Fallback to empty summary
+                summary = SummaryResult(
+                    executive_summary=[f"Collected {len(items_for_date)} items"],
+                    top_updates=[],
+                    release_notes=[],
+                    themes=[],
+                    action_items=[],
+                )
+        else:
+            click.echo(f"  {date_str}: {len(items_for_date)} items - links only (no LLM summary)")
+            # Create a minimal summary with just the links
+            summary = SummaryResult(
+                executive_summary=[f"Collected {len(items_for_date)} items"],
+                top_updates=[],
+                release_notes=[],
+                themes=[],
+                action_items=[],
+                raw_response="",
+            )
+
+        # Build top_updates from items (even without LLM summary)
+        top_updates = []
+        for item in items_for_date:
+            update = {
+                "product": item.product,
+                "title": item.title,
+                "what_changed": [],
+                "why_it_matters": [],
+                "sources": item.sources,
+                "published_date": item.published_at,
+            }
+            top_updates.append(update)
+
+        # Override summary top_updates with all items for bootstrap mode
+        summary.top_updates = top_updates
+
+        # Write report
+        report = writer.write_report(
+            summary=summary,
+            ranked_items=ranked_items,
+            fetch_failures=fetch_failures if date_str == today_str else [],
+            date=date_str,
+            interests=interests,
+            write_html=False,
+        )
+        generated_dates.append(date_str)
+        click.echo(f"    Written: {report[0].name}, {report[1].name}")
+
+    if summarizer:
+        summarizer.client.close()
+
+    click.echo("")
+    click.echo(f"Bootstrap complete! Generated {len(generated_dates)} date files:")
+    for date_str in generated_dates[:5]:
+        click.echo(f"  - {date_str}.json/md")
+    if len(generated_dates) > 5:
+        click.echo(f"  ... and {len(generated_dates) - 5} more")
+    click.echo("")
+    click.echo(f"Run 'dbradar serve' to view the results at http://localhost:5000")
 
 
 @cli.command()
@@ -755,6 +1066,335 @@ def serve(host: str, port: int, debug: bool):
     click.echo("")
 
     run_server(host=host, port=port, debug=debug)
+
+
+# Sync command group
+@cli.group()
+def sync():
+    """OSS sync commands for data synchronization between Mac and server."""
+    pass
+
+
+@sync.command("export")
+@click.option(
+    "--since",
+    type=click.DateTime(formats=["%Y-%m-%d", "%Y-%m-%dT%H:%M:%S"]),
+    default=None,
+    help="Export data since this date/time (default: last sync time)",
+)
+@click.option(
+    "--output-dir",
+    type=click.Path(file_okay=False, path_type=Path),
+    default="data/sync",
+    help="Output directory for sync files",
+)
+@click.pass_obj
+def sync_export(config: Config, since: Optional[datetime], output_dir: Path):
+    """Export incremental data to Parquet file (Mac side)."""
+    from dbradar.sync import export_incremental
+    from dbradar.storage import DuckDBStore
+
+    store = DuckDBStore(Path("data"))
+
+    try:
+        parquet_path, metadata = export_incremental(
+            store=store,
+            since=since,
+            output_dir=output_dir,
+        )
+
+        if metadata.item_count > 0:
+            click.echo(f"Exported {metadata.item_count} items to {parquet_path}")
+            click.echo(f"  File size: {metadata.file_size:,} bytes")
+            click.echo(f"  Date range: {metadata.date_range}")
+            click.echo(f"  Checksum: {metadata.checksum}")
+        else:
+            click.echo("No new data to export")
+
+    finally:
+        store.close()
+
+
+@sync.command("push")
+@click.option(
+    "--since",
+    type=click.DateTime(formats=["%Y-%m-%d", "%Y-%m-%dT%H:%M:%S"]),
+    default=None,
+    help="Export data since this date/time (default: last sync time)",
+)
+@click.option(
+    "--output-dir",
+    type=click.Path(file_okay=False, path_type=Path),
+    default="data/sync",
+    help="Output directory for sync files",
+)
+@click.option(
+    "--delete-local",
+    is_flag=True,
+    default=False,
+    help="Delete local files after successful upload",
+)
+@click.pass_obj
+def sync_push(config: Config, since: Optional[datetime], output_dir: Path, delete_local: bool):
+    """Export and upload incremental data to OSS (Mac side)."""
+    from dbradar.sync import export_incremental, upload_sync_file, update_sync_status
+    from dbradar.storage import DuckDBStore
+
+    store = DuckDBStore(Path("data"))
+
+    try:
+        # Export
+        click.echo("Exporting incremental data...")
+        parquet_path, metadata = export_incremental(
+            store=store,
+            since=since,
+            output_dir=output_dir,
+        )
+
+        if metadata.item_count == 0:
+            click.echo("No new data to push")
+            return
+
+        click.echo(f"Exported {metadata.item_count} items")
+
+        # Upload to OSS
+        click.echo("Uploading to OSS...")
+        try:
+            parquet_url, metadata_url = upload_sync_file(
+                parquet_path=parquet_path,
+                metadata=metadata,
+                config=config,
+                delete_local=delete_local,
+            )
+            click.echo(f"Uploaded to OSS:")
+            click.echo(f"  Parquet: {parquet_url}")
+            click.echo(f"  Metadata: {metadata_url}")
+
+            # Update sync status
+            update_sync_status(metadata)
+            click.echo("Sync complete!")
+
+        except ImportError as e:
+            click.echo(f"Error: {e}", err=True)
+            click.echo("Install oss2: pip install oss2", err=True)
+            raise click.Abort()
+        except ValueError as e:
+            click.echo(f"Error: {e}", err=True)
+            click.echo("Set OSS credentials via environment variables:", err=True)
+            click.echo("  DB_RADAR_OSS_ACCESS_KEY_ID", err=True)
+            click.echo("  DB_RADAR_OSS_ACCESS_KEY_SECRET", err=True)
+            raise click.Abort()
+
+    finally:
+        store.close()
+
+
+@sync.command("status")
+def sync_status():
+    """Show sync status (Mac side)."""
+    from dbradar.sync import get_last_sync_time
+    from dbradar.sync.models import SyncStatus
+
+    last_sync = get_last_sync_time()
+    status = SyncStatus.load(Path("data/sync_status.json"))
+
+    click.echo("Sync Status:")
+    if last_sync:
+        click.echo(f"  Last sync: {last_sync.isoformat()}")
+    else:
+        click.echo("  Last sync: Never")
+    click.echo(f"  Total syncs: {status.sync_count}")
+    click.echo(f"  Total synced items: {status.total_synced_items:,}")
+    if status.last_sync_file:
+        click.echo(f"  Last sync file: {status.last_sync_file}")
+
+
+@sync.command("pull")
+@click.option(
+    "--output-dir",
+    type=click.Path(file_okay=False, path_type=Path),
+    default="data/sync/incoming",
+    help="Directory to save downloaded files",
+)
+@click.option(
+    "--all",
+    "download_all",
+    is_flag=True,
+    default=False,
+    help="Download all available sync files, not just the latest",
+)
+@click.pass_obj
+def sync_pull(config: Config, output_dir: Path, download_all: bool):
+    """Download sync files from OSS (server side)."""
+    from dbradar.sync import list_sync_files, download_sync_file
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    try:
+        sync_files = list_sync_files(config)
+    except ImportError as e:
+        click.echo(f"Error: {e}", err=True)
+        click.echo("Install oss2: pip install oss2", err=True)
+        raise click.Abort()
+    except ValueError as e:
+        click.echo(f"Error: {e}", err=True)
+        raise click.Abort()
+
+    if not sync_files:
+        click.echo("No sync files found in OSS")
+        return
+
+    click.echo(f"Found {len(sync_files)} sync file(s) in OSS")
+
+    files_to_download = sync_files if download_all else sync_files[:1]
+
+    for metadata in files_to_download:
+        click.echo(f"\nDownloading {metadata.file_name}...")
+        click.echo(f"  Exported at: {metadata.exported_at.isoformat()}")
+        click.echo(f"  Items: {metadata.item_count}")
+
+        parquet_path = download_sync_file(metadata, output_dir, config)
+        if parquet_path:
+            click.echo(f"  Saved to: {parquet_path}")
+        else:
+            click.echo(f"  Failed to download", err=True)
+
+
+@sync.command("import")
+@click.argument("parquet_file", type=click.Path(exists=True, path_type=Path))
+@click.option(
+    "--metadata-file",
+    type=click.Path(exists=True, path_type=Path),
+    default=None,
+    help="Path to metadata JSON file (optional)",
+)
+@click.option(
+    "--delete-after",
+    is_flag=True,
+    default=False,
+    help="Delete Parquet file after successful import",
+)
+def sync_import(parquet_file: Path, metadata_file: Optional[Path], delete_after: bool):
+    """Import a sync file into DuckDB (server side)."""
+    from dbradar.sync import import_incremental
+    from dbradar.storage import DuckDBStore
+
+    store = DuckDBStore(Path("data"))
+
+    try:
+        if metadata_file:
+            from dbradar.sync.models import SyncMetadata
+            metadata = SyncMetadata.load(metadata_file)
+            count = import_incremental(store, parquet_file, metadata)
+        else:
+            from dbradar.sync.importer import import_from_parquet
+            count = import_from_parquet(store, parquet_file, delete_after)
+
+        click.echo(f"Successfully imported {count} items")
+
+        if delete_after and metadata_file:
+            metadata_file.unlink()
+            click.echo(f"Deleted {metadata_file}")
+
+    finally:
+        store.close()
+
+
+@sync.command("pull-import")
+@click.option(
+    "--output-dir",
+    type=click.Path(file_okay=False, path_type=Path),
+    default="data/sync/incoming",
+    help="Directory to save downloaded files",
+)
+@click.option(
+    "--delete-after",
+    is_flag=True,
+    default=False,
+    help="Delete files after successful import",
+)
+@click.pass_obj
+def sync_pull_import(config: Config, output_dir: Path, delete_after: bool):
+    """Pull latest sync file from OSS and import it (server side, one command)."""
+    from dbradar.sync import (
+        get_latest_sync_metadata,
+        download_sync_file,
+        import_incremental,
+    )
+    from dbradar.sync.importer import get_import_status
+    from dbradar.storage import DuckDBStore
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Check if we already have the latest
+    import_status = get_import_status()
+
+    try:
+        latest = get_latest_sync_metadata(config)
+    except ImportError as e:
+        click.echo(f"Error: {e}", err=True)
+        click.echo("Install oss2: pip install oss2", err=True)
+        raise click.Abort()
+    except ValueError as e:
+        click.echo(f"Error: {e}", err=True)
+        raise click.Abort()
+
+    if not latest:
+        click.echo("No sync files found in OSS")
+        return
+
+    # Check if already up to date
+    if import_status.last_sync_at and latest.exported_at <= import_status.last_sync_at:
+        click.echo("Already up to date")
+        click.echo(f"  Last import: {import_status.last_sync_at.isoformat()}")
+        click.echo(f"  Latest available: {latest.exported_at.isoformat()}")
+        return
+
+    click.echo(f"Found new sync: {latest.file_name}")
+    click.echo(f"  Exported at: {latest.exported_at.isoformat()}")
+    click.echo(f"  Items: {latest.item_count}")
+
+    # Download
+    click.echo("\nDownloading...")
+    parquet_path = download_sync_file(latest, output_dir, config)
+    if not parquet_path:
+        click.echo("Download failed", err=True)
+        raise click.Abort()
+    click.echo(f"Downloaded to: {parquet_path}")
+
+    # Import
+    click.echo("\nImporting...")
+    store = DuckDBStore(Path("data"))
+    try:
+        count = import_incremental(store, parquet_path, latest)
+        click.echo(f"Imported {count} items")
+    finally:
+        store.close()
+
+    # Cleanup
+    if delete_after:
+        parquet_path.unlink()
+        click.echo(f"Deleted {parquet_path}")
+
+    click.echo("\nPull-import complete!")
+
+
+@sync.command("server-status")
+def sync_server_status():
+    """Show import status on server side."""
+    from dbradar.sync.importer import get_import_status
+
+    status = get_import_status()
+
+    click.echo("Server Import Status:")
+    if status.last_sync_at:
+        click.echo(f"  Last import: {status.last_sync_at.isoformat()}")
+    else:
+        click.echo("  Last import: Never")
+    click.echo(f"  Total imports: {status.sync_count}")
+    click.echo(f"  Total imported items: {status.total_synced_items:,}")
+    if status.last_sync_file:
+        click.echo(f"  Last imported file: {status.last_sync_file}")
 
 
 if __name__ == "__main__":

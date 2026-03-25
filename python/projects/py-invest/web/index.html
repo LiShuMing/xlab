@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>每日投资分析 - 明资</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #f5f0e8;
+            --bg-secondary: #faf8f5;
+            --bg-card: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --text-muted: #999999;
+            --accent-yellow: #f5c518;
+            --accent-green: #16a34a;
+            --accent-red: #dc2626;
+            --accent-blue: #2563eb;
+            --border-color: #e8e4dc;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #f5f0e8 0%, #fff 50%, #faf8f5 100%);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(245, 197, 24, 0.25), inset 0 1px 0 rgba(255,255,255,0.8);
+            border: 2px solid #f5c518;
+        }
+
+        .logo-icon svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .logo-icon .chart-line {
+            stroke: #1a1a1a;
+            stroke-width: 3;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .logo-icon .chart-dot {
+            fill: #f5c518;
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .logo-brand {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 2px;
+        }
+
+        .logo-tagline {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-muted);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .date-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            letter-spacing: -0.02em;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Stock List */
+        .stock-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Stock Item */
+        .stock-item {
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .stock-item:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .stock-header {
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+        }
+
+        .stock-main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .stock-logo {
+            width: 44px;
+            height: 44px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            flex-shrink: 0;
+        }
+
+        .stock-info {
+            flex: 1;
+        }
+
+        .stock-name-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+
+        .stock-name {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .stock-code {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-family: 'SF Mono', monospace;
+            background: var(--bg-secondary);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .stock-rating {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+
+        .stock-rating.buy {
+            background: rgba(22, 163, 74, 0.1);
+            color: var(--accent-green);
+        }
+
+        .stock-rating.hold {
+            background: rgba(245, 197, 24, 0.15);
+            color: #b45309;
+        }
+
+        .stock-rating.sell {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--accent-red);
+        }
+
+        .rating-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .stock-rating.buy .rating-dot { background: var(--accent-green); }
+        .stock-rating.hold .rating-dot { background: #f59e0b; }
+        .stock-rating.sell .rating-dot { background: var(--accent-red); }
+
+        .stock-price-section {
+            text-align: right;
+            margin-right: 8px;
+        }
+
+        .current-price {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .price-change {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .price-change.up { color: var(--accent-green); }
+        .price-change.down { color: var(--accent-red); }
+
+        .expand-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            transition: transform 0.2s ease;
+            flex-shrink: 0;
+            font-size: 12px;
+        }
+
+        .stock-item.expanded .expand-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Expanded Content */
+        .stock-details {
+            display: none;
+            border-top: 1px solid var(--border-color);
+            padding: 24px;
+        }
+
+        .stock-item.expanded .stock-details {
+            display: block;
+            animation: slideDown 0.25s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Executive Summary */
+        .executive-summary {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .section-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 10px;
+        }
+
+        .summary-text {
+            font-size: 14px;
+            color: var(--text-primary);
+            line-height: 1.8;
+        }
+
+        /* Price Target Section */
+        .price-target-section {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+            padding: 20px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+        }
+
+        .target-box {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .target-box-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .target-box-value {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .target-box-value.positive { color: var(--accent-green); }
+        .target-box-value.negative { color: var(--accent-red); }
+
+        /* Key Metrics */
+        .metrics-section {
+            margin-bottom: 24px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .metric-card {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Analysis Content */
+        .analysis-section {
+            margin-bottom: 24px;
+        }
+
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .analysis-card {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+            padding: 20px;
+        }
+
+        .analysis-card-title {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .analysis-card-content {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.9;
+        }
+
+        /* Scenario Analysis */
+        .scenario-section {
+            margin-bottom: 24px;
+        }
+
+        .scenario-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .scenario-card {
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            border: 1px solid;
+        }
+
+        .scenario-card.bull {
+            background: rgba(22, 163, 74, 0.04);
+            border-color: rgba(22, 163, 74, 0.2);
+        }
+
+        .scenario-card.bear {
+            background: rgba(220, 38, 38, 0.04);
+            border-color: rgba(220, 38, 38, 0.2);
+        }
+
+        .scenario-card.base {
+            background: rgba(37, 99, 235, 0.04);
+            border-color: rgba(37, 99, 235, 0.2);
+        }
+
+        .scenario-card-title {
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .scenario-card.bull .scenario-card-title { color: var(--accent-green); }
+        .scenario-card.bear .scenario-card-title { color: var(--accent-red); }
+        .scenario-card.base .scenario-card-title { color: var(--accent-blue); }
+
+        .scenario-card-content {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        /* Risk Table */
+        .risk-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .risk-table th,
+        .risk-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .risk-table th {
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: var(--bg-secondary);
+        }
+
+        .risk-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Loading State */
+        .loading-item {
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            padding: 48px;
+            text-align: center;
+        }
+
+        .loading-spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent-yellow);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 64px 24px;
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .empty-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .empty-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .empty-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Action Bar */
+        .action-bar {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 12px 16px;
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            background: var(--bg-primary);
+        }
+
+        .btn-danger {
+            background: rgba(220, 38, 38, 0.08);
+            border-color: rgba(220, 38, 38, 0.3);
+            color: var(--accent-red);
+        }
+
+        .btn-danger:hover {
+            background: rgba(220, 38, 38, 0.15);
+        }
+
+        .btn-primary {
+            background: var(--text-primary);
+            border-color: var(--text-primary);
+            color: var(--bg-card);
+        }
+
+        .btn-primary:hover {
+            background: #333;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 10px 16px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+            margin-bottom: 16px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+
+        .status-dot.active {
+            background: var(--accent-green);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stock-item {
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        .stock-item:nth-child(1) { animation-delay: 0.05s; }
+        .stock-item:nth-child(2) { animation-delay: 0.1s; }
+        .stock-item:nth-child(3) { animation-delay: 0.15s; }
+        .stock-item:nth-child(4) { animation-delay: 0.2s; }
+        .stock-item:nth-child(5) { animation-delay: 0.25s; }
+        .stock-item:nth-child(6) { animation-delay: 0.3s; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+
+            .price-target-section {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .analysis-grid,
+            .scenario-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stock-header {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="#" class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Background circle -->
+                        <circle cx="16" cy="16" r="14" fill="#f5c518" opacity="0.15"/>
+                        <!-- Trend line -->
+                        <path class="chart-line" d="M8 20L14 14L18 18L26 8"/>
+                        <!-- Highlight dot -->
+                        <circle class="chart-dot" cx="26" cy="8" r="3"/>
+                        <!-- Decorative ring -->
+                        <circle cx="16" cy="16" r="14" stroke="#f5c518" stroke-width="1.5" fill="none" opacity="0.3"/>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-brand">明资</span>
+                    <span class="logo-tagline">MingZi</span>
+                </div>
+            </a>
+            <div class="date-badge">
+                <span id="current-date">--</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="page-header">
+            <h1 class="page-title">明资 · 每日投资分析</h1>
+            <p class="page-subtitle">私人定制的智能投资研究助手</p>
+        </div>
+
+        <div class="action-bar">
+            <div id="status-bar" class="status-bar" style="display: none; margin: 0; flex: 1;">
+                <span class="status-indicator">
+                    <span class="status-dot" id="status-dot"></span>
+                    <span id="status-text">就绪</span>
+                </span>
+                <span id="queue-info"></span>
+            </div>
+            <button class="btn btn-primary" onclick="refreshData()">刷新数据</button>
+            <button class="btn btn-danger" onclick="deleteAllReports()">清空历史</button>
+        </div>
+
+        <div class="stock-list" id="stock-list">
+            <div class="loading-item">
+                <div class="loading-spinner"></div>
+                <p class="loading-text">正在加载分析数据...</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let stockData = [];
+
+        function formatNumber(num) {
+            if (num >= 1e12) return (num / 1e12).toFixed(1) + 'T';
+            if (num >= 1e9) return (num / 1e9).toFixed(1) + 'B';
+            if (num >= 1e6) return (num / 1e6).toFixed(1) + 'M';
+            return num.toString();
+        }
+
+        function getRatingText(rating) {
+            const map = { 'buy': '买入', 'hold': '持有', 'sell': '卖出' };
+            return map[rating] || rating;
+        }
+
+        function getConfidenceText(confidence) {
+            const map = { 'high': '高置信度', 'medium': '中等置信度', 'low': '低置信度' };
+            return map[confidence] || confidence;
+        }
+
+        function renderRiskTable(riskContent) {
+            if (!riskContent || riskContent.includes('暂无数据')) {
+                return '<p style="color: var(--text-muted); font-size: 13px;">暂无风险数据</p>';
+            }
+            // Try to parse markdown table
+            const lines = riskContent.split('\n').filter(l => l.trim());
+            const tableRows = lines.filter(l => l.startsWith('|') && !l.includes('---'));
+
+            if (tableRows.length < 2) {
+                return `<p class="analysis-card-content">${riskContent}</p>`;
+            }
+
+            let html = '<table class="risk-table"><thead><tr>';
+            const headers = tableRows[0].split('|').filter(h => h.trim()).map(h => `<th>${h.trim()}</th>`);
+            html += headers.join('') + '</tr></thead><tbody>';
+
+            for (let i = 1; i < tableRows.length; i++) {
+                const cells = tableRows[i].split('|').filter(c => c.trim()).map(c => `<td>${c.trim()}</td>`);
+                html += '<tr>' + cells.join('') + '</tr>';
+            }
+
+            html += '</tbody></table>';
+            return html;
+        }
+
+        function createStockItem(stock, index) {
+            const isUp = stock.change >= 0;
+            const changeSign = isUp ? '+' : '';
+            const potential = stock.targetPrice && stock.price
+                ? ((stock.targetPrice - stock.price) / stock.price * 100).toFixed(1)
+                : 0;
+            const isPositive = potential > 0;
+
+            return `
+                <div class="stock-item" data-index="${index}">
+                    <div class="stock-header" onclick="toggleItem(${index})">
+                        <div class="stock-main">
+                            <div class="stock-logo">${stock.code[0]}</div>
+                            <div class="stock-info">
+                                <div class="stock-name-row">
+                                    <span class="stock-name">${stock.name}</span>
+                                    <span class="stock-code">${stock.code}</span>
+                                </div>
+                                <div class="stock-rating ${stock.rating}">
+                                    <span class="rating-dot"></span>
+                                    ${getRatingText(stock.rating)}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stock-price-section">
+                            <div class="current-price">$${stock.price ? stock.price.toFixed(2) : '--'}</div>
+                            <div class="price-change ${isUp ? 'up' : 'down'}">
+                                ${changeSign}${stock.change ? stock.change.toFixed(2) : '0.00'} (${changeSign}${stock.changePercent ? stock.changePercent.toFixed(2) : '0.00'}%)
+                            </div>
+                        </div>
+                        <div class="expand-icon">▼</div>
+                    </div>
+                    <div class="stock-details">
+                        <div class="executive-summary">
+                            <div class="section-label">核心投资逻辑</div>
+                            <div class="summary-text">${stock.summary || '暂无分析摘要'}</div>
+                        </div>
+
+                        <div class="price-target-section">
+                            <div class="target-box">
+                                <div class="target-box-label">当前价格</div>
+                                <div class="target-box-value">$${stock.price ? stock.price.toFixed(2) : '--'}</div>
+                            </div>
+                            <div class="target-box">
+                                <div class="target-box-label">目标价格</div>
+                                <div class="target-box-value ${isPositive ? 'positive' : 'negative'}">$${stock.targetPrice ? stock.targetPrice.toFixed(2) : '--'}</div>
+                            </div>
+                            <div class="target-box">
+                                <div class="target-box-label">潜在收益</div>
+                                <div class="target-box-value ${isPositive ? 'positive' : 'negative'}">${isPositive ? '+' : ''}${potential}%</div>
+                            </div>
+                            <div class="target-box">
+                                <div class="target-box-label">置信水平</div>
+                                <div class="target-box-value" style="font-size: 16px;">${getConfidenceText(stock.confidence)}</div>
+                            </div>
+                        </div>
+
+                        <div class="metrics-section">
+                            <div class="section-label" style="margin-bottom: 12px;">关键估值指标</div>
+                            <div class="metrics-grid">
+                                <div class="metric-card">
+                                    <div class="metric-value">${stock.metrics?.pe || '-'}</div>
+                                    <div class="metric-label">市盈率 (P/E)</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-value">${stock.metrics?.pb || '-'}</div>
+                                    <div class="metric-label">市净率 (P/B)</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-value">${stock.metrics?.marketCap || '-'}</div>
+                                    <div class="metric-label">市值</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-value">${stock.metrics?.dividendYield || '-'}</div>
+                                    <div class="metric-label">股息率</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="analysis-section">
+                            <div class="section-label" style="margin-bottom: 12px;">深度分析</div>
+                            <div class="analysis-grid">
+                                <div class="analysis-card">
+                                    <div class="analysis-card-title">技术分析</div>
+                                    <div class="analysis-card-content">${stock.analysis?.technical || '暂无数据'}</div>
+                                </div>
+                                <div class="analysis-card">
+                                    <div class="analysis-card-title">基本面分析</div>
+                                    <div class="analysis-card-content">${stock.analysis?.fundamental || '暂无数据'}</div>
+                                </div>
+                                <div class="analysis-card" style="grid-column: 1 / -1;">
+                                    <div class="analysis-card-title">风险评估矩阵</div>
+                                    ${renderRiskTable(stock.analysis?.risk)}
+                                </div>
+                                <div class="analysis-card">
+                                    <div class="analysis-card-title">行业展望</div>
+                                    <div class="analysis-card-content">${stock.analysis?.sector || '暂无数据'}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="scenario-section">
+                            <div class="section-label" style="margin-bottom: 12px;">情景分析</div>
+                            <div class="scenario-grid">
+                                <div class="scenario-card bull">
+                                    <div class="scenario-card-title">乐观情景</div>
+                                    <div class="scenario-card-content">${stock.scenarios?.bull || '暂无数据'}</div>
+                                </div>
+                                <div class="scenario-card base">
+                                    <div class="scenario-card-title">基准情景</div>
+                                    <div class="scenario-card-content">${stock.scenarios?.base || '暂无数据'}</div>
+                                </div>
+                                <div class="scenario-card bear">
+                                    <div class="scenario-card-title">悲观情景</div>
+                                    <div class="scenario-card-content">${stock.scenarios?.bear || '暂无数据'}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleItem(index) {
+            const items = document.querySelectorAll('.stock-item');
+            const clicked = items[index];
+
+            if (clicked.classList.contains('expanded')) {
+                clicked.classList.remove('expanded');
+            } else {
+                items.forEach(item => item.classList.remove('expanded'));
+                clicked.classList.add('expanded');
+            }
+        }
+
+        function updateDate() {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+            document.getElementById('current-date').textContent = now.toLocaleDateString('zh-CN', options);
+        }
+
+        // Refresh data
+        async function refreshData() {
+            const list = document.getElementById('stock-list');
+            list.innerHTML = `
+                <div class="loading-item">
+                    <div class="loading-spinner"></div>
+                    <p class="loading-text">正在加载分析数据...</p>
+                </div>
+            `;
+            await init();
+        }
+
+        // Delete all reports
+        async function deleteAllReports() {
+            if (!confirm('确定要删除所有历史报告数据吗？此操作不可恢复。')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/reports', { method: 'DELETE' });
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(`已删除 ${result.deleted} 条历史报告`);
+                    await refreshData();
+                } else {
+                    alert('删除失败: ' + result.error);
+                }
+            } catch (error) {
+                alert('删除失败: ' + error.message);
+            }
+        }
+
+        // Update status bar
+        async function updateStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const status = await response.json();
+
+                const statusBar = document.getElementById('status-bar');
+                const statusDot = document.getElementById('status-dot');
+                const statusText = document.getElementById('status-text');
+                const queueInfo = document.getElementById('queue-info');
+
+                if (status.auto_analysis) {
+                    statusBar.style.display = 'flex';
+                    statusDot.classList.add('active');
+                    statusText.textContent = '正在生成报告...';
+                    queueInfo.textContent = status.queue_size > 0 ? `剩余 ${status.queue_size} 只股票` : '';
+                } else {
+                    statusBar.style.display = 'none';
+                    statusDot.classList.remove('active');
+                }
+            } catch (error) {
+                // Silently fail
+            }
+        }
+
+        async function init() {
+            updateDate();
+            const list = document.getElementById('stock-list');
+
+            // Start status polling
+            updateStatus();
+            setInterval(updateStatus, 5000);
+
+            try {
+                const response = await fetch('/api/reports');
+                const data = await response.json();
+                stockData = data.reports || [];
+
+                if (stockData.length === 0) {
+                    list.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">-</div>
+                            <h3 class="empty-title">暂无分析数据</h3>
+                            <p class="empty-desc">系统正在自动生成报告，请稍候...</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                list.innerHTML = stockData.map((stock, index) => createStockItem(stock, index)).join('');
+            } catch (error) {
+                console.error('Failed to load data:', error);
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">!</div>
+                        <h3 class="empty-title">加载失败</h3>
+                        <p class="empty-desc">请检查网络连接或稍后重试</p>
+                    </div>
+                `;
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

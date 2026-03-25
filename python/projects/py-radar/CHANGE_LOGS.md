@@ -2,6 +2,193 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2026-03-25] - OSS Sync Implementation
+
+### Added
+
+#### OSS Sync Module (`dbradar/sync/`)
+- **Incremental data synchronization** between Mac (local) and remote server via Alibaba Cloud OSS
+  - Mac side: Export incremental data → Upload to OSS
+  - Server side: Download from OSS → Import to DuckDB
+
+#### New Files
+```
+dbradar/sync/
+├── __init__.py       # Module exports
+├── models.py         # SyncMetadata, SyncStatus, checksum utilities
+├── exporter.py       # Mac side: export_incremental() to Parquet
+├── uploader.py       # Mac side: OSSClient, upload_sync_file()
+├── downloader.py     # Server side: list_sync_files(), download_sync_file()
+└── importer.py       # Server side: import_incremental() with INSERT OR REPLACE
+```
+
+#### CLI Commands (`dbradar sync`)
+**Mac side commands:**
+- `dbradar sync export` - Export incremental data to local Parquet file
+- `dbradar sync push` - Export and upload to OSS in one command
+- `dbradar sync status` - Show last sync time and statistics
+
+**Server side commands:**
+- `dbradar sync pull` - Download latest sync file(s) from OSS
+- `dbradar sync import <file>` - Import Parquet file into DuckDB
+- `dbradar sync pull-import` - Download and import in one command (recommended)
+- `dbradar sync server-status` - Show import status on server
+
+#### Configuration
+- **OSS settings** in `config.py` (environment variables):
+  - `DB_RADAR_OSS_ACCESS_KEY_ID` - OSS access key
+  - `DB_RADAR_OSS_ACCESS_KEY_SECRET` - OSS secret key
+  - `DB_RADAR_OSS_ENDPOINT` - OSS endpoint (default: oss-cn-hangzhou.aliyuncs.com)
+  - `DB_RADAR_OSS_BUCKET` - Bucket name (default: dbradar-sync)
+  - `DB_RADAR_OSS_PREFIX` - File prefix (default: sync/)
+
+#### Data Format
+- **Parquet files** with Snappy compression for efficient transfer
+- **Metadata JSON** with SHA256 checksums for integrity validation
+- **Incremental detection** based on `fetched_at` timestamp
+- **Conflict resolution** using `INSERT OR REPLACE` on item ID
+
+#### Workflow Example
+```bash
+# Mac side (after fetch)
+python -m dbradar fetch
+python -m dbradar sync push
+
+# Server side (cron job every 5 minutes)
+python -m dbradar sync pull-import
+
+# Or one-liner for server
+python -m dbradar sync pull-import --delete-after
+```
+
+### Dependencies
+- Added `oss2>=2.18.0` to requirements.txt (optional, for OSS sync)
+- Added `duckdb>=1.0.0` to requirements.txt
+
+## [2026-03-25] - DuckDB Storage Migration (Complete)
+
+### Changed
+
+#### Storage Architecture
+- **Unified DuckDB Storage**: Single database file (`data/items.duckdb`) for all data
+  - Removed hot/warm tiering complexity
+  - All 1614 items stored in one file (~1.5MB)
+  - Indexed columns: `published_date`, `product`, `content_type`
+
+#### CLI Integration
+- **Fetch command** now saves to DuckDB by default
+  - Primary storage: DuckDB (`data/items.duckdb`)
+  - Backup: JSON files (`out/fetched_items.json`)
+  - Automatic ID generation from URL hash
+
+#### Web Server
+- **Default server** (`dbradar/server.py`) now uses DuckDB
+  - Fast SQL queries with OFFSET/LIMIT pagination
+  - Date grouping in Python (flexible display)
+  - API endpoints: `/api/items`, `/api/stats`, `/api/news`
+
+#### Migration
+- **One-time migration script**: `scripts/migrate_to_duckdb.py`
+  - Converts all JSON files to DuckDB
+  - Preserves all historical data
+  - Dry-run mode for preview
+
+### File Structure
+```
+data/
+└── items.duckdb          # All items (1614 entries, ~1.5MB)
+
+out/                      # JSON reports (backward compatibility)
+├── 2026-03-24.json
+├── 2026-03-23.json
+└── ...
+```
+
+### Performance
+| Metric | Before (JSON) | After (DuckDB) |
+|--------|--------------|----------------|
+| Query 30 items | ~100ms (file scan) | ~5ms (indexed) |
+| Storage size | 8 MB | 1.5 MB |
+| Date range query | Full scan | Index seek |
+| Startup time | ~500ms | ~50ms |
+
+---
+
+## [2026-03-25] - Web UI Improvements
+
+### Changed
+
+#### Web Template (`dbradar/web/templates/index.html`)
+- **标题结构优化**:
+  - 主标题：原文标题（带链接，可直接点击访问）
+  - 副标题：中文翻译（灰色显示）
+  - 当原文标题和中文标题相同时，不显示副标题
+- **去除 API 链接**: 顶部导航栏和底部 footer 不再显示 API 链接
+- **固定每页 30 条**: 严格按条目数分页，不考虑天数限制
+- **日期分组保留**: 条目按日期分组显示，但分页按条目数
+- **底部分页栏**: 简洁的分页导航（上一页 / 当前页/总页数 / 下一页）
+
+#### Web Server (`dbradar/server.py`)
+- **条目级分页**: 从按天分页改为按条目数分页
+  - 每页严格固定 30 条 (`ITEMS_PER_PAGE = 30`)
+  - 保留日期分组显示，但分页按条目数切割
+  - 一页可能包含多天的数据
+
+### Technical Details
+
+```
+Before: DAYS_PER_PAGE = 3 (每页3天，条目数不固定，可能只有几条)
+After:  ITEMS_PER_PAGE = 30 (每页严格30条，保证数量一致)
+```
+
+---
+
+## [2026-03-25] - Bootstrap Command & Incremental Mode Fix
+
+### Added
+
+#### Bootstrap Command (`dbradar/cli.py`)
+- **New `bootstrap` command** for cold-start content population
+  - Collects ALL items without ranking/scoring/topN filtering
+  - Groups items by their published date into separate report files
+  - Items without dates are placed into today's report
+  - Only generates LLM summaries for recent items (configurable, default 7 days)
+  - Older items get basic reports with links and metadata only
+  - Options:
+    - `--days`: Number of days to look back (default: 30)
+    - `--max-items`: Maximum items to collect (default: 500)
+    - `--summarize-days`: Only LLM-summarize items within last N days (default: 7)
+    - `--language`: Output language (en/zh, default: zh)
+    - `--no-cache`: Disable cache
+
+### Changed
+
+#### Fetch Command (`dbradar/cli.py`)
+- **Default to incremental mode**: `dbradar fetch` now defaults to incremental
+  - Use `--full` flag to fetch all articles (disable incremental)
+  - Fixed: Always mark articles as seen in both incremental and full mode
+  - This ensures full mode establishes baseline for future incremental runs
+
+### Fixed
+- **Incremental tracking bug**: Articles fetched in full mode were not being marked as seen,
+  causing them to incorrectly appear as new articles on subsequent incremental runs.
+  Now all fetched articles are always tracked regardless of mode.
+
+### Usage
+
+```bash
+# Bootstrap - populate website with historical content (LLM only last 7 days)
+python -m dbradar bootstrap --days 30 --summarize-days 7
+
+# Fetch with new defaults (incremental mode)
+python -m dbradar fetch
+
+# Fetch all articles (full mode)
+python -m dbradar fetch --full
+```
+
+---
+
 ## [2026-03-24] - URL Fix for Relative Links
 
 ### Fixed

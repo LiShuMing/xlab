@@ -70,22 +70,40 @@ def adjust_theme():
 
         from themes.common import get_common_html_javascript_code
         js = get_common_html_javascript_code()
+        
+        # 保存原始函数
         if not hasattr(gr, "RawTemplateResponse"):
             gr.RawTemplateResponse = gr.routes.templates.TemplateResponse
         gradio_original_template_fn = gr.RawTemplateResponse
 
         def gradio_new_template_fn(*args, **kwargs):
+            # 调用原始函数获取响应
             res = gradio_original_template_fn(*args, **kwargs)
-            res.body = res.body.replace(b"</html>", f"{js}</html>".encode("utf8"))
-            res.init_headers()
+            
+            # 检查是否为 HTML 响应
+            if hasattr(res, 'body') and isinstance(res.body, (bytes, str)):
+                try:
+                    # 注入 JS 代码
+                    if isinstance(res.body, bytes):
+                        body_str = res.body.decode('utf-8', errors='ignore')
+                        if '</html>' in body_str:
+                            body_str = body_str.replace('</html>', f'{js}</html>')
+                            res.body = body_str.encode('utf-8')
+                            # 更新 content-length 如果存在
+                            if hasattr(res, 'headers') and 'content-length' in res.headers:
+                                res.headers['content-length'] = str(len(res.body))
+                    # 如果是字符串格式 (某些版本的 starlette)
+                    elif isinstance(res.body, str) and '</html>' in res.body:
+                        res.body = res.body.replace('</html>', f'{js}</html>')
+                except Exception as e:
+                    logger.debug(f"Template injection failed: {e}")
+            
             return res
 
-        gr.routes.templates.TemplateResponse = (
-            gradio_new_template_fn  # override gradio template
-        )
-    except:
+        gr.routes.templates.TemplateResponse = gradio_new_template_fn
+    except Exception as e:
         set_theme = None
-        logger.error("gradio版本较旧, 不能自定义字体和颜色")
+        logger.error(f"gradio主题设置失败: {e}")
     return set_theme
 
 

@@ -44,6 +44,12 @@ class Config:
         top_k: int = 10,
         days: int = 7,
         language: str = "en",
+        # OSS sync configuration
+        oss_access_key_id: Optional[str] = None,
+        oss_access_key_secret: Optional[str] = None,
+        oss_endpoint: Optional[str] = None,
+        oss_bucket: Optional[str] = None,
+        oss_prefix: Optional[str] = None,
     ):
         # LLM configuration from ~/.env or environment variables
         self.api_key = api_key or os.environ.get("LLM_API_KEY", "")
@@ -60,6 +66,13 @@ class Config:
         self.top_k = top_k
         self.days = days
         self.language = language  # "en" or "zh"
+
+        # OSS sync configuration from environment variables
+        self.oss_access_key_id = oss_access_key_id or os.environ.get("DB_RADAR_OSS_ACCESS_KEY_ID")
+        self.oss_access_key_secret = oss_access_key_secret or os.environ.get("DB_RADAR_OSS_ACCESS_KEY_SECRET")
+        self.oss_endpoint = oss_endpoint or os.environ.get("DB_RADAR_OSS_ENDPOINT", "oss-cn-hangzhou.aliyuncs.com")
+        self.oss_bucket = oss_bucket or os.environ.get("DB_RADAR_OSS_BUCKET", "dbradar-sync")
+        self.oss_prefix = oss_prefix or os.environ.get("DB_RADAR_OSS_PREFIX", "sync/")
 
     def ensure_dirs(self) -> None:
         """Create necessary directories if they don't exist."""

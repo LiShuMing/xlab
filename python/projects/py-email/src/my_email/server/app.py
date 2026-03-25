@@ -36,7 +36,12 @@ from my_email.db.repository import (
     save_setting,
     update_message_state,
 )
-from my_email.scheduler.sync_task import run_sync, start_sync_scheduler, start_summarization_worker
+from my_email.scheduler.sync_task import (
+    run_sync,
+    run_initial_sync,
+    start_sync_scheduler,
+    start_summarization_worker,
+)
 from my_email.scheduler.cleanup_task import start_cleanup_scheduler
 
 log = structlog.get_logger()
@@ -72,6 +77,18 @@ async def lifespan(app: FastAPI):
     sync_task = asyncio.create_task(start_sync_scheduler())
     summary_task = asyncio.create_task(start_summarization_worker())
     cleanup_task = asyncio.create_task(start_cleanup_scheduler())
+
+    # Run initial sync for recent 7 days (non-blocking)
+    async def initial_sync_task():
+        try:
+            await asyncio.sleep(2)  # Wait for server to start
+            log.info("app.initial_sync_start", days=7)
+            result = await run_initial_sync(days=7)
+            log.info("app.initial_sync_complete", **result)
+        except Exception as e:
+            log.error("app.initial_sync_error", error=str(e))
+
+    asyncio.create_task(initial_sync_task())
 
     yield
 

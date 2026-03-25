@@ -11,7 +11,9 @@ from storage.models import (
 )
 from storage.repository import (
     cleanup_completed_tasks,
+    delete_all_reports,
     delete_pending_email,
+    delete_reports_before,
     get_active_stocks,
     get_latest_report,
     get_pending_emails,
@@ -41,6 +43,8 @@ __all__ = [
     "save_report",
     "get_report",
     "get_latest_report",
+    "delete_all_reports",
+    "delete_reports_before",
     "get_active_stocks",
     "save_pending_email",
     "get_pending_emails",

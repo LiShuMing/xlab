@@ -2,6 +2,51 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-03-25 - UI Redesign: Zeli-inspired Design System
+
+### Design Changes
+
+#### Color Palette
+- **Background**: `#f5f0e8` (温暖米黄色) - 替代原来的冷灰色 `#f5f5f5`
+- **Primary Accent**: `#d97706` (琥珀色) - 替代原来的蓝色 `#667eea`
+- **Text Primary**: `#1a1a1a` (近黑色) - 更好的对比度
+- **Text Secondary**: `#6b7280` (中性灰) - 层次分明的辅助文字
+- **Card Background**: `white` - 纯白卡片悬浮在米黄背景上
+
+#### Visual Style
+- **Border Radius**: 更大的圆角 (12px-20px) 营造现代感
+  - 小元素: 8px-10px (按钮、标签)
+  - 卡片: 16px-20px
+  - 统计卡片: 16px
+- **Shadows**: 更柔和的阴影 `0 1px 3px rgba(0,0,0,0.04)`
+- **Typography**: Inter 字体优先，更紧凑的字间距
+- **Spacing**: 更宽松的留白 (24px 默认 padding)
+
+#### Interactive Elements
+- **Buttons**:
+  - 主按钮: 琥珀色背景 + 悬停阴影效果
+  - 次按钮: 浅灰背景 + 悬停加深
+  - 更大的圆角 (10px-12px)
+- **Cards**: 悬停时轻微上浮 + 阴影加深
+- **Filters**: 圆角胶囊形状，激活状态琥珀色
+
+#### Updated Templates
+- `src/my_email/server/templates/inbox.html.j2` - Inbox 页面
+- `src/my_email/server/templates/index.html.j2` - Digest 浏览器
+- `src/my_email/server/templates/settings.html.j2` - 设置页面
+- `src/my_email/server/templates/projects.html.j2` - 项目列表
+- `src/my_email/server/templates/project_detail.html.j2` - 项目详情
+- `src/my_email/digest/templates/digest.html.j2` - 日报模板
+
+### Design Philosophy
+参考 [Zeli](https://zeli.app/zh) 的设计语言:
+- 温暖、亲和的配色
+- 充足留白，内容优先
+- 圆润的边角处理
+- 微妙但流畅的交互动画
+
+---
+
 ## 2026-03-24 - Feature: Thread Merging and Unified Summary
 
 ### Features

@@ -247,6 +247,7 @@ class ReportFormatter:
             "created_at": report.created_at.isoformat(),
             "model_name": report.model_name,
             "analysis_duration": report.analysis_duration,
+            "raw_data": report.raw_data,
             "sections": [
                 {"title": s.title, "content": s.content, "order": s.order}
                 for s in report.sections

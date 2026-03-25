@@ -174,6 +174,64 @@ def get_reports_for_date(report_date: date) -> list[DailyReport]:
         conn.close()
 
 
+def delete_all_reports() -> int:
+    """Delete all daily reports from the database.
+
+    Returns:
+        Number of deleted reports.
+
+    Raises:
+        sqlite3.OperationalError: If database write fails.
+    """
+    conn = _get_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("DELETE FROM daily_reports")
+        deleted = cursor.rowcount
+        conn.commit()
+        logger.info("Deleted all reports", count=deleted)
+        return deleted
+
+    except sqlite3.OperationalError as e:
+        logger.error("Failed to delete reports", error=str(e))
+        raise
+    finally:
+        conn.close()
+
+
+def delete_reports_before(cutoff_date: date) -> int:
+    """Delete reports older than the specified date.
+
+    Args:
+        cutoff_date: Delete reports before this date.
+
+    Returns:
+        Number of deleted reports.
+
+    Raises:
+        sqlite3.OperationalError: If database write fails.
+    """
+    conn = _get_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(
+            "DELETE FROM daily_reports WHERE report_date < ?",
+            (cutoff_date.isoformat(),),
+        )
+        deleted = cursor.rowcount
+        conn.commit()
+        logger.info("Deleted old reports", count=deleted, before=str(cutoff_date))
+        return deleted
+
+    except sqlite3.OperationalError as e:
+        logger.error("Failed to delete old reports", error=str(e))
+        raise
+    finally:
+        conn.close()
+
+
 # =============================================================================
 # Stock Configs CRUD
 # =============================================================================

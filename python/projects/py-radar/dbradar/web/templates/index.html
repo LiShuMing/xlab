@@ -3,151 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DB Radar - 数据库行业每日速递</title>
+    <title>DB Radar</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
             font-family: Verdana, Geneva, sans-serif;
             font-size: 10pt;
-            background: #f6f6ef;
-            color: #828282;
-            line-height: 1.5;
+            color: #000;
+            background: #fff;
         }
-        a { text-decoration: none; }
-        a:visited { color: #828282; }
 
+        a { color: #000; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        /* Header - HN Orange */
         .header {
             background: #ff6600;
-            padding: 2px 4px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            padding: 2px;
         }
         .header-inner {
             max-width: 85%;
             margin: 0 auto;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 4px;
         }
-        .header-left { display: flex; align-items: center; gap: 15px; }
-        .header a { color: #000; }
-        .header .logo { font-weight: bold; font-size: 14pt; color: #000; }
-        .header .tagline { font-size: 9pt; color: #333; }
-
-        .container { max-width: 85%; margin: 10px auto; }
-
-        .date-group { margin-bottom: 30px; }
-        .date-header {
+        .header .logo {
+            font-weight: bold;
+            font-size: 13pt;
+            color: #000;
+            padding: 0 4px;
+            border: 1px solid #fff;
+        }
+        .header .nav {
             display: flex;
-            align-items: center;
             gap: 10px;
-            padding: 8px 0;
-            border-bottom: 2px solid #ff6600;
-            margin-bottom: 10px;
-        }
-        .date-header h2 { font-size: 12pt; color: #333; font-weight: 600; }
-        .date-header .count {
-            font-size: 9pt;
-            color: #828282;
-            background: #f0f0f0;
-            padding: 2px 8px;
-            border-radius: 10px;
-        }
-
-        .news-list {
-            background: #fff;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-        }
-        .news-item { padding: 10px 15px; border-bottom: 1px solid #eee; }
-        .news-item:last-child { border-bottom: none; }
-
-        .title-row { display: flex; align-items: flex-start; gap: 5px; }
-        .rank { color: #828282; font-size: 10pt; min-width: 20px; padding-top: 2px; }
-        .title-content { flex: 1; }
-        .cn-title { color: #333; font-size: 11pt; font-weight: 600; margin-bottom: 3px; line-height: 1.4; }
-        .link-row { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
-        .title-link { color: #000; font-size: 10pt; }
-        .title-link:hover { text-decoration: underline; }
-        .site { font-size: 9pt; color: #828282; }
-        .more-sources {
-            font-size: 8pt;
-            color: #ff6600;
-            background: #fff3e0;
-            padding: 1px 4px;
-            border-radius: 3px;
-            cursor: pointer;
-        }
-
-        .meta-row {
-            margin-left: 25px;
-            margin-top: 6px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            align-items: center;
-        }
-        .type-tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 8pt; font-weight: 500; }
-        .type-tag.type-release { background: #e8f5e9; color: #2e7d32; }
-        .type-tag.type-benchmark { background: #fff3e0; color: #e65100; }
-        .type-tag.type-blog { background: #e3f2fd; color: #1565c0; }
-        .type-tag.type-news { background: #fce4ec; color: #c2185b; }
-        .type-tag.type-tutorial { background: #f3e5f5; color: #7b1fa2; }
-        .type-tag.type-other { background: #f5f5f5; color: #666; }
-        .product-tag { display: inline-block; background: #e3f2fd; color: #1565c0; padding: 2px 8px; border-radius: 3px; font-size: 8pt; font-weight: 500; }
-        .tech-tag { display: inline-block; background: #f5f5f5; color: #666; padding: 2px 6px; border-radius: 3px; font-size: 8pt; }
-        .date-tag { font-size: 8pt; color: #999; }
-
-        .summary-row {
-            margin-left: 25px;
-            margin-top: 8px;
-            padding: 10px 12px;
-            background: #fafafa;
-            border-left: 3px solid #ff6600;
-            border-radius: 0 4px 4px 0;
             font-size: 10pt;
-            color: #444;
-            line-height: 1.7;
+        }
+        .header .nav a { color: #000; }
+
+        /* Main Content */
+        .container {
+            max-width: 85%;
+            margin: 0 auto;
+            background: #f6f6ef;
+            min-height: calc(100vh - 60px);
         }
 
-        .sources-row { margin-left: 25px; margin-top: 6px; font-size: 9pt; }
-        .sources-label { color: #666; }
-        .source-link { color: #ff6600; margin-left: 5px; }
-        .source-link:hover { text-decoration: underline; }
+        /* News List */
+        .news-list {
+            padding: 8px 0;
+        }
 
-        .pagination {
+        .news-item {
+            padding: 3px 0;
+        }
+
+        .item-row {
             display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            padding: 20px 0;
+            align-items: flex-start;
+            gap: 4px;
         }
-        .pagination a, .pagination span { padding: 8px 16px; border-radius: 4px; font-size: 10pt; }
-        .pagination a { background: #fff; border: 1px solid #ddd; color: #333; }
-        .pagination a:hover { background: #ff6600; color: #fff; border-color: #ff6600; }
-        .pagination .current { background: #ff6600; color: #fff; border: 1px solid #ff6600; }
-        .pagination .disabled { background: #f5f5f5; color: #ccc; border: 1px solid #eee; cursor: not-allowed; }
 
-        .footer { text-align: center; padding: 20px; font-size: 9pt; }
-        .footer a { color: #828282; }
-        .error-box { background: #fff3f3; border: 1px solid #ffcdd2; padding: 20px; text-align: center; color: #c62828; border-radius: 4px; }
-        .empty-date { text-align: center; padding: 30px; color: #828282; background: #fff; border-radius: 4px; }
+        .rank {
+            color: #828282;
+            font-size: 10pt;
+            min-width: 30px;
+            text-align: right;
+            padding-top: 1px;
+        }
 
-        @media (max-width: 768px) {
-            .container, .header-inner { max-width: 95%; }
+        .vote-arrow {
+            color: #828282;
+            font-size: 10pt;
+            cursor: pointer;
+            padding: 0 2px;
+        }
+        .vote-arrow:hover { color: #ff6600; }
+
+        .item-content {
+            flex: 1;
+        }
+
+        .title-line {
+            font-size: 10pt;
+            line-height: 1.4;
+        }
+
+        .title-line a.title-link {
+            color: #000;
+        }
+
+        .title-line a:visited {
+            color: #828282;
+        }
+
+        .site {
+            color: #828282;
+            font-size: 8pt;
+            margin-left: 4px;
+        }
+
+        .sub-line {
+            font-size: 7pt;
+            color: #828282;
+            margin-left: 34px;
+            margin-top: 1px;
+        }
+
+        .sub-line a { color: #828282; }
+        .sub-line a:hover { text-decoration: underline; }
+
+        /* Summary - Async loaded */
+        .summary {
+            margin-left: 0;
+            margin-top: 6px;
+            padding: 10px 12px;
+            background: #fff;
+            border-left: 3px solid #ff6600;
+            font-size: 9.5pt;
+            color: #333;
+            line-height: 1.6;
+            display: none;
+        }
+        .summary.loaded {
+            display: block;
+        }
+        .summary.loading {
+            color: #828282;
+            font-style: italic;
+        }
+        .summary.has-content {
+            display: block;
+        }
+        .summary-toggle {
+            cursor: pointer;
+            color: #000;
+        }
+        .summary-toggle:hover {
+            text-decoration: underline;
+        }
+
+        /* Date Header */
+        .date-header {
+            padding: 10px 0 5px 34px;
+            font-size: 11pt;
+            font-weight: bold;
+            color: #ff6600;
+            border-bottom: 1px solid #ff6600;
+            margin-bottom: 8px;
+        }
+
+        /* Pagination */
+        .pagination {
+            padding: 20px 0 20px 34px;
+            font-size: 10pt;
+        }
+        .pagination a {
+            color: #000;
+            padding: 0 8px;
+        }
+        .pagination .current {
+            color: #ff6600;
+            font-weight: bold;
+        }
+        .pagination .more {
+            color: #000;
+            margin-left: 10px;
+        }
+
+        /* Footer */
+        .footer {
+            border-top: 2px solid #ff6600;
+            padding: 15px;
+            text-align: center;
+            font-size: 8pt;
+            color: #828282;
+        }
+        .footer a { color: #000; }
+
+        /* Error */
+        .error-box {
+            padding: 20px;
+            color: #c62828;
+            text-align: center;
+        }
+
+        /* Mobile */
+        @media (max-width: 750px) {
+            .header-inner, .container { max-width: 100%; }
+            .header-inner { padding: 0 4px; }
         }
     </style>
 </head>
 <body>
     <header class="header">
         <div class="header-inner">
-            <div class="header-left">
-                <a href="/" class="logo">DB Radar</a>
-                <span class="tagline">数据库行业每日速递</span>
-            </div>
-            <nav>
-                <a href="/api/news">API</a>
+            <a href="/" class="logo">DB Radar</a>
+            <nav class="nav">
+                <a href="/">new</a>
             </nav>
         </div>
     </header>
@@ -156,94 +211,129 @@
         {% if error %}
         <div class="error-box">{{ error }}</div>
         {% elif date_groups %}
-            {% for group in date_groups %}
-            <div class="date-group">
-                <div class="date-header">
-                    <h2>{{ group.date_display }}</h2>
-                    <span class="count">{{ group.total }} 条更新</span>
-                </div>
+            <div class="news-list">
+                {% for group in date_groups %}
+                <div class="date-header">{{ group.date_display }} ({{ group.total }})</div>
 
-                {% if group.news_items %}
-                <div class="news-list">
-                    {% for item in group.news_items %}
-                    <div class="news-item">
-                        <div class="title-row">
-                            <span class="rank">{{ item.id }}.</span>
-                            <div class="title-content">
-                                <div class="cn-title">{{ item.title }}</div>
-                                <div class="link-row">
-                                    <a href="{{ item.url }}" class="title-link" target="_blank">{{ item.original_title }}</a>
-                                    {% if item.site %}
-                                    <span class="site">({{ item.site }})</span>
-                                    {% endif %}
-                                    {% if item.other_sources and item.other_sources|length > 0 %}
-                                    <span class="more-sources" title="共 {{ item.other_sources|length + 1 }} 个来源">+{{ item.other_sources|length }} 来源</span>
-                                    {% endif %}
-                                </div>
+                {% for item in group.news_items %}
+                <div class="news-item" data-id="{{ item.id }}">
+                    <div class="item-row">
+                        <span class="rank">{{ item.id }}.</span>
+                        <span class="vote-arrow">▲</span>
+                        <div class="item-content">
+                            <div class="title-line">
+                                <a href="{{ item.url }}" class="title-link" target="_blank">{{ item.original_title }}</a>
+                                {% if item.site %}
+                                <span class="site">({{ item.site }})</span>
+                                {% endif %}
+                            </div>
+                            <div class="sub-line">
+                                {{ item.product or 'unknown' }}
+                                {% if item.published_date %}
+                                | {{ item.published_date }}
+                                {% endif %}
+                                {% if item.tags %}
+                                | {{ item.tags | join(', ') }}
+                                {% endif %}
+                                | <span class="summary-toggle" onclick="toggleSummary({{ item.id }})">摘要</span>
+                                {% if item.other_sources %}
+                                | <a href="#" onclick="showSources({{ item.id }}); return false;">{{ item.other_sources | length }} sources</a>
+                                {% endif %}
+                            </div>
+                            <div class="summary{% if item.summary %} has-content{% endif %}" id="summary-{{ item.id }}">
+                                {% if item.summary %}
+                                {{ item.summary }}
+                                {% else %}
+                                <span class="loading-text">加载中...</span>
+                                {% endif %}
                             </div>
                         </div>
-
-                        <div class="meta-row">
-                            {% if item.content_type %}
-                            <span class="type-tag type-{{ item.content_type }}">{{ item.content_type_cn }}</span>
-                            {% endif %}
-                            {% if item.product %}
-                            <span class="product-tag">{{ item.product }}</span>
-                            {% endif %}
-                            {% for tag in item.tags[:3] %}
-                            <span class="tech-tag">{{ tag }}</span>
-                            {% endfor %}
-                            {% if item.published_date %}
-                            <span class="date-tag">{{ item.published_date }}</span>
-                            {% endif %}
-                        </div>
-
-                        {% if item.summary %}
-                        <div class="summary-row">{{ item.summary }}</div>
-                        {% endif %}
-
-                        {% if item.other_sources and item.other_sources|length > 0 %}
-                        <div class="sources-row">
-                            <span class="sources-label">📎 其他来源：</span>
-                            {% for src in item.other_sources[:2] %}
-                            <a href="{{ src.url }}" target="_blank" class="source-link">{{ src.site }}</a>
-                            {% endfor %}
-                        </div>
-                        {% endif %}
                     </div>
-                    {% endfor %}
                 </div>
-                {% else %}
-                <div class="empty-date">当日暂无更新</div>
-                {% endif %}
+                {% endfor %}
+                {% endfor %}
             </div>
-            {% endfor %}
 
-            {% if not single_date %}
+            {% if total_pages > 1 %}
             <div class="pagination">
                 {% if has_prev %}
-                <a href="/page/{{ prev_page }}">← 上一页</a>
-                {% else %}
-                <span class="disabled">← 上一页</span>
+                <a href="/page/{{ prev_page }}">&lt; prev</a>
                 {% endif %}
-
-                <span class="current">第 {{ current_page }} / {{ total_pages }} 页</span>
-
+                <span class="current">{{ current_page }} / {{ total_pages }}</span>
                 {% if has_next %}
-                <a href="/page/{{ next_page }}">下一页 →</a>
-                {% else %}
-                <span class="disabled">下一页 →</span>
+                <a href="/page/{{ next_page }}">more &gt;</a>
                 {% endif %}
             </div>
             {% endif %}
 
         {% else %}
-        <div class="error-box">暂无数据</div>
+        <div class="error-box">No data available</div>
         {% endif %}
     </main>
 
     <footer class="footer">
-        DB Radar · 数据库行业每日速递 · <a href="/">首页</a> · <a href="/api/news">API</a>
+        <a href="/">DB Radar</a> - Database Industry Radar
     </footer>
+
+    <script>
+        // Summary cache
+        const summaryCache = {};
+
+        // Auto-fetch summaries that don't have content yet
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.summary:not(.has-content)').forEach(el => {
+                const itemId = el.id.replace('summary-', '');
+                fetchSummary(itemId);
+            });
+        });
+
+        function toggleSummary(itemId) {
+            const summaryEl = document.getElementById(`summary-${itemId}`);
+
+            // Toggle visibility
+            if (summaryEl.style.display === 'none') {
+                summaryEl.style.display = 'block';
+            } else {
+                summaryEl.style.display = 'none';
+            }
+        }
+
+        function fetchSummary(itemId) {
+            const summaryEl = document.getElementById(`summary-${itemId}`);
+
+            // Show loading state
+            summaryEl.classList.add('loading');
+
+            // Check cache
+            if (summaryCache[itemId]) {
+                renderSummary(itemId, summaryCache[itemId]);
+                return;
+            }
+
+            // Fetch summary asynchronously
+            fetch(`/api/item/${itemId}/summary`)
+                .then(r => r.json())
+                .then(data => {
+                    const summaryText = data.summary || '暂无摘要';
+                    summaryCache[itemId] = summaryText;
+                    renderSummary(itemId, summaryText);
+                })
+                .catch(err => {
+                    summaryCache[itemId] = '加载失败';
+                    renderSummary(itemId, summaryCache[itemId]);
+                });
+        }
+
+        function renderSummary(itemId, text) {
+            const el = document.getElementById(`summary-${itemId}`);
+            el.innerHTML = text;
+            el.classList.remove('loading');
+            el.classList.add('loaded');
+        }
+
+        function showSources(itemId) {
+            alert('相关来源: ' + itemId);
+        }
+    </script>
 </body>
 </html>

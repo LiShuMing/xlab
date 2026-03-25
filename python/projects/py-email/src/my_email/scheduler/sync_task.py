@@ -200,6 +200,28 @@ def _run_summarization_batch_sync(limit: int = SUMMARY_BATCH_SIZE) -> int:
         db_conn.close()
 
 
+async def run_initial_sync(days: int = 7) -> dict:
+    """
+    Run initial sync for recent emails.
+
+    Args:
+        days: Number of days to sync (default: 7).
+
+    Returns:
+        Sync result dict.
+    """
+    from my_email.gmail.sync import build_service, sync_messages
+
+    db_conn = get_connection()
+    try:
+        service = build_service()
+        result = sync_messages(db_conn, service, days=days)
+        log.info("sync_task.initial_sync_done", days=days, **result)
+        return result
+    finally:
+        db_conn.close()
+
+
 async def start_sync_scheduler() -> None:
     """
     Start the periodic sync scheduler.
@@ -207,12 +229,6 @@ async def start_sync_scheduler() -> None:
     Runs sync every auto_sync_interval_minutes (from settings).
     Performs an initial sync immediately on startup.
     """
-    # Run initial sync immediately (without blocking)
-    try:
-        await run_sync_only()
-    except Exception as e:
-        log.error("sync_scheduler.initial_error", error=str(e))
-
     while True:
         try:
             db_conn = get_connection()

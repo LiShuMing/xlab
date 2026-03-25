@@ -1,3 +1,124 @@
+## [2026-03-25] - Branding: Logo Redesign for 明资
+
+### Changed
+- **Logo Design**: Created professional SVG logo
+  - Dark gradient background (#1a1a1a to #333)
+  - Gold accent bar at top (matching brand colors)
+  - Upward trending line chart icon (growth symbol)
+  - Gold dot accent (highlight/prosperity)
+  - Two-line text layout: 明资 + MingZi
+  - Modern, minimal, professional aesthetic
+
+### Design Elements
+- Trend line: Represents investment growth and analysis
+- Gold accent: Wealth, prosperity, premium quality
+- Dark background: Sophistication, trust, stability
+- Clean typography: Professional, readable
+
+---
+
+## [2026-03-25] - Branding: Rename to 明资 (MingZi)
+
+### Changed
+- **Brand Name**: PyInvest → 明资 (MingZi)
+  - 寓意：明智投资，明晰资产
+  - Logo: "明" 字作为图标
+  - 页面标题：明资 · 每日投资分析
+  - 副标题：私人定制的智能投资研究助手
+
+### Updated Files
+- `web/index.html`: Updated logo, title, and brand messaging
+
+---
+
+## [2026-03-25] - Feature: Web Dashboard Auto-Analysis & Data Management
+
+### Added
+- **Delete Report API** (`web/server.py`)
+  - `DELETE /api/reports` - Delete all historical reports
+  - Added `delete_all_reports()` and `delete_reports_before()` repository functions
+  - Frontend "清空历史" button with confirmation dialog
+
+- **Auto-Analyzer** (`web/server.py`)
+  - `AutoAnalyzer` class runs in background thread on server startup
+  - Automatically detects stocks without today's report
+  - Asynchronously generates missing reports using `SimpleAgentOrchestrator`
+  - Status polling via `/api/status` endpoint
+  - Shows progress indicator in UI (remaining stocks count)
+
+- **Status API** (`web/server.py`)
+  - `GET /api/status` - Returns auto-analysis status and queue size
+  - `POST /api/analyze` - Trigger manual analysis for all stocks
+
+- **UI Enhancements** (`web/index.html`)
+  - Action bar with "刷新数据" and "清空历史" buttons
+  - Status indicator showing auto-analysis progress
+  - Auto-refresh when analysis is running
+
+### Changed
+- **Empty State Message** - Changed from manual task prompt to "系统正在自动生成报告"
+
+---
+
+## [2026-03-25] - Fix: Report Data Format and Web Dashboard
+
+### Fixed
+- **JSON Formatter** (`modules/report_generator/formatter.py`)
+  - Added `raw_data` field to JSON output
+  - Previously missing price, metrics, and analysis data in web dashboard
+  - Now includes all collected data for frontend consumption
+
+- **Web Server** (`web/server.py`)
+  - Enhanced `_format_report()` with fallback data extraction
+  - Added support for extracting price from kline data when price data unavailable
+  - Added fallback to English section titles for older reports
+  - Improved robustness when raw_data is missing or incomplete
+
+### Changed
+- **Web Dashboard** (`web/index.html`)
+  - Removed all emoji symbols for professional appearance
+  - Changed layout from cards to waterfall list style
+  - Added risk matrix table rendering from markdown
+  - Enhanced visual hierarchy with section labels
+  - Improved typography and spacing
+
+---
+
+## [2026-03-25] - Feature: Web Dashboard for Daily Stock Analysis
+
+### Added
+- **Web Dashboard** (`web/index.html`) - Modern web interface for viewing daily stock analysis
+  - Clean, minimalist design inspired by zeli.app
+  - Warm cream/beige color palette (#f5f0e8 background)
+  - Responsive grid layout for stock cards
+  - Interactive card expansion for detailed analysis
+
+- **Design Features**:
+  - **Color Scheme**: Warm off-white background, subtle borders, yellow accent
+  - **Typography**: Inter + Noto Sans SC for bilingual support
+  - **Stock Cards**: Compact summary view with expandable detailed analysis
+  - **Rating Badges**: Color-coded (Buy=green, Hold=yellow, Sell=red)
+  - **Price Display**: Current price with change indicator
+  - **Key Metrics**: PE, PB, Market Cap in clean grid layout
+  - **Analysis Sections**: Technical, Fundamental, Risk, Sector in 2x2 grid
+  - **Scenario Analysis**: Bull/Base/Bear case cards
+  - **Target Price**: Visual comparison with current price
+
+- **Interactive Features**:
+  - Click to expand/collapse stock cards
+  - Smooth animations on card interactions
+  - Responsive design for mobile and desktop
+  - Sample data with realistic stock analysis (AAPL, NVDA, MSFT, TSLA)
+
+### Technical Details
+- Pure HTML/CSS/JavaScript - no build step required
+- CSS custom properties for theming
+- CSS Grid and Flexbox for layouts
+- Vanilla JavaScript for interactivity
+- Animation delays for staggered card appearance
+
+---
+
 # Change Log - py-invest
 
 All notable changes to this project will be documented in this file.
