@@ -85,8 +85,10 @@ def export_incremental(
         query = "SELECT * FROM items ORDER BY fetched_at ASC"
         params = []
 
-    # First, count the items
+    # First, count the items (remove ORDER BY for count)
     count_query = query.replace("SELECT *", "SELECT COUNT(*)")
+    # Remove ORDER BY clause for count query
+    count_query = count_query.split("ORDER BY")[0].strip()
     if params:
         count_result = conn.execute(count_query, params).fetchone()
     else:

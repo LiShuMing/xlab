@@ -65,3 +65,4 @@ cc/cclab/bplusplus.out.boot
 rust/rdb/data
 .venv
 .env
+shell/bin/bash-history-export-*.txt
