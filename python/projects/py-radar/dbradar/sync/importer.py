@@ -101,7 +101,8 @@ def import_incremental(
             tags,
             sources,
             fetched_at,
-            raw_content
+            raw_content,
+            COALESCE(sync_batch, CURRENT_DATE) as sync_batch
         FROM incremental_data
     """)
 
@@ -186,7 +187,8 @@ def import_from_parquet(
             tags,
             sources,
             fetched_at,
-            raw_content
+            raw_content,
+            COALESCE(sync_batch, CURRENT_DATE) as sync_batch
         FROM incremental_data
     """)
 

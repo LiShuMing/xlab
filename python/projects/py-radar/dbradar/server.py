@@ -74,8 +74,8 @@ def storage_item_to_dict(item: StorageItem, idx: int) -> Dict[str, Any]:
         "published_date": format_date(item.published_date),
         "content_type": item.content_type,
         "content_type_cn": CONTENT_TYPE_LABELS.get(item.content_type, "文章"),
-        "_date": item.published_date.isoformat() if item.published_date else "",
-        "_date_display": format_date_display(item.published_date),
+        "_date": item.sync_batch.isoformat() if item.sync_batch else (item.published_date.isoformat() if item.published_date else ""),
+        "_date_display": format_sync_batch_display(item.sync_batch),
     }
 
 
@@ -133,6 +133,26 @@ def format_date_display(item_date: Optional[date]) -> str:
         return str(item_date)
 
 
+def format_sync_batch_display(sync_batch: Optional[date]) -> str:
+    """Format sync_batch for display header (shows as 'Added on YYYY-MM-DD')."""
+    if not sync_batch:
+        return "未知时间"
+
+    try:
+        today = date.today()
+        weekdays = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"]
+
+        if sync_batch == today:
+            return "今天新增"
+        elif sync_batch == today - timedelta(days=1):
+            return "昨天新增"
+        else:
+            weekday = weekdays[sync_batch.weekday()]
+            return f"{sync_batch.month}月{sync_batch.day}日 {weekday} 新增"
+    except (ValueError, AttributeError):
+        return str(sync_batch)
+
+
 CONTENT_TYPE_LABELS = {
     "release": "发布",
     "benchmark": "基准测试",
@@ -182,8 +202,8 @@ def show_page(page: int):
 
     start_idx = (page - 1) * ITEMS_PER_PAGE
 
-    # Query items for this page
-    items = store.query(limit=ITEMS_PER_PAGE, offset=start_idx)
+    # Query items for this page, ordered by sync_batch
+    items = store.query_by_sync_batch(limit=ITEMS_PER_PAGE, offset=start_idx)
 
     # Convert to dicts and assign sequential IDs
     item_dicts = []
@@ -191,8 +211,8 @@ def show_page(page: int):
         d = storage_item_to_dict(item, idx)
         item_dicts.append(d)
 
-    # Group by date
-    date_groups = group_items_by_date(item_dicts)
+    # Group by sync_batch (not published_date)
+    date_groups = group_items_by_sync_batch(item_dicts)
 
     return render_template(
         "index.html",

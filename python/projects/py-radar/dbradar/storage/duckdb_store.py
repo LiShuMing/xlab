@@ -56,7 +56,8 @@ class DuckDBStore(ItemStore):
                 tags VARCHAR[],
                 sources VARCHAR[],
                 fetched_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                raw_content VARCHAR
+                raw_content VARCHAR,
+                sync_batch DATE DEFAULT CURRENT_DATE
             )
         """)
 
@@ -64,6 +65,7 @@ class DuckDBStore(ItemStore):
         conn.execute("CREATE INDEX IF NOT EXISTS idx_published_date ON items(published_date)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_product ON items(product)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_content_type ON items(content_type)")
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_sync_batch ON items(sync_batch)")
 
     def _generate_id(self, url: str) -> str:
         """Generate unique ID from URL."""
@@ -76,10 +78,12 @@ class DuckDBStore(ItemStore):
 
         conn = self._get_conn()
 
-        # Ensure all items have IDs
+        # Ensure all items have IDs and sync_batch
         for item in items:
             if not item.id:
                 item.id = self._generate_id(item.url)
+            if item.sync_batch is None:
+                item.sync_batch = date.today()
 
         # Prepare data
         data = []
@@ -97,14 +101,15 @@ class DuckDBStore(ItemStore):
                 item.sources,
                 item.fetched_at,
                 item.raw_content,
+                item.sync_batch,
             ))
 
         # Use INSERT OR REPLACE for upsert
         conn.executemany("""
             INSERT OR REPLACE INTO items
             (id, url, title, original_title, published_date, product,
-             content_type, summary, tags, sources, fetched_at, raw_content)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             content_type, summary, tags, sources, fetched_at, raw_content, sync_batch)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, data)
 
         conn.commit()
@@ -159,6 +164,49 @@ class DuckDBStore(ItemStore):
     def get_by_date(self, target_date: date) -> List[StorageItem]:
         """Get all items for a specific date."""
         return self.query(start_date=target_date, end_date=target_date, limit=10000)
+
+    def query_by_sync_batch(
+        self,
+        limit: int = 100,
+        offset: int = 0,
+    ) -> List[StorageItem]:
+        """Query items ordered by sync_batch (newest first), then by published_date.
+
+        This is used for displaying items grouped by sync date (when they were added)
+        rather than by published date.
+        """
+        conn = self._get_conn()
+
+        rows = conn.execute("""
+            SELECT * FROM items
+            ORDER BY sync_batch DESC, published_date DESC, fetched_at DESC
+            LIMIT ? OFFSET ?
+        """, [limit, offset]).fetchall()
+
+        return [self._row_to_item(row) for row in rows]
+
+    def get_sync_batch_stats(self) -> Dict[str, Any]:
+        """Get statistics grouped by sync_batch."""
+        conn = self._get_conn()
+
+        rows = conn.execute("""
+            SELECT
+                sync_batch,
+                COUNT(*) as item_count,
+                MIN(published_date) as min_published,
+                MAX(published_date) as max_published
+            FROM items
+            GROUP BY sync_batch
+            ORDER BY sync_batch DESC
+        """).fetchall()
+
+        return {
+            str(row[0]): {
+                "item_count": row[1],
+                "date_range": (row[2], row[3]),
+            }
+            for row in rows
+        }
 
     def get_by_id(self, item_id: str) -> Optional[StorageItem]:
         """Get item by ID."""
@@ -229,6 +277,7 @@ class DuckDBStore(ItemStore):
             sources=list(row[9]) if row[9] else [],
             fetched_at=row[10],
             raw_content=row[11] or "",
+            sync_batch=row[12] if len(row) > 12 else None,
         )
 
     def get_items_without_summary(self, limit: int = 100) -> List[StorageItem]:

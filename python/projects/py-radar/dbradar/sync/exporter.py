@@ -115,9 +115,29 @@ def export_incremental(
     else:
         conn.execute("CREATE OR REPLACE TEMPORARY VIEW incremental_items AS " + query)
 
-    # Copy to Parquet with Snappy compression
+    # Get current date for sync_batch
+    from datetime import date
+    sync_batch_date = date.today().isoformat()
+
+    # Copy to Parquet with Snappy compression, adding sync_batch column
     conn.execute(f"""
-        COPY (SELECT * FROM incremental_items)
+        COPY (
+            SELECT
+                id,
+                url,
+                title,
+                original_title,
+                published_date,
+                product,
+                content_type,
+                summary,
+                tags,
+                sources,
+                fetched_at,
+                raw_content,
+                COALESCE(sync_batch, '{sync_batch_date}'::DATE) as sync_batch
+            FROM incremental_items
+        )
         TO '{parquet_path}'
         (FORMAT PARQUET, COMPRESSION 'SNAPPY')
     """)

@@ -29,6 +29,7 @@ class StorageItem:
     sources: List[str] = None  # Additional source URLs
     fetched_at: datetime = None
     raw_content: str = ""  # Original HTML/text content
+    sync_batch: Optional[date] = None  # Date when item was synced
 
     def __post_init__(self):
         if self.tags is None:
@@ -37,6 +38,8 @@ class StorageItem:
             self.sources = []
         if self.fetched_at is None:
             self.fetched_at = datetime.now()
+        if self.sync_batch is None:
+            self.sync_batch = date.today()
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization."""
@@ -52,6 +55,7 @@ class StorageItem:
             "tags": self.tags,
             "sources": self.sources,
             "fetched_at": self.fetched_at.isoformat(),
+            "sync_batch": self.sync_batch.isoformat() if self.sync_batch else None,
         }
 
     @classmethod
@@ -65,6 +69,10 @@ class StorageItem:
         if fetched and isinstance(fetched, str):
             fetched = datetime.fromisoformat(fetched)
 
+        sync_batch = data.get("sync_batch")
+        if sync_batch and isinstance(sync_batch, str):
+            sync_batch = date.fromisoformat(sync_batch)
+
         return cls(
             id=data["id"],
             url=data["url"],
@@ -77,6 +85,7 @@ class StorageItem:
             tags=data.get("tags", []),
             sources=data.get("sources", []),
             fetched_at=fetched or datetime.now(),
+            sync_batch=sync_batch,
         )
 
 
