@@ -228,6 +228,38 @@ def show_page(page: int):
     )
 
 
+def group_items_by_sync_batch(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Group items by sync_batch for display."""
+    date_groups = []
+    current_batch = None
+    current_items = []
+
+    for item in items:
+        item_batch = item.get("_date", "")
+        if item_batch != current_batch:
+            if current_items:
+                date_groups.append({
+                    "date": current_batch,
+                    "date_display": current_items[0].get("_date_display", ""),
+                    "news_items": current_items,
+                    "total": len(current_items),
+                })
+            current_batch = item_batch
+            current_items = []
+        current_items.append(item)
+
+    # Add last group
+    if current_items:
+        date_groups.append({
+            "date": current_batch,
+            "date_display": current_items[0].get("_date_display", ""),
+            "news_items": current_items,
+            "total": len(current_items),
+        })
+
+    return date_groups
+
+
 def group_items_by_date(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """Group items by date for display."""
     date_groups = []
@@ -262,14 +294,21 @@ def group_items_by_date(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
 @app.route("/date/<date_str>")
 def by_date(date_str: str):
-    """Serve a specific date's report."""
+    """Serve a specific sync_batch's items."""
     try:
         target_date = date.fromisoformat(date_str)
     except ValueError:
         abort(404)
 
     store = get_store()
-    items = store.get_by_date(target_date)
+
+    # Query items by sync_batch instead of published_date
+    conn = store._get_conn()
+    rows = conn.execute("""
+        SELECT * FROM items WHERE sync_batch = ?
+        ORDER BY published_date DESC
+    """, [target_date]).fetchall()
+    items = [store._row_to_item(row) for row in rows]
 
     if not items:
         abort(404)
@@ -278,7 +317,7 @@ def by_date(date_str: str):
 
     date_groups = [{
         "date": date_str,
-        "date_display": format_date_display(target_date),
+        "date_display": format_sync_batch_display(target_date),
         "news_items": item_dicts,
         "total": len(item_dicts),
     }]
