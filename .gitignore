@@ -66,3 +66,4 @@ rust/rdb/data
 .venv
 .env
 shell/bin/bash-history-export-*.txt
+python/projects/py-radar/data/sync/

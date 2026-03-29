@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Digest - 2026-03-23</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; display: flex; gap: 24px; }
+        .main { flex: 1; min-width: 0; }
+        .sidebar { width: 300px; flex-shrink: 0; }
+        @media (max-width: 900px) {
+            .container { flex-direction: column; }
+            .sidebar { width: 100%; }
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+        .header h1 { font-size: 28px; margin-bottom: 8px; }
+        .stats { display: flex; gap: 24px; margin-top: 12px; opacity: 0.9; }
+        .stat { text-align: center; }
+        .stat-value { font-size: 24px; font-weight: 600; }
+        .stat-label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+        .card-title { font-size: 18px; font-weight: 600; color: #1a1a1a; }
+        .relevance {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .relevance-high { background: #dcfce7; color: #166534; }
+        .relevance-medium { background: #fef3c7; color: #92400e; }
+        .relevance-low { background: #f3f4f6; color: #4b5563; }
+        .meta { font-size: 13px; color: #666; margin-bottom: 8px; }
+        .topics { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+        .topic {
+            background: #e0e7ff;
+            color: #3730a3;
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+        .summary { color: #444; margin-bottom: 12px; }
+        .key-points { list-style: none; }
+        .key-points li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 6px;
+            font-size: 14px;
+            color: #555;
+        }
+        .key-points li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+        }
+        .action-items {
+            background: #fef2f2;
+            border-left: 3px solid #ef4444;
+            padding: 12px 16px;
+            margin-top: 12px;
+            border-radius: 0 8px 8px 0;
+        }
+        .action-items h4 { color: #dc2626; font-size: 13px; margin-bottom: 8px; }
+        .action-items ul { margin-left: 16px; }
+        .action-items li { font-size: 13px; color: #7f1d1d; }
+        .sidebar-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .sidebar-title { font-size: 14px; font-weight: 600; color: #1a1a1a; margin-bottom: 12px; }
+        .topic-row { display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
+        .topic-row:last-child { border-bottom: none; }
+        .topic-name { flex: 1; font-size: 13px; color: #333; }
+        .topic-trend { font-size: 16px; margin-left: 8px; }
+        .topic-count { font-size: 12px; color: #888; margin-left: 8px; }
+        .footer { text-align: center; padding: 20px; color: #888; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="main">
+            <div class="header">
+                <h1>Daily Digest</h1>
+                <div>2026-03-23</div>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value">9</div>
+                        <div class="stat-label">Emails</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">1</div>
+                        <div class="stat-label">High Priority</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">9</div>
+                        <div class="stat-label">Summaries</div>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Iceberg Primary Key Reverse-Lookup Index Proposal</div>
+                    <span class="relevance relevance-high">high</span>
+                </div>
+                <div class="meta">
+                    <strong>Apache Iceberg</strong>
+                     • 2026-03-23
+                </div>
+                
+                <div class="topics">
+                    
+                    <span class="topic">Apache Iceberg</span>
+                    
+                    <span class="topic">Primary Key Index</span>
+                    
+                    <span class="topic">Position Deletes</span>
+                    
+                    <span class="topic">Flink CDC</span>
+                    
+                    <span class="topic">Spark MERGE INTO</span>
+                    
+                    <span class="topic">Secondary Index Framework</span>
+                    
+                </div>
+                
+                <div class="summary">Huaxin Gao provided an update on the indexing work for the Iceberg table format, indicating a strategic shift from bloom filter indexes to primary key indexes. This decision was driven by ambiguity regarding whether bloom filters fit within the secondary index framework or should be classified as extended stats. The new proposal outlines a primary key reverse-lookup index that maps each key to its specific physical location, including file path and row position. This implementation enables scan-time file pruning specifically optimized for point lookups. Additionally, it allows for the conversion of key-based deletes into position deletes, effectively eliminating equality deletes for Flink CDC pipelines. The index also accelerates Spark MERGE INTO operations by replacing expensive full-table joins with direct file lookups. A detailed proposal document has been shared with the community for review and feedback.</div>
+                
+                <ul class="key-points">
+                    
+                    <li>Focus shifted from bloom filter indexes to primary key indexes due to framework fit clarity.</li>
+                    
+                    <li>Bloom filters faced open questions regarding classification as secondary indexes versus extended stats.</li>
+                    
+                    <li>Proposed index is a reverse-lookup structure mapping keys to physical locations.</li>
+                    
+                    <li>Physical location metadata includes file_path and row_position.</li>
+                    
+                    <li>Enables scan-time file pruning to optimize point lookup queries.</li>
+                    
+                </ul>
+                
+                
+                <div class="action-items">
+                    <h4>⚠️ Action Items</h4>
+                    <ul>
+                        
+                        <li>Review proposal document and provide feedback</li>
+                        
+                    </ul>
+                </div>
+                
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">IMDb Weekly Show Recommendations: March 2026</div>
+                    <span class="relevance relevance-low">low</span>
+                </div>
+                <div class="meta">
+                    <strong>IMDb</strong>
+                     • 2026-03-23
+                </div>
+                
+                <div class="topics">
+                    
+                    <span class="topic">media metadata</span>
+                    
+                    <span class="topic">content ratings</span>
+                    
+                    <span class="topic">release schedules</span>
+                    
+                    <span class="topic">streaming services</span>
+                    
+                    <span class="topic">entertainment data</span>
+                    
+                </div>
+                
+                <div class="summary">This email from IMDb outlines five television shows scheduled for release or return during the week of March 23, 2026. The digest highlights metadata for each title including release year, episode duration, content rating, and IMDb user scores. Featured content includes returning seasons for &#34;Daredevil: Born Again&#34; and &#34;For All Mankind&#34; alongside new series launches. Specific attention is given to genre diversity ranging from mockumentary comedy to sci-fi and horror. The communication serves as a curated recommendation list rather than a technical announcement. No infrastructure or data pipeline information is contained within the message. The footer indicates corporate ownership by IMDb.com based in Seattle, Washington.</div>
+                
+                <ul class="key-points">
+                    
+                    <li>&#34;The Comeback&#34; Season 3 listed with 30-minute runtime and 8.0/10 rating.</li>
+                    
+                    <li>&#34;Daredevil: Born Again&#34; Season 2 scheduled with 1-hour episode duration and TV-MA rating.</li>
+                    
+                    <li>&#34;Bait&#34; features a 1-hour 12-minute runtime with a current rating of 7.4/10.</li>
+                    
+                    <li>&#34;For All Mankind&#34; Season 5 maintains an 8.1/10 rating with 1-hour episodes.</li>
+                    
+                    <li>&#34;Something Very Bad Is Going to Happen&#34; identified as a 2026 horror series release.</li>
+                    
+                </ul>
+                
+                
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Apache Iceberg Contributor Onboarding and Issue Guidance</div>
+                    <span class="relevance relevance-medium">medium</span>
+                </div>
+                <div class="meta">
+                    <strong>Apache Iceberg</strong>
+                     • 2026-03-23
+                </div>
+                
+                <div class="topics">
+                    
+                    <span class="topic">Apache Iceberg</span>
+                    
+                    <span class="topic">Open Source Contribution</span>
+                    
+                    <span class="topic">Java</span>
+                    
+                    <span class="topic">GitHub Issues</span>
+                    
+                    <span class="topic">Onboarding</span>
+                    
+                    <span class="topic">Data Lakehouse</span>
+                    
+                </div>
+                
+                <div class="summary">Divyansh Sahu initiated contact expressing interest in contributing to the Apache Iceberg project. He highlighted his background in Java and Spring Boot development. Eduard Tudenhöfner responded on behalf of the community to welcome the new contributor. The response directs the applicant to the project&#39;s GitHub repository for open issues. Specific guidance was provided to filter issues labeled as &#34;good first issue&#34; for beginners. This interaction illustrates the standard onboarding workflow for external contributors to the Iceberg codebase. No specific technical tasks were assigned during this initial exchange. The communication establishes a pathway for community involvement without immediate deadlines.</div>
+                
+                <ul class="key-points">
+                    
+                    <li>Divyansh Sahu requested guidance on contributing to Apache Iceberg.</li>
+                    
+                    <li>Contributor background includes Java and Spring Boot experience.</li>
+                    
+                    <li>Eduard Tudenhöfner provided official community welcome.</li>
+                    
+                    <li>Contribution workflow starts via GitHub issue tracker.</li>
+                    
+                    <li>Base URL for issues is github.com/apache/iceberg/issues.</li>
+                    
+                </ul>
+                
+                
+                <div class="action-items">
+                    <h4>⚠️ Action Items</h4>
+                    <ul>
+                        
+                        <li>Review open GitHub issues for contribution opportunities</li>
+                        
+                    </ul>
+                </div>
+                
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Security Alert: Third-Party OAuth Application Authorized on GitHub Account</div>
+                    <span class="relevance relevance-medium">medium</span>
+                </div>
+                <div class="meta">
+                    <strong>GitHub</strong>
+                     • 2026-03-23
+                </div>
+                
+                <div class="topics">
+                    
+                    <span class="topic">OAuth</span>
+                    
+                    <span class="topic">Identity Management</span>
+                    
+                    <span class="topic">Account Security</span>
+                    
+                    <span class="topic">Access Control</span>
+                    
+                    <span class="topic">Authentication</span>
+                    
+                    <span class="topic">Third-Party Integration</span>
+                    
+                </div>
+                
+                <div class="summary">This email is a security notification from GitHub regarding account access changes. A third-party OAuth application associated with gitee.com was recently authorized to access the user&#39;s account. The authorization includes user scopes, granting the application specific permissions within the GitHub environment. This event is logged in the account&#39;s security log for audit purposes. Users are provided with a direct link to review the connection details and manage authorized applications. The notification serves as an alert to potential unauthorized access or intentional integration setup. Immediate verification is recommended to ensure the authorization was intended by the account holder.</div>
+                
+                <ul class="key-points">
+                    
+                    <li>OAuth application domain identified as gitee.com</li>
+                    
+                    <li>Authorization grants user scopes for account access</li>
+                    
+                    <li>Event timestamp recorded as 2026-03-23T08:32:24Z</li>
+                    
+                    <li>Target account holder identified as LiShuMing</li>
+                    
+                    <li>Specific application ID referenced in settings URL (5a179b878a9f6ac42acd)</li>
+                    
+                </ul>
+                
+                
+                <div class="action-items">
+                    <h4>⚠️ Action Items</h4>
+                    <ul>
+                        
+                        <li>Verify if gitee.com OAuth authorization was intended</li>
+                        
+                        <li>Revoke access via settings link if unauthorized</li>
+                        
+                        <li>Review security log for other anomalous events</li>
+                        
+                    </ul>
+                </div>
+                
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Gitee Account Email Binding Notification</div>
+                    <span class="relevance relevance-medium">medium</span>
+                </div>
+                <div class="meta">
+                    <strong>Gitee</strong>
+                     • 2026-03-23
+                </div>
+                
+                <div class="topics">
+                    
+                    <span class="topic">Account Security</span>
+                    
+                    <span class="topic">Identity Management</span>
+                    
+                    <span class="topic">Email Binding</span>
+                    
+                    <span class="topic">Access Control</span>
+                    
+                    <span class="topic">Gitee Platform</span>
+                    
+                    <span class="topic">Authentication</span>
+                    
+                </div>
+                
+                <div class="summary">This notification confirms a successful binding of a new email address to a Gitee account. The account username is identified as shuming_li within the platform. The newly bound email address is recorded as ming.moriarty@gmail.com. This action impacts account recovery mechanisms and notification routing configurations. The notification includes a security warning advising immediate password rotation if the action was unauthorized. A direct link to the account information profile is provided for credential updates. This event signifies a change in the identity verification parameters for the repository hosting service. Monitoring such changes is critical for maintaining supply chain security integrity.</div>
+                
+                <ul class="key-points">
+                    
+                    <li>Account username: shuming_li</li>
+                    
+                    <li>Bound email: ming.moriarty@gmail.com</li>
+                    
+                    <li>Event type: Email binding success notification</li>
+                    
+                    <li>Timestamp: 2026-03-23T08:34:05Z</li>
+                    
+                    <li>Security recommendation: Change password if unauthorized</li>
+                    
+                </ul>
+                
+                
+                <div class="action-items">
+                    <h4>⚠️ Action Items</h4>
+                    <ul>
+                        
+                        <li>Verify authorization of the email binding event immediately</li>
+                        
+                        <li>Reset account password via provided link if unauthorized</li>
+                        
+                        <li>Audit recent account activity for unauthorized access</li>
+                        
+                    </ul>
+                </div>
+                
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Gitee Platform Onboarding and Feature Capabilities Overview</div>
+                    <span class="relevance relevance-low">low</span>
+                </div>
+                <div class="meta">
+                    <strong>Gitee</strong>
+                     • 2026-03-23
+                </div>
+                
+                <div class="topics">
+                    
+                    <span class="topic">Git</span>
+                    
+                    <span class="topic">SVN</span>
+                    
+                    <span class="topic">Repository Management</span>
+                    
+                    <span class="topic">SSH Keys</span>
+                    
+                    <span class="topic">Pull Requests</span>
+                    
+                    <span class="topic">Code Hosting</span>
+                    
+                </div>
+                
+                <div class="summary">This email serves as an onboarding notification for new users of the Gitee code hosting platform. It outlines the service tiers, noting that individual developer accounts receive unlimited free public and private repositories. Enterprise collaboration features are available, with a limited-time offer for teams consisting of fewer than five members. Technical capabilities include standard Git operations alongside legacy SVN support for code management. Account security and access are managed through SSH public key configuration and password reset workflows. Support is facilitated via a dedicated QQ technical exchange group and online help documentation. Enterprise sales inquiries are directed to a specific telephone hotline for further engagement.</div>
+                
+                <ul class="key-points">
+                    
+                    <li>Individual developer accounts include unlimited free public and private repositories.</li>
+                    
+                    <li>Enterprise version offers limited-time free access for teams with fewer than 5 members.</li>
+                    
+                    <li>Account management supports SSH public key configuration for secure access.</li>
+                    
+                    <li>Code management features include cloning, downloading, and Pull Request workflows.</li>
+                    
+                    <li>Platform provides Subversion (SVN) support in addition to Git.</li>
+                    
+                </ul>
+                
+                
+                <div class="action-items">
+                    <h4>⚠️ Action Items</h4>
+                    <ul>
+                        
+                        <li>Configure SSH public keys for repository access</li>
+                        
+                        <li>Review help documentation for Git/SVN operations</li>
+                        
+                        <li>Evaluate enterprise free tier eligibility for teams under 5 people</li>
+                        
+                    </ul>
+                </div>
+                
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">2026 Tencent Cloud City Summit Shanghai Station: AI Agent and Industry Application Focus</div>
+                    <span class="relevance relevance-medium">medium</span>
+                </div>
+                <div class="meta">
+                    <strong>InfoQ China</strong>
+                     • 2026-03-23
+                </div>
+                
+                <div class="topics">
+                    
+                    <span class="topic">AI Agent</span>
+                    
+                    <span class="topic">Cloud Infrastructure</span>
+                    
+                    <span class="topic">RAG</span>
+                    
+                    <span class="topic">AI Compliance</span>
+                    
+                    <span class="topic">Smart Manufacturing</span>
+                    
+                    <span class="topic">Data Integration</span>
+                    
+                </div>
+                
+                <div class="summary">The email announces the 2026 Tencent Cloud City Summit Shanghai Station scheduled for March 27, 2026. The event focuses on AI-native enterprise transformation through five specialized technical tracks. Key discussions include scaling enterprise AI Agents from cost centers to growth engines and addressing security governance. The summit covers overseas compliance regulations for AI and audio-video scene innovation for global expansion. Technical sessions detail Tencent Cloud ADP for industrial AI and the evolution from RAG to Agent for knowledge management. A closed-door Media TechDay will analyze AI animated drama production pipelines and efficiency tools. The marketing track introduces new solutions for integrating public and private domain data for transaction growth. Overall, the event emphasizes practical implementation cases and infrastructure support for AI workloads.</div>
+                
+                <ul class="key-points">
+                    
+                    <li>Summit scheduled for March 27, 2026, with main tracks starting at 14:00 and Media TechDay at 13:30.</li>
+                    
+                    <li>AI Agent track addresses scaling challenges, Agentic Coding, and AI-native storage architectures.</li>
+                    
+                    <li>Security governance for enterprise AI Agents and edge-cloud collaborative development will be discussed.</li>
+                    
+                    <li>Go-Global salon features legal interpretation of overseas AI regulations and compliance practices.</li>
+                    
+                    <li>Partners TopOn and PPIO will share AI-driven monetization and native customer insight strategies.</li>
+                    
+                </ul>
+                
+                
+                <div class="action-items">
+                    <h4>⚠️ Action Items</h4>
+                    <ul>
+                        
+                        <li>Register for the summit before March 27, 2026.</li>
+                        
+                    </ul>
+                </div>
+                
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Gitee Account SSH Public Key Addition Notification</div>
+                    <span class="relevance relevance-medium">medium</span>
+                </div>
+                <div class="meta">
+                    <strong>Gitee</strong>
+                     • 2026-03-23
+                </div>
+                
+                <div class="topics">
+                    
+                    <span class="topic">SSH</span>
+                    
+                    <span class="topic">Authentication</span>
+                    
+                    <span class="topic">Access Control</span>
+                    
+                    <span class="topic">Git</span>
+                    
+                    <span class="topic">Security</span>
+                    
+                    <span class="topic">Identity Management</span>
+                    
+                </div>
+                
+                <div class="summary">This notification confirms the successful addition of a new SSH public key to the Gitee account associated with user shuming.li. The key is labeled with the identifier ming.moriarty@gmail.com for recognition within the profile settings. This configuration enables secure, passwordless authentication for Git operations over the SSH protocol. Such modifications directly impact repository access permissions and potential CI/CD pipeline integrations relying on SSH keys. Immediate verification is advised to ensure the change was authorized by the account owner. If the key was not added intentionally, the provided management link allows for immediate revocation to prevent unauthorized access. Maintaining accurate SSH key inventories is critical for infrastructure security and audit compliance. This event serves as an audit trail entry for identity and access management processes.</div>
+                
+                <ul class="key-points">
+                    
+                    <li>Event type is SSH public key addition notification</li>
+                    
+                    <li>Target platform is Gitee code hosting service</li>
+                    
+                    <li>Account username identified as shuming.li</li>
+                    
+                    <li>Public key title label is ming.moriarty@gmail.com</li>
+                    
+                    <li>Notification timestamp is 2026-03-23T09:47:32Z</li>
+                    
+                </ul>
+                
+                
+                <div class="action-items">
+                    <h4>⚠️ Action Items</h4>
+                    <ul>
+                        
+                        <li>Verify authorization of the SSH key addition</li>
+                        
+                        <li>Revoke key via profile settings if unrecognized</li>
+                        
+                        <li>Update local SSH configurations if this key is for new access</li>
+                        
+                    </ul>
+                </div>
+                
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">EU-Australia Trade Deal and Global Geopolitical Updates</div>
+                    <span class="relevance relevance-low">low</span>
+                </div>
+                <div class="meta">
+                    <strong>Bloomberg Politics</strong>
+                     • 2026-03-23
+                </div>
+                
+                <div class="topics">
+                    
+                    <span class="topic">Supply Chain</span>
+                    
+                    <span class="topic">Critical Minerals</span>
+                    
+                    <span class="topic">Energy Security</span>
+                    
+                    <span class="topic">Trade Agreements</span>
+                    
+                    <span class="topic">Geopolitics</span>
+                    
+                    <span class="topic">Infrastructure Risk</span>
+                    
+                </div>
+                
+                <div class="summary">The European Union is pursuing a free-trade agreement with Australia, aiming to conclude negotiations started in 2018 during Ursula von der Leyen&#39;s visit to Sydney. This move is driven by the EU&#39;s need to bolster trade, military, and economic defenses amidst conflicts in Ukraine and Iran, as well as strained transatlantic relations. Australia is positioned as a critical supplier of rare earths and minerals essential for European industry, alongside providing military aid to Ukraine. Concurrently, geopolitical tensions escalate with US President Trump issuing ultimatums to Iran regarding the Strait of Hormuz, through which 20% of global oil and LNG supplies flow. The International Energy Agency reports over 40 energy assets damaged across nine Middle Eastern nations, threatening global supply chains. China recorded a $1.2 trillion trade surplus last year, prompting Premier Li Qiang to address partner concerns about market disruption. These developments highlight significant risks to global infrastructure supply chains and energy stability.</div>
+                
+                <ul class="key-points">
+                    
+                    <li>EU Commission Chief Ursula von der Leyen is visiting Sydney to finalize a free-trade deal with Australia initiated in 2018.</li>
+                    
+                    <li>The agreement includes strengthened cooperation on defense and critical minerals supply chains.</li>
+                    
+                    <li>Australia supplies rare earths and minerals required for European industry and has sent armored vehicles to Ukraine.</li>
+                    
+                    <li>US President Trump issued a two-day deadline for Iran to reopen the Strait of Hormuz or face infrastructure bombing.</li>
+                    
+                    <li>The Strait of Hormuz facilitates the flow of one-fifth of global oil and liquefied natural gas supplies.</li>
+                    
+                </ul>
+                
+                
+            </div>
+            
+
+            <div class="footer">
+                Generated by my-email • 2026-03-23
+            </div>
+        </div>
+
+        
+        <div class="sidebar">
+            <div class="sidebar-card">
+                <div class="sidebar-title">📊 Topic Trends (30 days)</div>
+                
+                <div class="topic-row">
+                    <span class="topic-name">identity management</span>
+                    <span class="topic-trend">→</span>
+                    <span class="topic-count">3</span>
+                </div>
+                
+                <div class="topic-row">
+                    <span class="topic-name">access control</span>
+                    <span class="topic-trend">→</span>
+                    <span class="topic-count">3</span>
+                </div>
+                
+                <div class="topic-row">
+                    <span class="topic-name">authentication</span>
+                    <span class="topic-trend">→</span>
+                    <span class="topic-count">3</span>
+                </div>
+                
+                <div class="topic-row">
+                    <span class="topic-name">apache iceberg</span>
+                    <span class="topic-trend">→</span>
+                    <span class="topic-count">2</span>
+                </div>
+                
+                <div class="topic-row">
+                    <span class="topic-name">account security</span>
+                    <span class="topic-trend">→</span>
+                    <span class="topic-count">2</span>
+                </div>
+                
+                <div class="topic-row">
+                    <span class="topic-name">git</span>
+                    <span class="topic-trend">→</span>
+                    <span class="topic-count">2</span>
+                </div>
+                
+                <div class="topic-row">
+                    <span class="topic-name">primary key index</span>
+                    <span class="topic-trend">→</span>
+                    <span class="topic-count">1</span>
+                </div>
+                
+                <div class="topic-row">
+                    <span class="topic-name">position deletes</span>
+                    <span class="topic-trend">→</span>
+                    <span class="topic-count">1</span>
+                </div>
+                
+                <div class="topic-row">
+                    <span class="topic-name">flink cdc</span>
+                    <span class="topic-trend">→</span>
+                    <span class="topic-count">1</span>
+                </div>
+                
+                <div class="topic-row">
+                    <span class="topic-name">spark merge into</span>
+                    <span class="topic-trend">→</span>
+                    <span class="topic-count">1</span>
+                </div>
+                
+                <div class="topic-row">
+                    <span class="topic-name">secondary index framework</span>
+                    <span class="topic-trend">→</span>
+                    <span class="topic-count">1</span>
+                </div>
+                
+                <div class="topic-row">
+                    <span class="topic-name">file pruning</span>
+                    <span class="topic-trend">→</span>
+                    <span class="topic-count">1</span>
+                </div>
+                
+                <div class="topic-row">
+                    <span class="topic-name">media metadata</span>
+                    <span class="topic-trend">→</span>
+                    <span class="topic-count">1</span>
+                </div>
+                
+                <div class="topic-row">
+                    <span class="topic-name">content ratings</span>
+                    <span class="topic-trend">→</span>
+                    <span class="topic-count">1</span>
+                </div>
+                
+                <div class="topic-row">
+                    <span class="topic-name">release schedules</span>
+                    <span class="topic-trend">→</span>
+                    <span class="topic-count">1</span>
+                </div>
+                
+            </div>
+
+            
+            <div class="sidebar-card">
+                <div class="sidebar-title">🔥 Top Topics Today</div>
+                <div class="topics">
+                    
+                    <span class="topic">identity management</span>
+                    
+                    <span class="topic">access control</span>
+                    
+                    <span class="topic">authentication</span>
+                    
+                    <span class="topic">apache iceberg</span>
+                    
+                    <span class="topic">account security</span>
+                    
+                    <span class="topic">git</span>
+                    
+                    <span class="topic">primary key index</span>
+                    
+                    <span class="topic">position deletes</span>
+                    
+                    <span class="topic">flink cdc</span>
+                    
+                    <span class="topic">spark merge into</span>
+                    
+                </div>
+            </div>
+            
+        </div>
+        
+    </div>
+</body>
+</html>
