@@ -16,7 +16,7 @@ include(CTest)
 enable_testing()
 
 # Use local thirdparty dependencies
-set(THIRDPARTY_DIR /Users/lishuming/work/xlab/cc/thirdparty)
+set(THIRDPARTY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../thirdparty)
 
 # Core library
 add_library(tinykv STATIC
