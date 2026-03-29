@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2026-03-29] - Harness Engineering Standards Documentation
+
+### Added
+
+#### Engineering Standards (RULE.md)
+- **Created comprehensive AI Agent engineering standards document**
+- **8 major rule categories** covering:
+  1. **Structured Output Validation** - Pydantic requirements for LLM outputs
+  2. **Observability & Telemetry** - structlog, context tracing, LLM I/O logging
+  3. **Error Handling & Resilience** - tenacity retry patterns, circuit breaker
+  4. **Prompt Engineering** - external prompt management, version tracking
+  5. **Testing & Evaluation** - deterministic evaluation datasets, quality metrics
+  6. **Performance & Resource Management** - connection pooling, caching strategies
+  7. **Configuration Management** - Pydantic Settings, dependency injection
+  8. **Documentation Requirements** - CHANGE_LOGS.md compliance checklist
+
+#### Agent Guidelines (AGENTS.md)
+- **Created AI Agent onboarding document**
+- **Mandatory reading order**: RULE.md → CLAUDE.md → CHANGE_LOGS.md → README.md
+- **Compliance checklist** for verifying RULE.md adherence
+- **Prohibited actions** list for agent constraints
+- **Communication style guidelines**
+
+### References
+- Inspired by OpenAI's "Harness Engineering: Optimizing LLM Testing at Scale"
+- Aligns with existing CLAUDE.md modern Python standards
+
 ## [2026-03-25] - OSS Sync Implementation
 
 ### Added
