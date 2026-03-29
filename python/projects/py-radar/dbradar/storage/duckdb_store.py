@@ -63,10 +63,16 @@ class DuckDBStore(ItemStore):
 
         # Migrate: add sync_batch column if it doesn't exist
         try:
-            conn.execute("SELECT sync_batch FROM items LIMIT 0")
-        except Exception:
-            logger.info("Adding sync_batch column to existing table")
-            conn.execute("ALTER TABLE items ADD COLUMN sync_batch DATE DEFAULT CURRENT_DATE")
+            # Check if column exists using information_schema
+            result = conn.execute("""
+                SELECT COUNT(*) FROM information_schema.columns 
+                WHERE table_name = 'items' AND column_name = 'sync_batch'
+            """).fetchone()
+            if result[0] == 0:
+                logger.info("Adding sync_batch column to existing table")
+                conn.execute("ALTER TABLE items ADD COLUMN sync_batch DATE DEFAULT CURRENT_DATE")
+        except Exception as e:
+            logger.warning(f"Could not check/add sync_batch column: {e}")
 
         # Create indexes for common queries
         conn.execute("CREATE INDEX IF NOT EXISTS idx_published_date ON items(published_date)")

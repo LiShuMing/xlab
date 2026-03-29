@@ -6,14 +6,23 @@ as per Harness Engineering standards (see RULE.md).
 
 import json
 import re
+import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import List, Optional
+from typing import Any, List, Optional
 
 import httpx
 from pydantic import ValidationError
+from tenacity import (
+    retry,
+    retry_if_exception_type,
+    stop_after_attempt,
+    wait_exponential,
+    before_sleep_log,
+)
 
 from dbradar.config import get_config
+from dbradar.logging_config import get_logger, correlation_id
 from dbradar.models import (
     SummaryOutput,
     TranslationOutput,
@@ -22,7 +31,9 @@ from dbradar.models import (
 )
 from dbradar.ranker import RankedItem
 
-DEFAULT_MODEL = "qwen3.5-plus"
+logger = get_logger(__name__)
+
+DEFAULT_MODEL = "qwen-max"
 
 
 @dataclass
@@ -70,6 +81,57 @@ class Summarizer:
         self.timeout = timeout or config.timeout
         self.language = language or config.language or "en"
         self.client = httpx.Client(timeout=self.timeout)
+        self.logger = get_logger(__name__)
+
+    @retry(
+        retry=retry_if_exception_type((httpx.HTTPError, httpx.TimeoutException)),
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        before_sleep=before_sleep_log(logger, "warning"),
+        reraise=True,
+    )
+    def _call_llm(self, prompt: str, max_tokens: int = 4000) -> dict:
+        """Call LLM API with retry logic.
+
+        Args:
+            prompt: The prompt to send to the LLM.
+            max_tokens: Maximum tokens to generate.
+
+        Returns:
+            The raw API response data.
+
+        Raises:
+            httpx.HTTPError: If the API call fails after all retries.
+        """
+        cid = correlation_id.get()
+        log = self.logger.bind(correlation_id=cid)
+
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.api_key}",
+        }
+
+        payload = {
+            "model": self.model,
+            "max_tokens": max_tokens,
+            "messages": [{"role": "user", "content": prompt}],
+        }
+
+        log.debug(
+            "llm_request",
+            url=f"{self.base_url}/chat/completions",
+            model=self.model,
+            max_tokens=max_tokens,
+            prompt_tokens=len(prompt) // 4,
+        )
+
+        response = self.client.post(
+            f"{self.base_url}/chat/completions",
+            headers=headers,
+            json=payload,
+        )
+        response.raise_for_status()
+        return response.json()
 
     def _extract_json_from_response(self, raw_text: str) -> dict:
         """Extract and parse JSON from LLM response.
@@ -281,22 +343,22 @@ Generate a JSON object with the following structure (NO markdown code blocks, ju
 {{
     "executive_summary": ["bullet 1", "bullet 2", "bullet 3", "bullet 4", "bullet 5"],
     "top_updates": [
-        {{
+        {
             "product": "ProductName",
             "title": "Title of the update",
             "what_changed": ["change 1", "change 2", "change 3"],
             "why_it_matters": ["reason 1", "reason 2"],
             "sources": ["url1"],
             "evidence": ["snippet1", "snippet2"]
-        }}
+        }
     ],
     "release_notes": [
-        {{
+        {
             "product": "ProductName",
             "version": "version info if available",
             "date": "release date",
             "highlights": ["highlight 1", "highlight 2"]
-        }}
+        }
     ],
     "themes": ["theme 1", "theme 2", "theme 3", "theme 4"],
     "action_items": ["action 1", "action 2", "action 3", "action 4", "action 5"]
@@ -351,36 +413,11 @@ Generate a JSON object with the following structure (NO markdown code blocks, ju
         log.debug("prompt_built", prompt_length=len(prompt))
 
         start_time = time.time()
+        raw_text = ""
 
         try:
-            # Build OpenAI-compatible API request
-            headers = {
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {self.api_key}",
-            }
-
-            payload = {
-                "model": self.model,
-                "max_tokens": 4000,
-                "messages": [{"role": "user", "content": prompt}],
-            }
-
-            # Log LLM request (DEBUG level as per RULE.md 2.2)
-            log.debug(
-                "llm_request",
-                url=f"{self.base_url}/chat/completions",
-                model=self.model,
-                max_tokens=4000,
-                prompt_tokens=len(prompt) // 4,  # Rough estimate
-            )
-
-            response = self.client.post(
-                f"{self.base_url}/chat/completions",
-                headers=headers,
-                json=payload,
-            )
-            response.raise_for_status()
-            data = response.json()
+            # Call LLM with retry logic
+            data = self._call_llm(prompt, max_tokens=4000)
 
             latency_ms = (time.time() - start_time) * 1000
 
@@ -396,7 +433,6 @@ Generate a JSON object with the following structure (NO markdown code blocks, ju
             )
 
             # Extract response text
-            raw_text = ""
             if "choices" in data and len(data["choices"]) > 0:
                 choice = data["choices"][0]
                 if "message" in choice and "content" in choice["message"]:
@@ -458,11 +494,12 @@ Generate a JSON object with the following structure (NO markdown code blocks, ju
             )
         except httpx.HTTPError as e:
             latency_ms = (time.time() - start_time) * 1000
+            status_code = e.response.status_code if hasattr(e, 'response') and e.response else None
             log.error(
                 "llm_http_error",
                 error=str(e),
                 latency_ms=round(latency_ms, 2),
-                status_code=e.response.status_code if hasattr(e, 'response') else None,
+                status_code=status_code,
             )
             return SummaryResult(
                 executive_summary=[f"HTTP error: {str(e)}"],
@@ -520,24 +557,7 @@ Return ONLY the JSON object with the same structure, no markdown code blocks:
 """
         start_time = time.time()
         try:
-            headers = {
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {self.api_key}",
-            }
-
-            payload = {
-                "model": self.model,
-                "max_tokens": 4000,
-                "messages": [{"role": "user", "content": prompt}],
-            }
-
-            response = self.client.post(
-                f"{self.base_url}/chat/completions",
-                headers=headers,
-                json=payload,
-            )
-            response.raise_for_status()
-            data = response.json()
+            data = self._call_llm(prompt, max_tokens=4000)
 
             latency_ms = (time.time() - start_time) * 1000
 
@@ -558,7 +578,7 @@ Return ONLY the JSON object with the same structure, no markdown code blocks:
             # Translate top_updates individually to preserve structure
             log.debug("translating_top_updates", count=len(result.top_updates))
             translated_top_updates = []
-            for i, update in enumerate(result.top_updates):
+            for update in result.top_updates:
                 translated_update = self._translate_update_to_chinese(update)
                 translated_top_updates.append(translated_update)
 
@@ -591,90 +611,6 @@ Return ONLY the JSON object with the same structure, no markdown code blocks:
             # If translation fails, return original result
             return result
 
-## Task
-Translate the following JSON content from English to Chinese. Keep the JSON structure exactly the same, only translate the text values.
-
-## Input JSON
-{json.dumps({
-    "executive_summary": result.executive_summary,
-    "themes": result.themes,
-    "action_items": result.action_items,
-}, indent=2, ensure_ascii=False)}
-
-## Translation Rules
-1. Translate all text content to natural, fluent Simplified Chinese
-2. Keep technical terms accurate (e.g., "query optimizer" -> "查询优化器", "lakehouse" -> "湖仓一体")
-3. Maintain professional database/OLAP industry terminology
-4. Keep product names, version numbers, and URLs unchanged
-5. Do not add or remove any fields
-
-## Output Format
-Return ONLY the JSON object with the same structure, no markdown code blocks:
-{{
-    "executive_summary": ["翻译后的要点1", "翻译后的要点2", ...],
-    "themes": ["主题1", "主题2", ...],
-    "action_items": ["行动项1", "行动项2", ...]
-}}
-"""
-        try:
-            headers = {
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {self.api_key}",
-            }
-
-            payload = {
-                "model": self.model,
-                "max_tokens": 4000,
-                "messages": [{"role": "user", "content": prompt}],
-            }
-
-            response = self.client.post(
-                f"{self.base_url}/chat/completions",
-                headers=headers,
-                json=payload,
-            )
-            response.raise_for_status()
-            data = response.json()
-
-            raw_text = ""
-            if "choices" in data and len(data["choices"]) > 0:
-                choice = data["choices"][0]
-                if "message" in choice and "content" in choice["message"]:
-                    raw_text = choice["message"]["content"]
-
-            if not raw_text:
-                return result
-
-            # Parse JSON from response
-            parsed_data = self._extract_json_from_response(raw_text)
-            translated = TranslationOutput.model_validate(parsed_data)
-
-            # Translate top_updates individually to preserve structure
-            translated_top_updates = []
-            for update in result.top_updates:
-                translated_update = self._translate_update_to_chinese(update)
-                translated_top_updates.append(translated_update)
-
-            # Translate release_notes individually
-            translated_release_notes = []
-            for note in result.release_notes:
-                translated_note = self._translate_release_note_to_chinese(note)
-                translated_release_notes.append(translated_note)
-
-            return SummaryResult(
-                executive_summary=translated.executive_summary or result.executive_summary,
-                top_updates=translated_top_updates,
-                release_notes=translated_release_notes,
-                themes=translated.themes or result.themes,
-                action_items=translated.action_items or result.action_items,
-                raw_response=result.raw_response + "\n\n[Translated to Chinese]",
-                validation_errors=result.validation_errors,
-            )
-
-        except (JSONExtractionError, ValidationError, Exception):
-            # If translation fails, return original result
-            return result
-
     def _translate_update_to_chinese(self, update: dict) -> dict:
         """Translate a single top_update item to Chinese."""
         prompt = f"""Translate the following JSON content from English to Chinese (Simplified). Keep the JSON structure and keep product names, URLs unchanged.
@@ -697,24 +633,7 @@ Return ONLY the JSON object, no markdown:
     "evidence": ["keep original or translate if natural"]
 }}"""
         try:
-            headers = {
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {self.api_key}",
-            }
-
-            payload = {
-                "model": self.model,
-                "max_tokens": 2000,
-                "messages": [{"role": "user", "content": prompt}],
-            }
-
-            response = self.client.post(
-                f"{self.base_url}/chat/completions",
-                headers=headers,
-                json=payload,
-            )
-            response.raise_for_status()
-            data = response.json()
+            data = self._call_llm(prompt, max_tokens=2000)
 
             raw_text = ""
             if "choices" in data and len(data["choices"]) > 0:
@@ -757,24 +676,7 @@ Return ONLY the JSON object:
     "highlights": ["翻译1", "翻译2"]
 }}"""
         try:
-            headers = {
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {self.api_key}",
-            }
-
-            payload = {
-                "model": self.model,
-                "max_tokens": 1000,
-                "messages": [{"role": "user", "content": prompt}],
-            }
-
-            response = self.client.post(
-                f"{self.base_url}/chat/completions",
-                headers=headers,
-                json=payload,
-            )
-            response.raise_for_status()
-            data = response.json()
+            data = self._call_llm(prompt, max_tokens=1000)
 
             raw_text = ""
             if "choices" in data and len(data["choices"]) > 0:

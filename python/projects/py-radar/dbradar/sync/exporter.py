@@ -75,24 +75,20 @@ def export_incremental(
 
     # Build the query based on since time
     if since:
-        query = """
+        # Use string formatting for timestamp since DuckDB doesn't support params in CREATE VIEW
+        since_str = since.strftime("%Y-%m-%d %H:%M:%S") if isinstance(since, datetime) else str(since)
+        query = f"""
             SELECT * FROM items
-            WHERE fetched_at > ?
+            WHERE fetched_at > '{since_str}'
             ORDER BY fetched_at ASC
         """
-        params = [since]
+        count_query = f"SELECT COUNT(*) FROM items WHERE fetched_at > '{since_str}'"
     else:
         query = "SELECT * FROM items ORDER BY fetched_at ASC"
-        params = []
+        count_query = "SELECT COUNT(*) FROM items"
 
-    # First, count the items (remove ORDER BY for count)
-    count_query = query.replace("SELECT *", "SELECT COUNT(*)")
-    # Remove ORDER BY clause for count query
-    count_query = count_query.split("ORDER BY")[0].strip()
-    if params:
-        count_result = conn.execute(count_query, params).fetchone()
-    else:
-        count_result = conn.execute(count_query).fetchone()
+    # First, count the items
+    count_result = conn.execute(count_query).fetchone()
     item_count = count_result[0] if count_result else 0
 
     if item_count == 0:
@@ -110,10 +106,7 @@ def export_incremental(
 
     # Export to Parquet using DuckDB's native COPY command
     # Create a temporary view for the incremental data
-    if params:
-        conn.execute("CREATE OR REPLACE TEMPORARY VIEW incremental_items AS " + query, params)
-    else:
-        conn.execute("CREATE OR REPLACE TEMPORARY VIEW incremental_items AS " + query)
+    conn.execute("CREATE OR REPLACE TEMPORARY VIEW incremental_items AS " + query)
 
     # Get current date for sync_batch
     from datetime import date
