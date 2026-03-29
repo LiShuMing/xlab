@@ -1,13 +1,25 @@
-"""Generate structured summaries using LLM API (OpenAI-compatible)."""
+"""Generate structured summaries using LLM API (OpenAI-compatible).
+
+This module implements structured output validation using Pydantic models
+as per Harness Engineering standards (see RULE.md).
+"""
 
 import json
+import re
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import List, Optional
 
 import httpx
+from pydantic import ValidationError
 
 from dbradar.config import get_config
+from dbradar.models import (
+    SummaryOutput,
+    TranslationOutput,
+    TranslatedUpdate,
+    TranslatedReleaseNote,
+)
 from dbradar.ranker import RankedItem
 
 DEFAULT_MODEL = "qwen3.5-plus"
@@ -23,10 +35,25 @@ class SummaryResult:
     themes: List[str]
     action_items: List[str]
     raw_response: str
+    validation_errors: Optional[List[str]] = None
+
+
+class JSONExtractionError(Exception):
+    """Raised when JSON extraction from LLM response fails."""
+
+    pass
+
+
+class ValidationFailedError(Exception):
+    """Raised when Pydantic validation fails."""
+
+    def __init__(self, message: str, errors: List[str]):
+        super().__init__(message)
+        self.errors = errors
 
 
 class Summarizer:
-    """Generate structured summaries using LLM."""
+    """Generate structured summaries using LLM with Pydantic validation."""
 
     def __init__(
         self,
@@ -43,6 +70,166 @@ class Summarizer:
         self.timeout = timeout or config.timeout
         self.language = language or config.language or "en"
         self.client = httpx.Client(timeout=self.timeout)
+
+    def _extract_json_from_response(self, raw_text: str) -> dict:
+        """Extract and parse JSON from LLM response.
+
+        Handles multiple formats:
+        - Markdown code blocks (```json ... ```)
+        - Raw JSON objects
+        - JSON with surrounding text
+
+        Args:
+            raw_text: Raw text response from LLM.
+
+        Returns:
+            Parsed JSON as dictionary.
+
+        Raises:
+            JSONExtractionError: If JSON cannot be extracted or parsed.
+        """
+        if not raw_text or not raw_text.strip():
+            raise JSONExtractionError("Empty response from LLM")
+
+        json_text = raw_text.strip()
+
+        # Try to extract from markdown code blocks
+        patterns = [
+            (r"```json\s*(.*?)\s*```", re.DOTALL),
+            (r"```\s*(.*?)\s*```", re.DOTALL),
+        ]
+
+        for pattern, flags in patterns:
+            match = re.search(pattern, json_text, flags)
+            if match:
+                json_text = match.group(1).strip()
+                break
+
+        # If no code blocks, try to find JSON object boundaries
+        if not json_text.startswith("{"):
+            start = json_text.find("{")
+            if start >= 0:
+                # Find matching closing brace
+                brace_count = 0
+                end = start
+                for i, char in enumerate(json_text[start:], start):
+                    if char == "{":
+                        brace_count += 1
+                    elif char == "}":
+                        brace_count -= 1
+                        if brace_count == 0:
+                            end = i + 1
+                            break
+                json_text = json_text[start:end]
+
+        try:
+            return json.loads(json_text)
+        except json.JSONDecodeError as e:
+            raise JSONExtractionError(f"Failed to parse JSON: {e}") from e
+
+    def _validate_and_parse_output(self, data: dict, raw_response: str) -> SummaryResult:
+        """Validate LLM output using Pydantic model.
+
+        Args:
+            data: Parsed JSON data from LLM response.
+            raw_response: Original raw response for debugging.
+
+        Returns:
+            SummaryResult with validated data.
+
+        Raises:
+            ValidationFailedError: If validation fails and cannot be repaired.
+        """
+        validation_errors = []
+
+        try:
+            # Primary validation attempt
+            validated = SummaryOutput.model_validate(data)
+            return SummaryResult(
+                executive_summary=validated.executive_summary,
+                top_updates=[update.model_dump() for update in validated.top_updates],
+                release_notes=[note.model_dump() for note in validated.release_notes],
+                themes=validated.themes,
+                action_items=validated.action_items,
+                raw_response=raw_response,
+                validation_errors=None,
+            )
+        except ValidationError as e:
+            # Collect validation errors
+            for error in e.errors():
+                field = ".".join(str(x) for x in error["loc"])
+                validation_errors.append(f"{field}: {error['msg']}")
+
+            # Attempt repair by applying defaults
+            try:
+                repaired = self._repair_output(data)
+                validated = SummaryOutput.model_validate(repaired)
+                validation_errors.append("[Repaired with defaults]")
+
+                return SummaryResult(
+                    executive_summary=validated.executive_summary,
+                    top_updates=[update.model_dump() for update in validated.top_updates],
+                    release_notes=[note.model_dump() for note in validated.release_notes],
+                    themes=validated.themes,
+                    action_items=validated.action_items,
+                    raw_response=raw_response,
+                    validation_errors=validation_errors,
+                )
+            except (ValidationError, Exception) as repair_error:
+                raise ValidationFailedError(
+                    f"Validation failed and repair unsuccessful: {repair_error}",
+                    validation_errors,
+                ) from e
+
+    def _repair_output(self, data: dict) -> dict:
+        """Attempt to repair invalid LLM output by applying defaults.
+
+        Args:
+            data: Potentially invalid output from LLM.
+
+        Returns:
+            Repaired data with defaults applied.
+        """
+        repaired = dict(data)
+
+        # Ensure executive_summary exists and is non-empty
+        if not repaired.get("executive_summary"):
+            repaired["executive_summary"] = ["No executive summary available"]
+
+        # Ensure lists exist
+        for field in ["top_updates", "release_notes", "themes", "action_items"]:
+            if field not in repaired or not isinstance(repaired[field], list):
+                repaired[field] = []
+
+        # Filter empty strings from lists
+        for field in ["executive_summary", "themes", "action_items"]:
+            if isinstance(repaired.get(field), list):
+                repaired[field] = [
+                    item for item in repaired[field]
+                    if item and str(item).strip()
+                ]
+
+        # Ensure executive_summary is not empty after filtering
+        if not repaired["executive_summary"]:
+            repaired["executive_summary"] = ["No executive summary available"]
+
+        # Repair top_updates entries
+        if isinstance(repaired.get("top_updates"), list):
+            valid_updates = []
+            for update in repaired["top_updates"]:
+                if isinstance(update, dict) and update.get("product") and update.get("title"):
+                    valid_updates.append(update)
+            repaired["top_updates"] = valid_updates
+
+        # Repair release_notes entries
+        if isinstance(repaired.get("release_notes"), list):
+            valid_notes = []
+            for note in repaired["release_notes"]:
+                if isinstance(note, dict) and note.get("product"):
+                    valid_notes.append(note)
+            repaired["release_notes"] = valid_notes
+
+        return repaired
 
     def _build_prompt(self, items: List[RankedItem], top_k: int = 10, force_english: bool = False) -> str:
         """Build the summarization prompt."""
@@ -136,14 +323,14 @@ Generate a JSON object with the following structure (NO markdown code blocks, ju
 
     def summarize(self, items: List[RankedItem], top_k: int = 10) -> SummaryResult:
         """
-        Generate structured summary from ranked items.
+        Generate structured summary from ranked items with Pydantic validation.
 
         Args:
             items: List of ranked items.
             top_k: Number of top items to include in summary.
 
         Returns:
-            SummaryResult with structured data.
+            SummaryResult with validated structured data.
         """
         if not items:
             return SummaryResult(
@@ -153,6 +340,7 @@ Generate a JSON object with the following structure (NO markdown code blocks, ju
                 themes=[],
                 action_items=[],
                 raw_response="",
+                validation_errors=None,
             )
 
         prompt = self._build_prompt(items, top_k)
@@ -193,32 +381,12 @@ Generate a JSON object with the following structure (NO markdown code blocks, ju
                     themes=[],
                     action_items=[],
                     raw_response=json.dumps(data),
+                    validation_errors=["Empty response from LLM"],
                 )
 
-            # Parse JSON from response
-            # Handle potential markdown code block wrapper
-            json_text = raw_text
-            if "```json" in raw_text:
-                json_text = raw_text.split("```json")[1].split("```")[0]
-            elif "```" in raw_text:
-                json_text = raw_text.split("```")[1].split("```")[0]
-            else:
-                # Try to find JSON object
-                start = raw_text.find("{")
-                end = raw_text.rfind("}") + 1
-                if start >= 0 and end > start:
-                    json_text = raw_text[start:end]
-
-            parsed_data = json.loads(json_text.strip())
-
-            result = SummaryResult(
-                executive_summary=parsed_data.get("executive_summary", []),
-                top_updates=parsed_data.get("top_updates", []),
-                release_notes=parsed_data.get("release_notes", []),
-                themes=parsed_data.get("themes", []),
-                action_items=parsed_data.get("action_items", []),
-                raw_response=raw_text,
-            )
+            # Parse JSON from response using robust extraction and Pydantic validation
+            parsed_data = self._extract_json_from_response(raw_text)
+            result = self._validate_and_parse_output(parsed_data, raw_text)
 
             # If Chinese is requested, translate the result
             if self.language == "zh":
@@ -226,14 +394,25 @@ Generate a JSON object with the following structure (NO markdown code blocks, ju
 
             return result
 
-        except json.JSONDecodeError as e:
+        except JSONExtractionError as e:
             return SummaryResult(
-                executive_summary=["Error parsing summary response"],
+                executive_summary=[f"Error extracting JSON: {str(e)}"],
                 top_updates=[],
                 release_notes=[],
                 themes=[],
                 action_items=[],
-                raw_response=f"JSON parse error: {str(e)}",
+                raw_response=raw_text if 'raw_text' in locals() else str(e),
+                validation_errors=[f"JSON extraction error: {str(e)}"],
+            )
+        except ValidationFailedError as e:
+            return SummaryResult(
+                executive_summary=[f"Validation failed: {', '.join(e.errors)}"],
+                top_updates=[],
+                release_notes=[],
+                themes=[],
+                action_items=[],
+                raw_response=raw_text if 'raw_text' in locals() else "",
+                validation_errors=e.errors,
             )
         except Exception as e:
             return SummaryResult(
@@ -243,6 +422,7 @@ Generate a JSON object with the following structure (NO markdown code blocks, ju
                 themes=[],
                 action_items=[],
                 raw_response=str(e),
+                validation_errors=[f"Error: {str(e)}"],
             )
 
     def _translate_to_chinese(self, result: SummaryResult) -> SummaryResult:
@@ -261,7 +441,7 @@ Translate the following JSON content from English to Chinese. Keep the JSON stru
 
 ## Translation Rules
 1. Translate all text content to natural, fluent Simplified Chinese
-2. Keep technical terms accurate (e.g., "query optimizer" → "查询优化器", "lakehouse" → "湖仓一体")
+2. Keep technical terms accurate (e.g., "query optimizer" -> "查询优化器", "lakehouse" -> "湖仓一体")
 3. Maintain professional database/OLAP industry terminology
 4. Keep product names, version numbers, and URLs unchanged
 5. Do not add or remove any fields
@@ -304,18 +484,8 @@ Return ONLY the JSON object with the same structure, no markdown code blocks:
                 return result
 
             # Parse JSON from response
-            json_text = raw_text
-            if "```json" in raw_text:
-                json_text = raw_text.split("```json")[1].split("```")[0]
-            elif "```" in raw_text:
-                json_text = raw_text.split("```")[1].split("```")[0]
-            else:
-                start = raw_text.find("{")
-                end = raw_text.rfind("}") + 1
-                if start >= 0 and end > start:
-                    json_text = raw_text[start:end]
-
-            translated = json.loads(json_text.strip())
+            parsed_data = self._extract_json_from_response(raw_text)
+            translated = TranslationOutput.model_validate(parsed_data)
 
             # Translate top_updates individually to preserve structure
             translated_top_updates = []
@@ -330,15 +500,16 @@ Return ONLY the JSON object with the same structure, no markdown code blocks:
                 translated_release_notes.append(translated_note)
 
             return SummaryResult(
-                executive_summary=translated.get("executive_summary", result.executive_summary),
+                executive_summary=translated.executive_summary or result.executive_summary,
                 top_updates=translated_top_updates,
                 release_notes=translated_release_notes,
-                themes=translated.get("themes", result.themes),
-                action_items=translated.get("action_items", result.action_items),
+                themes=translated.themes or result.themes,
+                action_items=translated.action_items or result.action_items,
                 raw_response=result.raw_response + "\n\n[Translated to Chinese]",
+                validation_errors=result.validation_errors,
             )
 
-        except Exception:
+        except (JSONExtractionError, ValidationError, Exception):
             # If translation fails, return original result
             return result
 
@@ -392,28 +563,18 @@ Return ONLY the JSON object, no markdown:
             if not raw_text:
                 return update
 
-            json_text = raw_text
-            if "```json" in raw_text:
-                json_text = raw_text.split("```json")[1].split("```")[0]
-            elif "```" in raw_text:
-                json_text = raw_text.split("```")[1].split("```")[0]
-            else:
-                start = raw_text.find("{")
-                end = raw_text.rfind("}") + 1
-                if start >= 0 and end > start:
-                    json_text = raw_text[start:end]
-
-            translated = json.loads(json_text.strip())
+            parsed_data = self._extract_json_from_response(raw_text)
+            translated = TranslatedUpdate.model_validate(parsed_data)
 
             return {
                 "product": update.get("product", ""),
-                "title": translated.get("title", update.get("title", "")),
-                "what_changed": translated.get("what_changed", update.get("what_changed", [])),
-                "why_it_matters": translated.get("why_it_matters", update.get("why_it_matters", [])),
+                "title": translated.title or update.get("title", ""),
+                "what_changed": translated.what_changed or update.get("what_changed", []),
+                "why_it_matters": translated.why_it_matters or update.get("why_it_matters", []),
                 "sources": update.get("sources", []),
-                "evidence": translated.get("evidence", update.get("evidence", [])),
+                "evidence": translated.evidence or update.get("evidence", []),
             }
-        except Exception:
+        except (JSONExtractionError, ValidationError, Exception):
             return update
 
     def _translate_release_note_to_chinese(self, note: dict) -> dict:
@@ -462,26 +623,16 @@ Return ONLY the JSON object:
             if not raw_text:
                 return note
 
-            json_text = raw_text
-            if "```json" in raw_text:
-                json_text = raw_text.split("```json")[1].split("```")[0]
-            elif "```" in raw_text:
-                json_text = raw_text.split("```")[1].split("```")[0]
-            else:
-                start = raw_text.find("{")
-                end = raw_text.rfind("}") + 1
-                if start >= 0 and end > start:
-                    json_text = raw_text[start:end]
-
-            translated = json.loads(json_text.strip())
+            parsed_data = self._extract_json_from_response(raw_text)
+            translated = TranslatedReleaseNote.model_validate(parsed_data)
 
             return {
                 "product": note.get("product", ""),
                 "version": note.get("version", ""),
                 "date": note.get("date", ""),
-                "highlights": translated.get("highlights", note.get("highlights", [])),
+                "highlights": translated.highlights or note.get("highlights", []),
             }
-        except Exception:
+        except (JSONExtractionError, ValidationError, Exception):
             return note
 
 

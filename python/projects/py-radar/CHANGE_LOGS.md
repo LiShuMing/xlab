@@ -2,6 +2,69 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2026-03-29] - P0: Structured Output Validation (Pydantic)
+
+### Added
+
+#### Pydantic Models (`dbradar/models.py`)
+- **Created comprehensive Pydantic models for LLM output validation**
+- **Models**:
+  - `SummaryOutput` - Root model for summary response validation
+  - `TopUpdate` - Individual update entry with field validators
+  - `ReleaseNote` - Release note entry validation
+  - `TranslationOutput` - Translation response model
+  - `TranslatedUpdate` / `TranslatedReleaseNote` - Translation helpers
+- **Validation features**:
+  - Non-empty string validation for lists
+  - Max 5 bullets constraint for executive_summary
+  - Automatic repair for invalid entries
+
+#### Enhanced Summarizer (`dbradar/summarizer.py`)
+- **Refactored to use Pydantic validation** (Harness Engineering Rule 1.1)
+- **New validation methods**:
+  - `_extract_json_from_response()` - Robust JSON extraction with regex
+  - `_validate_and_parse_output()` - Pydantic model validation with repair
+  - `_repair_output()` - Automatic repair of invalid LLM outputs
+- **New exception types**:
+  - `JSONExtractionError` - Failed JSON extraction
+  - `ValidationFailedError` - Validation with error details
+- **Validation features**:
+  - Markdown code block extraction (```json, ```)
+  - Bracket matching for nested JSON
+  - Automatic repair with defaults
+  - Validation error tracking in SummaryResult
+- **Translation models** now use Pydantic validation:
+  - `_translate_to_chinese()` uses TranslationOutput
+  - `_translate_update_to_chinese()` uses TranslatedUpdate
+  - `_translate_release_note_to_chinese()` uses TranslatedReleaseNote
+
+### Changed
+
+#### SummaryResult Dataclass
+- Added `validation_errors: Optional[List[str]]` field
+- Tracks validation issues for debugging and monitoring
+
+### Technical Details
+
+```python
+# Before: Manual dict access
+parsed_data = json.loads(json_text)
+result = SummaryResult(
+    executive_summary=parsed_data.get("executive_summary", []),
+    ...
+)
+
+# After: Pydantic validation
+parsed_data = self._extract_json_from_response(raw_text)
+result = self._validate_and_parse_output(parsed_data, raw_text)
+```
+
+### Benefits
+- **Type safety**: Runtime validation prevents malformed data propagation
+- **Better error messages**: Clear validation errors with field paths
+- **Automatic repair**: Graceful degradation with default values
+- **Maintainability**: Single source of truth for output schema
+
 ## [2026-03-29] - Harness Engineering Standards Documentation
 
 ### Added
