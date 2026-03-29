@@ -2,6 +2,98 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2026-03-29] - P0: Observability & Telemetry (structlog)
+
+### Added
+
+#### Structured Logging Configuration (`dbradar/logging_config.py`)
+- **Created comprehensive logging configuration for AI Agent observability**
+- **Context variable support** (`correlation_id`):
+  - `ContextVar` for request tracing across async boundaries (Rule 2.3)
+  - `CorrelationIdContext` context manager for automatic cleanup
+  - `set_correlation_id()` / `get_correlation_id()` helper functions
+- **Processors configured**:
+  - `TimeStamper(fmt="iso")` - ISO format timestamps
+  - `add_log_level` - Log level inclusion
+  - `add_correlation_id` - Custom processor for context propagation
+  - `PositionalArgumentsFormatter` - Format positional args
+  - `CallsiteParameterAdder` - File, function, line number
+  - `ConsoleRenderer(colors=True)` / `JSONRenderer` - Output formats
+- **Configuration modes**:
+  - Development: Colored console output
+  - Production: JSON format for log aggregation
+
+#### Enhanced Summarizer with Structured Logging
+- **Added LLM I/O tracing** (Rule 2.2) in `dbradar/summarizer.py`:
+  - `llm_request` - Logs model, max_tokens, prompt_tokens, URL
+  - `llm_response` - Logs latency_ms, token usage, finish_reason
+- **Operation lifecycle logging**:
+  - `summarize_empty_items` - Empty input handling
+  - `prompt_built` - Prompt construction success
+  - `validation_success` / `validation_failed` / `validation_repaired`
+  - `summarize_success` - Summary generation metrics
+  - `json_extraction_failed` - JSON parsing errors
+  - `validation_failed` - Pydantic validation errors
+  - `llm_http_error` - HTTP-level errors with status codes
+  - `summarize_failed` - General error handling
+- **Translation operation logging**:
+  - `translation_started` - Translation request initiated
+  - `translating_top_updates` / `translating_release_notes`
+  - `translation_success` / `translation_failed`
+
+#### Logger Instance Management
+- **Per-class logger binding** in `Summarizer.__init__`:
+  ```python
+  self.logger = get_logger(__name__).bind(model=self.model, language=self.language)
+  ```
+- **Per-method context binding**:
+  ```python
+  log = self.logger.bind(item_count=len(items), top_k=top_k, correlation_id=cid)
+  ```
+
+### Technical Details
+
+```python
+# Example log output (development mode)
+2026-03-29T12:34:56.789Z [info] summarize_success
+    item_count=10 top_k=10 latency_ms=2345.67
+    summary_count=5 update_count=8 theme_count=4
+    had_validation_errors=False correlation_id=req-abc123
+
+# Example log output (JSON mode)
+{"timestamp": "2026-03-29T12:34:56.789Z", "level": "info",
+ "event": "llm_response", "latency_ms": 2345.67,
+ "prompt_tokens": 1500, "completion_tokens": 800,
+ "finish_reason": "stop", "correlation_id": "req-abc123"}
+```
+
+### Dependencies
+- Added `structlog>=24.1.0` to requirements.txt
+
+### Usage Example
+
+```python
+from dbradar.logging_config import (
+    configure_logging, get_logger,
+    CorrelationIdContext, set_correlation_id
+)
+
+# Configure logging
+configure_logging(log_level="DEBUG", json_format=False)
+
+# Method 1: Context manager
+with CorrelationIdContext("req-123"):
+    logger = get_logger(__name__)
+    logger.info("processing_started", items=10)
+
+# Method 2: Manual set/reset
+token = set_correlation_id("req-456")
+try:
+    logger.info("processing_started", items=10)
+finally:
+    correlation_id.reset(token)
+```
+
 ## [2026-03-29] - P0: Structured Output Validation (Pydantic)
 
 ### Added

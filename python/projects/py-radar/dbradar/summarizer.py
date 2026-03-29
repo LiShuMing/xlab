@@ -332,7 +332,11 @@ Generate a JSON object with the following structure (NO markdown code blocks, ju
         Returns:
             SummaryResult with validated structured data.
         """
+        cid = correlation_id.get()
+        log = self.logger.bind(item_count=len(items), top_k=top_k, correlation_id=cid)
+
         if not items:
+            log.info("summarize_empty_items")
             return SummaryResult(
                 executive_summary=["No updates found for the specified period."],
                 top_updates=[],
@@ -344,9 +348,178 @@ Generate a JSON object with the following structure (NO markdown code blocks, ju
             )
 
         prompt = self._build_prompt(items, top_k)
+        log.debug("prompt_built", prompt_length=len(prompt))
+
+        start_time = time.time()
 
         try:
             # Build OpenAI-compatible API request
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {self.api_key}",
+            }
+
+            payload = {
+                "model": self.model,
+                "max_tokens": 4000,
+                "messages": [{"role": "user", "content": prompt}],
+            }
+
+            # Log LLM request (DEBUG level as per RULE.md 2.2)
+            log.debug(
+                "llm_request",
+                url=f"{self.base_url}/chat/completions",
+                model=self.model,
+                max_tokens=4000,
+                prompt_tokens=len(prompt) // 4,  # Rough estimate
+            )
+
+            response = self.client.post(
+                f"{self.base_url}/chat/completions",
+                headers=headers,
+                json=payload,
+            )
+            response.raise_for_status()
+            data = response.json()
+
+            latency_ms = (time.time() - start_time) * 1000
+
+            # Log LLM response (DEBUG level as per RULE.md 2.2)
+            usage = data.get("usage", {})
+            log.debug(
+                "llm_response",
+                latency_ms=round(latency_ms, 2),
+                prompt_tokens=usage.get("prompt_tokens"),
+                completion_tokens=usage.get("completion_tokens"),
+                total_tokens=usage.get("total_tokens"),
+                finish_reason=data.get("choices", [{}])[0].get("finish_reason"),
+            )
+
+            # Extract response text
+            raw_text = ""
+            if "choices" in data and len(data["choices"]) > 0:
+                choice = data["choices"][0]
+                if "message" in choice and "content" in choice["message"]:
+                    raw_text = choice["message"]["content"]
+
+            if not raw_text:
+                log.error("llm_empty_response")
+                return SummaryResult(
+                    executive_summary=["Error: Empty response from API"],
+                    top_updates=[],
+                    release_notes=[],
+                    themes=[],
+                    action_items=[],
+                    raw_response=json.dumps(data),
+                    validation_errors=["Empty response from LLM"],
+                )
+
+            # Parse JSON from response using robust extraction and Pydantic validation
+            parsed_data = self._extract_json_from_response(raw_text)
+            result = self._validate_and_parse_output(parsed_data, raw_text)
+
+            log.info(
+                "summarize_success",
+                latency_ms=round(latency_ms, 2),
+                summary_count=len(result.executive_summary),
+                update_count=len(result.top_updates),
+                theme_count=len(result.themes),
+                had_validation_errors=result.validation_errors is not None,
+            )
+
+            # If Chinese is requested, translate the result
+            if self.language == "zh":
+                log.debug("translation_requested", target_language="zh")
+                result = self._translate_to_chinese(result)
+
+            return result
+
+        except JSONExtractionError as e:
+            log.error("json_extraction_failed", error=str(e))
+            return SummaryResult(
+                executive_summary=[f"Error extracting JSON: {str(e)}"],
+                top_updates=[],
+                release_notes=[],
+                themes=[],
+                action_items=[],
+                raw_response=raw_text if 'raw_text' in locals() else str(e),
+                validation_errors=[f"JSON extraction error: {str(e)}"],
+            )
+        except ValidationFailedError as e:
+            log.error("validation_failed", errors=e.errors)
+            return SummaryResult(
+                executive_summary=[f"Validation failed: {', '.join(e.errors)}"],
+                top_updates=[],
+                release_notes=[],
+                themes=[],
+                action_items=[],
+                raw_response=raw_text if 'raw_text' in locals() else "",
+                validation_errors=e.errors,
+            )
+        except httpx.HTTPError as e:
+            latency_ms = (time.time() - start_time) * 1000
+            log.error(
+                "llm_http_error",
+                error=str(e),
+                latency_ms=round(latency_ms, 2),
+                status_code=e.response.status_code if hasattr(e, 'response') else None,
+            )
+            return SummaryResult(
+                executive_summary=[f"HTTP error: {str(e)}"],
+                top_updates=[],
+                release_notes=[],
+                themes=[],
+                action_items=[],
+                raw_response=str(e),
+                validation_errors=[f"HTTP error: {str(e)}"],
+            )
+        except Exception as e:
+            latency_ms = (time.time() - start_time) * 1000
+            log.error("summarize_failed", error=str(e), latency_ms=round(latency_ms, 2))
+            return SummaryResult(
+                executive_summary=[f"Error generating summary: {str(e)}"],
+                top_updates=[],
+                release_notes=[],
+                themes=[],
+                action_items=[],
+                raw_response=str(e),
+                validation_errors=[f"Error: {str(e)}"],
+            )
+
+    def _translate_to_chinese(self, result: SummaryResult) -> SummaryResult:
+        """Translate English summary result to Chinese using LLM."""
+        log = self.logger.bind(operation="translate_to_chinese")
+        log.debug("translation_started", sections_to_translate=3)
+
+        prompt = f"""You are a professional translator specializing in technical content translation from English to Chinese (Simplified).
+
+## Task
+Translate the following JSON content from English to Chinese. Keep the JSON structure exactly the same, only translate the text values.
+
+## Input JSON
+{json.dumps({
+    "executive_summary": result.executive_summary,
+    "themes": result.themes,
+    "action_items": result.action_items,
+}, indent=2, ensure_ascii=False)}
+
+## Translation Rules
+1. Translate all text content to natural, fluent Simplified Chinese
+2. Keep technical terms accurate (e.g., "query optimizer" -> "查询优化器", "lakehouse" -> "湖仓一体")
+3. Maintain professional database/OLAP industry terminology
+4. Keep product names, version numbers, and URLs unchanged
+5. Do not add or remove any fields
+
+## Output Format
+Return ONLY the JSON object with the same structure, no markdown code blocks:
+{{
+    "executive_summary": ["翻译后的要点1", "翻译后的要点2", ...],
+    "themes": ["主题1", "主题2", ...],
+    "action_items": ["行动项1", "行动项2", ...]
+}}
+"""
+        start_time = time.time()
+        try:
             headers = {
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {self.api_key}",
@@ -366,7 +539,8 @@ Generate a JSON object with the following structure (NO markdown code blocks, ju
             response.raise_for_status()
             data = response.json()
 
-            # Extract response text
+            latency_ms = (time.time() - start_time) * 1000
+
             raw_text = ""
             if "choices" in data and len(data["choices"]) > 0:
                 choice = data["choices"][0]
@@ -374,60 +548,48 @@ Generate a JSON object with the following structure (NO markdown code blocks, ju
                     raw_text = choice["message"]["content"]
 
             if not raw_text:
-                return SummaryResult(
-                    executive_summary=["Error: Empty response from API"],
-                    top_updates=[],
-                    release_notes=[],
-                    themes=[],
-                    action_items=[],
-                    raw_response=json.dumps(data),
-                    validation_errors=["Empty response from LLM"],
-                )
+                log.warning("translation_empty_response")
+                return result
 
-            # Parse JSON from response using robust extraction and Pydantic validation
+            # Parse JSON from response
             parsed_data = self._extract_json_from_response(raw_text)
-            result = self._validate_and_parse_output(parsed_data, raw_text)
+            translated = TranslationOutput.model_validate(parsed_data)
 
-            # If Chinese is requested, translate the result
-            if self.language == "zh":
-                result = self._translate_to_chinese(result)
+            # Translate top_updates individually to preserve structure
+            log.debug("translating_top_updates", count=len(result.top_updates))
+            translated_top_updates = []
+            for i, update in enumerate(result.top_updates):
+                translated_update = self._translate_update_to_chinese(update)
+                translated_top_updates.append(translated_update)
 
+            # Translate release_notes individually
+            log.debug("translating_release_notes", count=len(result.release_notes))
+            translated_release_notes = []
+            for note in result.release_notes:
+                translated_note = self._translate_release_note_to_chinese(note)
+                translated_release_notes.append(translated_note)
+
+            log.info(
+                "translation_success",
+                latency_ms=round(latency_ms, 2),
+                top_updates_translated=len(translated_top_updates),
+                release_notes_translated=len(translated_release_notes),
+            )
+
+            return SummaryResult(
+                executive_summary=translated.executive_summary or result.executive_summary,
+                top_updates=translated_top_updates,
+                release_notes=translated_release_notes,
+                themes=translated.themes or result.themes,
+                action_items=translated.action_items or result.action_items,
+                raw_response=result.raw_response + "\n\n[Translated to Chinese]",
+                validation_errors=result.validation_errors,
+            )
+
+        except (JSONExtractionError, ValidationError, Exception) as e:
+            log.error("translation_failed", error=str(e), error_type=type(e).__name__)
+            # If translation fails, return original result
             return result
-
-        except JSONExtractionError as e:
-            return SummaryResult(
-                executive_summary=[f"Error extracting JSON: {str(e)}"],
-                top_updates=[],
-                release_notes=[],
-                themes=[],
-                action_items=[],
-                raw_response=raw_text if 'raw_text' in locals() else str(e),
-                validation_errors=[f"JSON extraction error: {str(e)}"],
-            )
-        except ValidationFailedError as e:
-            return SummaryResult(
-                executive_summary=[f"Validation failed: {', '.join(e.errors)}"],
-                top_updates=[],
-                release_notes=[],
-                themes=[],
-                action_items=[],
-                raw_response=raw_text if 'raw_text' in locals() else "",
-                validation_errors=e.errors,
-            )
-        except Exception as e:
-            return SummaryResult(
-                executive_summary=[f"Error generating summary: {str(e)}"],
-                top_updates=[],
-                release_notes=[],
-                themes=[],
-                action_items=[],
-                raw_response=str(e),
-                validation_errors=[f"Error: {str(e)}"],
-            )
-
-    def _translate_to_chinese(self, result: SummaryResult) -> SummaryResult:
-        """Translate English summary result to Chinese using LLM."""
-        prompt = f"""You are a professional translator specializing in technical content translation from English to Chinese (Simplified).
 
 ## Task
 Translate the following JSON content from English to Chinese. Keep the JSON structure exactly the same, only translate the text values.
