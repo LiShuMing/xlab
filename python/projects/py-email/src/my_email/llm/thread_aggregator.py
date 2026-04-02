@@ -36,18 +36,9 @@ def normalize_subject(subject: str) -> str:
 
     while True:
         # Remove Re:, RE:, Fwd:, FW:, Fw: prefixes
-        new_normalized = re.sub(
-            r'^(re|fw|fwd)\s*:\s*',
-            '',
-            normalized,
-            flags=re.IGNORECASE
-        )
+        new_normalized = re.sub(r"^(re|fw|fwd)\s*:\s*", "", normalized, flags=re.IGNORECASE)
         # Remove [list-name] style prefixes
-        new_normalized = re.sub(
-            r'^\[[^\]]+\]\s*',
-            '',
-            new_normalized
-        )
+        new_normalized = re.sub(r"^\[[^\]]+\]\s*", "", new_normalized)
 
         if new_normalized == normalized:
             break
@@ -179,21 +170,18 @@ class ThreadAggregator:
             "message_count": 1,
         }
 
-    def _build_aggregated_group(
-        self, messages: list[dict[str, Any]]
-    ) -> dict[str, Any]:
+    def _build_aggregated_group(self, messages: list[dict[str, Any]]) -> dict[str, Any]:
         """Build an aggregated result for a group of related messages."""
         # Sort by received_at
-        sorted_messages = sorted(
-            messages,
-            key=lambda m: m.get("received_at", "")
-        )
+        sorted_messages = sorted(messages, key=lambda m: m.get("received_at", ""))
 
         # Extract info
         first_msg = sorted_messages[0]
         last_msg = sorted_messages[-1]
 
-        senders = list(dict.fromkeys(m.get("sender", "") for m in sorted_messages))  # Unique, preserve order
+        senders = list(
+            dict.fromkeys(m.get("sender", "") for m in sorted_messages)
+        )  # Unique, preserve order
         message_ids = [m.get("id", "") for m in sorted_messages]
 
         # Build combined body

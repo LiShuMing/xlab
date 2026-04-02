@@ -12,7 +12,6 @@ from my_email.db.repository import (
     get_message_counts,
     get_messages,
     get_setting,
-    init_db,
     save_setting,
     save_summary,
     update_message_state,

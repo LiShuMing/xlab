@@ -322,6 +322,36 @@ init_db()
 
 ---
 
+---
+
+## 2026-04-02 - Repository Refactoring and Documentation
+
+### Project Documentation
+- Created `AGENTS.md` - AI assistant work guide with project overview, tech stack, structure, and commands
+- Created `RULES.md` - Coding standards, naming conventions, commit message format, and testing requirements
+- Created `CHANGELOG.md` - Formal changelog following Keep a Changelog format
+
+### Enhanced Unit Tests
+- Created `tests/test_config.py` - Tests for Settings validation, env file loading, and global config handling
+- Created `tests/test_email_filter.py` - Tests for EmailFilter (StarRocks, auto-reply, noreply, custom keywords)
+- Created `tests/test_thread_aggregator.py` - Tests for ThreadAggregator (subject normalization, grouping, formatting)
+- Total test count: 114 tests (up from 57)
+- All new tests pass
+
+### Code Quality Improvements
+- Fixed unused variable in `gmail/sync.py` (_determine_msg_state was assigned but not used)
+- Removed unused function `_determine_msg_state`
+- Fixed import order in `server/app.py` (E402 module level import not at top)
+- Fixed unused imports across multiple files
+- All code reformatted with ruff
+- All ruff linting checks pass
+
+### Test Fixes
+- Fixed `test_old_tables_dropped` to use `MIGRATION_SQL` for dropping old tables
+- Fixed `test_env_vars_override_global_env` to match actual behavior (global env takes precedence)
+
+---
+
 ## Initial Release
 
 ### Core Features

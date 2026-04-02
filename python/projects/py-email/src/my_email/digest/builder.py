@@ -94,18 +94,19 @@ def build_digest(db_conn: sqlite3.Connection, digest_date: str) -> DailyDigest:
             key = topic.lower().strip()
             topic_index.setdefault(key, []).append(summary.title)
 
-        summaries.append({
-            **data,
-            "message_id": row["message_id"],
-            "received_at": row["received_at"],
-        })
+        summaries.append(
+            {
+                **data,
+                "message_id": row["message_id"],
+                "received_at": row["received_at"],
+            }
+        )
 
     # Rank topics by frequency (descending), cap at 15
     ranked = sorted(topic_index.items(), key=lambda x: len(x[1]), reverse=True)[:15]
     top_topics = [t for t, _ in ranked]
     topic_clusters = [
-        TopicCluster(topic=t, count=len(titles), email_titles=titles)
-        for t, titles in ranked
+        TopicCluster(topic=t, count=len(titles), email_titles=titles) for t, titles in ranked
     ]
 
     digest = DailyDigest(

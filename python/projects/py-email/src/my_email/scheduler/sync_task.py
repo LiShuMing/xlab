@@ -11,7 +11,6 @@ import structlog
 from my_email.db.repository import (
     get_connection,
     get_setting,
-    save_setting,
     save_summary,
     save_thread_summary,
     get_unsummarized_threads,

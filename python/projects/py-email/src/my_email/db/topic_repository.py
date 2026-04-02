@@ -58,9 +58,12 @@ def upsert_topic_tracks(
         )
 
         # Step 2: recompute aggregates from topic_daily
-        total = conn.execute(
-            "SELECT SUM(count) FROM topic_daily WHERE topic = ?", (topic,)
-        ).fetchone()[0] or 0
+        total = (
+            conn.execute("SELECT SUM(count) FROM topic_daily WHERE topic = ?", (topic,)).fetchone()[
+                0
+            ]
+            or 0
+        )
 
         peak_row = conn.execute(
             "SELECT date, count FROM topic_daily WHERE topic = ? ORDER BY count DESC, date DESC LIMIT 1",
@@ -204,16 +207,18 @@ def get_active_topics(
         last_seen = Date.fromisoformat(row["last_seen_date"])
         days_active = (last_seen - first_seen).days + 1
 
-        results.append({
-            "topic": topic,
-            "first_seen_date": row["first_seen_date"],
-            "last_seen_date": row["last_seen_date"],
-            "total_mentions": row["total_mentions"],
-            "peak_date": row["peak_date"],
-            "peak_count": row["peak_count"],
-            "sample_titles": json.loads(row["sample_titles"]),
-            "trend_arrow": trend_arrow,
-            "days_active": days_active,
-        })
+        results.append(
+            {
+                "topic": topic,
+                "first_seen_date": row["first_seen_date"],
+                "last_seen_date": row["last_seen_date"],
+                "total_mentions": row["total_mentions"],
+                "peak_date": row["peak_date"],
+                "peak_count": row["peak_count"],
+                "sample_titles": json.loads(row["sample_titles"]),
+                "trend_arrow": trend_arrow,
+                "days_active": days_active,
+            }
+        )
 
     return results

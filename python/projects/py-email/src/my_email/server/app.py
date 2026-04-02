@@ -15,18 +15,16 @@ Endpoints:
 from __future__ import annotations
 
 import json
-import sqlite3
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Any
 
 import structlog
 from fastapi import FastAPI, HTTPException, Query, Request
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse
+from jinja2 import Environment, FileSystemLoader
 
 from my_email.config import settings
 from my_email.db.repository import (
-    cleanup_old_messages,
     get_connection,
     get_message_by_id,
     get_message_counts,
@@ -58,8 +56,6 @@ def from_json(value):
 
 
 # Create Jinja2 environment
-from jinja2 import Environment, FileSystemLoader
-
 jinja_env = Environment(loader=FileSystemLoader(str(_TEMPLATE_DIR)))
 jinja_env.filters["from_json"] = from_json
 
@@ -113,11 +109,13 @@ async def inbox_page(request: Request):
         counts = get_message_counts(conn)
         messages = get_messages(conn)
         template = jinja_env.get_template("inbox.html.j2")
-        return HTMLResponse(template.render(
-            request=request,
-            messages=messages,
-            counts=counts,
-        ))
+        return HTMLResponse(
+            template.render(
+                request=request,
+                messages=messages,
+                counts=counts,
+            )
+        )
     finally:
         conn.close()
 
@@ -130,11 +128,13 @@ async def settings_page(request: Request):
         retention_days = int(get_setting(conn, "retention_days", default="7"))
         sync_interval = int(get_setting(conn, "auto_sync_interval_minutes", default="30"))
         template = jinja_env.get_template("settings.html.j2")
-        return HTMLResponse(template.render(
-            request=request,
-            retention_days=retention_days,
-            sync_interval=sync_interval,
-        ))
+        return HTMLResponse(
+            template.render(
+                request=request,
+                retention_days=retention_days,
+                sync_interval=sync_interval,
+            )
+        )
     finally:
         conn.close()
 
@@ -153,7 +153,9 @@ async def list_messages(
     """List messages with optional filters."""
     conn = get_connection()
     try:
-        messages = get_messages(conn, state=state, relevance=relevance, days=days, page=page, size=size)
+        messages = get_messages(
+            conn, state=state, relevance=relevance, days=days, page=page, size=size
+        )
         counts = get_message_counts(conn)
 
         return {
@@ -169,8 +171,12 @@ async def list_messages(
                     "received_at": msg["received_at"],
                     "msg_state": msg["msg_state"],
                     "relevance": msg["relevance"],
-                    "summary": json.loads(msg["summary_json"]).get("summary") if msg["summary_json"] else None,
-                    "thread_count": msg["thread_count"] if msg["thread_count"] and msg["thread_count"] > 1 else None,
+                    "summary": json.loads(msg["summary_json"]).get("summary")
+                    if msg["summary_json"]
+                    else None,
+                    "thread_count": msg["thread_count"]
+                    if msg["thread_count"] and msg["thread_count"] > 1
+                    else None,
                 }
                 for msg in messages
             ],
@@ -241,7 +247,9 @@ async def get_settings():
     try:
         return {
             "retention_days": int(get_setting(conn, "retention_days", default="7")),
-            "auto_sync_interval_minutes": int(get_setting(conn, "auto_sync_interval_minutes", default="30")),
+            "auto_sync_interval_minutes": int(
+                get_setting(conn, "auto_sync_interval_minutes", default="30")
+            ),
         }
     finally:
         conn.close()
@@ -255,19 +263,25 @@ async def update_settings(body: dict[str, int]):
         if "retention_days" in body:
             days = body["retention_days"]
             if not 1 <= days <= 365:
-                raise HTTPException(status_code=400, detail="retention_days must be between 1 and 365")
+                raise HTTPException(
+                    status_code=400, detail="retention_days must be between 1 and 365"
+                )
             save_setting(conn, "retention_days", str(days))
 
         if "auto_sync_interval_minutes" in body:
             interval = body["auto_sync_interval_minutes"]
             if not 5 <= interval <= 1440:
-                raise HTTPException(status_code=400, detail="auto_sync_interval_minutes must be between 5 and 1440")
+                raise HTTPException(
+                    status_code=400, detail="auto_sync_interval_minutes must be between 5 and 1440"
+                )
             save_setting(conn, "auto_sync_interval_minutes", str(interval))
 
         conn.commit()
         return {
             "retention_days": int(get_setting(conn, "retention_days", default="7")),
-            "auto_sync_interval_minutes": int(get_setting(conn, "auto_sync_interval_minutes", default="30")),
+            "auto_sync_interval_minutes": int(
+                get_setting(conn, "auto_sync_interval_minutes", default="30")
+            ),
         }
     finally:
         conn.close()

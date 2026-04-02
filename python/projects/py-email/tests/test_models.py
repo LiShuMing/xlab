@@ -2,9 +2,7 @@
 
 import sqlite3
 
-import pytest
-
-from my_email.db.models import SCHEMA_SQL
+from my_email.db.models import MIGRATION_SQL, SCHEMA_SQL
 
 
 def test_schema_creates_messages_table():
@@ -36,9 +34,7 @@ def test_schema_creates_settings_table():
     conn = sqlite3.connect(":memory:")
     conn.executescript(SCHEMA_SQL)
 
-    cursor = conn.execute(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name='settings'"
-    )
+    cursor = conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='settings'")
     assert cursor.fetchone() is not None
 
 
@@ -84,9 +80,10 @@ def test_messages_msg_state_default():
 
 
 def test_old_tables_dropped():
-    """Verify old tables are dropped."""
+    """Verify old tables are dropped using MIGRATION_SQL."""
     conn = sqlite3.connect(":memory:")
     # Create old tables first
+    conn.execute("CREATE TABLE messages (id INTEGER PRIMARY KEY)")
     conn.execute("CREATE TABLE summaries (id INTEGER PRIMARY KEY)")
     conn.execute("CREATE TABLE digests (id INTEGER PRIMARY KEY)")
     conn.execute("CREATE TABLE topic_daily (topic TEXT)")
@@ -96,7 +93,9 @@ def test_old_tables_dropped():
     conn.execute("CREATE TABLE email_projects (message_id TEXT)")
     conn.execute("CREATE TABLE sync_state (id INTEGER PRIMARY KEY)")
 
-    # Now run the new schema
+    # Now run the migration SQL which drops old tables
+    conn.executescript(MIGRATION_SQL)
+    # Then run the new schema
     conn.executescript(SCHEMA_SQL)
 
     # Verify old tables don't exist

@@ -3,7 +3,6 @@ Tests for parser/cleaner.py.
 These are pure unit tests — no external I/O.
 """
 
-import pytest
 from my_email.parser.cleaner import clean_email_body, MAX_CHARS
 
 

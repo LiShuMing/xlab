@@ -117,6 +117,7 @@ def cli() -> None:
 
 # ── sync ──────────────────────────────────────────────────────────────────────
 
+
 @cli.command()
 @click.option("--full", is_flag=True, help="Force full re-sync, ignoring stored historyId.")
 def sync(full: bool) -> None:
@@ -140,11 +141,18 @@ def sync(full: bool) -> None:
 
 # ── summarize ─────────────────────────────────────────────────────────────────
 
+
 @cli.command()
 @click.option("--date", "target_date", default=None, help="YYYY-MM-DD (default: today)")
 @click.option("--limit", default=50, show_default=True, help="Max messages to process per run.")
-@click.option("--no-filter", is_flag=True, help="Disable email filtering (keep starrocks, auto-replies).")
-@click.option("--no-aggregate", is_flag=True, help="Disable thread aggregation (process each message separately).")
+@click.option(
+    "--no-filter", is_flag=True, help="Disable email filtering (keep starrocks, auto-replies)."
+)
+@click.option(
+    "--no-aggregate",
+    is_flag=True,
+    help="Disable thread aggregation (process each message separately).",
+)
 def summarize(target_date: str | None, limit: int, no_filter: bool, no_aggregate: bool) -> None:
     """
     Run LLM summarization on unprocessed messages.
@@ -211,7 +219,9 @@ def summarize(target_date: str | None, limit: int, no_filter: bool, no_aggregate
     # Count threads vs singles
     thread_count = sum(1 for a in aggregated if a.get("is_thread"))
     single_count = len(aggregated) - thread_count
-    click.echo(f"Summarizing {len(aggregated)} item(s) for {target_date} ({thread_count} threads, {single_count} singles)…")
+    click.echo(
+        f"Summarizing {len(aggregated)} item(s) for {target_date} ({thread_count} threads, {single_count} singles)…"
+    )
 
     ok, fail = 0, 0
     for group in aggregated:
@@ -230,7 +240,9 @@ def summarize(target_date: str | None, limit: int, no_filter: bool, no_aggregate
                     summary.model_dump_json(),
                     settings.llm_model,
                 )
-                click.echo(f"  ✓ [{summary.relevance}] {summary.title[:70]} ({group['message_count']} msgs)")
+                click.echo(
+                    f"  ✓ [{summary.relevance}] {summary.title[:70]} ({group['message_count']} msgs)"
+                )
             else:
                 # Single message summarization
                 msg = group["messages"][0]
@@ -260,12 +272,15 @@ def summarize(target_date: str | None, limit: int, no_filter: bool, no_aggregate
 
 # ── digest ────────────────────────────────────────────────────────────────────
 
+
 @cli.command()
 @click.option("--date", "target_date", default=None, help="YYYY-MM-DD (default: today)")
 @click.option("--out", default=None, help="Write digest JSON to this file path.")
 @click.option("--output-dir", default=None, help="Write JSON + HTML to <dir>/digest-<date>.*")
 @click.option("--html", "emit_html", is_flag=True, help="Also write an HTML digest file.")
-@click.option("--open", "open_browser", is_flag=True, help="Open the HTML file in a browser after writing.")
+@click.option(
+    "--open", "open_browser", is_flag=True, help="Open the HTML file in a browser after writing."
+)
 def digest(
     target_date: str | None,
     out: str | None,
@@ -330,10 +345,13 @@ def digest(
 
 # ── topics ────────────────────────────────────────────────────────────────────
 
+
 @cli.command()
 @click.option("--days", default=30, show_default=True, help="Look-back window in days.")
 @click.option("--top", default=20, show_default=True, help="Max topics to show.")
-@click.option("--date", "as_of_date", default=None, help="YYYY-MM-DD reference date (default: today)")
+@click.option(
+    "--date", "as_of_date", default=None, help="YYYY-MM-DD reference date (default: today)"
+)
 def topics(days: int, top: int, as_of_date: str | None) -> None:
     """Show ongoing topic threads with arc data and trend indicators."""
     from my_email.db.topic_repository import get_active_topics
@@ -349,11 +367,11 @@ def topics(days: int, top: int, as_of_date: str | None) -> None:
         click.echo("No topics tracked yet. Run 'my-email digest' first.")
         return
 
-    click.echo(f"\n{'='*72}")
+    click.echo(f"\n{'=' * 72}")
     click.echo(f"  Topic Arcs  (as of {as_of_date}, last {days} days)")
-    click.echo(f"{'='*72}")
+    click.echo(f"{'=' * 72}")
     click.echo(f"  {'TOPIC':<30} {'TREND':>5}  {'DAYS':>4}  {'TOTAL':>5}  {'PEAK':>5}  FIRST SEEN")
-    click.echo(f"  {'-'*30} {'-'*5}  {'-'*4}  {'-'*5}  {'-'*5}  {'-'*10}")
+    click.echo(f"  {'-' * 30} {'-' * 5}  {'-' * 4}  {'-' * 5}  {'-' * 5}  {'-' * 10}")
 
     for row in rows:
         click.echo(
@@ -365,6 +383,7 @@ def topics(days: int, top: int, as_of_date: str | None) -> None:
 
 
 # ── show ──────────────────────────────────────────────────────────────────────
+
 
 @cli.command()
 @click.option("--date", "target_date", default=None, help="YYYY-MM-DD (default: today)")
@@ -379,12 +398,10 @@ def show(target_date: str | None) -> None:
     result = build_digest(conn, target_date)
     conn.close()
 
-    click.echo(f"\n{'='*60}")
+    click.echo(f"\n{'=' * 60}")
     click.echo(f"  Daily Digest — {result.date}")
-    click.echo(f"{'='*60}")
-    click.echo(
-        f"  Emails: {result.total_emails}  |  High relevance: {result.high_relevance_count}"
-    )
+    click.echo(f"{'=' * 60}")
+    click.echo(f"  Emails: {result.total_emails}  |  High relevance: {result.high_relevance_count}")
     if result.top_topics:
         click.echo(f"  Top topics: {', '.join(result.top_topics[:8])}")
     click.echo()
@@ -398,6 +415,7 @@ def show(target_date: str | None) -> None:
 
 
 # ── server ────────────────────────────────────────────────────────────────────
+
 
 @cli.command()
 @click.option("--host", default="127.0.0.1", help="Host to bind (default: 127.0.0.1)")
@@ -432,6 +450,7 @@ def server(host: str, port: int, reload: bool) -> None:
 
 # ── projects ──────────────────────────────────────────────────────────────────
 
+
 @cli.group()
 def projects() -> None:
     """
@@ -453,8 +472,12 @@ def projects() -> None:
 
 @projects.command()
 @click.option("--min-emails", default=3, show_default=True, help="Minimum emails for a project.")
-@click.option("--threshold", default=5, show_default=True, help="Co-occurrence threshold for topic linking.")
-@click.option("--backfill", is_flag=True, help="Backfill message_topics from existing summaries first.")
+@click.option(
+    "--threshold", default=5, show_default=True, help="Co-occurrence threshold for topic linking."
+)
+@click.option(
+    "--backfill", is_flag=True, help="Backfill message_topics from existing summaries first."
+)
 def discover(min_emails: int, threshold: int, backfill: bool) -> None:
     """
     Discover projects from email patterns.
@@ -492,7 +515,9 @@ def discover(min_emails: int, threshold: int, backfill: bool) -> None:
 
     # Discover new projects
     click.echo(f"Discovering projects (min_emails={min_emails}, threshold={threshold})...")
-    discovered, project_messages = do_discover(conn, min_emails=min_emails, co_occurrence_threshold=threshold)
+    discovered, project_messages = do_discover(
+        conn, min_emails=min_emails, co_occurrence_threshold=threshold
+    )
 
     if not discovered:
         click.echo("No projects discovered. Try lowering --min-emails or run more summarizations.")
@@ -520,7 +545,7 @@ def discover(min_emails: int, threshold: int, backfill: bool) -> None:
     # Display results
     click.echo(f"\nDiscovered {len(discovered)} projects:\n")
     click.echo(f"  {'PROJECT':<25} {'EMAILS':>6} {'KEYWORDS':<40}")
-    click.echo(f"  {'-'*25} {'-'*6} {'-'*40}")
+    click.echo(f"  {'-' * 25} {'-' * 6} {'-' * 40}")
 
     for project in discovered:
         keywords_str = ", ".join(project.keywords[:3])
@@ -529,7 +554,9 @@ def discover(min_emails: int, threshold: int, backfill: bool) -> None:
         click.echo(f"  {project.id:<25} {project.email_count:>6} {keywords_str}")
 
     conn.close()
-    click.echo(f"\nDone. Discovered {len(discovered)} projects with {assignment_count} email assignments.")
+    click.echo(
+        f"\nDone. Discovered {len(discovered)} projects with {assignment_count} email assignments."
+    )
     click.echo("Run 'my-email projects list' to see all projects.")
 
 
@@ -554,17 +581,19 @@ def list_projects_cmd(min_emails: int) -> None:
         click.echo("No projects found. Run 'my-email projects discover' first.")
         return
 
-    click.echo(f"\n{'='*80}")
+    click.echo(f"\n{'=' * 80}")
     click.echo(f"  Projects ({len(projects_list)} found)")
-    click.echo(f"{'='*80}")
+    click.echo(f"{'=' * 80}")
     click.echo(f"  {'ID':<25} {'NAME':<20} {'EMAILS':>6} {'DOMAINS':<20}")
-    click.echo(f"  {'-'*25} {'-'*20} {'-'*6} {'-'*20}")
+    click.echo(f"  {'-' * 25} {'-' * 20} {'-' * 6} {'-' * 20}")
 
     for project in projects_list:
         domains_str = ", ".join(project.sender_domains[:2])
         if len(project.sender_domains) > 2:
             domains_str += "..."
-        click.echo(f"  {project.id:<25} {project.name[:20]:<20} {project.email_count:>6} {domains_str}")
+        click.echo(
+            f"  {project.id:<25} {project.name[:20]:<20} {project.email_count:>6} {domains_str}"
+        )
 
     click.echo()
 
@@ -607,9 +636,9 @@ def show_project_emails(project_id: str, days: int, show_all: bool) -> None:
     # Get emails
     emails = get_project_emails(conn, project_id, start_date=start_date)
 
-    click.echo(f"\n{'='*80}")
+    click.echo(f"\n{'=' * 80}")
     click.echo(f"  Project: {project.name}")
-    click.echo(f"{'='*80}")
+    click.echo(f"{'=' * 80}")
     click.echo(f"  ID: {project.id}")
     click.echo(f"  Emails: {project.email_count} total, {len(emails)} in view")
     click.echo(f"  Keywords: {', '.join(project.keywords)}")
@@ -626,7 +655,7 @@ def show_project_emails(project_id: str, days: int, show_all: bool) -> None:
         return
 
     click.echo(f"  {'SUBJECT':<50} {'DATE':>10}")
-    click.echo(f"  {'-'*50} {'-'*10}")
+    click.echo(f"  {'-' * 50} {'-' * 10}")
 
     for email in emails:
         subject = (email.get("subject") or "(no subject)")[:50]
@@ -637,7 +666,9 @@ def show_project_emails(project_id: str, days: int, show_all: bool) -> None:
 
 
 @projects.command()
-@click.option("--dry-run", is_flag=True, help="Show what would be backfilled without making changes.")
+@click.option(
+    "--dry-run", is_flag=True, help="Show what would be backfilled without making changes."
+)
 def backfill(dry_run: bool) -> None:
     """
     Backfill message_topics from existing summaries.
@@ -656,6 +687,7 @@ def backfill(dry_run: bool) -> None:
 
     if dry_run:
         import json
+
         cursor = conn.execute("SELECT message_id, summary_json FROM summaries")
         count = 0
         for row in cursor.fetchall():

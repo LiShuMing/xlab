@@ -15,6 +15,7 @@ from my_email.project.models import Project
 
 # ── unit: _slugify ─────────────────────────────────────────────────────────────
 
+
 def test_slugify_basic():
     """Basic lowercase conversion."""
     assert _slugify("DuckDB") == "duckdb"
@@ -231,7 +232,13 @@ class TestAssignEmail:
         temp_db.execute(
             """INSERT INTO projects (id, name, keywords, sender_domains, email_count)
                VALUES (?, ?, ?, ?, ?)""",
-            ("clickhouse", "ClickHouse", json.dumps(["clickhouse", "database"]), json.dumps([]), 10),
+            (
+                "clickhouse",
+                "ClickHouse",
+                json.dumps(["clickhouse", "database"]),
+                json.dumps([]),
+                10,
+            ),
         )
         temp_db.commit()
 

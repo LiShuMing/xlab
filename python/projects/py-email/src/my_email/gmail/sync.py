@@ -206,23 +206,6 @@ def extract_email_address(sender: str | None) -> str | None:
     return None
 
 
-def _determine_msg_state(label_ids: list[str]) -> str:
-    """
-    Determine message state from Gmail labels.
-
-    Args:
-        label_ids: List of Gmail label IDs.
-
-    Returns:
-        'unread', 'read', or 'starred'.
-    """
-    if "STARRED" in label_ids:
-        return "starred"
-    if "UNREAD" in label_ids:
-        return "unread"
-    return "read"
-
-
 def _parse_message(raw: dict[str, Any]) -> MessageData:
     """Parse a raw Gmail message into a structured MessageData dict."""
     headers = {h["name"].lower(): h["value"] for h in raw["payload"].get("headers", [])}
@@ -237,9 +220,6 @@ def _parse_message(raw: dict[str, Any]) -> MessageData:
 
     sender = headers.get("from", "")
     sender_email = extract_email_address(sender)
-
-    label_ids = raw.get("labelIds", [])
-    msg_state = _determine_msg_state(label_ids)
 
     return MessageData(
         id=raw["id"],
@@ -301,9 +281,7 @@ def _fetch_history_refs(
     return refs, new_history_id
 
 
-def _ingest_refs(
-    service: Resource, refs: list[dict[str, str]], db_conn: Any
-) -> dict[str, int]:
+def _ingest_refs(service: Resource, refs: list[dict[str, str]], db_conn: Any) -> dict[str, int]:
     """Fetch full messages for each ref and upsert into DB."""
     synced = 0
     skipped = 0
@@ -311,9 +289,7 @@ def _ingest_refs(
 
     for ref in refs:
         try:
-            raw = service.users().messages().get(
-                userId="me", id=ref["id"], format="full"
-            ).execute()
+            raw = service.users().messages().get(userId="me", id=ref["id"], format="full").execute()
 
             msg = _parse_message(raw)
 
@@ -339,9 +315,7 @@ def _ingest_refs(
 # ── public entry points ───────────────────────────────────────────────────────
 
 
-def sync_messages(
-    db_conn: Any, service: Resource | None = None, days: int = 7
-) -> dict[str, Any]:
+def sync_messages(db_conn: Any, service: Resource | None = None, days: int = 7) -> dict[str, Any]:
     """
     Sync recent messages from Gmail.
 

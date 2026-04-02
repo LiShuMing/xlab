@@ -39,6 +39,7 @@ log = structlog.get_logger()
 
 # ── custom exceptions ─────────────────────────────────────────────────────────
 
+
 class LLMSummarizationError(Exception):
     """Base exception for LLM summarization failures."""
 
@@ -70,6 +71,7 @@ class LLMConnectionError(LLMSummarizationError):
 
 # ── output schema ─────────────────────────────────────────────────────────────
 
+
 class EmailSummary(BaseModel):
     """Structured summary of an email newsletter."""
 
@@ -77,8 +79,12 @@ class EmailSummary(BaseModel):
     sender_org: str = Field(description="Organization or project name, e.g. 'Apache Iceberg'")
     topics: list[str] = Field(description="3–8 main technical topic keywords (中文+英文)")
     summary: str = Field(description="5–8 sentence detailed factual summary of the content (中文)")
-    key_points: list[str] = Field(description="5–10 concrete bullet points worth remembering (中文)")
-    relevance: str = Field(description='"high" | "medium" | "low" | "skip" — for data/infra engineering. Use "skip" for non-technical emails.')
+    key_points: list[str] = Field(
+        description="5–10 concrete bullet points worth remembering (中文)"
+    )
+    relevance: str = Field(
+        description='"high" | "medium" | "low" | "skip" — for data/infra engineering. Use "skip" for non-technical emails.'
+    )
     action_items: list[str] = Field(
         default_factory=list,
         description="Action items, deadlines, or decisions requiring attention (if any) (中文)",
@@ -175,6 +181,7 @@ JSON only."""
 
 # ── client ────────────────────────────────────────────────────────────────────
 
+
 def _build_client() -> OpenAI:
     """
     Build an OpenAI client with configured settings.
@@ -201,11 +208,14 @@ def _validate_relevance(value: str) -> str:
     """Validate and normalize relevance field."""
     normalized = value.lower().strip()
     if normalized not in ("high", "medium", "low", "skip"):
-        raise ValueError(f"Invalid relevance value: {value}. Must be 'high', 'medium', 'low', or 'skip'.")
+        raise ValueError(
+            f"Invalid relevance value: {value}. Must be 'high', 'medium', 'low', or 'skip'."
+        )
     return normalized
 
 
 # ── public API ────────────────────────────────────────────────────────────────
+
 
 @retry(
     retry=retry_if_exception_type((RateLimitError, APIConnectionError)),
@@ -264,9 +274,7 @@ def summarize_message(subject: str, sender: str, date: str, body: str) -> EmailS
         LLMSummarizationError: For other LLM-related errors.
     """
     client = _build_client()
-    prompt = _USER_TEMPLATE.format(
-        subject=subject, sender=sender, date=date, body=body
-    )
+    prompt = _USER_TEMPLATE.format(subject=subject, sender=sender, date=date, body=body)
     messages = [
         {"role": "system", "content": _SYSTEM_PROMPT},
         {"role": "user", "content": prompt},
@@ -295,7 +303,9 @@ def summarize_message(subject: str, sender: str, date: str, body: str) -> EmailS
         parsed: dict[str, Any] = json.loads(raw)
     except json.JSONDecodeError as e:
         log.error("llm.summarize.json_error", raw=raw[:500], error=str(e))
-        raise LLMOutputValidationError(raw, ValidationError.from_exception_data("EmailSummary", [])) from e
+        raise LLMOutputValidationError(
+            raw, ValidationError.from_exception_data("EmailSummary", [])
+        ) from e
 
     # Normalize relevance before validation
     if "relevance" in parsed:
@@ -386,7 +396,9 @@ def summarize_thread(
         parsed: dict[str, Any] = json.loads(raw)
     except json.JSONDecodeError as e:
         log.error("llm.summarize_thread.json_error", raw=raw[:500], error=str(e))
-        raise LLMOutputValidationError(raw, ValidationError.from_exception_data("EmailSummary", [])) from e
+        raise LLMOutputValidationError(
+            raw, ValidationError.from_exception_data("EmailSummary", [])
+        ) from e
 
     # Normalize relevance before validation
     if "relevance" in parsed:

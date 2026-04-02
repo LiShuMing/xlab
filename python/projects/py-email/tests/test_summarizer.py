@@ -17,6 +17,7 @@ from my_email.llm.summarizer import (
 
 # ── unit: _strip_fences ───────────────────────────────────────────────────────
 
+
 def test_strip_fences_no_fences():
     raw = '{"title": "test"}'
     assert _strip_fences(raw) == '{"title": "test"}'
@@ -61,9 +62,7 @@ def _mock_openai_response(content: str):
 def test_summarize_message_valid(mock_openai_cls):
     client = MagicMock()
     mock_openai_cls.return_value = client
-    client.chat.completions.create.return_value = _mock_openai_response(
-        json.dumps(_VALID_RESPONSE)
-    )
+    client.chat.completions.create.return_value = _mock_openai_response(json.dumps(_VALID_RESPONSE))
 
     result = summarize_message(
         subject="[ANNOUNCE] Apache Iceberg 1.5.0",
@@ -99,6 +98,4 @@ def test_summarize_message_invalid_json(mock_openai_cls):
     client.chat.completions.create.return_value = _mock_openai_response("not json at all")
 
     with pytest.raises(LLMOutputValidationError):
-        summarize_message(
-            subject="Test", sender="x@y.com", date="2026-03-19", body="body"
-        )
+        summarize_message(subject="Test", sender="x@y.com", date="2026-03-19", body="body")

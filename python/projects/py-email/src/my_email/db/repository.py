@@ -43,7 +43,9 @@ def init_db() -> None:
     conn = get_connection()
     try:
         # Check if messages table exists and if thread_subject column is missing
-        cursor = conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='messages'")
+        cursor = conn.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='messages'"
+        )
         table_exists = cursor.fetchone() is not None
 
         if table_exists:
@@ -58,7 +60,9 @@ def init_db() -> None:
         conn.executescript(SCHEMA_SQL)
 
         # Create index for thread_subject if it wasn't created
-        conn.execute("CREATE INDEX IF NOT EXISTS idx_messages_thread_subject ON messages(thread_subject)")
+        conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_messages_thread_subject ON messages(thread_subject)"
+        )
 
         # Backfill thread_subject for existing messages
         if table_exists:
@@ -68,7 +72,10 @@ def init_db() -> None:
                 log.info("db.migration.backfill_thread_subject", count=len(rows))
                 for row in rows:
                     thread_subject = normalize_subject(row["subject"]) if row["subject"] else None
-                    conn.execute("UPDATE messages SET thread_subject = ? WHERE id = ?", (thread_subject, row["id"]))
+                    conn.execute(
+                        "UPDATE messages SET thread_subject = ? WHERE id = ?",
+                        (thread_subject, row["id"]),
+                    )
 
         conn.commit()
         log.info("db.initialized", path=str(settings.db_path))
@@ -189,9 +196,9 @@ def get_messages(
 
     if days:
         ref_date = current_date or datetime.utcnow().strftime("%Y-%m-%d")
-        cutoff = (
-            datetime.strptime(ref_date, "%Y-%m-%d") - timedelta(days=days)
-        ).strftime("%Y-%m-%d")
+        cutoff = (datetime.strptime(ref_date, "%Y-%m-%d") - timedelta(days=days)).strftime(
+            "%Y-%m-%d"
+        )
         conditions.append("received_at >= ?")
         params.append(cutoff)
 
@@ -229,14 +236,10 @@ def get_message_by_id(conn: sqlite3.Connection, message_id: str) -> sqlite3.Row 
     Returns:
         Message row with body_text, or None if not found.
     """
-    return conn.execute(
-        "SELECT * FROM messages WHERE id = ?", (message_id,)
-    ).fetchone()
+    return conn.execute("SELECT * FROM messages WHERE id = ?", (message_id,)).fetchone()
 
 
-def update_message_state(
-    conn: sqlite3.Connection, message_id: str, new_state: str
-) -> bool:
+def update_message_state(conn: sqlite3.Connection, message_id: str, new_state: str) -> bool:
     """
     Update the msg_state of a message.
 
@@ -248,9 +251,7 @@ def update_message_state(
     Returns:
         True if updated, False if message not found.
     """
-    cur = conn.execute(
-        "UPDATE messages SET msg_state = ? WHERE id = ?", (new_state, message_id)
-    )
+    cur = conn.execute("UPDATE messages SET msg_state = ? WHERE id = ?", (new_state, message_id))
     return cur.rowcount > 0
 
 
@@ -265,9 +266,7 @@ def get_message_counts(conn: sqlite3.Connection) -> dict[str, int]:
         Dict with 'total', 'unread', 'high_relevance' counts.
     """
     total = conn.execute("SELECT COUNT(*) FROM messages").fetchone()[0]
-    unread = conn.execute(
-        "SELECT COUNT(*) FROM messages WHERE msg_state = 'unread'"
-    ).fetchone()[0]
+    unread = conn.execute("SELECT COUNT(*) FROM messages WHERE msg_state = 'unread'").fetchone()[0]
     high_relevance = conn.execute(
         "SELECT COUNT(*) FROM messages WHERE relevance = 'high'"
     ).fetchone()[0]
@@ -292,13 +291,11 @@ def cleanup_old_messages(
         Number of deleted messages.
     """
     ref_date = current_date or datetime.utcnow().strftime("%Y-%m-%d")
-    cutoff = (
-        datetime.strptime(ref_date, "%Y-%m-%d") - timedelta(days=retention_days)
-    ).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-    cur = conn.execute(
-        "DELETE FROM messages WHERE received_at < ?", (cutoff,)
+    cutoff = (datetime.strptime(ref_date, "%Y-%m-%d") - timedelta(days=retention_days)).strftime(
+        "%Y-%m-%dT%H:%M:%SZ"
     )
+
+    cur = conn.execute("DELETE FROM messages WHERE received_at < ?", (cutoff,))
     return cur.rowcount
 
 
@@ -332,31 +329,34 @@ def get_unsummarized_threads(conn: sqlite3.Connection, limit: int = 10) -> list[
 
     # Group by thread_subject
     from collections import defaultdict
+
     groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
 
     for row in rows:
         # Use thread_subject as key, fall back to subject if None
         key = row["thread_subject"] or row["subject"] or row["id"]
-        groups[key].append({
-            "id": row["id"],
-            "thread_id": row["thread_id"],
-            "subject": row["subject"],
-            "sender": row["sender"],
-            "received_at": row["received_at"],
-            "body_text": row["body_text"],
-        })
+        groups[key].append(
+            {
+                "id": row["id"],
+                "thread_id": row["thread_id"],
+                "subject": row["subject"],
+                "sender": row["sender"],
+                "received_at": row["received_at"],
+                "body_text": row["body_text"],
+            }
+        )
 
     # Return groups sorted by most recent message
     result = []
     for thread_subject, messages in sorted(
-        groups.items(),
-        key=lambda x: max(m["received_at"] for m in x[1]),
-        reverse=True
+        groups.items(), key=lambda x: max(m["received_at"] for m in x[1]), reverse=True
     ):
-        result.append({
-            "thread_subject": thread_subject,
-            "messages": messages,
-        })
+        result.append(
+            {
+                "thread_subject": thread_subject,
+                "messages": messages,
+            }
+        )
         if len(result) >= limit:
             break
 
@@ -399,9 +399,7 @@ def save_thread_summary(
     return cur.rowcount
 
 
-def save_summary(
-    conn: sqlite3.Connection, message_id: str, summary_json: str
-) -> None:
+def save_summary(conn: sqlite3.Connection, message_id: str, summary_json: str) -> None:
     """
     Save AI summary for a message and extract relevance.
 
@@ -429,9 +427,7 @@ def save_summary(
 # ── settings ──────────────────────────────────────────────────────────────────
 
 
-def get_setting(
-    conn: sqlite3.Connection, key: str, default: str | None = None
-) -> str | None:
+def get_setting(conn: sqlite3.Connection, key: str, default: str | None = None) -> str | None:
     """
     Get a setting value.
 

@@ -24,9 +24,7 @@ def seconds_until_midnight() -> int:
 
     now = datetime.now(timezone.utc)
     # Calculate midnight of the next day
-    tomorrow = (now + timedelta(days=1)).replace(
-        hour=0, minute=0, second=0, microsecond=0
-    )
+    tomorrow = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
     return int((tomorrow - now).total_seconds())
 
 
@@ -49,7 +47,9 @@ async def run_cleanup(db_conn: sqlite3.Connection | None = None) -> dict:
         retention_days = int(get_setting(db_conn, "retention_days", default="7"))
         current_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
-        deleted = cleanup_old_messages(db_conn, retention_days=retention_days, current_date=current_date)
+        deleted = cleanup_old_messages(
+            db_conn, retention_days=retention_days, current_date=current_date
+        )
         db_conn.commit()
 
         result = {"deleted": deleted}

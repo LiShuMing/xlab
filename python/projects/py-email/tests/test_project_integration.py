@@ -25,6 +25,7 @@ from my_email.project.models import Project
 
 # ── fixtures ──────────────────────────────────────────────────────────────────
 
+
 @pytest.fixture
 def temp_db():
     """Create an in-memory SQLite database with all tables."""
@@ -80,6 +81,7 @@ def populated_db(temp_db):
 
 # ── integration: discover_projects ─────────────────────────────────────────────
 
+
 class TestDiscoverProjects:
     """Tests for discover_projects clustering."""
 
@@ -95,7 +97,13 @@ class TestDiscoverProjects:
         for i in range(5):
             temp_db.execute(
                 "INSERT INTO messages (id, thread_id, subject, sender, received_at) VALUES (?, ?, ?, ?, ?)",
-                (f"msg-{i}", f"thread-{i}", f"Subject {i}", "user@example.com", f"2026-03-{10+i}T10:00:00Z"),
+                (
+                    f"msg-{i}",
+                    f"thread-{i}",
+                    f"Subject {i}",
+                    "user@example.com",
+                    f"2026-03-{10 + i}T10:00:00Z",
+                ),
             )
         temp_db.commit()
 
@@ -108,7 +116,9 @@ class TestDiscoverProjects:
                 )
         temp_db.commit()
 
-        projects, project_messages = discover_projects(temp_db, min_emails=3, co_occurrence_threshold=3)
+        projects, project_messages = discover_projects(
+            temp_db, min_emails=3, co_occurrence_threshold=3
+        )
 
         assert len(projects) == 1
         assert projects[0].email_count == 5
@@ -116,7 +126,9 @@ class TestDiscoverProjects:
 
     def test_discover_projects_multiple_clusters(self, populated_db):
         """Disconnected topics form separate projects."""
-        projects, project_messages = discover_projects(populated_db, min_emails=3, co_occurrence_threshold=3)
+        projects, project_messages = discover_projects(
+            populated_db, min_emails=3, co_occurrence_threshold=3
+        )
 
         # Should get at least one project
         assert len(projects) >= 1
@@ -131,7 +143,13 @@ class TestDiscoverProjects:
         for i in range(2):
             temp_db.execute(
                 "INSERT INTO messages (id, thread_id, subject, sender, received_at) VALUES (?, ?, ?, ?, ?)",
-                (f"msg-{i}", f"thread-{i}", f"Subject {i}", "user@example.com", f"2026-03-{10+i}T10:00:00Z"),
+                (
+                    f"msg-{i}",
+                    f"thread-{i}",
+                    f"Subject {i}",
+                    "user@example.com",
+                    f"2026-03-{10 + i}T10:00:00Z",
+                ),
             )
             for topic in ["small-cluster", "test"]:
                 temp_db.execute(
@@ -140,7 +158,9 @@ class TestDiscoverProjects:
                 )
         temp_db.commit()
 
-        projects, project_messages = discover_projects(temp_db, min_emails=3, co_occurrence_threshold=1)
+        projects, project_messages = discover_projects(
+            temp_db, min_emails=3, co_occurrence_threshold=1
+        )
 
         assert projects == []
 
@@ -162,15 +182,25 @@ class TestDiscoverProjects:
         temp_db.commit()
 
         # topic-a appears in msg-1 and msg-2
-        temp_db.execute("INSERT INTO message_topics (message_id, topic) VALUES ('msg-1', 'topic-a')")
-        temp_db.execute("INSERT INTO message_topics (message_id, topic) VALUES ('msg-2', 'topic-a')")
+        temp_db.execute(
+            "INSERT INTO message_topics (message_id, topic) VALUES ('msg-1', 'topic-a')"
+        )
+        temp_db.execute(
+            "INSERT INTO message_topics (message_id, topic) VALUES ('msg-2', 'topic-a')"
+        )
         # topic-b appears in msg-1 and msg-3
-        temp_db.execute("INSERT INTO message_topics (message_id, topic) VALUES ('msg-1', 'topic-b')")
-        temp_db.execute("INSERT INTO message_topics (message_id, topic) VALUES ('msg-3', 'topic-b')")
+        temp_db.execute(
+            "INSERT INTO message_topics (message_id, topic) VALUES ('msg-1', 'topic-b')"
+        )
+        temp_db.execute(
+            "INSERT INTO message_topics (message_id, topic) VALUES ('msg-3', 'topic-b')"
+        )
         temp_db.commit()
 
         # With threshold 2, topics share only 1 message, should not link
-        projects, project_messages = discover_projects(temp_db, min_emails=1, co_occurrence_threshold=2)
+        projects, project_messages = discover_projects(
+            temp_db, min_emails=1, co_occurrence_threshold=2
+        )
 
         # topic-a and topic-b should NOT be in same cluster (only share msg-1)
         # Each topic cluster has only 2 messages
@@ -182,7 +212,13 @@ class TestDiscoverProjects:
         for i in range(5):
             temp_db.execute(
                 "INSERT INTO messages (id, thread_id, subject, sender, received_at) VALUES (?, ?, ?, ?, ?)",
-                (f"msg-{i}", f"thread-{i}", f"Subject {i}", "user@example.com", f"2026-03-{10+i}T10:00:00Z"),
+                (
+                    f"msg-{i}",
+                    f"thread-{i}",
+                    f"Subject {i}",
+                    "user@example.com",
+                    f"2026-03-{10 + i}T10:00:00Z",
+                ),
             )
             temp_db.execute(
                 "INSERT INTO message_topics (message_id, topic) VALUES (?, ?)",
@@ -190,7 +226,9 @@ class TestDiscoverProjects:
             )
         temp_db.commit()
 
-        projects, project_messages = discover_projects(temp_db, min_emails=3, co_occurrence_threshold=1)
+        projects, project_messages = discover_projects(
+            temp_db, min_emails=3, co_occurrence_threshold=1
+        )
 
         assert len(projects) == 1
         assert projects[0].first_seen == "2026-03-10"
@@ -198,6 +236,7 @@ class TestDiscoverProjects:
 
 
 # ── integration: persistence ───────────────────────────────────────────────────
+
 
 class TestPersistence:
     """Tests for project persistence functions."""
@@ -283,6 +322,7 @@ class TestPersistence:
         temp_db.commit()
 
         from my_email.project.clusterer import ProjectAssignment
+
         assignment = ProjectAssignment(
             message_id="msg-001",
             project_id="test",
@@ -306,6 +346,7 @@ class TestPersistence:
 
 # ── integration: pipeline ──────────────────────────────────────────────────────
 
+
 class TestPipelineIntegration:
     """Tests for integration with existing summarization pipeline."""
 
@@ -318,14 +359,16 @@ class TestPipelineIntegration:
         )
         temp_db.commit()
 
-        summary_json = json.dumps({
-            "title": "DuckDB Release",
-            "sender_org": "DuckDB Labs",
-            "topics": ["duckdb", "database", "release"],
-            "summary": "DuckDB 1.0 released.",
-            "key_points": ["Fast OLAP", "Embedded"],
-            "relevance": "high",
-        })
+        summary_json = json.dumps(
+            {
+                "title": "DuckDB Release",
+                "sender_org": "DuckDB Labs",
+                "topics": ["duckdb", "database", "release"],
+                "summary": "DuckDB 1.0 released.",
+                "key_points": ["Fast OLAP", "Embedded"],
+                "relevance": "high",
+            }
+        )
 
         save_summary(temp_db, "msg-001", summary_json, "gpt-4")
 
@@ -345,13 +388,15 @@ class TestPipelineIntegration:
             "INSERT INTO messages (id, thread_id, subject, sender, received_at) VALUES (?, ?, ?, ?, ?)",
             ("msg-001", "t1", "Test", "user@example.com", "2026-03-10T10:00:00Z"),
         )
-        summary_json = json.dumps({
-            "title": "Test",
-            "topics": ["test-topic", "example"],
-            "summary": "Test summary.",
-            "key_points": [],
-            "relevance": "medium",
-        })
+        summary_json = json.dumps(
+            {
+                "title": "Test",
+                "topics": ["test-topic", "example"],
+                "summary": "Test summary.",
+                "key_points": [],
+                "relevance": "medium",
+            }
+        )
         temp_db.execute(
             "INSERT INTO summaries (message_id, summary_json, model) VALUES (?, ?, ?)",
             ("msg-001", summary_json, "gpt-4"),
@@ -363,7 +408,9 @@ class TestPipelineIntegration:
         assert count == 2
 
         # Verify topics
-        cursor = temp_db.execute("SELECT topic FROM message_topics WHERE message_id = ?", ("msg-001",))
+        cursor = temp_db.execute(
+            "SELECT topic FROM message_topics WHERE message_id = ?", ("msg-001",)
+        )
         topics = [row[0] for row in cursor.fetchall()]
         assert set(topics) == {"test-topic", "example"}
 
@@ -374,13 +421,15 @@ class TestPipelineIntegration:
             "INSERT INTO messages (id, thread_id, subject, sender, received_at) VALUES (?, ?, ?, ?, ?)",
             ("msg-001", "t1", "Test", "user@example.com", "2026-03-10T10:00:00Z"),
         )
-        summary_json = json.dumps({
-            "title": "Test",
-            "topics": ["test"],
-            "summary": "Test.",
-            "key_points": [],
-            "relevance": "medium",
-        })
+        summary_json = json.dumps(
+            {
+                "title": "Test",
+                "topics": ["test"],
+                "summary": "Test.",
+                "key_points": [],
+                "relevance": "medium",
+            }
+        )
         temp_db.execute(
             "INSERT INTO summaries (message_id, summary_json, model) VALUES (?, ?, ?)",
             ("msg-001", summary_json, "gpt-4"),
@@ -408,6 +457,7 @@ class TestPipelineIntegration:
 
 # ── integration: get_project_emails ───────────────────────────────────────────
 
+
 class TestGetProjectEmails:
     """Tests for querying emails by project."""
 
@@ -423,6 +473,7 @@ class TestGetProjectEmails:
         temp_db.commit()
 
         from my_email.project.clusterer import ProjectAssignment
+
         assignment = ProjectAssignment(
             message_id="msg-001",
             project_id="test",
@@ -442,13 +493,20 @@ class TestGetProjectEmails:
         for i in range(3):
             temp_db.execute(
                 "INSERT INTO messages (id, thread_id, subject, sender, received_at) VALUES (?, ?, ?, ?, ?)",
-                (f"msg-{i}", f"t{i}", f"Subject {i}", "user@example.com", f"2026-03-{10+i}T10:00:00Z"),
+                (
+                    f"msg-{i}",
+                    f"t{i}",
+                    f"Subject {i}",
+                    "user@example.com",
+                    f"2026-03-{10 + i}T10:00:00Z",
+                ),
             )
         project = Project(id="test", name="Test", keywords=[], sender_domains=[])
         save_project(temp_db, project)
         temp_db.commit()
 
         from my_email.project.clusterer import ProjectAssignment
+
         for i in range(3):
             assignment = ProjectAssignment(
                 message_id=f"msg-{i}",
@@ -461,9 +519,7 @@ class TestGetProjectEmails:
         # Filter to only March 11 (end_date needs to include the full day)
         # Using >= '2026-03-11' and <= '2026-03-11T23:59:59Z' to capture the whole day
         result = get_project_emails(
-            temp_db, "test",
-            start_date="2026-03-11",
-            end_date="2026-03-11T23:59:59Z"
+            temp_db, "test", start_date="2026-03-11", end_date="2026-03-11T23:59:59Z"
         )
 
         assert len(result) == 1

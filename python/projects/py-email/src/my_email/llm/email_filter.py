@@ -164,10 +164,14 @@ class EmailFilter:
         # Check auto-reply
         if self.exclude_auto_reply:
             if self._is_auto_reply_subject(subject):
-                log.debug("email_filter.auto_reply_subject", message_id=message_id, subject=subject[:50])
+                log.debug(
+                    "email_filter.auto_reply_subject", message_id=message_id, subject=subject[:50]
+                )
                 return True, "auto_reply"
             if self._is_auto_reply_body(body):
-                log.debug("email_filter.auto_reply_body", message_id=message_id, subject=subject[:50])
+                log.debug(
+                    "email_filter.auto_reply_body", message_id=message_id, subject=subject[:50]
+                )
                 return True, "auto_reply"
 
         # Check noreply sender
