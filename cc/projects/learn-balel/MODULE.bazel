@@ -1,0 +1,11 @@
+# MODULE.bazel
+module(
+    name = "bazel_learning",
+    version = "1.0.0",
+)
+
+# 引入fmt库
+bazel_dep(
+    name = "fmt",
+    version = "10.2.1",
+)
