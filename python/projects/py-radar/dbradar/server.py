@@ -175,57 +175,65 @@ def show_page(page: int):
     if page < 1:
         page = 1
 
-    store = get_store()
+    # Create a new store instance for this request (DuckDB is not thread-safe)
+    config = get_config()
+    store = DuckDBStore(
+        data_dir=config.output_dir.parent / "data",
+        db_name="items.duckdb",
+    )
 
-    # Get total count
-    stats = store.get_stats()
-    total_items = stats["total_count"]
+    try:
+        # Get total count
+        stats = store.get_stats()
+        total_items = stats["total_count"]
 
-    if total_items == 0:
+        if total_items == 0:
+            return render_template(
+                "index.html",
+                date_groups=[],
+                current_page=page,
+                total_pages=0,
+                has_prev=False,
+                has_next=False,
+                total_items=0,
+                items_per_page=ITEMS_PER_PAGE,
+                error="暂无数据。请先运行 dbradar fetch 获取数据。",
+            )
+
+        # Calculate pagination
+        total_pages = (total_items + ITEMS_PER_PAGE - 1) // ITEMS_PER_PAGE
+
+        if page > total_pages:
+            page = total_pages
+
+        start_idx = (page - 1) * ITEMS_PER_PAGE
+
+        # Query items for this page, ordered by sync_batch
+        items = store.query_by_sync_batch(limit=ITEMS_PER_PAGE, offset=start_idx)
+
+        # Convert to dicts and assign sequential IDs
+        item_dicts = []
+        for idx, item in enumerate(items, start=start_idx + 1):
+            d = storage_item_to_dict(item, idx)
+            item_dicts.append(d)
+
+        # Group by sync_batch (not published_date)
+        date_groups = group_items_by_sync_batch(item_dicts)
+
         return render_template(
             "index.html",
-            date_groups=[],
+            date_groups=date_groups,
             current_page=page,
-            total_pages=0,
-            has_prev=False,
-            has_next=False,
-            total_items=0,
+            total_pages=total_pages,
+            has_prev=page > 1,
+            has_next=page < total_pages,
+            prev_page=page - 1 if page > 1 else None,
+            next_page=page + 1 if page < total_pages else None,
+            total_items=total_items,
             items_per_page=ITEMS_PER_PAGE,
-            error="暂无数据。请先运行 dbradar fetch 获取数据。",
         )
-
-    # Calculate pagination
-    total_pages = (total_items + ITEMS_PER_PAGE - 1) // ITEMS_PER_PAGE
-
-    if page > total_pages:
-        page = total_pages
-
-    start_idx = (page - 1) * ITEMS_PER_PAGE
-
-    # Query items for this page, ordered by sync_batch
-    items = store.query_by_sync_batch(limit=ITEMS_PER_PAGE, offset=start_idx)
-
-    # Convert to dicts and assign sequential IDs
-    item_dicts = []
-    for idx, item in enumerate(items, start=start_idx + 1):
-        d = storage_item_to_dict(item, idx)
-        item_dicts.append(d)
-
-    # Group by sync_batch (not published_date)
-    date_groups = group_items_by_sync_batch(item_dicts)
-
-    return render_template(
-        "index.html",
-        date_groups=date_groups,
-        current_page=page,
-        total_pages=total_pages,
-        has_prev=page > 1,
-        has_next=page < total_pages,
-        prev_page=page - 1 if page > 1 else None,
-        next_page=page + 1 if page < total_pages else None,
-        total_items=total_items,
-        items_per_page=ITEMS_PER_PAGE,
-    )
+    finally:
+        store.close()
 
 
 def group_items_by_sync_batch(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -300,57 +308,73 @@ def by_date(date_str: str):
     except ValueError:
         abort(404)
 
-    store = get_store()
-
-    # Query items by sync_batch instead of published_date
-    conn = store._get_conn()
-    rows = conn.execute("""
-        SELECT * FROM items WHERE sync_batch = ?
-        ORDER BY published_date DESC
-    """, [target_date]).fetchall()
-    items = [store._row_to_item(row) for row in rows]
-
-    if not items:
-        abort(404)
-
-    item_dicts = [storage_item_to_dict(item, idx + 1) for idx, item in enumerate(items)]
-
-    date_groups = [{
-        "date": date_str,
-        "date_display": format_sync_batch_display(target_date),
-        "news_items": item_dicts,
-        "total": len(item_dicts),
-    }]
-
-    return render_template(
-        "index.html",
-        date_groups=date_groups,
-        current_page=1,
-        total_pages=1,
-        has_prev=False,
-        has_next=False,
-        total_items=len(item_dicts),
-        items_per_page=ITEMS_PER_PAGE,
-        single_date=True,
+    # Create a new store instance for this request (DuckDB is not thread-safe)
+    config = get_config()
+    store = DuckDBStore(
+        data_dir=config.output_dir.parent / "data",
+        db_name="items.duckdb",
     )
+
+    try:
+        # Query items by sync_batch instead of published_date
+        conn = store._get_conn()
+        rows = conn.execute("""
+            SELECT * FROM items WHERE sync_batch = ?
+            ORDER BY published_date DESC
+        """, [target_date]).fetchall()
+        items = [store._row_to_item(row) for row in rows]
+
+        if not items:
+            abort(404)
+
+        item_dicts = [storage_item_to_dict(item, idx + 1) for idx, item in enumerate(items)]
+
+        date_groups = [{
+            "date": date_str,
+            "date_display": format_sync_batch_display(target_date),
+            "news_items": item_dicts,
+            "total": len(item_dicts),
+        }]
+
+        return render_template(
+            "index.html",
+            date_groups=date_groups,
+            current_page=1,
+            total_pages=1,
+            has_prev=False,
+            has_next=False,
+            total_items=len(item_dicts),
+            items_per_page=ITEMS_PER_PAGE,
+            single_date=True,
+        )
+    finally:
+        store.close()
 
 
 @app.route("/api/news")
 def api_news():
     """API endpoint to get latest news items."""
-    store = get_store()
+    # Create a new store instance for this request (DuckDB is not thread-safe)
+    config = get_config()
+    store = DuckDBStore(
+        data_dir=config.output_dir.parent / "data",
+        db_name="items.duckdb",
+    )
 
-    # Get recent 7 days
-    end_date = date.today()
-    start_date = end_date - timedelta(days=7)
+    try:
+        # Get recent 7 days
+        end_date = date.today()
+        start_date = end_date - timedelta(days=7)
 
-    items = store.query(start_date=start_date, end_date=end_date, limit=100)
+        items = store.query(start_date=start_date, end_date=end_date, limit=100)
 
-    return jsonify({
-        "items": [item.to_dict() for item in items],
-        "count": len(items),
-        "date_range": {"start": start_date.isoformat(), "end": end_date.isoformat()},
-    })
+        return jsonify({
+            "items": [item.to_dict() for item in items],
+            "count": len(items),
+            "date_range": {"start": start_date.isoformat(), "end": end_date.isoformat()},
+        })
+    finally:
+        store.close()
 
 
 @app.route("/api/items")
@@ -359,67 +383,93 @@ def api_items():
     page = int(request.args.get("page", 1))
     per_page = min(int(request.args.get("per_page", ITEMS_PER_PAGE)), 100)
 
-    store = get_store()
-    stats = store.get_stats()
-    total_items = stats["total_count"]
-    total_pages = (total_items + per_page - 1) // per_page
+    # Create a new store instance for this request (DuckDB is not thread-safe)
+    config = get_config()
+    store = DuckDBStore(
+        data_dir=config.output_dir.parent / "data",
+        db_name="items.duckdb",
+    )
 
-    offset = (page - 1) * per_page
-    items = store.query(limit=per_page, offset=offset)
+    try:
+        stats = store.get_stats()
+        total_items = stats["total_count"]
+        total_pages = (total_items + per_page - 1) // per_page
 
-    return jsonify({
-        "items": [item.to_dict() for item in items],
-        "page": page,
-        "per_page": per_page,
-        "total_items": total_items,
-        "total_pages": total_pages,
-        "has_prev": page > 1,
-        "has_next": page < total_pages,
-    })
+        offset = (page - 1) * per_page
+        items = store.query(limit=per_page, offset=offset)
+
+        return jsonify({
+            "items": [item.to_dict() for item in items],
+            "page": page,
+            "per_page": per_page,
+            "total_items": total_items,
+            "total_pages": total_pages,
+            "has_prev": page > 1,
+            "has_next": page < total_pages,
+        })
+    finally:
+        store.close()
 
 
 @app.route("/api/stats")
 def api_stats():
     """API endpoint to get storage statistics."""
-    store = get_store()
-    stats = store.get_stats()
+    # Create a new store instance for this request (DuckDB is not thread-safe)
+    config = get_config()
+    store = DuckDBStore(
+        data_dir=config.output_dir.parent / "data",
+        db_name="items.duckdb",
+    )
 
-    return jsonify({
-        "total_count": stats["total_count"],
-        "db_size_mb": round(stats["db_size_mb"], 2),
-        "db_path": stats["db_path"],
-        "date_range": {
-            "min": stats["date_range"][0].isoformat() if stats["date_range"][0] else None,
-            "max": stats["date_range"][1].isoformat() if stats["date_range"][1] else None,
-        },
-        "by_content_type": stats["by_content_type"],
-    })
+    try:
+        stats = store.get_stats()
+
+        return jsonify({
+            "total_count": stats["total_count"],
+            "db_size_mb": round(stats["db_size_mb"], 2),
+            "db_path": stats["db_path"],
+            "date_range": {
+                "min": stats["date_range"][0].isoformat() if stats["date_range"][0] else None,
+                "max": stats["date_range"][1].isoformat() if stats["date_range"][1] else None,
+            },
+            "by_content_type": stats["by_content_type"],
+        })
+    finally:
+        store.close()
 
 
 @app.route("/api/item/<int:item_id>/summary")
 def api_item_summary(item_id: int):
     """API endpoint to get summary for a specific item by its display ID."""
-    store = get_store()
+    # Create a new store instance for this request (DuckDB is not thread-safe)
+    config = get_config()
+    store = DuckDBStore(
+        data_dir=config.output_dir.parent / "data",
+        db_name="items.duckdb",
+    )
 
-    # Get total count to validate ID range
-    stats = store.get_stats()
-    total_items = stats["total_count"]
+    try:
+        # Get total count to validate ID range
+        stats = store.get_stats()
+        total_items = stats["total_count"]
 
-    if item_id < 1 or item_id > total_items:
-        abort(404)
+        if item_id < 1 or item_id > total_items:
+            abort(404)
 
-    # Query the item at the specific offset (item_id is 1-based)
-    items = store.query(limit=1, offset=item_id - 1)
+        # Query the item at the specific offset (item_id is 1-based)
+        items = store.query(limit=1, offset=item_id - 1)
 
-    if not items:
-        abort(404)
+        if not items:
+            abort(404)
 
-    item = items[0]
-    return jsonify({
-        "id": item_id,
-        "summary": item.summary or "No summary available",
-        "title": item.title,
-    })
+        item = items[0]
+        return jsonify({
+            "id": item_id,
+            "summary": item.summary or "No summary available",
+            "title": item.title,
+        })
+    finally:
+        store.close()
 
 
 def run_server(

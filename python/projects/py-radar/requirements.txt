@@ -11,10 +11,15 @@ click>=8.1.0
 # Utilities
 python-dateutil>=2.8.2
 tqdm>=4.66.0
-
-# Personalization & HTML output
 pyyaml>=6.0
-jinja2>=3.1.0
+
+# Data validation and settings
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+
+# Resilience and retry
+tenacity>=8.0.0
+pybreaker>=1.0.0
 
 # Web server
 flask>=3.0.0

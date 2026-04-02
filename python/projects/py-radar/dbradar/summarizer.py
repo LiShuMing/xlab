@@ -4,6 +4,7 @@ This module implements structured output validation using Pydantic models
 as per Harness Engineering standards (see RULE.md).
 """
 
+import asyncio
 import json
 import re
 import time
@@ -21,7 +22,9 @@ from tenacity import (
     before_sleep_log,
 )
 
+from dbradar.circuit_breaker import with_circuit_breaker, CircuitBreakerOpenError
 from dbradar.config import get_config
+from dbradar.http_client import get_http_client, LLMHttpClient
 from dbradar.logging_config import get_logger, correlation_id
 from dbradar.models import (
     SummaryOutput,
@@ -29,6 +32,7 @@ from dbradar.models import (
     TranslatedUpdate,
     TranslatedReleaseNote,
 )
+from dbradar.prompt_loader import load_prompt, get_prompt_loader
 from dbradar.ranker import RankedItem
 
 logger = get_logger(__name__)
@@ -80,9 +84,13 @@ class Summarizer:
         self.model = model or config.model or DEFAULT_MODEL
         self.timeout = timeout or config.timeout
         self.language = language or config.language or "en"
+        # Use the async HTTP client with connection pooling
+        self.http_client = get_http_client()
+        # Keep sync client for backward compatibility during transition
         self.client = httpx.Client(timeout=self.timeout)
         self.logger = get_logger(__name__)
 
+    @with_circuit_breaker
     @retry(
         retry=retry_if_exception_type((httpx.HTTPError, httpx.TimeoutException)),
         stop=stop_after_attempt(3),
@@ -91,7 +99,7 @@ class Summarizer:
         reraise=True,
     )
     def _call_llm(self, prompt: str, max_tokens: int = 4000) -> dict:
-        """Call LLM API with retry logic.
+        """Call LLM API with retry logic (sync wrapper for async implementation).
 
         Args:
             prompt: The prompt to send to the LLM.
@@ -102,6 +110,28 @@ class Summarizer:
 
         Raises:
             httpx.HTTPError: If the API call fails after all retries.
+            CircuitBreakerOpenError: If circuit breaker is open.
+        """
+        # Run the async version in an event loop for backward compatibility
+        try:
+            loop = asyncio.get_event_loop()
+            if loop.is_running():
+                # If already in an async context, use the sync client as fallback
+                return self._call_llm_sync(prompt, max_tokens)
+            return loop.run_until_complete(self._call_llm_async(prompt, max_tokens))
+        except RuntimeError:
+            # No event loop running, create a new one
+            return asyncio.run(self._call_llm_async(prompt, max_tokens))
+
+    async def _call_llm_async(self, prompt: str, max_tokens: int = 4000) -> dict:
+        """Async version of LLM API call with connection pooling.
+
+        Args:
+            prompt: The prompt to send to the LLM.
+            max_tokens: Maximum tokens to generate.
+
+        Returns:
+            The raw API response data.
         """
         cid = correlation_id.get()
         log = self.logger.bind(correlation_id=cid)
@@ -123,6 +153,42 @@ class Summarizer:
             model=self.model,
             max_tokens=max_tokens,
             prompt_tokens=len(prompt) // 4,
+        )
+
+        # Use the async HTTP client with connection pooling
+        http_client = get_http_client()
+        response = await http_client.post(
+            f"{self.base_url}/chat/completions",
+            headers=headers,
+            json_payload=payload,
+        )
+
+        return response.json()
+
+    def _call_llm_sync(self, prompt: str, max_tokens: int = 4000) -> dict:
+        """Synchronous fallback using legacy httpx.Client.
+
+        Used when called from an already-running async context.
+        """
+        cid = correlation_id.get()
+        log = self.logger.bind(correlation_id=cid)
+
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.api_key}",
+        }
+
+        payload = {
+            "model": self.model,
+            "max_tokens": max_tokens,
+            "messages": [{"role": "user", "content": prompt}],
+        }
+
+        log.debug(
+            "llm_request_sync_fallback",
+            url=f"{self.base_url}/chat/completions",
+            model=self.model,
+            max_tokens=max_tokens,
         )
 
         response = self.client.post(
@@ -294,7 +360,7 @@ class Summarizer:
         return repaired
 
     def _build_prompt(self, items: List[RankedItem], top_k: int = 10, force_english: bool = False) -> str:
-        """Build the summarization prompt."""
+        """Build the summarization prompt using external template."""
         # Prepare item data
         item_data = []
         for item in items[:top_k]:
@@ -309,78 +375,20 @@ class Summarizer:
                 "rank_reasons": item.reasons,
             })
 
-        # Always use English for generation, translation will be done separately if needed
-        role_desc = "You are a senior database engineer analyzing industry updates for DB/OLAP systems"
-        task_desc = "Analyze the following collected items and produce a structured daily radar report"
-        output_format_title = "Output Format"
-        rules_title = "Rules"
-        lang_instruction = "**Important: Write all content in English.**"
-        current_date_title = "Current Date"
-        return_instruction = "Return ONLY the JSON object, no additional text or markdown formatting."
-        focus_areas = "performance, execution engine, storage, query optimizer, governance, cost, serverless, lakehouse"
-        executive_summary_desc = "Executive summary: 5 bullets max, high-level overview"
-        action_items_desc = "Action items should be concrete (e.g., \"check feature X\", \"benchmark idea Y\")"
-        themes_desc = "Themes should reflect broader industry trends"
-        not_invent_facts = "**DO NOT invent facts** - Only use information present in the snippets"
-        evidence_limit = "Evidence snippets should be <= 40 words each"
-        what_changed_desc = 'For "what_changed", extract 2-4 concrete changes from the content'
-        why_matters_desc = 'For "why_it_matters", explain relevance to OLAP/query engines (2 bullets)'
+        # Load external prompt with variable substitution
+        prompt = load_prompt(
+            "summarize",
+            variables={
+                "item_count": len(item_data),
+                "item_data": item_data,
+                "current_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+            },
+        )
 
-        prompt = f"""{role_desc}.
+        # Track prompt version for observability
+        prompt_version = get_prompt_loader().get_prompt_version("summarize")
+        self.logger.debug("prompt_loaded", prompt_name="summarize", version=prompt_version)
 
-## {task_desc}
-
-{lang_instruction}
-
-## Input Data
-You have {len(item_data)} items to analyze. Here is the data:
-
-{json.dumps(item_data, indent=2, ensure_ascii=False)}
-
-## {output_format_title}
-Generate a JSON object with the following structure (NO markdown code blocks, just raw JSON):
-
-{{
-    "executive_summary": ["bullet 1", "bullet 2", "bullet 3", "bullet 4", "bullet 5"],
-    "top_updates": [
-        {
-            "product": "ProductName",
-            "title": "Title of the update",
-            "what_changed": ["change 1", "change 2", "change 3"],
-            "why_it_matters": ["reason 1", "reason 2"],
-            "sources": ["url1"],
-            "evidence": ["snippet1", "snippet2"]
-        }
-    ],
-    "release_notes": [
-        {
-            "product": "ProductName",
-            "version": "version info if available",
-            "date": "release date",
-            "highlights": ["highlight 1", "highlight 2"]
-        }
-    ],
-    "themes": ["theme 1", "theme 2", "theme 3", "theme 4"],
-    "action_items": ["action 1", "action 2", "action 3", "action 4", "action 5"]
-}}
-
-## {rules_title}
-1. {not_invent_facts}
-2. Include URLs as sources for every claim
-3. {evidence_limit}
-4. {what_changed_desc}
-5. {why_matters_desc}
-6. Focus on: {focus_areas}
-7. {executive_summary_desc}
-8. {action_items_desc}
-9. {themes_desc}
-10. **IMPORTANT**: Include ALL meaningful updates in top_updates, not just the most important ones. Aim for comprehensive coverage. Include updates even if they seem minor but are from key products.
-
-## {current_date_title}
-{datetime.now(timezone.utc).strftime("%Y-%m-%d")}
-
-{return_instruction}
-"""
         return prompt
 
     def summarize(self, items: List[RankedItem], top_k: int = 10) -> SummaryResult:
@@ -510,6 +518,25 @@ Generate a JSON object with the following structure (NO markdown code blocks, ju
                 raw_response=str(e),
                 validation_errors=[f"HTTP error: {str(e)}"],
             )
+        except CircuitBreakerOpenError as e:
+            latency_ms = (time.time() - start_time) * 1000
+            log.error(
+                "circuit_breaker_open",
+                error=str(e),
+                latency_ms=round(latency_ms, 2),
+            )
+            return SummaryResult(
+                executive_summary=[
+                    "LLM API is temporarily unavailable due to repeated failures. "
+                    "The system has entered a protective mode and will retry automatically after a cooldown period."
+                ],
+                top_updates=[],
+                release_notes=[],
+                themes=[],
+                action_items=["Wait for LLM API recovery, then retry"],
+                raw_response=str(e),
+                validation_errors=["Circuit breaker is OPEN"],
+            )
         except Exception as e:
             latency_ms = (time.time() - start_time) * 1000
             log.error("summarize_failed", error=str(e), latency_ms=round(latency_ms, 2))
@@ -528,33 +555,18 @@ Generate a JSON object with the following structure (NO markdown code blocks, ju
         log = self.logger.bind(operation="translate_to_chinese")
         log.debug("translation_started", sections_to_translate=3)
 
-        prompt = f"""You are a professional translator specializing in technical content translation from English to Chinese (Simplified).
+        # Load external prompt
+        prompt = load_prompt(
+            "translate_main",
+            variables={
+                "input_json": {
+                    "executive_summary": result.executive_summary,
+                    "themes": result.themes,
+                    "action_items": result.action_items,
+                },
+            },
+        )
 
-## Task
-Translate the following JSON content from English to Chinese. Keep the JSON structure exactly the same, only translate the text values.
-
-## Input JSON
-{json.dumps({
-    "executive_summary": result.executive_summary,
-    "themes": result.themes,
-    "action_items": result.action_items,
-}, indent=2, ensure_ascii=False)}
-
-## Translation Rules
-1. Translate all text content to natural, fluent Simplified Chinese
-2. Keep technical terms accurate (e.g., "query optimizer" -> "查询优化器", "lakehouse" -> "湖仓一体")
-3. Maintain professional database/OLAP industry terminology
-4. Keep product names, version numbers, and URLs unchanged
-5. Do not add or remove any fields
-
-## Output Format
-Return ONLY the JSON object with the same structure, no markdown code blocks:
-{{
-    "executive_summary": ["翻译后的要点1", "翻译后的要点2", ...],
-    "themes": ["主题1", "主题2", ...],
-    "action_items": ["行动项1", "行动项2", ...]
-}}
-"""
         start_time = time.time()
         try:
             data = self._call_llm(prompt, max_tokens=4000)
@@ -613,25 +625,20 @@ Return ONLY the JSON object with the same structure, no markdown code blocks:
 
     def _translate_update_to_chinese(self, update: dict) -> dict:
         """Translate a single top_update item to Chinese."""
-        prompt = f"""Translate the following JSON content from English to Chinese (Simplified). Keep the JSON structure and keep product names, URLs unchanged.
+        # Load external prompt
+        prompt = load_prompt(
+            "translate_update",
+            variables={
+                "input_json": {
+                    "product": update.get("product", ""),
+                    "title": update.get("title", ""),
+                    "what_changed": update.get("what_changed", []),
+                    "why_it_matters": update.get("why_it_matters", []),
+                    "evidence": update.get("evidence", []),
+                },
+            },
+        )
 
-Input:
-{json.dumps({
-    "product": update.get("product", ""),
-    "title": update.get("title", ""),
-    "what_changed": update.get("what_changed", []),
-    "why_it_matters": update.get("why_it_matters", []),
-    "evidence": update.get("evidence", []),
-}, indent=2, ensure_ascii=False)}
-
-Return ONLY the JSON object, no markdown:
-{{
-    "product": "keep original",
-    "title": "translated title",
-    "what_changed": ["翻译1", "翻译2"],
-    "why_it_matters": ["翻译1", "翻译2"],
-    "evidence": ["keep original or translate if natural"]
-}}"""
         try:
             data = self._call_llm(prompt, max_tokens=2000)
 
@@ -660,21 +667,18 @@ Return ONLY the JSON object, no markdown:
 
     def _translate_release_note_to_chinese(self, note: dict) -> dict:
         """Translate a single release note item to Chinese."""
-        prompt = f"""Translate the following JSON content from English to Chinese (Simplified). Keep product names and version numbers unchanged.
+        # Load external prompt
+        prompt = load_prompt(
+            "translate_release",
+            variables={
+                "input_json": {
+                    "product": note.get("product", ""),
+                    "version": note.get("version", ""),
+                    "highlights": note.get("highlights", []),
+                },
+            },
+        )
 
-Input:
-{json.dumps({
-    "product": note.get("product", ""),
-    "version": note.get("version", ""),
-    "highlights": note.get("highlights", []),
-}, indent=2, ensure_ascii=False)}
-
-Return ONLY the JSON object:
-{{
-    "product": "keep original",
-    "version": "keep original",
-    "highlights": ["翻译1", "翻译2"]
-}}"""
         try:
             data = self._call_llm(prompt, max_tokens=1000)
 
@@ -706,4 +710,7 @@ def summarize_items(items: List[RankedItem], top_k: int = 10, language: str = "e
     try:
         return summarizer.summarize(items, top_k=top_k)
     finally:
+        # Close sync client
         summarizer.client.close()
+        # Note: Async HTTP client is a singleton and should be closed
+        # at application shutdown, not per-request

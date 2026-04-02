@@ -2,6 +2,91 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2026-03-31] - P0: Harness Engineering Standards Implementation
+
+### Added
+
+#### Circuit Breaker Pattern (Rule 3.3)
+- **New module `dbradar/circuit_breaker.py`**:
+  - `get_llm_circuit_breaker()` - Singleton circuit breaker for LLM API calls
+  - `with_circuit_breaker` decorator for automatic protection
+  - `CircuitBreakerListener` for logging state changes
+  - `get_circuit_breaker_status()` for health checks
+  - Configurable via `CIRCUIT_BREAKER_FAILURE_THRESHOLD` and `CIRCUIT_BREAKER_RECOVERY_TIMEOUT`
+- **Integration in `dbradar/summarizer.py`**:
+  - Circuit breaker protection on `_call_llm()` method
+  - Graceful handling when circuit is open (returns informative error message)
+
+#### External Prompt Management (Rule 4.1)
+- **New directory `dbradar/prompts/`**:
+  - `summarize_v1.txt` - Main summarization prompt template
+  - `translate_main_v1.txt` - Main translation prompt
+  - `translate_update_v1.txt` - Individual update translation prompt
+  - `translate_release_v1.txt` - Release note translation prompt
+  - `registry.yaml` - Prompt version tracking and metadata
+- **New module `dbradar/prompt_loader.py`**:
+  - `PromptLoader` class for loading prompts from external files
+  - Variable substitution using `{{variable}}` syntax
+  - Version tracking for A/B testing
+  - Hot-reloading support via `reload_registry()`
+  - `load_prompt()` convenience function
+- **Updated `dbradar/summarizer.py`**:
+  - All prompts now loaded from external files
+  - Prompt version logged for observability
+
+#### Connection Pooling (Rule 6.1)
+- **New module `dbradar/http_client.py`**:
+  - `LLMHttpClient` singleton with `httpx.AsyncClient`
+  - Connection limits via `httpx.Limits`
+  - Semaphore-based concurrency control
+  - HTTP/2 support enabled
+  - Configurable via `HTTP_MAX_CONNECTIONS`, `HTTP_MAX_KEEPALIVE`, `HTTP_TIMEOUT`
+- **Updated `dbradar/summarizer.py`**:
+  - New `_call_llm_async()` method using async HTTP client
+  - Sync `_call_llm()` wrapper for backward compatibility
+  - Falls back to sync client when called from running event loop
+
+#### Pydantic Settings (Rule 7.1)
+- **Updated `dbradar/config.py`**:
+  - New `Settings` class using `pydantic_settings.BaseSettings`
+  - Type-safe configuration with validation
+  - `SecretStr` for API keys (auto-masking in logs)
+  - Environment variable and `~/.env` file support
+  - Configurable circuit breaker, connection pooling, and LLM settings
+  - Backward-compatible `Config` class wrapping `Settings`
+  - `get_settings()` cached singleton accessor
+
+### Changed
+
+#### Dependencies
+- Added `pybreaker>=1.0.0` for circuit breaker pattern
+- Added `pydantic>=2.0.0` and `pydantic-settings>=2.0.0` for settings management
+- Updated `tenacity>=8.0.0` for retry logic
+
+#### Error Handling
+- Added `CircuitBreakerOpenError` handling in summarizer
+- Returns graceful error message when LLM API is unavailable
+
+### Technical Details
+
+```python
+# Circuit breaker usage
+from dbradar.circuit_breaker import get_circuit_breaker_status
+status = get_circuit_breaker_status()
+# {'name': 'llm_api_circuit_breaker', 'state': 'closed', 'failure_count': 0, ...}
+
+# Prompt loading
+from dbradar.prompt_loader import load_prompt
+prompt = load_prompt("summarize", variables={"item_count": 5, ...})
+
+# Pydantic settings
+from dbradar.config import get_settings
+settings = get_settings()
+api_key = settings.get_api_key()  # Returns plain string, never log this
+```
+
+---
+
 ## [2026-03-29] - P0: Observability & Telemetry (structlog)
 
 ### Added

@@ -1,0 +1,11 @@
+Translate the following JSON content from English to Chinese (Simplified). Keep product names and version numbers unchanged.
+
+Input:
+{{input_json}}
+
+Return ONLY the JSON object:
+{
+    "product": "keep original",
+    "version": "keep original",
+    "highlights": ["翻译1", "翻译2"]
+}
