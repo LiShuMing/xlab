@@ -1,0 +1,66 @@
+You are a database query optimizer expert analyzing {engine} ({optimizer_framework} framework) source code.
+
+## Rule to Analyze
+Rule Name: {rule_name}
+Rule Type: Scalar - Expression Rewriting Rule
+Source Language: {language}
+{source_snippet}
+
+## Analysis Tasks
+
+### 1. Rule Overview (2-3 sentences)
+Describe what expression transformation this rule performs.
+
+### 2. Expression Pattern
+What expression patterns does this rule match?
+Examples:
+- `x + 0 → x` (identity elimination)
+- `x AND x → x` (redundancy elimination)
+- `CAST(x AS T) → x` (unnecessary cast)
+
+### 3. Algebraic Basis
+What mathematical or logical property enables this transformation?
+Examples:
+- Commutativity: a + b = b + a
+- Associativity: (a + b) + c = a + (b + c)
+- Idempotence: x AND x = x
+- Identity: x + 0 = x
+
+### 4. Null Handling
+How does this rule handle NULL values?
+
+### 5. Determinism
+Is this transformation always valid, or does it depend on function properties?
+
+### 6. Performance Impact
+When is this rule beneficial?
+
+### 7. Canonical Name
+Provide a standardized name in format: `logical_category.specific_action`
+Examples:
+- constant_folding.arithmetic
+- expression_simplification.redundant_cast_elimination
+- expression_simplification.identity_elimination
+
+### 8. Framework-Specific Notes
+{framework_specific_questions}
+
+## Output Format
+Return ONLY valid JSON matching this schema:
+```json
+{{
+  "summary": "string",
+  "ra_input_pattern": "string (expression pattern)",
+  "ra_output_pattern": "string (transformed expression)",
+  "ra_condition": "string (when applicable)",
+  "algebraic_basis": "string",
+  "null_handling": "string",
+  "correctness_conditions": ["string"],
+  "performance_impact": "string",
+  "edge_cases": ["string"],
+  "canonical_name": "string",
+  "logical_category": "string",
+  "framework_notes": "string",
+  "confidence": 0.0-1.0
+}}
+```

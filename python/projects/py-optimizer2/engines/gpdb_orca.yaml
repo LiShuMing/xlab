@@ -1,0 +1,45 @@
+engine_id: gpdb_orca
+display_name: "GPDB (Orca)"
+version: "7.x"
+language: cpp
+optimizer_framework: cascades
+optimizer_root: "./src/backend/gporca/libgpopt"
+
+patterns:
+  rbo_rules:
+    glob: "**/xforms/CXform*.cpp"
+    class_pattern: "class CXform\\w+\\s*:\\s*public CXformExploration"
+    key_methods: ["Transform", "Matches", "Arity"]
+  cbo_rules:
+    glob: "**/xforms/CXform*.cpp"
+    class_pattern: "class CXform\\w+\\s*:\\s*public CXformImplementation"
+    key_methods: ["Transform", "Matches"]
+  scalar_rules:
+    glob: "**/xforms/CXformScalar*.cpp"
+    class_pattern: "class CXformScalar\\w+"
+    key_methods: ["Transform"]
+  post_opt:
+    glob: "**/engine/COptimizer.cpp"
+    func_pattern: "COptimizer::\\w+"
+    key_methods: []
+  properties:
+    glob: "**/base/CDistributionSpec*.{h,cpp}"
+    class_pattern: "class CDistributionSpec\\w+"
+    key_methods: ["FSatisfies", "PdsCopyWithRemappedColumns"]
+  statistics:
+    glob: "**/base/CStatistics.cpp"
+    entry_points: ["CStatistics", "CHistogram", "CMDAccessorUtils"]
+
+lifecycle_entry:
+  optimizer_class: "COptimizer"
+  entry_method: "PdxlnOptimize"
+  plan_root_class: "CGroupExpression"
+
+rule_registry:
+  file: "libgpopt/include/gpopt/xforms/CXformFactory.h"
+  list_func: "Pxff"
+
+scanner_hints:
+  skip_generated_files: false
+  prefer_dsl_over_generated: false
+  max_tokens_per_snippet: 2000

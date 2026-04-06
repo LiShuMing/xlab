@@ -67,3 +67,7 @@ rust/rdb/data
 .env
 shell/bin/bash-history-export-*.txt
 python/projects/py-radar/data/sync/
+*.duckdb
+python/projects/py-radar/data/items.duckdb
+.codex
+.github

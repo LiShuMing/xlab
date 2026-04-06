@@ -46,6 +46,10 @@ _background_task: Optional[threading.Thread] = None
 _background_task_running = False
 _summary_executor: Optional[ThreadPoolExecutor] = None
 
+# Track items being generated on-demand (item_id -> timestamp)
+_pending_generations: Dict[str, datetime] = {}
+_pending_generations_lock = threading.Lock()
+
 
 def get_store() -> DuckDBStore:
     """Get or initialize the DuckDB store."""
@@ -463,10 +467,25 @@ def api_item_summary(item_id: int):
             abort(404)
 
         item = items[0]
+
+        # Check if summary is missing and trigger async generation
+        if not item.summary or item.summary.strip() == "":
+            generation_status = _trigger_async_summary_generation(item, item_id)
+            return jsonify({
+                "id": item_id,
+                "summary": None,
+                "title": item.title,
+                "status": generation_status,
+                "message": "Summary is being generated, please try again in a few moments"
+                if generation_status == "generating"
+                else "Failed to start summary generation",
+            }), 202 if generation_status == "generating" else 503
+
         return jsonify({
             "id": item_id,
-            "summary": item.summary or "No summary available",
+            "summary": item.summary,
             "title": item.title,
+            "status": "ready",
         })
     finally:
         store.close()
@@ -584,6 +603,71 @@ def _background_summary_worker():
         except Exception as e:
             logger.error(f"Error in background summary worker: {e}")
             time.sleep(30)  # Wait longer on error
+
+
+def _trigger_async_summary_generation(item: StorageItem, display_id: int) -> str:
+    """Trigger async summary generation for a single item on demand.
+
+    Args:
+        item: The StorageItem to generate summary for
+        display_id: The display ID (1-based) for tracking
+
+    Returns:
+        Status string: "generating", "pending", or "failed"
+    """
+    global _summary_executor, _pending_generations
+
+    if not _summary_executor:
+        logger.warning("Summary executor not initialized, cannot generate summary on demand")
+        return "failed"
+
+    with _pending_generations_lock:
+        # Check if already being generated
+        if item.id in _pending_generations:
+            # Check if it's been pending for too long (>5 minutes)
+            pending_time = datetime.now() - _pending_generations[item.id]
+            if pending_time > timedelta(minutes=5):
+                # Remove stale entry and retry
+                logger.warning(f"Stale generation entry for {item.id}, retrying")
+                del _pending_generations[item.id]
+            else:
+                logger.debug(f"Summary generation already in progress for {item.id}")
+                return "pending"
+
+        # Mark as pending
+        _pending_generations[item.id] = datetime.now()
+
+    # Submit to thread pool
+    try:
+        _summary_executor.submit(_generate_summary_on_demand, item, display_id)
+        logger.info(f"Submitted on-demand summary generation for item {item.id} (display_id: {display_id})")
+        return "generating"
+    except Exception as e:
+        logger.error(f"Failed to submit summary generation for {item.id}: {e}")
+        with _pending_generations_lock:
+            if item.id in _pending_generations:
+                del _pending_generations[item.id]
+        return "failed"
+
+
+def _generate_summary_on_demand(item: StorageItem, display_id: int):
+    """Generate summary for on-demand request and clean up pending status.
+
+    Args:
+        item: The StorageItem to generate summary for
+        display_id: The display ID for logging
+    """
+    global _pending_generations
+
+    try:
+        logger.info(f"On-demand summary generation started for {item.id} (display_id: {display_id})")
+        _generate_summary_worker(item)
+        logger.info(f"On-demand summary generation completed for {item.id}")
+    finally:
+        # Clean up pending status
+        with _pending_generations_lock:
+            if item.id in _pending_generations:
+                del _pending_generations[item.id]
 
 
 def _get_items_without_summary() -> List[StorageItem]:

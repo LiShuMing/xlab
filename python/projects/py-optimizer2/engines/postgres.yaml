@@ -1,0 +1,54 @@
+engine_id: postgres
+display_name: "PostgreSQL"
+version: "16.x"
+language: c
+optimizer_framework: path_based
+optimizer_root: "./src/backend/optimizer"
+
+patterns:
+  rbo_rules:
+    glob: "**/prep/*.c"
+    func_pattern: "^(void|List\\s*\\*|Query\\s*\\*)\\s+\\w+(PlannerInfo|Query)\\s*\\*"
+    key_files:
+      - "prep/prepjointree.c"
+      - "prep/prepqual.c"
+      - "prep/tlist.c"
+      - "plan/subselect.c"
+  cbo_rules:
+    glob: "**/path/*.c"
+    func_pattern: "^\\w+\\s+\\w+\\(PlannerInfo"
+    key_files:
+      - "path/joinpath.c"
+      - "path/indxpath.c"
+      - "util/costsize.c"
+      - "path/allpaths.c"
+  scalar_rules:
+    glob: "**/optimizer/clauses.c"
+    func_pattern: "Node\\s*\\*\\s+eval_const_expressions"
+    key_files:
+      - "optimizer/clauses.c"
+  post_opt:
+    glob: "**/plan/createplan.c"
+    func_pattern: "Plan\\s*\\*\\s+create_\\w+_plan"
+    key_files:
+      - "plan/createplan.c"
+  properties:
+    glob: "**/optimizer/pathkeys.c"
+    key_files:
+      - "optimizer/pathkeys.c"
+  statistics:
+    glob: "**/statistics/**/*.c"
+    entry_points: ["examine_attribute_values", "statext_ndistinct", "get_attavgwidth"]
+    key_files:
+      - "utils/selfuncs.c"
+      - "statistics/statistics.c"
+
+lifecycle_entry:
+  optimizer_class: "planner"
+  entry_method: "subquery_planner"
+  plan_root_class: "PlannerInfo"
+
+scanner_hints:
+  no_class_concept: true
+  key_function_signature: "PlannerInfo *"
+  max_tokens_per_snippet: 2000

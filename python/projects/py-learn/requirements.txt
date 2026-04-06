@@ -1,0 +1,19 @@
+# 每日精进 Agent 依赖
+
+# 数据库
+sqlite3
+
+# 配置解析
+pyyaml>=6.0
+
+# 定时任务
+apscheduler>=3.10.0
+
+# Telegram Bot
+python-telegram-bot>=20.0
+
+# LLM API
+openai>=1.0.0
+
+# 工具
+python-dateutil>=2.8.0

@@ -1,0 +1,83 @@
+You are a database query optimizer expert analyzing {engine} ({optimizer_framework} framework) source code.
+
+## Rule to Analyze
+Rule Name: {rule_name}
+Rule Type: RBO - Logical Equivalence Transformation
+Source Language: {language}
+{dsl_section}
+{source_snippet}
+
+## Analysis Tasks
+
+### 1. Rule Overview (2-3 sentences)
+Describe what this rule does in simple terms.
+
+### 2. Relational Algebra Form
+Using the symbols from Appendix A, provide:
+- Input pattern
+- Output pattern
+- Trigger condition
+
+Format as:
+```
+Input: σ_p(R ⋈_q S)
+Output: σ_p(R) ⋈_q S
+Condition: p references only columns from R, join is INNER JOIN
+```
+
+### 3. Correctness Conditions
+What must be true for this transformation to be semantically correct?
+
+### 4. Performance Impact
+When is this rule beneficial? Are there cases where it might hurt performance?
+
+### 5. Edge Cases and Limitations
+What queries or schemas might not benefit from this rule?
+
+### 6. Canonical Name
+Provide a standardized name in format: `logical_category.specific_action`
+Examples:
+- predicate_pushdown.filter_through_join
+- join_reorder.bushy_tree_enumeration
+- subquery_unnesting.in_to_semijoin
+
+### 7. Framework-Specific Notes
+{framework_specific_questions}
+
+## Output Format
+Return ONLY valid JSON matching this schema:
+```json
+{{
+  "summary": "string",
+  "ra_input_pattern": "string",
+  "ra_output_pattern": "string",
+  "ra_condition": "string",
+  "correctness_conditions": ["string"],
+  "performance_impact": "string",
+  "edge_cases": ["string"],
+  "canonical_name": "string",
+  "logical_category": "string",
+  "framework_notes": "string",
+  "confidence": 0.0-1.0
+}}
+```
+
+Appendix A - Relational Algebra Symbols:
+- σ (select/filter)
+- π (project)
+- ⋈ (join)
+- ⟕ (left outer join)
+- ⟖ (right outer join)
+- ⟗ (full outer join)
+- γ (aggregate/group by)
+- τ (sort/order by)
+- δ (distinct)
+- λ (limit/top n)
+- ω (window functions)
+- ρ (rename)
+- ∪ (union)
+- ∩ (intersect)
+- − (difference/except)
+- × (cartesian product)
+- ▷ (anti-semi join)
+- ⋉ (semi join)

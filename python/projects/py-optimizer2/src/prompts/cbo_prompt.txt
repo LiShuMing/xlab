@@ -1,0 +1,82 @@
+You are a database query optimizer expert analyzing {engine} ({optimizer_framework} framework) source code.
+
+## Rule to Analyze
+Rule Name: {rule_name}
+Rule Type: CBO - Physical Implementation Rule
+Source Language: {language}
+{dsl_section}
+{source_snippet}
+
+## Analysis Tasks
+
+### 1. Rule Overview (2-3 sentences)
+Describe what physical implementation this rule provides.
+
+### 2. Relational Algebra Form
+Using the symbols from Appendix A, provide:
+- Input: Logical operator pattern
+- Output: Physical operator pattern
+- Required properties
+
+### 3. Cost Model
+- What statistics are referenced (row count, NDV, histograms, etc.)?
+- What is the cost formula (CPU/Memory/Network)?
+- What is the fallback when statistics are missing?
+
+### 4. Physical Properties
+- What properties does this operator output?
+- What required properties does it impose on children?
+- Does it trigger Enforcer insertion (Sort/Exchange)?
+
+### 5. Correctness Conditions
+What must be true for this physical implementation to be valid?
+
+### 6. Performance Impact
+When is this implementation preferred? Trade-offs vs alternatives?
+
+### 7. Canonical Name
+Provide a standardized name in format: `logical_category.specific_action`
+Examples:
+- physical_join_impl.hash_join
+- physical_join_impl.merge_join
+- physical_agg_impl.hash_aggregate
+- distribution_optimization.broadcast_vs_shuffle
+
+### 8. Framework-Specific Notes
+{framework_specific_questions}
+
+## Output Format
+Return ONLY valid JSON matching this schema:
+```json
+{{
+  "summary": "string",
+  "ra_input_pattern": "string",
+  "ra_output_pattern": "string",
+  "ra_condition": "string",
+  "cost_formula": "string",
+  "stats_dependencies": ["string"],
+  "enforcer_triggered": true/false,
+  "correctness_conditions": ["string"],
+  "performance_impact": "string",
+  "edge_cases": ["string"],
+  "canonical_name": "string",
+  "logical_category": "string",
+  "framework_notes": "string",
+  "confidence": 0.0-1.0
+}}
+```
+
+Appendix A - Relational Algebra Symbols:
+- σ (select/filter)
+- π (project)
+- ⋈ (join)
+- ⟕ (left outer join)
+- ⟖ (right outer join)
+- ⟗ (full outer join)
+- γ (aggregate/group by)
+- τ (sort/order by)
+- δ (distinct)
+- λ (limit/top n)
+- ω (window functions)
+- ρ (rename)
+- ε (exchange/shuffle)
