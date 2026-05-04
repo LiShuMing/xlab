@@ -11,6 +11,7 @@ import logging
 import os
 import threading
 import time
+import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, datetime, timedelta
 from pathlib import Path
@@ -19,7 +20,17 @@ from typing import Any, Dict, List, Optional
 import httpx
 from flask import Flask, abort, jsonify, render_template, request
 
+from dbradar.admin_auth import (
+    admin_username,
+    is_admin_authenticated,
+    login_admin,
+    logout_admin,
+    require_admin,
+    verify_admin_password,
+)
 from dbradar.config import get_config
+from dbradar.ingestion import IngestionRequest, ingest_link
+from dbradar.job_store import IngestionJobStore
 from dbradar.storage import DuckDBStore, StorageItem
 
 # Configure logging
@@ -34,6 +45,7 @@ _TEMPLATE_DIR = Path(__file__).parent / "web" / "templates"
 _STATIC_DIR = Path(__file__).parent / "web" / "static"
 
 app = Flask(__name__, template_folder=str(_TEMPLATE_DIR), static_folder=str(_STATIC_DIR))
+app.secret_key = os.environ.get("RADAR_SESSION_SECRET", "local-dev-radar-session-secret")
 
 # 每页显示的条目数
 ITEMS_PER_PAGE = 30
@@ -45,6 +57,7 @@ _store: Optional[DuckDBStore] = None
 _background_task: Optional[threading.Thread] = None
 _background_task_running = False
 _summary_executor: Optional[ThreadPoolExecutor] = None
+_ingestion_executor = ThreadPoolExecutor(max_workers=2, thread_name_prefix="link-ingest-")
 
 # Track items being generated on-demand (item_id -> timestamp)
 _pending_generations: Dict[str, datetime] = {}
@@ -81,6 +94,34 @@ def storage_item_to_dict(item: StorageItem, idx: int) -> Dict[str, Any]:
         "_date": item.sync_batch.isoformat() if item.sync_batch else (item.published_date.isoformat() if item.published_date else ""),
         "_date_display": format_sync_batch_display(item.sync_batch),
     }
+
+
+def storage_item_to_api_dict(item: StorageItem) -> Dict[str, Any]:
+    """Convert StorageItem to the Liminalis client API shape."""
+    return {
+        "id": item.id,
+        "title": item.title,
+        "originalTitle": item.original_title or item.title,
+        "url": item.url,
+        "site": extract_domain(item.url),
+        "product": item.product,
+        "summary": item.summary,
+        "tags": item.tags,
+        "sources": item.sources,
+        "publishedDate": item.published_date.isoformat() if item.published_date else None,
+        "contentType": item.content_type,
+        "fetchedAt": item.fetched_at.isoformat() if item.fetched_at else None,
+        "syncBatch": item.sync_batch.isoformat() if item.sync_batch else None,
+    }
+
+
+def get_data_dir() -> Path:
+    config = get_config()
+    return config.output_dir.parent / "data"
+
+
+def get_job_store() -> IngestionJobStore:
+    return IngestionJobStore(data_dir=get_data_dir(), db_name="items.duckdb")
 
 
 def extract_domain(url: str) -> str:
@@ -413,6 +454,176 @@ def api_items():
         })
     finally:
         store.close()
+
+
+@app.route("/api/radar/items")
+def api_radar_items():
+    """Client API for the Liminalis database dynamics feed."""
+    page = max(int(request.args.get("page", 1)), 1)
+    per_page = min(max(int(request.args.get("per_page", ITEMS_PER_PAGE)), 1), 100)
+    content_type = request.args.get("type", "all")
+    product = request.args.get("product", "all")
+    query = request.args.get("q", "").strip().lower()
+
+    store = DuckDBStore(data_dir=get_data_dir(), db_name="items.duckdb")
+    try:
+        items = store.query_by_sync_batch(limit=5000, offset=0)
+
+        def matches(item: StorageItem) -> bool:
+            searchable = " ".join(
+                [
+                    item.title,
+                    item.original_title,
+                    item.product,
+                    item.content_type,
+                    item.summary,
+                    " ".join(item.tags or []),
+                ]
+            ).lower()
+            return (
+                (content_type in {"", "all"} or item.content_type == content_type)
+                and (product in {"", "all"} or item.product == product)
+                and (not query or query in searchable)
+            )
+
+        filtered = [item for item in items if matches(item)]
+        total_items = len(filtered)
+        total_pages = (total_items + per_page - 1) // per_page if total_items else 0
+        offset = (page - 1) * per_page
+        page_items = filtered[offset : offset + per_page]
+
+        product_counts: Dict[str, int] = {}
+        type_counts: Dict[str, int] = {}
+        for item in items:
+            if item.product:
+                product_counts[item.product] = product_counts.get(item.product, 0) + 1
+            if item.content_type:
+                type_counts[item.content_type] = type_counts.get(item.content_type, 0) + 1
+
+        return jsonify(
+            {
+                "items": [storage_item_to_api_dict(item) for item in page_items],
+                "page": page,
+                "per_page": per_page,
+                "total_items": total_items,
+                "total_pages": total_pages,
+                "has_prev": page > 1,
+                "has_next": page < total_pages,
+                "products": [
+                    {"name": name, "count": count}
+                    for name, count in sorted(product_counts.items(), key=lambda pair: (-pair[1], pair[0]))[:24]
+                ],
+                "contentTypes": [
+                    {"name": name, "count": count}
+                    for name, count in sorted(type_counts.items(), key=lambda pair: (-pair[1], pair[0]))
+                ],
+            }
+        )
+    finally:
+        store.close()
+
+
+@app.route("/api/radar/stats")
+def api_radar_stats():
+    store = DuckDBStore(data_dir=get_data_dir(), db_name="items.duckdb")
+    try:
+        stats = store.get_stats()
+        sync_stats = store.get_sync_batch_stats()
+        latest_sync = next(iter(sync_stats.keys()), None)
+        return jsonify(
+            {
+                "totalItems": stats["total_count"],
+                "latestSyncBatch": latest_sync,
+                "byContentType": stats["by_content_type"],
+                "dbSizeMb": round(stats["db_size_mb"], 2),
+            }
+        )
+    finally:
+        store.close()
+
+
+@app.route("/api/admin/login", methods=["POST"])
+def api_admin_login():
+    payload = request.get_json(silent=True) or {}
+    username = payload.get("username", "")
+    password = payload.get("password", "")
+    if username != admin_username() or not verify_admin_password(password):
+        return jsonify({"error": "invalid credentials"}), 401
+
+    login_admin()
+    return jsonify({"ok": True, "user": admin_username()})
+
+
+@app.route("/api/admin/logout", methods=["POST"])
+def api_admin_logout():
+    logout_admin()
+    return jsonify({"ok": True})
+
+
+@app.route("/api/admin/me")
+def api_admin_me():
+    return jsonify({"authenticated": is_admin_authenticated(), "user": admin_username() if is_admin_authenticated() else None})
+
+
+@app.route("/api/admin/radar/links", methods=["POST"])
+@require_admin
+def api_admin_radar_links():
+    payload = request.get_json(silent=True) or {}
+    url = (payload.get("url") or "").strip()
+    if not url:
+        return jsonify({"error": "url is required"}), 400
+
+    job_id = f"job_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:8]}"
+    request_model = IngestionRequest(
+        url=url,
+        product=(payload.get("product") or "").strip(),
+        source=(payload.get("source") or "").strip(),
+        tags=payload.get("tags") or [],
+        note=(payload.get("note") or "").strip(),
+    )
+
+    job_store = get_job_store()
+    try:
+        job = job_store.create_job(
+            job_id,
+            url,
+            admin_username(),
+            {
+                "product": request_model.product,
+                "source": request_model.source,
+                "tags": request_model.tags,
+                "note": request_model.note,
+            },
+        )
+    finally:
+        job_store.close()
+
+    _ingestion_executor.submit(ingest_link, job_id, request_model, get_data_dir(), admin_username())
+    return jsonify({"jobId": job_id, "status": job["status"], "job": job}), 202
+
+
+@app.route("/api/admin/radar/jobs")
+@require_admin
+def api_admin_radar_jobs():
+    limit = min(max(int(request.args.get("limit", 30)), 1), 100)
+    job_store = get_job_store()
+    try:
+        return jsonify({"jobs": job_store.list_jobs(limit=limit)})
+    finally:
+        job_store.close()
+
+
+@app.route("/api/admin/radar/jobs/<job_id>")
+@require_admin
+def api_admin_radar_job(job_id: str):
+    job_store = get_job_store()
+    try:
+        job = job_store.get_job(job_id)
+        if not job:
+            abort(404)
+        return jsonify({"job": job})
+    finally:
+        job_store.close()
 
 
 @app.route("/api/stats")

@@ -4,12 +4,38 @@ This module implements type-safe configuration management as per
 Harness Engineering Rule 7.1.
 """
 
+import os
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal, Optional
 
 from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+try:
+    from dotenv import dotenv_values
+except ImportError:  # pragma: no cover - optional dependency in older envs
+    dotenv_values = None
+
+
+@lru_cache()
+def get_dotenv_values() -> dict:
+    """Read ~/.env once for backward-compatible variable aliases."""
+    if dotenv_values is None:
+        return {}
+    env_path = Path.home() / ".env"
+    if not env_path.exists():
+        return {}
+    return {key: value for key, value in dotenv_values(env_path).items() if value is not None}
+
+
+def env_value(*keys: str, default: Optional[str] = None) -> Optional[str]:
+    dotenv = get_dotenv_values()
+    for key in keys:
+        value = os.environ.get(key) or dotenv.get(key)
+        if value:
+            return value
+    return default
 
 
 class Settings(BaseSettings):
@@ -200,10 +226,10 @@ class Config:
         """Initialize Config with backward-compatible parameters."""
         settings = get_settings()
 
-        self.api_key = api_key or settings.get_api_key()
-        self.base_url = base_url or settings.llm_base_url
-        self.model = model or settings.llm_model
-        self.timeout = settings.llm_timeout
+        self.api_key = api_key or settings.get_api_key() or env_value("DB_RADAR_API_KEY", "OPENAI_API_KEY", default="")
+        self.base_url = base_url or settings.llm_base_url or env_value("DB_RADAR_BASE_URL")
+        self.model = model or env_value("DB_RADAR_MODEL") or settings.llm_model
+        self.timeout = int(env_value("DB_RADAR_TIMEOUT", default=str(settings.llm_timeout)))
         self.cache_dir = cache_dir or settings.cache_dir
         self.output_dir = output_dir or settings.output_dir
         self.website_file = website_file or Path("websites.txt")

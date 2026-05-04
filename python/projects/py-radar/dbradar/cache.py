@@ -26,7 +26,8 @@ class Cache:
     """Simple file-based cache for HTTP responses."""
 
     def __init__(self, cache_dir: Path):
-        self.cache_dir = cache_dir
+        self.cache_dir = Path(cache_dir)
+        self.cache_dir.mkdir(parents=True, exist_ok=True)
 
     def _get_url_hash(self, url: str) -> str:
         """Generate a short hash for the URL to use as filename."""
@@ -102,6 +103,7 @@ class Cache:
         )
 
         entry_path = self._get_entry_path(url)
+        entry_path.parent.mkdir(parents=True, exist_ok=True)
         entry_path.write_text(
             json.dumps(
                 {

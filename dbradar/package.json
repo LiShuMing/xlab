@@ -3,7 +3,8 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
-    "preview": "vite preview --host 0.0.0.0"
+    "preview": "vite preview --host 0.0.0.0",
+    "sync:radar": "python3 scripts/sync_py_radar_feed.py"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
