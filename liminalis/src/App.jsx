@@ -269,6 +269,7 @@ function buildDocumentCollection(modules, collection, fallbackCategory) {
   return Object.entries(modules)
     .map(([path, markdown]) => {
       const relativePath = relativeDocsPath(path, collection);
+      const xlabPath = `docs/${collection}/${relativePath}`;
       const fallbackTitle = titleizeSlug(relativePath.replace(/\.md$/, '').replace(/\//g, '-'));
       const readerMarkdown = normalizeMarkdownForReader(markdown, fallbackTitle);
       return {
@@ -277,6 +278,7 @@ function buildDocumentCollection(modules, collection, fallbackCategory) {
         excerpt: extractExcerpt(readerMarkdown),
         markdown: readerMarkdown,
         relativePath,
+        xlabPath,
         category: documentCategory(relativePath, fallbackCategory),
         filename: basename(path),
         minutes: readingMinutes(readerMarkdown),
@@ -409,9 +411,30 @@ function Logo({ small = false }) {
 function Header() {
   const [open, setOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState(null);
+  const headerRef = useRef(null);
+
+  useEffect(() => {
+    const closeMenu = (event) => {
+      if (!headerRef.current?.contains(event.target)) {
+        setActiveMenu(null);
+      }
+    };
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') {
+        setActiveMenu(null);
+      }
+    };
+
+    document.addEventListener('pointerdown', closeMenu);
+    document.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.removeEventListener('pointerdown', closeMenu);
+      document.removeEventListener('keydown', closeOnEscape);
+    };
+  }, []);
 
   return (
-    <header className="site-header">
+    <header className="site-header" ref={headerRef}>
       <nav className="nav-shell">
         <Logo />
         <div className="nav-links">
@@ -419,26 +442,22 @@ function Header() {
             if (item.children) {
               const expanded = activeMenu === item.label;
               return (
-                <div
-                  key={item.label}
-                  className="nav-menu"
-                  onMouseEnter={() => setActiveMenu(item.label)}
-                  onMouseLeave={() => setActiveMenu(null)}
-                >
-                  <a
-                    href={item.href}
+                <div key={item.label} className="nav-menu">
+                  <button
+                    type="button"
                     className="nav-link"
                     aria-expanded={expanded}
-                    onFocus={() => setActiveMenu(item.label)}
+                    aria-haspopup="menu"
+                    onClick={() => setActiveMenu((value) => (value === item.label ? null : item.label))}
                   >
                     <span className={`nav-dot ${item.tone}`} />
                     {item.label}
                     <ChevronRight size={13} className={expanded ? 'nav-arrow open' : 'nav-arrow'} />
-                  </a>
+                  </button>
                   {expanded && (
-                    <div className="nav-dropdown">
+                    <div className="nav-dropdown" role="menu">
                       {item.children.map((child) => (
-                        <a key={child.label} href={child.href} onClick={() => setActiveMenu(null)}>
+                        <a key={child.label} href={child.href} role="menuitem" onClick={() => setActiveMenu(null)}>
                           <strong>{child.label}</strong>
                           <span>{child.description}</span>
                         </a>
@@ -468,18 +487,52 @@ function Header() {
       </nav>
       {open && (
         <div className="mobile-panel">
-          {navItems.map((item) => (
-            <div key={item.label} className="mobile-nav-group">
-              <a href={item.href} onClick={() => setOpen(false)}>
-                {item.label}
-              </a>
-              {item.children?.map((child) => (
-                <a key={child.label} href={child.href} className="mobile-sub-link" onClick={() => setOpen(false)}>
-                  {child.label}
+          {navItems.map((item) => {
+            const expanded = activeMenu === item.label;
+            if (item.children) {
+              return (
+                <div key={item.label} className="mobile-nav-group">
+                  <button
+                    type="button"
+                    className="mobile-nav-parent"
+                    aria-expanded={expanded}
+                    onClick={() => setActiveMenu((value) => (value === item.label ? null : item.label))}
+                  >
+                    {item.label}
+                    <ChevronRight size={14} className={expanded ? 'nav-arrow open' : 'nav-arrow'} />
+                  </button>
+                  {expanded &&
+                    item.children.map((child) => (
+                      <a
+                        key={child.label}
+                        href={child.href}
+                        className="mobile-sub-link"
+                        onClick={() => {
+                          setOpen(false);
+                          setActiveMenu(null);
+                        }}
+                      >
+                        {child.label}
+                      </a>
+                    ))}
+                </div>
+              );
+            }
+
+            return (
+              <div key={item.label} className="mobile-nav-group">
+                <a
+                  href={item.href}
+                  onClick={() => {
+                    setOpen(false);
+                    setActiveMenu(null);
+                  }}
+                >
+                  {item.label}
                 </a>
-              ))}
-            </div>
-          ))}
+              </div>
+            );
+          })}
         </div>
       )}
     </header>
@@ -1440,7 +1493,7 @@ function KnowledgeCollectionPage({ type }) {
   const pageCopy = isReports
     ? '围绕数据库与数据基础设施产品，沉淀调研报告、版本演进、架构分析和竞品观察。'
     : '保留一些更松弛的技术随笔、阅读笔记和阶段性思考，让理解不只停在正式报告里。';
-  const location = isReports ? '/Users/lism/work/xlab/docs/reports' : '/Users/lism/work/xlab/docs/blogs';
+  const location = isReports ? 'docs/reports' : 'docs/blogs';
 
   if (activeDocument) {
     return (
@@ -1462,7 +1515,7 @@ function KnowledgeCollectionPage({ type }) {
             <div className="reader-toolbar">
               <div>
                 <span>Markdown Reader</span>
-                <strong>{activeDocument.relativePath}</strong>
+                <strong>{activeDocument.xlabPath}</strong>
               </div>
               <div className="reader-meta">
                 <span>
@@ -1524,7 +1577,7 @@ function KnowledgeCollectionPage({ type }) {
               <h2>{item.title}</h2>
               <p>{item.excerpt}</p>
               <div className="knowledge-card-bottom">
-                <span>{item.relativePath}</span>
+                <span>{item.xlabPath}</span>
                 <ArrowRight size={16} />
               </div>
             </button>

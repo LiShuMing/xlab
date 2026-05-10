@@ -3434,11 +3434,23 @@ footer p {
     gap: 2px;
   }
 
-  .mobile-panel a {
+  .mobile-panel a,
+  .mobile-nav-parent {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
     border-radius: 8px;
     padding: 12px 4px;
     color: var(--muted);
     font-size: 0.95rem;
+  }
+
+  .mobile-nav-parent {
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
   }
 
   .mobile-panel .mobile-sub-link {
