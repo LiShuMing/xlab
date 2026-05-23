@@ -120,7 +120,7 @@
     <div class="login-card">
       <h1>Context Social</h1>
       <p class="muted">输入 4 位 PIN 进入。同一网络地址 + 同一 PIN 会回到同一个 memory 账号。</p>
-      <input id="loginUser" placeholder="optional handle, e.g. kevin" />
+      <input id="loginUser" placeholder="optional display name" />
       <input id="loginPin" type="password" inputmode="numeric" maxlength="4" placeholder="4-digit PIN" />
       <div style="height:12px"></div>
       <button class="primary" id="loginBtn" style="width:100%">Login</button>
@@ -243,8 +243,7 @@
     let localMessages = [];
     let isSending = false;
     const $ = id => document.getElementById(id);
-    const savedUser = localStorage.getItem("ctx_username") || "";
-    if (savedUser) $("loginUser").value = savedUser;
+    // Don't pre-fill username - user must login with PIN each time
     const status = text => { $("status").textContent = text || "Ready."; };
 
     function getCSRF() {
@@ -280,18 +279,22 @@
       const res = await fetch("/api/auth?username=" + encodeURIComponent(username) + "&pin=" + encodeURIComponent(pin), {credentials: "same-origin"});
       const data = await res.json().catch(() => ({}));
       if (!res.ok || data.error) { $("loginStatus").textContent = data.error || "Login failed."; return; }
-      localStorage.setItem("ctx_username", data.username || username);
-      currentUser = data.username || username;
+      // Always use the server-generated username (pin-based), not the display name input
+      currentUser = data.username || pinUserHandle(pin);
       $("loginPin").value = "";
+      $("loginUser").value = "";
       showAuth(false);
       await ensureCSRF();
       await load(false);
-      status("Logged in.");
+      status("Logged in as " + currentUser);
+    }
+    function pinUserHandle(pin) {
+      // Fallback if server doesn't return username - use pin as handle prefix
+      return "pin_" + pin;
     }
     async function initializeSession() {
       const session = await api("/api/session");
       currentUser = session.username || "";
-      if (currentUser) localStorage.setItem("ctx_username", currentUser);
       await load(false);
     }
     async function load(keepUser = true) {
