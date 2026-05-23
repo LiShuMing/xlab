@@ -132,9 +132,7 @@ func (s *Server) state(w http.ResponseWriter, r *http.Request) {
 	if selected == "" {
 		selected = r.URL.Query().Get("user")
 	}
-	if selected == "" && len(users) > 0 {
-		selected = users[0].Handle
-	}
+	// No default user - must login via PIN to get an account
 	var user *domain.User
 	if selected != "" {
 		if u, err := s.store.UserByHandle(selected); err == nil {
