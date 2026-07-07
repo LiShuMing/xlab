@@ -1,0 +1,9 @@
+jupyterlab>=4.2
+notebook>=7.2
+ipykernel>=6.29
+numpy>=2.0
+pandas>=2.2
+matplotlib>=3.9
+seaborn>=0.13
+pyarrow>=16.0
+openpyxl>=3.1
