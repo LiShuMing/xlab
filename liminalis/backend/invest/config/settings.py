@@ -6,17 +6,14 @@ override for sensitive values like GMAIL_APP_PASSWORD.
 
 from __future__ import annotations
 
-import os
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
 import yaml
-from dotenv import load_dotenv
 
-# Load environment variables from ~/.env
-load_dotenv(Path.home() / ".env", override=True)
-
+from backend.settings import Settings as RuntimeSettings
+from backend.settings import get_settings as get_runtime_settings
 
 # Configuration file path
 CONFIG_PATH = Path.home() / ".py-invest" / "config.yaml"
@@ -75,24 +72,31 @@ class EmailConfig:
     password: str = ""  # Loaded from GMAIL_APP_PASSWORD env var
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> EmailConfig:
+    def from_dict(
+        cls,
+        data: dict[str, Any],
+        runtime_settings: RuntimeSettings | None = None,
+    ) -> EmailConfig:
         """Create EmailConfig from dictionary.
 
-        Overrides password with GMAIL_APP_PASSWORD environment variable if set.
+        Overrides password with unified runtime settings if set.
 
         Args:
             data: Dictionary with email configuration.
+            runtime_settings: Optional unified Liminalis runtime settings.
 
         Returns:
             EmailConfig instance.
         """
+        runtime_settings = runtime_settings or get_runtime_settings()
+
         return cls(
             smtp_host=data.get("smtp_host", "smtp.gmail.com"),
             smtp_port=data.get("smtp_port", 587),
             sender=data.get("sender", ""),
             recipient=data.get("recipient", ""),
-            # Security: Load password from environment variable
-            password=os.getenv("GMAIL_APP_PASSWORD", data.get("password", "")),
+            # Security: secrets come from the unified runtime settings layer.
+            password=runtime_settings.gmail_app_password or data.get("password", ""),
         )
 
 
@@ -141,20 +145,26 @@ class AppConfig:
     analysis: AnalysisConfig = field(default_factory=AnalysisConfig)
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> AppConfig:
+    def from_dict(
+        cls,
+        data: dict[str, Any],
+        runtime_settings: RuntimeSettings | None = None,
+    ) -> AppConfig:
         """Create AppConfig from dictionary.
 
         Args:
             data: Dictionary with full configuration.
+            runtime_settings: Optional unified Liminalis runtime settings.
 
         Returns:
             AppConfig instance.
         """
+        runtime_settings = runtime_settings or get_runtime_settings()
         stocks_data = data.get("stocks", [])
         stocks = [StockConfig.from_dict(s) for s in stocks_data]
 
         email_data = data.get("email", {})
-        email = EmailConfig.from_dict(email_data)
+        email = EmailConfig.from_dict(email_data, runtime_settings=runtime_settings)
 
         analysis_data = data.get("analysis", {})
         analysis = AnalysisConfig.from_dict(analysis_data)
@@ -165,15 +175,23 @@ class AppConfig:
             analysis=analysis,
         )
 
+    @classmethod
+    def from_runtime(cls, runtime_settings: RuntimeSettings) -> AppConfig:
+        """Load Invest configuration through the unified runtime settings."""
+        return load_config(get_config_path(runtime_settings), runtime_settings=runtime_settings)
 
-def load_config(config_path: Path | None = None) -> AppConfig:
+
+def load_config(
+    config_path: Path | None = None,
+    runtime_settings: RuntimeSettings | None = None,
+) -> AppConfig:
     """Load configuration from YAML file.
 
-    Loads configuration from the specified path or default CONFIG_PATH.
-    Environment variable GMAIL_APP_PASSWORD overrides email.password in config.
+    Loads configuration from the specified path or unified runtime settings path.
+    Runtime setting GMAIL_APP_PASSWORD overrides email.password in config.
 
     Args:
-        config_path: Optional custom config file path. Uses CONFIG_PATH if None.
+        config_path: Optional custom config file path. Uses runtime settings if None.
 
     Returns:
         AppConfig instance with loaded configuration.
@@ -181,7 +199,8 @@ def load_config(config_path: Path | None = None) -> AppConfig:
     Raises:
         ConfigError: If config file does not exist or is invalid.
     """
-    path = config_path or CONFIG_PATH
+    runtime_settings = runtime_settings or get_runtime_settings()
+    path = config_path or get_config_path(runtime_settings)
 
     if not path.exists():
         raise ConfigError(
@@ -208,13 +227,14 @@ analysis:
     except yaml.YAMLError as e:
         raise ConfigError(f"Invalid YAML in config file {path}: {e}") from e
 
-    return AppConfig.from_dict(data)
+    return AppConfig.from_dict(data, runtime_settings=runtime_settings)
 
 
-def get_config_path() -> Path:
+def get_config_path(runtime_settings: RuntimeSettings | None = None) -> Path:
     """Get the default configuration file path.
 
     Returns:
-        Path to ~/.py-invest/config.yaml
+        Path to configured py-invest config YAML.
     """
-    return CONFIG_PATH
+    runtime_settings = runtime_settings or get_runtime_settings()
+    return runtime_settings.invest_config_path

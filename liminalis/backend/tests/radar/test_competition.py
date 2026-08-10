@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
-import httpx
-
+from backend._shared.llm import CompletionResponse, LLMError
 from backend.radar.intelligence.competition import CompetitionAnalyzer
 from backend.radar.intelligence.types import CompetitiveInsight, ToolResult
+
+
+def _completion(raw: dict) -> CompletionResponse:
+    return CompletionResponse(text=raw["choices"][0]["message"]["content"], raw=raw)
 
 
 class TestCompetitionAnalyzer:
@@ -53,19 +56,15 @@ class TestCompetitionAnalyzer:
         assert result.success is True
         assert result.data == []
 
-    @patch.object(httpx.Client, "post")
+    @patch("backend.radar.intelligence.competition.SyncLLMClient.complete")
     def test_analyze_multiple_products(
         self,
-        mock_post,
+        mock_complete,
         sample_summary_result,
         mock_llm_response_competition: dict,
     ):
         """Test analyze with multiple products and mocked LLM response."""
-        # Mock the HTTP response
-        mock_response = MagicMock()
-        mock_response.json.return_value = mock_llm_response_competition
-        mock_response.raise_for_status = MagicMock()
-        mock_post.return_value = mock_response
+        mock_complete.return_value = _completion(mock_llm_response_competition)
 
         analyzer = CompetitionAnalyzer()
         result = analyzer.analyze(sample_summary_result)
@@ -76,18 +75,15 @@ class TestCompetitionAnalyzer:
         assert isinstance(result.data[0], CompetitiveInsight)
         assert result.data[0].product == "Snowflake"
 
-    @patch.object(httpx.Client, "post")
+    @patch("backend.radar.intelligence.competition.SyncLLMClient.complete")
     def test_analyze_custom_products(
         self,
-        mock_post,
+        mock_complete,
         sample_summary_result,
         mock_llm_response_competition: dict,
     ):
         """Test analyze with custom products set."""
-        mock_response = MagicMock()
-        mock_response.json.return_value = mock_llm_response_competition
-        mock_response.raise_for_status = MagicMock()
-        mock_post.return_value = mock_response
+        mock_complete.return_value = _completion(mock_llm_response_competition)
 
         analyzer = CompetitionAnalyzer()
         custom_products = {"ProductA", "ProductB"}
@@ -95,14 +91,14 @@ class TestCompetitionAnalyzer:
 
         assert result.success is True
 
-    @patch.object(httpx.Client, "post")
+    @patch("backend.radar.intelligence.competition.SyncLLMClient.complete")
     def test_analyze_handles_llm_error(
         self,
-        mock_post,
+        mock_complete,
         sample_summary_result,
     ):
         """Test analyze handles LLM errors gracefully."""
-        mock_post.side_effect = httpx.HTTPError("API error")
+        mock_complete.side_effect = LLMError("API error")
 
         analyzer = CompetitionAnalyzer()
         result = analyzer.analyze(sample_summary_result)
@@ -110,18 +106,14 @@ class TestCompetitionAnalyzer:
         assert result.success is False
         assert result.error is not None
 
-    @patch.object(httpx.Client, "post")
+    @patch("backend.radar.intelligence.competition.SyncLLMClient.complete")
     def test_analyze_handles_malformed_response(
         self,
-        mock_post,
+        mock_complete,
         sample_summary_result,
     ):
         """Test analyze handles malformed LLM responses."""
-        # Return invalid JSON
-        mock_response = MagicMock()
-        mock_response.json.return_value = {"choices": [{"message": {"content": "not valid json"}}]}
-        mock_response.raise_for_status = MagicMock()
-        mock_post.return_value = mock_response
+        mock_complete.return_value = CompletionResponse(text="not valid json", raw={})
 
         analyzer = CompetitionAnalyzer()
         result = analyzer.analyze(sample_summary_result)

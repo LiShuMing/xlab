@@ -5,7 +5,7 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import RedirectResponse
 
-from backend.db.engine import get_session_factory
+from backend._shared.storage import business_uow
 from backend.services import wechat_service
 from backend.settings import Settings, get_settings
 from backend.wechat.client import WeChatOAuthError, build_official_oauth_url
@@ -63,8 +63,7 @@ async def official_oauth_callback(
 ) -> RedirectResponse:
     try:
         if settings.postgres_configured and not settings.wechat_official_mock_openid:
-            factory = get_session_factory()
-            async with factory() as session:
+            async with business_uow() as session:
                 result = await wechat_service.complete_official_oauth(
                     code=code,
                     state=state,

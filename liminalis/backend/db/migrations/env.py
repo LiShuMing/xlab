@@ -14,8 +14,8 @@ from backend.db.base import Base  # noqa: F401  -- ensures Base import path is r
 from backend.ego import db_models as _ego_db_models  # noqa: F401
 from backend.invest import db_models as _invest_db_models  # noqa: F401
 from backend.radar import db_models as _radar_db_models  # noqa: F401
-from backend.wechat import db_models as _wechat_db_models  # noqa: F401
 from backend.settings import get_settings
+from backend.wechat import db_models as _wechat_db_models  # noqa: F401
 
 config = context.config
 

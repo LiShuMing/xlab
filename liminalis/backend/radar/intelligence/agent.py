@@ -172,7 +172,7 @@ class IntelligenceAgent:
 
     def close(self) -> None:
         """Close all HTTP clients."""
-        self.summarizer.client.close()
+        self.summarizer.close()
         self.trend_analyzer.close()
         self.competition_analyzer.close()
 

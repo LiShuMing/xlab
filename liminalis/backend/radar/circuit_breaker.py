@@ -11,8 +11,8 @@ from typing import Any, TypeVar
 import pybreaker
 from pybreaker import CircuitBreakerError
 
-from backend.radar.config import get_settings
 from backend.radar.logging_config import get_logger
+from backend.settings import get_settings
 
 logger = get_logger(__name__)
 

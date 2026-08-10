@@ -83,9 +83,7 @@ def upgrade() -> None:
             server_default=sa.text("now()"),
             nullable=False,
         ),
-        sa.ForeignKeyConstraint(
-            ["session_id"], ["ego_sessions.id"], ondelete="CASCADE"
-        ),
+        sa.ForeignKeyConstraint(["session_id"], ["ego_sessions.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index(
@@ -94,9 +92,7 @@ def upgrade() -> None:
         ["session_id", "created_at"],
         unique=False,
     )
-    op.create_index(
-        op.f("ix_ego_messages_session_id"), "ego_messages", ["session_id"], unique=False
-    )
+    op.create_index(op.f("ix_ego_messages_session_id"), "ego_messages", ["session_id"], unique=False)
 
 
 def downgrade() -> None:

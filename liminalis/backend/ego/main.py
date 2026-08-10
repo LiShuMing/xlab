@@ -16,27 +16,17 @@ from __future__ import annotations
 
 import atexit
 import logging
-import os
 import sys
 from pathlib import Path
 
-# Configure environment before importing ML libraries
-os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"
-os.environ["CUDA_VISIBLE_DEVICES"] = ""
-os.environ["OMP_NUM_THREADS"] = "1"
-os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
-os.environ["TOKENIZERS_PARALLELISM"] = "false"
-os.environ["TRANSFORMERS_VERBOSITY"] = "error"
-
-# Default to simple embedding mode for stability
-if os.getenv("USE_REAL_EMBEDDING", "false").lower() != "true":
-    os.environ["USE_SIMPLE_EMBEDDING"] = "true"
-
+from backend._shared.logging import configure_logging
+from backend._shared.ml_runtime import is_simple_embedding_mode, suppress_ml_library_logs
 from backend.ego.chat_service import ChatService
 from backend.ego.cli.commands import CommandHandler
 from backend.ego.cli.ui import Colors, TerminalUI, colorize
 from backend.ego.config import get_settings
 from backend.ego.roles.role_manager import RoleManager
+from backend.settings import get_settings as get_runtime_settings
 
 # ============================================================================
 # Command History Support (Up/Down Arrow Keys)
@@ -119,25 +109,8 @@ def get_input_with_history(prompt: str = "") -> str:
 
 def setup_logging() -> None:
     """Configure logging for the application."""
-    settings = get_settings()
-    logging.basicConfig(
-        level=getattr(logging, settings.log_level),
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        encoding="utf-8",
-    )
-
-    for logger_name in [
-        "sentence_transformers",
-        "transformers",
-        "urllib3",
-        "httpcore",
-        "openai",
-        "huggingface_hub",
-        "httpx",
-        "tqdm",
-        "torch",
-    ]:
-        logging.getLogger(logger_name).setLevel(logging.WARNING)
+    configure_logging(get_runtime_settings())
+    suppress_ml_library_logs(level=logging.WARNING)
 
 
 def main() -> None:
@@ -155,7 +128,7 @@ def main() -> None:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
 
-    use_simple = os.getenv("USE_SIMPLE_EMBEDDING", "false").lower() == "true"
+    use_simple = is_simple_embedding_mode()
 
     # Print welcome with current role
     ui.print_welcome(

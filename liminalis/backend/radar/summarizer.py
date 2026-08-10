@@ -6,12 +6,10 @@ as per Harness Engineering standards (see RULE.md).
 
 import asyncio
 import json
-import re
 import time
 from dataclasses import dataclass
 from datetime import UTC, datetime
 
-import httpx
 from pydantic import ValidationError
 from tenacity import (
     before_sleep_log,
@@ -21,9 +19,10 @@ from tenacity import (
     wait_exponential,
 )
 
+from backend._shared.json_tools import JSONTextError, load_json_object
+from backend._shared.llm import ChatMessage, LLMClient, LLMError, LLMRuntimeConfig, SyncLLMClient
 from backend.radar.circuit_breaker import CircuitBreakerOpenError, with_circuit_breaker
 from backend.radar.config import get_config
-from backend.radar.http_client import get_http_client
 from backend.radar.logging_config import correlation_id, get_logger
 from backend.radar.models import (
     SummaryOutput,
@@ -83,15 +82,20 @@ class Summarizer:
         self.model = model or config.model or DEFAULT_MODEL
         self.timeout = timeout or config.timeout
         self.language = language or config.language or "en"
-        # Use the async HTTP client with connection pooling
-        self.http_client = get_http_client()
-        # Keep sync client for backward compatibility during transition
-        self.client = httpx.Client(timeout=self.timeout)
+        self._llm_config = LLMRuntimeConfig(
+            api_key=self.api_key or "",
+            base_url=(self.base_url or "https://api.openai.com/v1"),
+            model=self.model,
+            timeout=self.timeout,
+            max_retries=2,
+        )
+        self.client = SyncLLMClient(self._llm_config)
+        self._async_client: LLMClient | None = None
         self.logger = get_logger(__name__)
 
     @with_circuit_breaker
     @retry(
-        retry=retry_if_exception_type((httpx.HTTPError, httpx.TimeoutException)),
+        retry=retry_if_exception_type(LLMError),
         stop=stop_after_attempt(3),
         wait=wait_exponential(multiplier=1, min=2, max=10),
         before_sleep=before_sleep_log(logger, "warning"),
@@ -108,22 +112,13 @@ class Summarizer:
             The raw API response data.
 
         Raises:
-            httpx.HTTPError: If the API call fails after all retries.
+            LLMError: If the API call fails after all retries.
             CircuitBreakerOpenError: If circuit breaker is open.
         """
-        # Run the async version in an event loop for backward compatibility
-        try:
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                # If already in an async context, use the sync client as fallback
-                return self._call_llm_sync(prompt, max_tokens)
-            return loop.run_until_complete(self._call_llm_async(prompt, max_tokens))
-        except RuntimeError:
-            # No event loop running, create a new one
-            return asyncio.run(self._call_llm_async(prompt, max_tokens))
+        return self._call_llm_sync(prompt, max_tokens)
 
     async def _call_llm_async(self, prompt: str, max_tokens: int = 4000) -> dict:
-        """Async version of LLM API call with connection pooling.
+        """Async version of LLM API call.
 
         Args:
             prompt: The prompt to send to the LLM.
@@ -135,68 +130,41 @@ class Summarizer:
         cid = correlation_id.get()
         log = self.logger.bind(correlation_id=cid)
 
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {self.api_key}",
-        }
-
-        payload = {
-            "model": self.model,
-            "max_tokens": max_tokens,
-            "messages": [{"role": "user", "content": prompt}],
-        }
-
         log.debug(
             "llm_request",
-            url=f"{self.base_url}/chat/completions",
+            base_url=self._llm_config.base_url,
             model=self.model,
             max_tokens=max_tokens,
             prompt_tokens=len(prompt) // 4,
         )
 
-        # Use the async HTTP client with connection pooling
-        http_client = get_http_client()
-        response = await http_client.post(
-            f"{self.base_url}/chat/completions",
-            headers=headers,
-            json_payload=payload,
+        if self._async_client is None:
+            self._async_client = LLMClient(self._llm_config)
+        response = await self._async_client.complete(
+            [ChatMessage(role="user", content=prompt)],
+            model=self.model,
+            max_tokens=max_tokens,
         )
-
-        return response.json()
+        return response.raw
 
     def _call_llm_sync(self, prompt: str, max_tokens: int = 4000) -> dict:
-        """Synchronous fallback using legacy httpx.Client.
-
-        Used when called from an already-running async context.
-        """
+        """Synchronous LLM API call."""
         cid = correlation_id.get()
         log = self.logger.bind(correlation_id=cid)
 
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {self.api_key}",
-        }
-
-        payload = {
-            "model": self.model,
-            "max_tokens": max_tokens,
-            "messages": [{"role": "user", "content": prompt}],
-        }
-
         log.debug(
-            "llm_request_sync_fallback",
-            url=f"{self.base_url}/chat/completions",
+            "llm_request_sync",
+            base_url=self._llm_config.base_url,
             model=self.model,
             max_tokens=max_tokens,
         )
 
-        response = self.client.post(
-            f"{self.base_url}/chat/completions",
-            headers=headers,
-            json=payload,
+        response = self.client.complete(
+            [ChatMessage(role="user", content=prompt)],
+            model=self.model,
+            max_tokens=max_tokens,
         )
-        response.raise_for_status()
-        return response.json()
+        return response.raw
 
     def _extract_json_from_response(self, raw_text: str) -> dict:
         """Extract and parse JSON from LLM response.
@@ -218,40 +186,9 @@ class Summarizer:
         if not raw_text or not raw_text.strip():
             raise JSONExtractionError("Empty response from LLM")
 
-        json_text = raw_text.strip()
-
-        # Try to extract from markdown code blocks
-        patterns = [
-            (r"```json\s*(.*?)\s*```", re.DOTALL),
-            (r"```\s*(.*?)\s*```", re.DOTALL),
-        ]
-
-        for pattern, flags in patterns:
-            match = re.search(pattern, json_text, flags)
-            if match:
-                json_text = match.group(1).strip()
-                break
-
-        # If no code blocks, try to find JSON object boundaries
-        if not json_text.startswith("{"):
-            start = json_text.find("{")
-            if start >= 0:
-                # Find matching closing brace
-                brace_count = 0
-                end = start
-                for i, char in enumerate(json_text[start:], start):
-                    if char == "{":
-                        brace_count += 1
-                    elif char == "}":
-                        brace_count -= 1
-                        if brace_count == 0:
-                            end = i + 1
-                            break
-                json_text = json_text[start:end]
-
         try:
-            return json.loads(json_text)
-        except json.JSONDecodeError as e:
+            return load_json_object(raw_text)
+        except JSONTextError as e:
             raise JSONExtractionError(f"Failed to parse JSON: {e}") from e
 
     def _validate_and_parse_output(self, data: dict, raw_response: str) -> SummaryResult:
@@ -498,23 +435,21 @@ class Summarizer:
                 raw_response=raw_text if "raw_text" in locals() else "",
                 validation_errors=e.errors,
             )
-        except httpx.HTTPError as e:
+        except LLMError as e:
             latency_ms = (time.time() - start_time) * 1000
-            status_code = e.response.status_code if hasattr(e, "response") and e.response else None
             log.error(
-                "llm_http_error",
+                "llm_error",
                 error=str(e),
                 latency_ms=round(latency_ms, 2),
-                status_code=status_code,
             )
             return SummaryResult(
-                executive_summary=[f"HTTP error: {str(e)}"],
+                executive_summary=[f"LLM error: {str(e)}"],
                 top_updates=[],
                 release_notes=[],
                 themes=[],
                 action_items=[],
                 raw_response=str(e),
-                validation_errors=[f"HTTP error: {str(e)}"],
+                validation_errors=[f"LLM error: {str(e)}"],
             )
         except CircuitBreakerOpenError as e:
             latency_ms = (time.time() - start_time) * 1000
@@ -701,6 +636,27 @@ class Summarizer:
         except (JSONExtractionError, ValidationError, Exception):
             return note
 
+    async def aclose(self) -> None:
+        """Close owned LLM clients."""
+        self.client.close()
+        if self._async_client is not None:
+            await self._async_client.aclose()
+            self._async_client = None
+
+    def close(self) -> None:
+        """Close owned LLM clients from synchronous callers."""
+        self.client.close()
+        if self._async_client is None:
+            return
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            asyncio.run(self._async_client.aclose())
+        else:
+            loop.create_task(self._async_client.aclose())
+        finally:
+            self._async_client = None
+
 
 def summarize_items(items: list[RankedItem], top_k: int = 10, language: str = "en") -> SummaryResult:
     """Convenience function to summarize items."""
@@ -708,7 +664,4 @@ def summarize_items(items: list[RankedItem], top_k: int = 10, language: str = "e
     try:
         return summarizer.summarize(items, top_k=top_k)
     finally:
-        # Close sync client
-        summarizer.client.close()
-        # Note: Async HTTP client is a singleton and should be closed
-        # at application shutdown, not per-request
+        summarizer.close()

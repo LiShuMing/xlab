@@ -23,7 +23,7 @@ start_liminalis() {
     "liminalis" \
     "${LIMINALIS_PORT}" \
     "${PROJECT_ROOT}" \
-    "VITE_LLM_WIKI_URL='http://127.0.0.1:${LLM_WIKI_PORT}/' exec npm run dev -- --host 0.0.0.0 --port ${LIMINALIS_PORT}"
+    "VITE_LLM_WIKI_URL='/llm-wiki/' exec npm run dev -- --host 0.0.0.0 --port ${LIMINALIS_PORT}"
 }
 
 start_liminalis_api() {
@@ -32,7 +32,7 @@ start_liminalis_api() {
     "liminalis-api" \
     "${LIMINALIS_API_PORT}" \
     "${PROJECT_ROOT}" \
-    ". '${VENV_ACTIVATE}' && exec python -m uvicorn backend.app:app --host 127.0.0.1 --port ${LIMINALIS_API_PORT}"
+    "export LLM_WIKI_SOCKET='${LLM_WIKI_SOCKET}'; . '${VENV_ACTIVATE}' && exec python -m uvicorn backend.app:app --host 127.0.0.1 --port ${LIMINALIS_API_PORT}"
 }
 
 start_llm_wiki() {
@@ -41,11 +41,11 @@ start_llm_wiki() {
     return 1
   fi
 
-  start_process \
+  start_process_unix \
     "llm-wiki" \
-    "${LLM_WIKI_PORT}" \
+    "${LLM_WIKI_SOCKET}" \
     "${LLM_WIKI_ROOT}" \
-    "CTX_WEB_ADDR='127.0.0.1:${LLM_WIKI_PORT}' exec make web WEB_PROVIDER='${LLM_WIKI_PROVIDER}' DEMO_DATA='${LLM_WIKI_DATA}'"
+    "CTX_WEB_UNIX_SOCKET='${LLM_WIKI_SOCKET}' exec make web WEB_PROVIDER='${LLM_WIKI_PROVIDER}' DEMO_DATA='${LLM_WIKI_DATA}'"
 }
 
 [[ "${START_LIMINALIS_API}" == "1" ]] && run_step "liminalis-api" start_liminalis_api
@@ -63,4 +63,8 @@ if (( ${#failures[@]} > 0 )); then
 fi
 
 echo
-echo "Started. Open http://localhost:${LIMINALIS_PORT}/"
+if [[ "${START_LIMINALIS}" == "1" ]]; then
+  echo "Started. Open http://localhost:${LIMINALIS_PORT}/"
+else
+  echo "Started. Open http://localhost:${LIMINALIS_API_PORT}/"
+fi

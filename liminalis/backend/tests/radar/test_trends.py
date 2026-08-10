@@ -3,12 +3,15 @@
 from __future__ import annotations
 
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
-import httpx
-
+from backend._shared.llm import CompletionResponse, LLMError
 from backend.radar.intelligence.trends import HistoricalSummary, TrendAnalyzer
 from backend.radar.intelligence.types import TrendResult
+
+
+def _completion(raw: dict) -> CompletionResponse:
+    return CompletionResponse(text=raw["choices"][0]["message"]["content"], raw=raw)
 
 
 class TestTrendAnalyzer:
@@ -111,10 +114,10 @@ class TestTrendAnalyzer:
         assert result.data.emerging_topics == []
         assert result.data.declining_topics == []
 
-    @patch.object(httpx.Client, "post")
+    @patch("backend.radar.intelligence.trends.SyncLLMClient.complete")
     def test_analyze_with_history(
         self,
-        mock_post,
+        mock_complete,
         temp_output_dir: Path,
         historical_summaries: list[dict],
         mock_llm_response_trends: dict,
@@ -132,11 +135,7 @@ class TestTrendAnalyzer:
             raw_response="{}",
         )
 
-        # Mock the HTTP response
-        mock_response = MagicMock()
-        mock_response.json.return_value = mock_llm_response_trends
-        mock_response.raise_for_status = MagicMock()
-        mock_post.return_value = mock_response
+        mock_complete.return_value = _completion(mock_llm_response_trends)
 
         analyzer = TrendAnalyzer(output_dir=temp_output_dir)
         result = analyzer.analyze(summary, history_days=14)
@@ -147,10 +146,10 @@ class TestTrendAnalyzer:
         assert len(result.data.emerging_topics) == 2
         assert "Vector databases" in result.data.emerging_topics
 
-    @patch.object(httpx.Client, "post")
+    @patch("backend.radar.intelligence.trends.SyncLLMClient.complete")
     def test_analyze_handles_llm_error(
         self,
-        mock_post,
+        mock_complete,
         temp_output_dir: Path,
         historical_summaries: list[dict],
     ):
@@ -167,8 +166,7 @@ class TestTrendAnalyzer:
             raw_response="{}",
         )
 
-        # Mock an HTTP error
-        mock_post.side_effect = httpx.HTTPError("API error")
+        mock_complete.side_effect = LLMError("API error")
 
         analyzer = TrendAnalyzer(output_dir=temp_output_dir)
         result = analyzer.analyze(summary, history_days=14)

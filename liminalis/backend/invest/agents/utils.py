@@ -1,22 +1,16 @@
 """Utility functions for agents module."""
 
 import json
-import re
 from dataclasses import asdict, is_dataclass
 
+from backend._shared.json_tools import JSONTextError, load_json_object
+from backend._shared.json_tools import strip_markdown_fences as shared_strip_markdown_fences
 from backend.invest.core.llm import HumanMessage, LLMClient
 
 
 def strip_markdown_fences(text: str) -> str:
-    """Strip markdown JSON fences from text.
-
-    Args:
-        text: Text potentially wrapped in markdown fences.
-
-    Returns:
-        Text with markdown fences removed.
-    """
-    return re.sub(r"^```json\s*|\s*```$", "", text, flags=re.DOTALL).strip()
+    """Backward-compatible wrapper around the shared markdown fence stripper."""
+    return shared_strip_markdown_fences(text)
 
 
 async def parse_llm_json(text: str, llm_client: LLMClient, retry_prompt: str | None = None) -> dict:
@@ -30,19 +24,16 @@ async def parse_llm_json(text: str, llm_client: LLMClient, retry_prompt: str | N
     Returns:
         Parsed JSON dictionary, or empty dict on failure.
     """
-    content = strip_markdown_fences(text)
-
     try:
-        return json.loads(content)
-    except json.JSONDecodeError:
+        return load_json_object(text)
+    except JSONTextError:
         # Retry once
         if retry_prompt is None:
             retry_prompt = "Return ONLY the JSON object, no other text:"
 
         try:
             response = await llm_client.model.ainvoke([HumanMessage(content=retry_prompt)])
-            content = strip_markdown_fences(response.content)
-            return json.loads(content)
+            return load_json_object(response.content)
         except Exception:
             return {}
 

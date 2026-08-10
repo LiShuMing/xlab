@@ -2,6 +2,8 @@
 
 import logging
 import uuid
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
@@ -9,7 +11,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from backend.routers import admin, ego, health, invest, radar, wechat
+from backend._shared.jobs import dispose_arq_pool
+from backend._shared.llm import dispose_llm_client
+from backend._shared.logging import configure_logging
+from backend.db.engine import dispose_engine
+from backend.routers import admin, ego, health, invest, llm_wiki, radar, wechat
+from backend.routers.llm_wiki import dispose_proxy_client
 from backend.settings import Settings, get_settings
 
 logger = logging.getLogger("liminalis")
@@ -68,24 +75,6 @@ def _is_relative_to(path: Path, parent: Path) -> bool:
         return False
 
 
-class _TraceFilter(logging.Filter):
-    def filter(self, record: logging.LogRecord) -> bool:
-        if not hasattr(record, "trace_id"):
-            record.trace_id = "-"
-        return True
-
-
-def _configure_logging(settings: Settings) -> None:
-    root = logging.getLogger()
-    if root.handlers:
-        return
-    handler = logging.StreamHandler()
-    handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(name)s [%(trace_id)s] %(message)s"))
-    handler.addFilter(_TraceFilter())
-    root.addHandler(handler)
-    root.setLevel(logging.INFO if settings.is_production else logging.DEBUG)
-
-
 def register_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(Exception)
     async def _unhandled(request: Request, exc: Exception) -> JSONResponse:
@@ -115,10 +104,21 @@ def register_cors(app: FastAPI, settings: Settings) -> None:
     )
 
 
+@asynccontextmanager
+async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+    try:
+        yield
+    finally:
+        await dispose_proxy_client()
+        await dispose_llm_client()
+        await dispose_arq_pool()
+        await dispose_engine()
+
+
 def create_app() -> FastAPI:
     settings = get_settings()
-    _configure_logging(settings)
-    app = FastAPI(title=settings.app_name)
+    configure_logging(settings)
+    app = FastAPI(title=settings.app_name, lifespan=lifespan)
     register_cors(app, settings)
     app.include_router(health.router)
     app.include_router(radar.router)
@@ -126,6 +126,7 @@ def create_app() -> FastAPI:
     app.include_router(invest.router)
     app.include_router(ego.router)
     app.include_router(wechat.router)
+    app.include_router(llm_wiki.router)
     register_exception_handlers(app)
     register_frontend(app, settings)
     return app

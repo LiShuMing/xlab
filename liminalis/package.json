@@ -3,8 +3,11 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "start": "bash scripts/start.sh",
+    "start:dev": "START_LIMINALIS=1 bash scripts/start.sh",
+    "start:one-port": "VITE_LLM_WIKI_URL=/llm-wiki/ npm run build && START_LIMINALIS=0 bash scripts/start.sh",
     "stop": "bash scripts/stop.sh",
     "check": "bash scripts/check.sh",
+    "check:one-port": "START_LIMINALIS=0 bash scripts/check.sh",
     "api": "python -m uvicorn backend.app:app --host 127.0.0.1 --port 8010",
     "serve": "npm run build && python -m backend.app",
     "build": "vite build",

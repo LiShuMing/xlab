@@ -1859,6 +1859,244 @@ button.book-card {
   max-width: 860px;
 }
 
+.invest-workspace-panel {
+  margin-bottom: 18px;
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: rgba(10, 14, 28, 0.82);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.2);
+}
+
+.invest-workspace-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 18px;
+  color: #d8e1ff;
+}
+
+.invest-workspace-head div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.invest-workspace-head span,
+.invest-mini-list span,
+.invest-evidence-list span {
+  color: #7f8ba8;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.invest-workspace-head strong {
+  overflow: hidden;
+  color: #fff;
+  font-size: 1rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.invest-icon-action {
+  display: inline-grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  cursor: pointer;
+}
+
+.invest-icon-action:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+.invest-workspace-muted {
+  margin: 0;
+  color: #aeb6d4;
+  line-height: 1.7;
+}
+
+.invest-thesis-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.invest-thesis-grid label,
+.invest-thesis-field,
+.invest-evidence-list {
+  display: grid;
+  gap: 8px;
+  color: #c7d0ef;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.invest-thesis-grid select,
+.invest-thesis-field textarea,
+.invest-evidence-list input {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #f7f8ff;
+  font: inherit;
+}
+
+.invest-thesis-grid select {
+  min-height: 38px;
+  padding: 0 10px;
+}
+
+.invest-thesis-field {
+  margin-top: 12px;
+}
+
+.invest-thesis-field textarea {
+  min-height: 88px;
+  padding: 11px 12px;
+  line-height: 1.65;
+  resize: vertical;
+}
+
+.invest-evidence-list {
+  margin-top: 12px;
+}
+
+.invest-evidence-list input {
+  min-height: 36px;
+  padding: 0 11px;
+}
+
+.invest-workspace-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.invest-mini-list {
+  min-height: 132px;
+  padding: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.invest-mini-head {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 10px;
+  color: #d8e1ff;
+}
+
+.invest-mini-list ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 18px;
+  color: #c4cce6;
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+
+.invest-mini-list p {
+  margin: 0;
+  color: #7f8ba8;
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+.invest-watch-list li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.invest-watch-list li span {
+  min-width: 0;
+  overflow: hidden;
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: 0;
+  text-overflow: ellipsis;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+.invest-watch-list button {
+  min-width: 48px;
+  min-height: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #9fb0d7;
+  font-size: 0.7rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.invest-watch-list button.done {
+  border-color: rgba(78, 211, 194, 0.3);
+  color: #7ee7d8;
+}
+
+.invest-inline-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.invest-inline-form input,
+.invest-inline-form select {
+  min-width: 0;
+  min-height: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.045);
+  color: #f7f8ff;
+  font: inherit;
+  font-size: 0.78rem;
+  padding: 0 9px;
+}
+
+.invest-inline-form select,
+.invest-inline-form input:not(:first-child) {
+  grid-column: 1 / -1;
+}
+
+.invest-inline-form button {
+  display: inline-grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  align-self: start;
+  border: 1px solid rgba(78, 211, 194, 0.28);
+  border-radius: 8px;
+  background: rgba(78, 211, 194, 0.1);
+  color: #7ee7d8;
+  cursor: pointer;
+}
+
+.invest-inline-form button:disabled,
+.invest-watch-list button:disabled {
+  cursor: wait;
+  opacity: 0.5;
+}
+
 .ai-chat-page {
   min-height: 100vh;
   padding-top: 64px;
@@ -3501,6 +3739,11 @@ footer p {
 
   .invest-console {
     position: static;
+  }
+
+  .invest-workspace-columns,
+  .invest-thesis-grid {
+    grid-template-columns: 1fr;
   }
 
   .reports-grid,

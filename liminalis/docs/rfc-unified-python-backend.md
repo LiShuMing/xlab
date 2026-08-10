@@ -10,8 +10,8 @@ Liminalis currently depends on multiple local development processes:
 
 ```text
 liminalis Vite client :5173
-py-radar Flask server :5000
-py-invest HTTP server :8080
+Legacy radar Flask server :5000
+Legacy invest HTTP server :8080
 py-ego API server     :8000
 py-ego H5 frontend    :5174
 ```
@@ -38,8 +38,7 @@ This keeps Python's ecosystem advantages for LLM workflows, financial data, Post
 The original Vite proxy mapped three API groups to different processes:
 
 ```text
-Liminalis /api        -> http://localhost:5000
-Liminalis /invest-api -> http://localhost:8080/api
+Liminalis /api/*      -> http://localhost:8010/api/*
 Liminalis /ego-api    -> http://localhost:8090/api
 ```
 
@@ -139,12 +138,12 @@ Production can use the same FastAPI process to serve the frontend build from `li
 
 ### Radar
 
-`py-radar` should stop being required as a separate Flask process. The unified backend imports and reuses its internal components:
+`py-radar` is no longer required as a separate Flask process. The unified backend reuses storage-free Radar components for fetching, extraction, and LLM analysis, and persists through SQLAlchemy/Supabase:
 
 ```python
-from dbradar.storage import DuckDBStore
-from dbradar.ingestion import ingest_link
-from dbradar.job_store import IngestionJobStore
+from backend.radar.analysis import analyze_with_llm
+from backend.radar.fetcher import Fetcher
+from backend.radar.service import upsert_radar_item
 ```
 
 The first migration should preserve the response shape currently expected by `liminalis/src/App.jsx`:
@@ -161,15 +160,15 @@ The first migration should preserve the response shape currently expected by `li
 
 ### Invest
 
-`py-invest`'s custom `web/server.py` should stop being required as a separate process. The unified backend imports the analysis pipeline:
+`py-invest`'s custom `web/server.py` is no longer a standalone process. The unified backend owns the Invest HTTP surface (`/api/invest/*`) and imports the analysis pipeline directly. HTTP routes, CLI, scheduler, and notifier now persist through SQLAlchemy/Supabase via `backend.invest.service`.
 
 ```python
-from agents.orchestrator import SimpleAgentOrchestrator
-from modules.report_generator.formatter import ReportFormatter, ReportFormat
-from storage import init_db, save_report, get_report
+from backend.invest.agents.orchestrator import SimpleAgentOrchestrator
+from backend.invest.modules.report_generator.formatter import ReportFormatter, ReportFormat
+from backend.invest.service import save_report, get_report
 ```
 
-In the first version, `/api/invest/analyze-stock` may execute in-process, matching current behavior. If responsiveness becomes poor, move analysis into the shared job queue while preserving the API contract.
+`/api/invest/analyze-stock` currently executes in-process, matching the original behavior. If responsiveness becomes poor, move analysis into the shared job queue while preserving the API contract.
 
 ### Ego
 
@@ -186,10 +185,10 @@ class Settings(BaseSettings):
     host: str = "127.0.0.1"
     port: int = 8010
     data_dir: Path = Path.home() / ".liminalis"
-    app_db_path: Path | None = None
-    radar_data_dir: Path | None = None
-    radar_db_name: str = "items.duckdb"
-    invest_db_path: Path | None = None
+    pgsql_url: str | None = None
+    pgsql_user: str | None = None
+    pgsql_password: str | None = None
+    pgsql_database: str = "liminalis_db"
     llm_api_key: str | None = None
     llm_base_url: str | None = None
     llm_model: str | None = None
@@ -202,23 +201,11 @@ Default local data layout:
 
 ```text
 ~/.liminalis/
-  liminalis.sqlite
-  radar/
-    items.duckdb
-  invest/
-    data.db
   cache/
   logs/
 ```
 
-During migration, settings may point to existing data:
-
-```text
-python/projects/py-radar/data/items.duckdb
-~/.py-invest/data.db
-```
-
-This avoids a data migration on day one.
+Durable business state lives in PostgreSQL/Supabase. Local files under `~/.liminalis` are runtime cache, logs, or static snapshots only.
 
 ## Unified Job Model
 
@@ -328,12 +315,12 @@ Deliverables:
 
 - `GET /api/radar/items` implemented in the unified backend.
 - Vite `/api` proxy points to port `8010`.
-- py-radar Flask is no longer required for read-only radar browsing.
+- The legacy radar Flask service is no longer required for read-only radar browsing.
 
 Tasks:
 
 - [x] Add `backend/services/radar_service.py`.
-- [x] Import `DuckDBStore` from `py-radar`.
+- [x] Query Radar through SQLAlchemy/Supabase.
 - [x] Implement item query, product aggregation, content type aggregation, and latest sync batch.
 - [x] Match the current Liminalis response casing: `originalTitle`, `publishedDate`, `contentType`, `latestSyncBatch`.
 - [x] Update `vite.config.js`: `/api/radar` -> `http://localhost:8010`.
@@ -343,7 +330,7 @@ Tasks:
 Exit criteria:
 
 - `/radar` loads from unified backend.
-- Stopping py-radar Flask does not break radar read browsing.
+- Stopping the legacy radar Flask service does not break radar read browsing.
 
 ### Phase 3: Move Radar Admin and Ingestion
 
@@ -351,7 +338,7 @@ Deliverables:
 
 - Radar admin endpoints implemented under unified backend.
 - Link ingestion jobs run through unified job manager.
-- py-radar Flask process is fully retired.
+- The legacy radar Flask process is fully retired.
 
 Tasks:
 
@@ -361,22 +348,22 @@ Tasks:
 - [x] Implement `POST /api/admin/logout`.
 - [x] Implement `POST /api/admin/radar/links`.
 - [x] Implement `GET /api/admin/radar/jobs/{job_id}`.
-- [x] Reuse py-radar `IngestionJobStore` for job persistence.
-- [x] Run `ingest_link` through in-process background executor.
+- [x] Persist ingestion jobs through `radar_ingestion_jobs`.
+- [x] Run Radar ingestion through the unified worker path.
 - [x] Update `scripts/start.sh` to stop starting py-radar by default.
 - [x] Update `docs/deployment.md`.
 
 Exit criteria:
 
 - Radar admin UI can submit a URL and poll job status.
-- `START_RADAR` is no longer needed by default.
+- The legacy radar start flag is no longer needed.
 
 ### Phase 4: Move Invest API Shell
 
 Deliverables:
 
 - `GET /api/invest/status` and `POST /api/invest/analyze-stock` implemented in unified backend.
-- py-invest HTTP server is no longer required.
+- The legacy invest HTTP server is no longer required.
 
 Current status:
 
@@ -399,7 +386,7 @@ Tasks:
 Exit criteria:
 
 - `/invest` can generate or read cached reports through unified backend.
-- Stopping py-invest HTTP server does not break Liminalis invest page.
+- Stopping the legacy invest HTTP server does not break the Liminalis invest page.
 
 ### Phase 5: Static Frontend Serving
 

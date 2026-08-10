@@ -1,10 +1,10 @@
 """Enhanced data sources from external APIs (Google Search, NewsAPI, etc.)."""
 
-import os
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
-import httpx
+from backend._shared.http import HTTPClientConfig, SharedSyncHTTPClient, TimeoutException
+from backend.settings import get_settings as get_runtime_settings
 
 
 @dataclass
@@ -23,9 +23,12 @@ class GoogleSearchSource:
     """Google Custom Search API source."""
 
     def __init__(self, api_key: str | None = None, cx: str | None = None):
-        self.api_key = api_key or os.environ.get("GOOGLE_API_KEY", "")
-        self.cx = cx or os.environ.get("GOOGLE_CX", "")  # Custom Search Engine ID
-        self.client = httpx.Client(timeout=30)
+        settings = get_runtime_settings()
+        self.api_key = api_key or settings.google_api_key or ""
+        self.cx = cx or settings.google_cx or ""  # Custom Search Engine ID
+        self.client = SharedSyncHTTPClient(
+            HTTPClientConfig.from_settings(settings, read_timeout=30),
+        )
 
     def is_configured(self) -> bool:
         """Check if API credentials are configured."""
@@ -68,7 +71,7 @@ class GoogleSearchSource:
             else:
                 return False, f"HTTP {response.status_code}: {response.text[:200]}"
 
-        except httpx.TimeoutException:
+        except TimeoutException:
             return False, "Request timeout (network issue)"
         except Exception as e:
             return False, f"Exception: {str(e)}"
@@ -155,8 +158,11 @@ class NewsAPISource:
     """NewsAPI.org source."""
 
     def __init__(self, api_key: str | None = None):
-        self.api_key = api_key or os.environ.get("NEWSAPI_KEY", "")
-        self.client = httpx.Client(timeout=30)
+        settings = get_runtime_settings()
+        self.api_key = api_key or settings.newsapi_key or ""
+        self.client = SharedSyncHTTPClient(
+            HTTPClientConfig.from_settings(settings, read_timeout=30),
+        )
 
     def is_configured(self) -> bool:
         """Check if API key is configured."""
@@ -192,7 +198,7 @@ class NewsAPISource:
                 error = data.get("message", response.text[:200])
                 return False, f"API Error: {error}"
 
-        except httpx.TimeoutException:
+        except TimeoutException:
             return False, "Request timeout (network issue)"
         except Exception as e:
             return False, f"Exception: {str(e)}"

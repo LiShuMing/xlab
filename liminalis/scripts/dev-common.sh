@@ -12,8 +12,9 @@ VENV_ACTIVATE="${VENV_ACTIVATE:-${VENV_DIR}/bin/activate}"
 
 LIMINALIS_PORT="${LIMINALIS_PORT:-5173}"
 LIMINALIS_API_PORT="${LIMINALIS_API_PORT:-8010}"
-LLM_WIKI_ROOT="${LLM_WIKI_ROOT:-$(cd "${PROJECT_ROOT}/../projects/llm-wiki" 2>/dev/null && pwd || true)}"
+LLM_WIKI_ROOT="${LLM_WIKI_ROOT:-${PROJECT_ROOT}/llm-wiki}"
 LLM_WIKI_PORT="${LLM_WIKI_PORT:-8787}"
+LLM_WIKI_SOCKET="${LLM_WIKI_SOCKET:-${STATE_DIR}/llm-wiki.sock}"
 LLM_WIKI_PROVIDER="${LLM_WIKI_PROVIDER:-llm}"
 LLM_WIKI_DATA="${LLM_WIKI_DATA:-.demo-data}"
 START_LIMINALIS="${START_LIMINALIS:-1}"
@@ -82,6 +83,11 @@ port_pid() {
   lsof -nP -tiTCP:"${port}" -sTCP:LISTEN 2>/dev/null | head -n 1 || true
 }
 
+socket_is_ready() {
+  local socket="$1"
+  [[ -S "${socket}" ]]
+}
+
 http_ok() {
   local url="$1"
   curl -fsS --max-time 3 "${url}" >/dev/null 2>&1
@@ -105,6 +111,25 @@ print_service() {
     printf '%-14s running pid=%-8s port=%-5s %s (external/no pid file)\n' "${name}" "${listener}" "${port}" "${url}"
   else
     printf '%-14s stopped             port=%-5s %s\n' "${name}" "${port}" "${url}"
+  fi
+}
+
+print_unix_service() {
+  local name="$1"
+  local socket="$2"
+  local url="$3"
+  local pid
+  pid="$(read_pid "${name}")"
+
+  if tmux_available && tmux_is_running "${name}"; then
+    pid="$(tmux_pid "${name}")"
+    printf '%-14s running pid=%-8s socket=%s %s (tmux:%s)\n' "${name}" "${pid:-unknown}" "${socket}" "${url}" "$(session_name "${name}")"
+  elif [[ -n "${pid}" ]] && pid_is_running "${pid}"; then
+    printf '%-14s running pid=%-8s socket=%s %s\n' "${name}" "${pid}" "${socket}" "${url}"
+  elif socket_is_ready "${socket}"; then
+    printf '%-14s running             socket=%s %s (external/no pid file)\n' "${name}" "${socket}" "${url}"
+  else
+    printf '%-14s stopped             socket=%s %s\n' "${name}" "${socket}" "${url}"
   fi
 }
 
@@ -146,15 +171,23 @@ start_process() {
   local log_path
 
   pid="$(read_pid "${name}")"
+  listener="$(port_pid "${port}")"
   if tmux_available && tmux_is_running "${name}"; then
+    if [[ -z "${listener}" ]]; then
+      echo "${name} is running in tmux session $(session_name "${name}") but port ${port} is not listening"
+      return 1
+    fi
     echo "${name} already running in tmux session $(session_name "${name}")"
     return 0
   elif [[ -n "${pid}" ]] && pid_is_running "${pid}"; then
+    if [[ -z "${listener}" ]]; then
+      echo "${name} is running with pid ${pid} but port ${port} is not listening"
+      return 1
+    fi
     echo "${name} already running with pid ${pid}"
     return 0
   fi
 
-  listener="$(port_pid "${port}")"
   if [[ -n "${listener}" ]]; then
     echo "${name} port ${port} is already used by pid ${listener}; treating it as running"
     return 0
@@ -209,6 +242,77 @@ start_process() {
   fi
 
   echo "${name} started but port ${port} is not listening yet; last log lines:"
+  tail -n 40 "${log_path}" 2>/dev/null || true
+  return 1
+}
+
+start_process_unix() {
+  local name="$1"
+  local socket="$2"
+  local cwd="$3"
+  local command="$4"
+  local pid
+  local pid_path
+  local log_path
+
+  pid="$(read_pid "${name}")"
+  if tmux_available && tmux_is_running "${name}"; then
+    echo "${name} already running in tmux session $(session_name "${name}")"
+    return 0
+  elif [[ -n "${pid}" ]] && pid_is_running "${pid}"; then
+    echo "${name} already running with pid ${pid}"
+    return 0
+  fi
+
+  rm -f "${socket}"
+  pid_path="$(pid_file "${name}")"
+  log_path="$(log_file "${name}")"
+  echo "Starting ${name} on unix socket ${socket}; log: ${log_path}"
+  if tmux_available; then
+    local session
+    local run_path
+    local run_path_quoted
+    local log_path_quoted
+    session="$(session_name "${name}")"
+    run_path="${STATE_DIR}/${name}.run.sh"
+    {
+      printf '#!/usr/bin/env bash\n'
+      printf 'set -euo pipefail\n'
+      printf 'cd %q\n' "${cwd}"
+      printf '%s\n' "${command}"
+    } > "${run_path}"
+    chmod +x "${run_path}"
+    printf -v run_path_quoted '%q' "${run_path}"
+    printf -v log_path_quoted '%q' "${log_path}"
+    tmux new-session -d -s "${session}" -c "${cwd}" "bash ${run_path_quoted} >> ${log_path_quoted} 2>&1"
+    tmux_pid "${name}" > "${pid_path}"
+  else
+    (
+      cd "${cwd}"
+      nohup bash -lc "${command}" > "${log_path}" 2>&1 &
+      echo "$!" > "${pid_path}"
+    )
+  fi
+
+  sleep 1
+  for _ in {1..30}; do
+    if socket_is_ready "${socket}"; then
+      return 0
+    fi
+    if tmux_available && ! tmux_is_running "${name}"; then
+      break
+    fi
+    sleep 0.2
+  done
+
+  pid="$(read_pid "${name}")"
+  if ! pid_is_running "${pid}"; then
+    echo "${name} failed to start; last log lines:"
+    tail -n 40 "${log_path}" 2>/dev/null || true
+    return 1
+  fi
+
+  echo "${name} started but socket ${socket} is not ready yet; last log lines:"
   tail -n 40 "${log_path}" 2>/dev/null || true
   return 1
 }

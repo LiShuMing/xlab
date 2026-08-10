@@ -19,7 +19,7 @@ depends_on: str | Sequence[str] | None = None
 
 def upgrade() -> None:
     op.create_table(
-        "users",
+        "liminalis_users",
         sa.Column("id", sa.Text(), nullable=False),
         sa.Column("display_name", sa.Text(), nullable=True),
         sa.Column(
@@ -38,7 +38,7 @@ def upgrade() -> None:
     )
 
     op.create_table(
-        "user_identities",
+        "liminalis_user_identities",
         sa.Column("id", sa.Text(), nullable=False),
         sa.Column("user_id", sa.Text(), nullable=False),
         sa.Column("provider", sa.Text(), nullable=False),
@@ -62,23 +62,41 @@ def upgrade() -> None:
             "provider",
             "app_id",
             "openid",
-            name="uq_user_identity_provider_app_openid",
+            name="uq_liminalis_user_identity_provider_app_openid",
         ),
     )
     op.create_index(
-        "idx_user_identities_user_provider",
-        "user_identities",
+        "idx_liminalis_user_identities_user_provider",
+        "liminalis_user_identities",
         ["user_id", "provider"],
         unique=False,
     )
-    op.create_index(op.f("ix_user_identities_unionid"), "user_identities", ["unionid"], unique=False)
-    op.create_index(op.f("ix_user_identities_user_id"), "user_identities", ["user_id"], unique=False)
+    op.create_index(
+        op.f("ix_liminalis_user_identities_unionid"),
+        "liminalis_user_identities",
+        ["unionid"],
+        unique=False,
+    )
+    op.create_index(
+        op.f("ix_liminalis_user_identities_user_id"),
+        "liminalis_user_identities",
+        ["user_id"],
+        unique=False,
+    )
 
 
 def downgrade() -> None:
-    op.drop_index(op.f("ix_user_identities_user_id"), table_name="user_identities")
-    op.drop_index(op.f("ix_user_identities_unionid"), table_name="user_identities")
-    op.drop_index("idx_user_identities_user_provider", table_name="user_identities")
-    op.drop_table("user_identities")
-    op.drop_table("users")
-
+    op.drop_index(
+        op.f("ix_liminalis_user_identities_user_id"),
+        table_name="liminalis_user_identities",
+    )
+    op.drop_index(
+        op.f("ix_liminalis_user_identities_unionid"),
+        table_name="liminalis_user_identities",
+    )
+    op.drop_index(
+        "idx_liminalis_user_identities_user_provider",
+        table_name="liminalis_user_identities",
+    )
+    op.drop_table("liminalis_user_identities")
+    op.drop_table("liminalis_users")

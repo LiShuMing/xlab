@@ -1,89 +1,53 @@
-"""Generate summary for a single item - used by background task.
-
-This module is designed to be run as a subprocess from the server
-to generate summaries without blocking the main server process.
-"""
+"""Generate a summary for one Radar item in the business database."""
 
 from __future__ import annotations
 
 import argparse
+import asyncio
 import logging
-import sys
-from pathlib import Path
 
-# Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
+from backend._shared.llm import ChatMessage, LLMRuntimeConfig, SyncLLMClient
+from backend._shared.logging import configure_logging
+from backend._shared.storage import business_uow
 from backend.radar.config import get_config
-from backend.radar.storage import DuckDBStore
+from backend.radar.db_models import RadarItem
+from backend.settings import get_settings
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+configure_logging(get_settings())
 logger = logging.getLogger(__name__)
 
 
 def generate_summary_for_item(item_id: str) -> bool:
-    """Generate a summary for a single item.
+    """Generate and persist a summary for a single Radar item."""
+    return asyncio.run(_generate_summary_for_item(item_id))
 
-    Args:
-        item_id: The unique ID of the item to summarize.
 
-    Returns:
-        True if successful, False otherwise.
-    """
-    config = get_config()
-
-    # Initialize storage
-    store = DuckDBStore(
-        data_dir=config.output_dir.parent / "data",
-        db_name="items.duckdb",
-    )
-
-    try:
-        # Get the item
-        item = store.get_by_id(item_id)
+async def _generate_summary_for_item(item_id: str) -> bool:
+    async with business_uow() as session:
+        item = await session.get(RadarItem, item_id)
         if not item:
-            logger.error(f"Item {item_id} not found")
+            logger.error("Item %s not found", item_id)
             return False
 
-        # Skip if already has summary
         if item.summary and item.summary.strip():
-            logger.info(f"Item {item_id} already has summary, skipping")
+            logger.info("Item %s already has summary, skipping", item_id)
             return True
 
-        # Generate summary using LLM
         summary = _generate_summary_with_llm(item)
-
-        if summary:
-            # Update the item with the new summary
-            success = store.update_summary(item_id, summary)
-            if success:
-                logger.info(f"Summary updated for item {item_id}")
-                return True
-            else:
-                logger.error(f"Failed to update summary for item {item_id}")
-                return False
-        else:
-            logger.error(f"Failed to generate summary for item {item_id}")
+        if not summary:
+            logger.error("Failed to generate summary for item %s", item_id)
             return False
 
-    finally:
-        store.close()
+        item.summary = summary
+        session.add(item)
+        await session.flush()
+        logger.info("Summary updated for item %s", item_id)
+        return True
 
 
-def _generate_summary_with_llm(item) -> str | None:
-    """Generate a summary for an item using LLM API.
-
-    Args:
-        item: The StorageItem to summarize.
-
-    Returns:
-        The generated summary string, or None if generation failed.
-    """
-    import httpx
-
+def _generate_summary_with_llm(item: RadarItem) -> str | None:
     config = get_config()
 
-    # Build prompt for single item summary
     prompt = f"""You are a technical content summarizer. Create a concise 2-3 sentence summary of the following article.
 
 ## Article Information
@@ -108,66 +72,49 @@ URL: {item.url}
 Return only the summary text, nothing else."""
 
     try:
-        client = httpx.Client(timeout=config.timeout)
-
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {config.api_key}",
-        }
-
-        payload = {
-            "model": config.model,
-            "max_tokens": 300,
-            "messages": [{"role": "user", "content": prompt}],
-        }
-
-        response = client.post(
-            f"{config.base_url}/chat/completions",
-            headers=headers,
-            json=payload,
+        client = SyncLLMClient(
+            LLMRuntimeConfig(
+                api_key=config.api_key or "",
+                base_url=config.base_url or "https://api.openai.com/v1",
+                model=config.model,
+                timeout=config.timeout,
+                max_retries=2,
+            )
         )
-        response.raise_for_status()
-        data = response.json()
+        try:
+            response = client.complete(
+                [ChatMessage(role="user", content=prompt)],
+                model=config.model,
+                max_tokens=300,
+            )
+            raw_text = response.text
+        finally:
+            client.close()
 
-        # Extract response text
-        raw_text = ""
-        if "choices" in data and len(data["choices"]) > 0:
-            choice = data["choices"][0]
-            if "message" in choice and "content" in choice["message"]:
-                raw_text = choice["message"]["content"]
+        if not raw_text:
+            return None
 
-        client.close()
-
-        if raw_text:
-            # Clean up the summary
-            summary = raw_text.strip()
-            # Remove quotes if present
-            if summary.startswith('"') and summary.endswith('"'):
-                summary = summary[1:-1]
-            if summary.startswith("'") and summary.endswith("'"):
-                summary = summary[1:-1]
-            return summary
-
-        return None
-
-    except Exception as e:
-        logger.error(f"LLM API error: {e}")
+        summary = raw_text.strip()
+        if summary.startswith('"') and summary.endswith('"'):
+            summary = summary[1:-1]
+        if summary.startswith("'") and summary.endswith("'"):
+            summary = summary[1:-1]
+        return summary
+    except Exception as exc:
+        logger.error("LLM API error: %s", exc)
         return None
 
 
-def main():
-    """Main entry point for command-line usage."""
-    parser = argparse.ArgumentParser(description="Generate summary for a single item")
-    parser.add_argument("--item-id", required=True, help="The ID of the item to summarize")
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Generate summary for a single Radar item")
+    parser.add_argument("--item-id", required=True, help="The Radar item ID to summarize")
     parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
-
     args = parser.parse_args()
 
     if args.verbose:
         logging.getLogger().setLevel(logging.DEBUG)
 
-    success = generate_summary_for_item(args.item_id)
-    sys.exit(0 if success else 1)
+    raise SystemExit(0 if generate_summary_for_item(args.item_id) else 1)
 
 
 if __name__ == "__main__":

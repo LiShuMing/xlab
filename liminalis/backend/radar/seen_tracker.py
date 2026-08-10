@@ -5,8 +5,10 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass
-from datetime import UTC, datetime
 from pathlib import Path
+
+from backend._shared.serializers import parse_datetime, utc_now, utc_now_iso
+from backend._shared.storage import runtime_cache_path
 
 
 @dataclass
@@ -84,7 +86,7 @@ class SeenTracker:
             published_at: Optional publication date.
         """
         key = self._get_url_hash(url)
-        now = datetime.now(UTC).isoformat()
+        now = utc_now_iso()
 
         if key in self._seen:
             # Update last_seen timestamp
@@ -175,13 +177,15 @@ class SeenTracker:
         Returns:
             Number of entries removed.
         """
-        cutoff = datetime.now(UTC)
+        cutoff = utc_now()
         removed = 0
 
         keys_to_remove = []
         for key, article in self._seen.items():
             try:
-                last_seen = datetime.fromisoformat(article.last_seen.replace("Z", "+00:00"))
+                last_seen = parse_datetime(article.last_seen)
+                if last_seen is None:
+                    raise ValueError("invalid last_seen")
                 age_days = (cutoff - last_seen).days
                 if age_days > days:
                     keys_to_remove.append(key)
@@ -201,8 +205,4 @@ class SeenTracker:
 
 def get_seen_tracker() -> SeenTracker:
     """Get the default SeenTracker instance."""
-    from backend.radar.config import get_config
-
-    config = get_config()
-    seen_file = config.cache_dir / "seen_articles.json"
-    return SeenTracker(seen_file)
+    return SeenTracker(runtime_cache_path("radar", "seen_articles.json"))

@@ -7,6 +7,7 @@ with RSS-extracted items.
 
 from __future__ import annotations
 
+from backend._shared.web_feed import is_feed_content
 from backend.radar.crawler import CrawledItem, SmartCrawler, URLNormalizer
 from backend.radar.extractor import ExtractedItem
 from backend.radar.fetcher import FetchResult
@@ -167,11 +168,7 @@ def extract_with_crawler(
         if result.content_type == "error" or not result.content:
             continue
 
-        # Check if RSS content
-        content_start = result.content[:500].lower()
-        is_rss = any(tag in content_start for tag in ["<rss", "<feed", "<channel", "<item"])
-
-        if is_rss:
+        if is_feed_content(result.content):
             items = extractor.extract_rss_items(result)
             for item in items:
                 normalized_url = URLNormalizer.normalize(item.url)
@@ -187,11 +184,7 @@ def extract_with_crawler(
             if result.content_type == "error" or not result.content:
                 continue
 
-            # Skip RSS feeds
-            content_start = result.content[:500].lower()
-            is_rss = any(tag in content_start for tag in ["<rss", "<feed", "<channel", "<item"])
-
-            if is_rss:
+            if is_feed_content(result.content):
                 continue
 
             # Crawl this source

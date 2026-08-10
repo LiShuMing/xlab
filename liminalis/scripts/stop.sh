@@ -65,7 +65,10 @@ stop_service() {
 
 [[ "${START_LIMINALIS}" == "1" ]] && stop_service "liminalis" "${LIMINALIS_PORT}"
 [[ "${START_LIMINALIS_API}" == "1" ]] && stop_service "liminalis-api" "${LIMINALIS_API_PORT}"
-[[ "${START_LLM_WIKI}" == "1" ]] && stop_service "llm-wiki" "${LLM_WIKI_PORT}"
+if [[ "${START_LLM_WIKI}" == "1" ]]; then
+  stop_service "llm-wiki" "${LLM_WIKI_PORT}"
+  rm -f "${LLM_WIKI_SOCKET}"
+fi
 
 echo
 "${SCRIPT_DIR}/check.sh"

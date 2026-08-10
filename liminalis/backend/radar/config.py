@@ -1,177 +1,77 @@
-"""Configuration management for Daily DB Radar using Pydantic Settings.
+"""Compatibility adapter for Daily DB Radar settings.
 
-This module implements type-safe configuration management as per
-Harness Engineering Rule 7.1.
+Radar used to keep its own pydantic-settings tree. The unified runtime now
+loads environment and env-file values from :mod:`backend.settings`; this module
+preserves the old Radar-facing API.
 """
 
-import os
+from __future__ import annotations
+
+from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
-from typing import Literal
 
-from pydantic import Field, SecretStr, field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
-
-try:
-    from dotenv import dotenv_values
-except ImportError:  # pragma: no cover - optional dependency in older envs
-    dotenv_values = None
+from backend.settings import Settings as RuntimeSettings
+from backend.settings import get_settings as get_runtime_settings
 
 
 @lru_cache
 def get_dotenv_values() -> dict:
-    """Read ~/.env once for backward-compatible variable aliases."""
-    if dotenv_values is None:
-        return {}
-    env_path = Path.home() / ".env"
-    if not env_path.exists():
-        return {}
-    return {key: value for key, value in dotenv_values(env_path).items() if value is not None}
+    """Compatibility hook; root runtime settings now owns env-file loading."""
+    return {}
 
 
-def env_value(*keys: str, default: str | None = None) -> str | None:
-    dotenv = get_dotenv_values()
-    for key in keys:
-        value = os.environ.get(key) or dotenv.get(key)
-        if value:
-            return value
-    return default
+@dataclass(frozen=True)
+class Settings:
+    """Radar-compatible settings view backed by runtime settings."""
 
+    llm_api_key: str
+    llm_base_url: str
+    llm_model: str
+    llm_timeout: int
+    cache_dir: Path
+    output_dir: Path
+    feeds_file: Path
+    max_items: int
+    top_k: int
+    days: int
+    language: str
+    oss_access_key_id: str | None
+    oss_access_key_secret: str | None
+    oss_endpoint: str
+    oss_bucket: str
+    oss_prefix: str
+    circuit_breaker_failure_threshold: int
+    circuit_breaker_recovery_timeout: int
+    http_max_connections: int
+    http_max_keepalive: int
+    http_timeout: int
 
-class Settings(BaseSettings):
-    """Type-safe application configuration using Pydantic Settings.
-
-    Configuration is loaded from environment variables and ~/.env file.
-    Secrets are automatically masked in logs using SecretStr.
-    """
-
-    model_config = SettingsConfigDict(
-        env_file="~/.env",
-        env_file_encoding="utf-8",
-        extra="ignore",  # Ignore extra env vars not defined here
-    )
-
-    # LLM Configuration
-    llm_api_key: SecretStr = Field(
-        default=SecretStr(""),
-        description="LLM API key",
-    )
-    llm_base_url: str | None = Field(
-        default=None,
-        description="LLM API base URL",
-    )
-    llm_model: str = Field(
-        default="qwen3.5-plus",
-        description="LLM model name",
-    )
-    llm_timeout: int = Field(
-        default=300,
-        ge=1,
-        le=600,
-        description="LLM request timeout in seconds",
-    )
-
-    # Application Configuration
-    cache_dir: Path = Field(
-        default=Path("cache"),
-        description="Cache directory path",
-    )
-    output_dir: Path = Field(
-        default=Path("out"),
-        description="Output directory path",
-    )
-    feeds_file: Path = Field(
-        default=Path("feeds.json"),
-        description="Path to feeds.json",
-    )
-    max_items: int = Field(
-        default=80,
-        ge=1,
-        le=500,
-        description="Maximum items to process",
-    )
-    top_k: int = Field(
-        default=10,
-        ge=1,
-        le=100,
-        description="Top K items to select",
-    )
-    days: int = Field(
-        default=7,
-        ge=1,
-        le=30,
-        description="Number of days to look back",
-    )
-    language: Literal["en", "zh"] = Field(
-        default="en",
-        description="Output language",
-    )
-
-    # OSS Sync Configuration
-    oss_access_key_id: str | None = Field(
-        default=None,
-        description="OSS access key ID",
-    )
-    oss_access_key_secret: SecretStr | None = Field(
-        default=None,
-        description="OSS access key secret",
-    )
-    oss_endpoint: str = Field(
-        default="oss-cn-hangzhou.aliyuncs.com",
-        description="OSS endpoint",
-    )
-    oss_bucket: str = Field(
-        default="dbradar-sync",
-        description="OSS bucket name",
-    )
-    oss_prefix: str = Field(
-        default="sync/",
-        description="OSS file prefix",
-    )
-
-    # Circuit Breaker Configuration
-    circuit_breaker_failure_threshold: int = Field(
-        default=5,
-        ge=1,
-        le=20,
-        description="Circuit breaker failure threshold",
-    )
-    circuit_breaker_recovery_timeout: int = Field(
-        default=30,
-        ge=5,
-        le=300,
-        description="Circuit breaker recovery timeout in seconds",
-    )
-
-    # Connection Pool Configuration
-    http_max_connections: int = Field(
-        default=20,
-        ge=1,
-        le=100,
-        description="HTTP connection pool max connections",
-    )
-    http_max_keepalive: int = Field(
-        default=10,
-        ge=1,
-        le=50,
-        description="HTTP connection pool max keepalive connections",
-    )
-    http_timeout: int = Field(
-        default=30,
-        ge=1,
-        le=120,
-        description="HTTP client timeout in seconds",
-    )
-
-    @field_validator("cache_dir", "output_dir", "feeds_file", mode="before")
     @classmethod
-    def validate_paths(cls, v: str | None) -> Path | None:
-        """Convert string paths to Path objects."""
-        if v is None:
-            return None
-        if isinstance(v, Path):
-            return v
-        return Path(v)
+    def from_runtime(cls, settings: RuntimeSettings) -> Settings:
+        return cls(
+            llm_api_key=settings.db_radar_api_key or settings.llm_api_key or "",
+            llm_base_url=settings.db_radar_base_url or settings.llm_base_url,
+            llm_model=settings.db_radar_model or settings.llm_model,
+            llm_timeout=int(settings.db_radar_timeout or settings.llm_timeout),
+            cache_dir=settings.radar_cache_dir,
+            output_dir=settings.radar_output_dir,
+            feeds_file=settings.radar_feeds_file,
+            max_items=settings.radar_max_items,
+            top_k=settings.radar_top_k,
+            days=settings.radar_days,
+            language=settings.radar_language,
+            oss_access_key_id=settings.radar_oss_access_key_id,
+            oss_access_key_secret=settings.radar_oss_access_key_secret,
+            oss_endpoint=settings.radar_oss_endpoint,
+            oss_bucket=settings.radar_oss_bucket,
+            oss_prefix=settings.radar_oss_prefix,
+            circuit_breaker_failure_threshold=settings.circuit_breaker_failure_threshold,
+            circuit_breaker_recovery_timeout=settings.circuit_breaker_recovery_timeout,
+            http_max_connections=settings.http_max_connections,
+            http_max_keepalive=settings.http_max_keepalive,
+            http_timeout=int(settings.http_timeout),
+        )
 
     def ensure_dirs(self) -> None:
         """Create necessary directories if they don't exist."""
@@ -179,30 +79,16 @@ class Settings(BaseSettings):
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
     def get_api_key(self) -> str:
-        """Get the API key as a plain string.
-
-        Note: Only use this when actually making API calls.
-        Never log the returned value.
-        """
-        return self.llm_api_key.get_secret_value() if self.llm_api_key else ""
+        """Get the API key as a plain string."""
+        return self.llm_api_key
 
     def get_oss_secret(self) -> str | None:
-        """Get the OSS secret as a plain string.
-
-        Note: Only use this when actually making OSS calls.
-        Never log the returned value.
-        """
-        if self.oss_access_key_secret:
-            return self.oss_access_key_secret.get_secret_value()
-        return None
+        """Get the OSS secret as a plain string."""
+        return self.oss_access_key_secret
 
 
-# Backward compatibility: Config class that wraps Settings
 class Config:
-    """Backward-compatible configuration holder.
-
-    Deprecated: Use Settings class directly instead.
-    """
+    """Backward-compatible configuration holder."""
 
     def __init__(
         self,
@@ -213,10 +99,10 @@ class Config:
         output_dir: Path | None = None,
         website_file: Path | None = None,
         feeds_file: Path | None = None,
-        max_items: int = 80,
-        top_k: int = 10,
-        days: int = 7,
-        language: str = "en",
+        max_items: int | None = None,
+        top_k: int | None = None,
+        days: int | None = None,
+        language: str | None = None,
         oss_access_key_id: str | None = None,
         oss_access_key_secret: str | None = None,
         oss_endpoint: str | None = None,
@@ -226,12 +112,10 @@ class Config:
         """Initialize Config with backward-compatible parameters."""
         settings = get_settings()
 
-        self.api_key = (
-            api_key or settings.get_api_key() or env_value("DB_RADAR_API_KEY", "OPENAI_API_KEY", default="")
-        )
-        self.base_url = base_url or settings.llm_base_url or env_value("DB_RADAR_BASE_URL")
-        self.model = model or env_value("DB_RADAR_MODEL") or settings.llm_model
-        self.timeout = int(env_value("DB_RADAR_TIMEOUT", default=str(settings.llm_timeout)))
+        self.api_key = api_key or settings.llm_api_key
+        self.base_url = base_url or settings.llm_base_url
+        self.model = model or settings.llm_model
+        self.timeout = settings.llm_timeout
         self.cache_dir = cache_dir or settings.cache_dir
         self.output_dir = output_dir or settings.output_dir
         self.website_file = website_file or Path("websites.txt")
@@ -241,7 +125,6 @@ class Config:
         self.days = days or settings.days
         self.language = language or settings.language
 
-        # OSS sync configuration
         self.oss_access_key_id = oss_access_key_id or settings.oss_access_key_id
         self.oss_access_key_secret = oss_access_key_secret or settings.get_oss_secret()
         self.oss_endpoint = oss_endpoint or settings.oss_endpoint
@@ -256,15 +139,10 @@ class Config:
 
 @lru_cache
 def get_settings() -> Settings:
-    """Get the cached Settings instance.
-
-    Settings are loaded once and cached for the lifetime of the application.
-    This ensures consistent configuration across all components.
-    """
-    return Settings()
+    """Get the cached Radar-compatible settings instance."""
+    return Settings.from_runtime(get_runtime_settings())
 
 
-# Global config instance for backward compatibility
 _config: Config | None = None
 
 

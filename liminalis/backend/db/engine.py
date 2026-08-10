@@ -1,13 +1,7 @@
-"""Async SQLAlchemy engine + FastAPI session dependency.
-
-The legacy sync `psycopg` adapters in `backend.db.postgres` continue to work
-side-by-side until M1 finishes migrating radar to ORM-backed access. This
-module exposes the async path that new code should use.
-"""
+"""Async SQLAlchemy engine for the unified business database."""
 
 from __future__ import annotations
 
-from collections.abc import AsyncIterator
 from functools import lru_cache
 
 from sqlalchemy.ext.asyncio import (
@@ -40,17 +34,6 @@ def get_engine() -> AsyncEngine:
 @lru_cache
 def get_session_factory() -> async_sessionmaker[AsyncSession]:
     return async_sessionmaker(get_engine(), expire_on_commit=False, class_=AsyncSession)
-
-
-async def get_session() -> AsyncIterator[AsyncSession]:
-    """FastAPI dependency. Yields a session and rolls back on exception."""
-    factory = get_session_factory()
-    async with factory() as session:
-        try:
-            yield session
-        except Exception:
-            await session.rollback()
-            raise
 
 
 async def dispose_engine() -> None:

@@ -220,9 +220,10 @@ async def run_daily_analysis(dry_run: bool = False) -> DailyJobResult:
     Returns:
         DailyJobResult with analysis status.
     """
+    from backend._shared.storage import business_uow
+    from backend.invest import service as invest_service
     from backend.invest.diff import compare_reports, format_email_subject, format_incremental_email
     from backend.invest.notifier import EmailConfig, EmailSender
-    from backend.invest.storage import get_report, init_db, save_report, sync_stock_configs
 
     result = DailyJobResult()
     today = date.today()
@@ -251,12 +252,10 @@ async def run_daily_analysis(dry_run: bool = False) -> DailyJobResult:
 
     logger.info("Loaded config", stock_count=len(config.stocks))
 
-    # Initialize database
-    init_db()
-
     # Sync stock configs to database
     stock_dicts = [{"code": s.code, "name": s.name} for s in config.stocks]
-    sync_stock_configs(stock_dicts)
+    async with business_uow() as session:
+        await invest_service.sync_stock_configs(session, stock_dicts)
 
     # Step 3: Analyze stocks in batches to manage API quota
     all_successful_reports: list[dict[str, Any]] = []
@@ -302,11 +301,13 @@ async def run_daily_analysis(dry_run: bool = False) -> DailyJobResult:
 
                     # Save report to storage
                     try:
-                        save_report(
-                            stock_code=analysis_result["stock_code"],
-                            report_date=today,
-                            analysis_json=json.dumps(report_dict, ensure_ascii=False),
-                        )
+                        async with business_uow() as session:
+                            await invest_service.save_report(
+                                session,
+                                stock_code=analysis_result["stock_code"],
+                                report_date=today,
+                                analysis_json=json.dumps(report_dict, ensure_ascii=False),
+                            )
                     except Exception as e:
                         logger.error(
                             "Failed to save report",
@@ -356,7 +357,8 @@ async def run_daily_analysis(dry_run: bool = False) -> DailyJobResult:
         stock_code = report_dict.get("stock_code", "")
 
         # Get yesterday's report
-        yesterday_report = get_report(stock_code, yesterday)
+        async with business_uow() as session:
+            yesterday_report = await invest_service.get_report(session, stock_code, yesterday)
         yesterday_data = None
         if yesterday_report:
             try:

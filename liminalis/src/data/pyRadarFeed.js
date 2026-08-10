@@ -1,6 +1,6 @@
 const pyRadarFeed = {
-  "source": "py-radar",
-  "sourcePath": "/Users/lism/work/xlab/python/projects/py-radar/data/items.duckdb",
+  "source": "liminalis-radar-snapshot",
+  "sourcePath": "liminalis/src/data/pyRadarFeed.js",
   "generatedAt": "2026-05-03T21:33:32",
   "limit": 160,
   "totalItems": 1621,

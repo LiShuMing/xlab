@@ -15,7 +15,7 @@ if [[ "${START_LIMINALIS_API}" == "1" ]]; then
   print_service "liminalis-api" "${LIMINALIS_API_PORT}" "http://localhost:${LIMINALIS_API_PORT}/health"
 fi
 if [[ "${START_LLM_WIKI}" == "1" ]]; then
-  print_service "llm-wiki" "${LLM_WIKI_PORT}" "http://localhost:${LLM_WIKI_PORT}/"
+  print_unix_service "llm-wiki" "${LLM_WIKI_SOCKET}" "http://localhost:${LIMINALIS_API_PORT}/llm-wiki/"
 fi
 
 echo
@@ -37,8 +37,10 @@ if [[ "${START_LIMINALIS_API}" == "1" ]]; then
 fi
 
 if [[ "${START_LLM_WIKI}" == "1" ]]; then
-  if http_ok "http://localhost:${LLM_WIKI_PORT}/"; then
+  if [[ "${START_LIMINALIS_API}" == "1" ]] && http_ok "http://localhost:${LIMINALIS_API_PORT}/llm-wiki/"; then
     echo "ok   llm-wiki"
+  elif socket_is_ready "${LLM_WIKI_SOCKET}"; then
+    echo "ok   llm-wiki socket"
   else
     echo "fail llm-wiki"
   fi
@@ -48,4 +50,7 @@ echo
 echo "Logs: ${LOG_DIR}"
 echo "PID files: ${STATE_DIR}"
 echo "Python venv: ${VENV_DIR}"
-[[ "${START_LLM_WIKI}" == "1" ]] && echo "llm-wiki root: ${LLM_WIKI_ROOT}"
+if [[ "${START_LLM_WIKI}" == "1" ]]; then
+  echo "llm-wiki root: ${LLM_WIKI_ROOT}"
+  echo "llm-wiki socket: ${LLM_WIKI_SOCKET}"
+fi

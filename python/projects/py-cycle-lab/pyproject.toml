@@ -1,0 +1,13 @@
+[project]
+name = "py-cycle-lab"
+version = "0.1.0"
+description = "LongCycle: a long-term personal investment value analysis and cycle research workspace."
+requires-python = ">=3.11"
+readme = "README.md"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100

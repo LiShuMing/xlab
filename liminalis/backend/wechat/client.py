@@ -71,4 +71,3 @@ def exchange_official_oauth_code(settings: Settings, code: str) -> dict[str, Any
     if not payload.get("openid"):
         raise WeChatOAuthError("WeChat OAuth response did not include openid")
     return payload
-

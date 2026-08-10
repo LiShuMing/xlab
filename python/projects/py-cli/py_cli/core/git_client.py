@@ -179,7 +179,7 @@ class GitClient:
         """Get list of files changed in a commit."""
         try:
             output = self._run_git(
-                ["diff-tree", "--no-commit-id", "--name-only", "-r", sha]
+                ["diff-tree", "--root", "--no-commit-id", "--name-only", "-r", sha]
             )
             return [f for f in output.split("\n") if f.strip()]
         except GitError:

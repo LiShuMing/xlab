@@ -17,6 +17,10 @@ function withTimestamp(message) {
   };
 }
 
+function chatStorageKey(roleId = 'therapist') {
+  return scopedStorageKey(`${STORAGE_KEY}:${roleId}`);
+}
+
 export function getWelcomeMessage(roleId = 'therapist') {
   return withTimestamp({
     ...WELCOME_MESSAGE,
@@ -26,7 +30,7 @@ export function getWelcomeMessage(roleId = 'therapist') {
 }
 
 export function loadLocalChatMessages(roleId = 'therapist') {
-  const messages = getItem(scopedStorageKey(STORAGE_KEY));
+  const messages = getItem(chatStorageKey(roleId)) || getItem(scopedStorageKey(STORAGE_KEY));
   if (!Array.isArray(messages) || messages.length === 0) {
     return [getWelcomeMessage(roleId)];
   }
@@ -36,6 +40,6 @@ export function loadLocalChatMessages(roleId = 'therapist') {
   return messages;
 }
 
-export function saveLocalChatMessages(messages) {
-  setItem(scopedStorageKey(STORAGE_KEY), messages.slice(-80));
+export function saveLocalChatMessages(messages, roleId = 'therapist') {
+  setItem(chatStorageKey(roleId), messages.slice(-80));
 }

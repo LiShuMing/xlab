@@ -5,8 +5,8 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING
 
-import httpx
-
+from backend._shared.json_tools import load_json_array
+from backend._shared.llm import ChatMessage, LLMRuntimeConfig, SyncLLMClient
 from backend.radar.config import get_config
 from backend.radar.intelligence.types import CompetitiveInsight, ToolResult
 
@@ -28,7 +28,15 @@ class CompetitionAnalyzer:
         self.base_url = base_url or config.base_url
         self.model = model or config.model or "qwen3.5-plus"
         self.timeout = config.timeout
-        self.client = httpx.Client(timeout=self.timeout)
+        self.client = SyncLLMClient(
+            LLMRuntimeConfig(
+                api_key=self.api_key or "",
+                base_url=self.base_url or "https://api.openai.com/v1",
+                model=self.model,
+                timeout=self.timeout,
+                max_retries=2,
+            )
+        )
 
     def analyze(
         self,
@@ -114,48 +122,17 @@ Return a JSON array with this structure (no markdown code blocks):
 Only include products with meaningful updates. Maximum 5 products.
 Be specific and factual — avoid speculation."""
 
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {self.api_key}",
-        }
-
-        payload = {
-            "model": self.model,
-            "max_tokens": 3000,
-            "messages": [{"role": "user", "content": prompt}],
-        }
-
-        response = self.client.post(
-            f"{self.base_url}/chat/completions",
-            headers=headers,
-            json=payload,
+        response = self.client.complete(
+            [ChatMessage(role="user", content=prompt)],
+            model=self.model,
+            max_tokens=3000,
         )
-        response.raise_for_status()
-        data = response.json()
-
-        # Extract response text
-        raw_text = ""
-        if "choices" in data and len(data["choices"]) > 0:
-            choice = data["choices"][0]
-            if "message" in choice and "content" in choice["message"]:
-                raw_text = choice["message"]["content"]
+        raw_text = response.text
 
         if not raw_text:
             return []
 
-        # Parse JSON from response
-        json_text = raw_text
-        if "```json" in raw_text:
-            json_text = raw_text.split("```json")[1].split("```")[0]
-        elif "```" in raw_text:
-            json_text = raw_text.split("```")[1].split("```")[0]
-        else:
-            start = raw_text.find("[")
-            end = raw_text.rfind("]") + 1
-            if start >= 0 and end > start:
-                json_text = raw_text[start:end]
-
-        parsed = json.loads(json_text.strip())
+        parsed = load_json_array(raw_text)
 
         insights = []
         for item in parsed:

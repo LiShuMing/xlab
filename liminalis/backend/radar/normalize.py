@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from difflib import SequenceMatcher
 
+from backend._shared.content import keyword_snippets
+from backend._shared.serializers import domain_from_url, parse_datetime, utc_now
 from backend.radar.extractor import ExtractedItem
 
 
@@ -49,29 +51,19 @@ class Normalizer:
 
     def extract_domain(self, url: str) -> str:
         """Extract domain from URL."""
-        from urllib.parse import urlparse
-
-        parsed = urlparse(url)
-        domain = parsed.netloc.removeprefix("www.")
-        return domain
+        return domain_from_url(url)
 
     def parse_date(self, date_str: str | None) -> datetime | None:
         """Parse a date string into datetime."""
         if not date_str:
             return None
 
-        # Normalize Z suffix for fromisoformat
-        normalized = date_str.strip()
-        if normalized.endswith("Z"):
-            normalized = normalized[:-1] + "+00:00"
-
-        # Try ISO format first (covers most RSS/API dates)
-        try:
-            return datetime.fromisoformat(normalized)
-        except (ValueError, AttributeError):
-            pass
+        parsed = parse_datetime(date_str)
+        if parsed is not None:
+            return parsed
 
         # Try strptime for human-readable formats
+        normalized = date_str.strip()
         strptime_formats = [
             "%Y-%m-%d %H:%M:%S",
             "%Y/%m/%d",
@@ -96,37 +88,7 @@ class Normalizer:
 
     def extract_snippets(self, content: str, title: str, max_length: int = 200) -> list[str]:
         """Extract relevant snippets from content."""
-        snippets = []
-
-        # Find sentences containing keywords
-        sentences = re.split(r"[.!?\n]", content)
-        keywords = [
-            "performance",
-            "query",
-            "execute",
-            "optimize",
-            "update",
-            "feature",
-            "release",
-            "new",
-            "improve",
-            "storage",
-            "engine",
-            "support",
-            "introduce",
-            "announce",
-        ]
-
-        for sentence in sentences:
-            sentence = sentence.strip()
-            if (
-                len(sentence) > 30
-                and len(sentence) < max_length
-                and any(kw in sentence.lower() for kw in keywords)
-            ):
-                snippets.append(sentence)
-
-        return snippets[:3]  # Max 3 snippets
+        return keyword_snippets(content, max_length=max_length)
 
     def is_similar(self, title1: str, title2: str) -> bool:
         """Check if two titles are similar enough to be duplicates."""
@@ -213,7 +175,7 @@ class Normalizer:
 
     def filter_by_date(self, items: list[NormalizedItem], max_days: int = 7) -> list[NormalizedItem]:
         """Filter items to only include recent ones."""
-        cutoff = datetime.now(UTC).timestamp() - (max_days * 24 * 60 * 60)
+        cutoff = utc_now().timestamp() - (max_days * 24 * 60 * 60)
 
         filtered = []
         for item in items:

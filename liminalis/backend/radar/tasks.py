@@ -11,18 +11,21 @@ import hashlib
 import ipaddress
 import logging
 import socket
-from datetime import UTC, date, datetime
+from datetime import date
 from typing import Any
 from urllib.parse import urlparse
 
-import httpx
 from dateutil import parser as date_parser
 
+from backend._shared.jobs import JobStatus
+from backend._shared.serializers import domain_from_url, utc_now
+from backend._shared.storage import business_uow
+from backend.radar.analysis import IngestionRequest, analyze_with_llm
 from backend.radar.extractor import ExtractedItem, Extractor
 from backend.radar.fetcher import Fetcher
 from backend.radar.service import (
-    _item_to_api_dict,
     get_radar_item_by_url,
+    radar_item_to_dict,
     update_ingestion_job,
     upsert_radar_item,
 )
@@ -63,12 +66,8 @@ async def ingest_link_task(
     submitted_by: str = "admin",
 ) -> dict[str, Any]:
     """arq task — ingest a single URL and persist to PostgreSQL."""
-    from backend.db.engine import get_session_factory
-
-    session_factory = get_session_factory()
-
-    async with session_factory() as session:
-        await _mark_status(session, job_id, "fetching")
+    async with business_uow() as session:
+        await _mark_status(session, job_id, JobStatus.FETCHING)
 
         url = validate_public_url(request_data["url"])
         product = request_data.get("product", "")
@@ -79,26 +78,23 @@ async def ingest_link_task(
         # Duplicate check
         existing = await get_radar_item_by_url(session, url)
         if existing:
-            await _mark_status(session, job_id, "duplicate", item_id=existing.id)
-            await session.commit()
-            return {"status": "duplicate", "item": _item_to_api_dict(existing)}
+            await _mark_status(session, job_id, JobStatus.DUPLICATE, item_id=existing.id)
+            return {"status": JobStatus.DUPLICATE.value, "item": radar_item_to_dict(existing)}
 
         # Blocking: fetch + extract + LLM analyze
         loop = asyncio.get_running_loop()
         try:
             result = await loop.run_in_executor(
-                None, _fetch_and_extract, url, product or source or _extract_domain(url)
+                None, _fetch_and_extract, url, product or source or domain_from_url(url)
             )
         except Exception:
-            await _mark_status(session, job_id, "failed", error="抓取失败")
-            await session.commit()
+            await _mark_status(session, job_id, JobStatus.FAILED, error="抓取失败")
             raise
 
         try:
             analysis = await loop.run_in_executor(None, _llm_analyze, result, product, source, tags, note)
         except Exception:
-            await _mark_status(session, job_id, "failed", error="AI 分析失败")
-            await session.commit()
+            await _mark_status(session, job_id, JobStatus.FAILED, error="AI 分析失败")
             raise
 
         # Save to PG
@@ -114,33 +110,32 @@ async def ingest_link_task(
             "summary": analysis["summary"],
             "tags": analysis["tags"],
             "sources": [],
-            "fetched_at": datetime.now(UTC),
+            "fetched_at": utc_now(),
             "raw_content": result.get("content", ""),
             "sync_batch": date.today(),
         }
         await upsert_radar_item(session, item_data)
-        await _mark_status(session, job_id, "completed", item_id=item_id)
-        await session.commit()
+        await _mark_status(session, job_id, JobStatus.COMPLETED, item_id=item_id)
 
-        return {"status": "completed", "item": item_data}
+        return {"status": JobStatus.COMPLETED.value, "item": item_data}
 
 
 async def _mark_status(
     session,
     job_id: str,
-    status: str,
+    status: JobStatus,
     *,
     error: str | None = None,
     item_id: str | None = None,
 ) -> None:
-    await update_ingestion_job(session, job_id, status=status, error=error, item_id=item_id)
+    await update_ingestion_job(session, job_id, status=status.value, error=error, item_id=item_id)
     await session.flush()
 
 
 def _fetch_and_extract(url: str, product: str) -> dict[str, Any]:
     """Blocking: fetch URL and extract content."""
     fetcher = Fetcher(timeout=30)
-    with httpx.Client(timeout=30) as client:
+    with fetcher._http_client() as client:
         result = fetcher._fetch_single(client, url, product)
     if result.content_type == "error":
         raise ValueError(result.error_message or "抓取失败")
@@ -148,6 +143,7 @@ def _fetch_and_extract(url: str, product: str) -> dict[str, Any]:
     extractor = Extractor()
     extracted = _select_best_item(extractor.extract(result), url)
     return {
+        "url": extracted.url or url,
         "title": extracted.title,
         "content": extracted.content,
         "published_at": extracted.published_at,
@@ -166,10 +162,8 @@ def _llm_analyze(
     note: str,
 ) -> dict[str, Any]:
     """Blocking: run LLM analysis on extracted content."""
-    from backend.radar.ingestion import IngestionRequest, analyze_with_llm
-
     extracted = ExtractedItem(
-        url="",
+        url=result.get("url", ""),
         product=result["product"],
         title=result["title"],
         content=result["content"],
@@ -207,11 +201,6 @@ def _select_best_item(items: list[ExtractedItem], url: str) -> ExtractedItem:
 
 def _hash_url(url: str) -> str:
     return hashlib.sha256(url.strip().lower().encode()).hexdigest()[:16]
-
-
-def _extract_domain(url: str) -> str:
-    parsed = urlparse(url)
-    return parsed.netloc.replace("www.", "") or ""
 
 
 def _parse_date(value: str | None) -> date | None:

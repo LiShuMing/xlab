@@ -12,9 +12,9 @@ Based on py-lab/stock_module.py framework with 8-section structure:
 """
 
 import json
-import re
 from datetime import datetime
 
+from backend._shared.json_tools import JSONTextError, load_json_object, strip_markdown_fences
 from backend.invest.agents.specialist_agents import (
     FundamentalOutput,
     RiskOutput,
@@ -549,21 +549,14 @@ Return ONLY a JSON object in {language_instruction}:
 
     def _strip_markdown_fences(self, text: str) -> str:
         """Strip markdown fences from text."""
-        return re.sub(r"^```json\s*|\s*```$", "", text, flags=re.DOTALL).strip()
+        return strip_markdown_fences(text)
 
     def _parse_report_json(self, content: str, price_data: dict) -> dict:
         """Parse model output into report JSON, preserving useful text on failure."""
-        candidates = [content]
-        start = content.find("{")
-        end = content.rfind("}")
-        if start != -1 and end != -1 and end > start:
-            candidates.append(content[start : end + 1])
-
-        for candidate in candidates:
-            try:
-                return json.loads(candidate)
-            except json.JSONDecodeError:
-                continue
+        try:
+            return load_json_object(content)
+        except JSONTextError:
+            pass
 
         report_data = self._get_default_report_data(price_data)
         if content.strip():

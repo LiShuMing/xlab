@@ -1,6 +1,6 @@
 # Liminalis API Contracts
 
-This document captures the API shapes that the unified Python backend must preserve while `py-radar` and `py-invest` are migrated behind `liminalis-api`.
+This document captures the API shapes served by the unified Python backend.
 
 Status: aligned with `backend/routers/` implementation as of 2026-05.
 
@@ -19,7 +19,7 @@ GET /api/radar/items?page=1&per_page=80&type=all&product=all&q=
 Current provider:
 
 ```text
-py-radar Flask server on port 5000
+Liminalis unified backend on port 8010
 ```
 
 Response shape expected by Liminalis:
@@ -57,7 +57,7 @@ Response shape expected by Liminalis:
 
 Compatibility notes:
 
-- Frontend falls back to `src/data/pyRadarFeed.js` if this request fails.
+- The backend falls back to `src/data/pyRadarFeed.js` when PostgreSQL has no matching rows.
 - `type=all` means no content-type filter.
 - `product=all` means no product filter.
 - `q` performs a search over title, summary, tags, and related text in the current server.

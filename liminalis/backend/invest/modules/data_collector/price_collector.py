@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-import aiohttp
+from backend._shared.http import fetch_text
 
 from .base import BaseCollector, CrawlResult
 
@@ -23,7 +23,6 @@ class PriceCollector(BaseCollector):
             timeout: Request timeout in seconds.
         """
         self.timeout = timeout
-        self.session: aiohttp.ClientSession | None = None
 
     def validate_params(self, stock_code: str, **kwargs) -> bool:
         """Validate stock code parameter.
@@ -79,14 +78,8 @@ class PriceCollector(BaseCollector):
             "User-Agent": "Mozilla/5.0",
         }
 
-        async with (
-            aiohttp.ClientSession() as session,
-            session.get(url, headers=headers, timeout=self.timeout) as resp,
-        ):
-            if resp.status == 200:
-                text = await resp.text(encoding="gbk")
-                return self._parse_cn_quote(text, stock_code)
-        return None
+        response = await fetch_text(url, headers=headers, timeout=self.timeout, encoding="gbk")
+        return self._parse_cn_quote(response.text, stock_code)
 
     async def _fetch_hk_price(self, stock_code: str) -> dict | None:
         """Fetch HK-share price from Sina API.
@@ -104,14 +97,8 @@ class PriceCollector(BaseCollector):
             "User-Agent": "Mozilla/5.0",
         }
 
-        async with (
-            aiohttp.ClientSession() as session,
-            session.get(url, headers=headers, timeout=self.timeout) as resp,
-        ):
-            if resp.status == 200:
-                text = await resp.text(encoding="gbk")
-                return self._parse_hk_quote(text, stock_code)
-        return None
+        response = await fetch_text(url, headers=headers, timeout=self.timeout, encoding="gbk")
+        return self._parse_hk_quote(response.text, stock_code)
 
     async def _fetch_us_price(self, stock_code: str) -> dict | None:
         """Fetch US-stock price from Sina API.
@@ -128,14 +115,8 @@ class PriceCollector(BaseCollector):
             "User-Agent": "Mozilla/5.0",
         }
 
-        async with (
-            aiohttp.ClientSession() as session,
-            session.get(url, headers=headers, timeout=self.timeout) as resp,
-        ):
-            if resp.status == 200:
-                text = await resp.text(encoding="gbk")
-                return self._parse_us_quote(text, stock_code)
-        return None
+        response = await fetch_text(url, headers=headers, timeout=self.timeout, encoding="gbk")
+        return self._parse_us_quote(response.text, stock_code)
 
     def _parse_cn_quote(self, text: str, stock_code: str) -> dict | None:
         """Parse A-share quote data.

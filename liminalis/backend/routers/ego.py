@@ -5,7 +5,8 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.db.engine import get_session
+from backend._shared.domain_errors import DomainError
+from backend._shared.storage import get_business_session
 from backend.ego.auth_deps import require_ego_auth
 from backend.ego.schemas.auth import PinLoginRequest
 from backend.ego.schemas.chat import (
@@ -22,6 +23,10 @@ from backend.settings import Settings, get_settings
 router = APIRouter(prefix="/api/ego", tags=["ego"])
 
 
+def _raise_domain_error(exc: DomainError) -> None:
+    raise HTTPException(status_code=exc.status_code, detail=exc.detail) from exc
+
+
 # ── Auth ────────────────────────────────────────────────────────────────────
 
 
@@ -30,7 +35,7 @@ async def auth_pin_login(
     payload: PinLoginRequest,
     request: Request,
     settings: Settings = Depends(get_settings),
-    session: AsyncSession = Depends(get_session),
+    session: AsyncSession = Depends(get_business_session),
 ) -> dict:
     client_ip = request.client.host if request.client else "127.0.0.1"
     return await ego_service.pin_login(payload.pin, client_ip, settings, session)
@@ -70,7 +75,7 @@ async def put_current_role(
 async def create_chat_session(
     payload: CreateSessionRequest,
     user_id: str = Depends(require_ego_auth),
-    session: AsyncSession = Depends(get_session),
+    session: AsyncSession = Depends(get_business_session),
 ) -> SessionResponse:
     return await ego_service.create_chat_session(user_id, payload.role_id, session)
 
@@ -78,7 +83,7 @@ async def create_chat_session(
 @router.get("/chat/sessions")
 async def list_chat_sessions(
     user_id: str = Depends(require_ego_auth),
-    session: AsyncSession = Depends(get_session),
+    session: AsyncSession = Depends(get_business_session),
 ) -> list[SessionResponse]:
     return await ego_service.list_chat_sessions(user_id, session)
 
@@ -88,21 +93,24 @@ async def send_chat_message(
     session_id: str,
     payload: SendMessageRequest,
     user_id: str = Depends(require_ego_auth),
-    session: AsyncSession = Depends(get_session),
     settings: Settings = Depends(get_settings),
 ) -> dict:
-    return await ego_service.send_chat_message(
-        user_id, session_id, payload.content, session, settings
-    )
+    try:
+        return await ego_service.send_chat_message(user_id, session_id, payload.content, settings)
+    except DomainError as exc:
+        _raise_domain_error(exc)
 
 
 @router.get("/chat/sessions/{session_id}/messages")
 async def list_chat_messages(
     session_id: str,
-    _user_id: str = Depends(require_ego_auth),
-    session: AsyncSession = Depends(get_session),
+    user_id: str = Depends(require_ego_auth),
+    session: AsyncSession = Depends(get_business_session),
 ) -> list[ChatMessageResponse]:
-    return await ego_service.list_chat_messages(session_id, session)
+    try:
+        return await ego_service.list_chat_messages(user_id, session_id, session)
+    except DomainError as exc:
+        _raise_domain_error(exc)
 
 
 # ── Records ─────────────────────────────────────────────────────────────────
@@ -112,7 +120,7 @@ async def list_chat_messages(
 async def create_record(
     payload: CreateRecordRequest,
     user_id: str = Depends(require_ego_auth),
-    session: AsyncSession = Depends(get_session),
+    session: AsyncSession = Depends(get_business_session),
 ) -> RecordResponse:
     return await ego_service.create_record(user_id, payload, session)
 
@@ -121,7 +129,7 @@ async def create_record(
 async def list_records(
     request: Request,
     user_id: str = Depends(require_ego_auth),
-    session: AsyncSession = Depends(get_session),
+    session: AsyncSession = Depends(get_business_session),
 ) -> dict:
     page = int(request.query_params.get("page", "1"))
     size = int(request.query_params.get("size", "20"))
@@ -133,7 +141,7 @@ async def list_records(
 async def get_timeline(
     request: Request,
     user_id: str = Depends(require_ego_auth),
-    session: AsyncSession = Depends(get_session),
+    session: AsyncSession = Depends(get_business_session),
 ) -> dict:
     month = request.query_params.get("month") or ""
     days = await ego_service.get_timeline(user_id, month, session)
@@ -144,7 +152,7 @@ async def get_timeline(
 async def get_record(
     record_id: str,
     user_id: str = Depends(require_ego_auth),
-    session: AsyncSession = Depends(get_session),
+    session: AsyncSession = Depends(get_business_session),
 ) -> RecordResponse:
     record = await ego_service.get_record(record_id, user_id, session)
     if record is None:
@@ -156,7 +164,7 @@ async def get_record(
 async def delete_record(
     record_id: str,
     user_id: str = Depends(require_ego_auth),
-    session: AsyncSession = Depends(get_session),
+    session: AsyncSession = Depends(get_business_session),
 ) -> dict:
     deleted = await ego_service.delete_record(record_id, user_id, session)
     if not deleted:

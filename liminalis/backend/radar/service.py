@@ -4,11 +4,13 @@ from __future__ import annotations
 
 from datetime import date, datetime
 from typing import Any
-from urllib.parse import urlparse
 
 from sqlalchemy import func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from backend._shared.jobs import TERMINAL_JOB_STATUSES, JobStatus
+from backend._shared.schemas import page_response
+from backend._shared.serializers import domain_from_url, isoformat
 from backend.radar.db_models import RadarIngestionJob, RadarItem
 
 
@@ -93,19 +95,17 @@ async def query_radar_items(
 
     latest_row = (await session.execute(select(func.max(RadarItem.sync_batch)))).scalar_one()
 
-    total_pages = (total_items + per_page - 1) // per_page if total_items else 0
-    return {
-        "items": [_item_to_api_dict(item) for item in rows],
-        "page": page,
-        "per_page": per_page,
-        "total_items": total_items,
-        "total_pages": total_pages,
-        "has_prev": page > 1,
-        "has_next": page < total_pages,
-        "products": [{"name": name, "count": cnt} for name, cnt in product_counts],
-        "contentTypes": [{"name": name, "count": cnt} for name, cnt in type_counts],
-        "latestSyncBatch": latest_row.isoformat() if latest_row else None,
-    }
+    return page_response(
+        items=[radar_item_to_dict(item) for item in rows],
+        page=page,
+        per_page=per_page,
+        total_items=total_items,
+        **{
+            "products": [{"name": name, "count": cnt} for name, cnt in product_counts],
+            "contentTypes": [{"name": name, "count": cnt} for name, cnt in type_counts],
+            "latestSyncBatch": latest_row.isoformat() if latest_row else None,
+        },
+    )
 
 
 async def upsert_radar_item(session: AsyncSession, item_data: dict[str, Any]) -> RadarItem:
@@ -173,7 +173,7 @@ async def create_ingestion_job(
     job = RadarIngestionJob(
         id=job_id,
         url=url,
-        status="queued",
+        status=JobStatus.QUEUED.value,
         submitted_by=submitted_by,
         submitted_at=func.now(),
         metadata_=metadata or {},
@@ -203,9 +203,9 @@ async def update_ingestion_job(
         job.item_id = item_id
     if metadata is not None:
         job.metadata_ = metadata
-    if status == "fetching" and job.started_at is None:
+    if status == JobStatus.FETCHING.value and job.started_at is None:
         job.started_at = func.now()
-    if status in ("completed", "failed", "duplicate") and job.completed_at is None:
+    if status in {state.value for state in TERMINAL_JOB_STATUSES} and job.completed_at is None:
         job.completed_at = func.now()
     session.add(job)
     await session.flush()
@@ -223,21 +223,21 @@ async def list_ingestion_jobs(session: AsyncSession, limit: int = 30) -> list[Ra
     return list(result.scalars().all())
 
 
-def _item_to_api_dict(item: RadarItem) -> dict[str, Any]:
+def radar_item_to_dict(item: RadarItem) -> dict[str, Any]:
     return {
         "id": item.id,
         "title": item.title,
         "originalTitle": item.original_title or item.title,
         "url": item.url,
-        "site": _extract_domain(item.url),
+        "site": domain_from_url(item.url),
         "product": item.product,
         "summary": item.summary,
         "tags": item.tags or [],
         "sources": item.sources or [],
-        "publishedDate": item.published_date.isoformat() if item.published_date else None,
+        "publishedDate": isoformat(item.published_date),
         "contentType": item.content_type,
-        "fetchedAt": item.fetched_at.isoformat() if item.fetched_at else None,
-        "syncBatch": item.sync_batch.isoformat() if item.sync_batch else None,
+        "fetchedAt": isoformat(item.fetched_at),
+        "syncBatch": isoformat(item.sync_batch),
     }
 
 
@@ -249,16 +249,16 @@ def _job_to_dict(job: RadarIngestionJob) -> dict[str, Any]:
         "error": job.error,
         "item_id": job.item_id,
         "submitted_by": job.submitted_by,
-        "submitted_at": job.submitted_at.isoformat() if job.submitted_at else None,
-        "started_at": job.started_at.isoformat() if job.started_at else None,
-        "completed_at": job.completed_at.isoformat() if job.completed_at else None,
+        "submitted_at": isoformat(job.submitted_at),
+        "started_at": isoformat(job.started_at),
+        "completed_at": isoformat(job.completed_at),
         "metadata": job.metadata_,
     }
 
 
-def _extract_domain(url: str) -> str:
-    parsed = urlparse(url)
-    return parsed.netloc.replace("www.", "") or ""
+def ingestion_job_to_dict(job: RadarIngestionJob) -> dict[str, Any]:
+    """Serialize an ingestion job for CLI/API callers."""
+    return _job_to_dict(job)
 
 
 def _parse_date(value: Any) -> date | None:

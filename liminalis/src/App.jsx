@@ -112,7 +112,7 @@ const bookSeriesList = Object.values(
       id: chapter.bookId,
       title: titleizeSlug(chapter.bookId),
       subtitle: 'Markdown based open book.',
-      location: `/Users/lism/work/xlab/docs/books/${chapter.bookId}`,
+      location: `docs/books/${chapter.bookId}`,
       minutes: null,
       chapters: [],
     };

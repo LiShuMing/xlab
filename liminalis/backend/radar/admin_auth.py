@@ -1,25 +1,30 @@
-"""Small session-based admin authentication for DB Radar APIs."""
+"""Legacy-compatible admin authentication helpers for Radar.
+
+FastAPI routes use ``backend.services.radar_admin_service``. This module keeps
+the old function names without importing Flask.
+"""
 
 from __future__ import annotations
 
-import os
 from collections.abc import Callable
 from functools import wraps
-from typing import TypeVar
+from typing import Any, TypeVar
 
-from flask import jsonify, session
 from werkzeug.security import check_password_hash
+
+from backend.settings import get_settings as get_runtime_settings
 
 F = TypeVar("F", bound=Callable)
 
 
 def admin_username() -> str:
-    return os.environ.get("RADAR_ADMIN_USER", "admin")
+    return get_runtime_settings().radar_admin_user
 
 
 def verify_admin_password(password: str) -> bool:
-    password_hash = os.environ.get("RADAR_ADMIN_PASSWORD_HASH", "")
-    plain_password = os.environ.get("RADAR_ADMIN_PASSWORD", "")
+    settings = get_runtime_settings()
+    password_hash = settings.radar_admin_password_hash or ""
+    plain_password = settings.radar_admin_password
 
     if password_hash:
         return check_password_hash(password_hash, password)
@@ -28,23 +33,23 @@ def verify_admin_password(password: str) -> bool:
     return bool(plain_password) and password == plain_password
 
 
-def is_admin_authenticated() -> bool:
-    return session.get("radar_admin") == admin_username()
+def is_admin_authenticated(session_data: dict[str, Any] | None = None) -> bool:
+    return bool(session_data) and session_data.get("radar_admin") == admin_username()
 
 
-def login_admin() -> None:
-    session["radar_admin"] = admin_username()
+def login_admin(session_data: dict[str, Any]) -> None:
+    session_data["radar_admin"] = admin_username()
 
 
-def logout_admin() -> None:
-    session.pop("radar_admin", None)
+def logout_admin(session_data: dict[str, Any]) -> None:
+    session_data.pop("radar_admin", None)
 
 
 def require_admin(fn: F) -> F:
     @wraps(fn)
     def wrapper(*args, **kwargs):
         if not is_admin_authenticated():
-            return jsonify({"error": "admin authentication required"}), 401
+            return {"error": "admin authentication required"}, 401
         return fn(*args, **kwargs)
 
     return wrapper  # type: ignore[return-value]

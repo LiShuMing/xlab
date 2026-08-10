@@ -7,12 +7,19 @@ lifetime of the server process (FAISS index, profile, role manager per user).
 from __future__ import annotations
 
 import asyncio
+import re
 
+from backend._shared.storage import local_artifact_path
 from backend.ego.chat_service import ChatService
 from backend.ego.roles.role_manager import RoleManager
 
 _chat_services: dict[str, ChatService] = {}
 _lock = asyncio.Lock()
+
+
+def _user_artifact_dir(user_id: str):
+    safe_user_id = re.sub(r"[^a-zA-Z0-9_.-]", "_", user_id)
+    return local_artifact_path("ego", "users", safe_user_id)
 
 
 async def get_chat_service(user_id: str) -> ChatService:
@@ -22,7 +29,11 @@ async def get_chat_service(user_id: str) -> ChatService:
     async with _lock:
         if user_id in _chat_services:
             return _chat_services[user_id]
-        svc = ChatService(role_manager=RoleManager())
+        user_dir = _user_artifact_dir(user_id)
+        svc = ChatService(
+            role_manager=RoleManager(data_dir=user_dir / "data"),
+            chat_logs_dir=user_dir / "chat_logs",
+        )
         _chat_services[user_id] = svc
         return svc
 

@@ -11,20 +11,16 @@ from backend.db.base import Base
 
 
 class User(Base):
-    __tablename__ = "users"
+    __tablename__ = "liminalis_users"
 
     id: Mapped[str] = mapped_column(Text, primary_key=True)
     display_name: Mapped[str | None] = mapped_column(Text, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=text("now()")
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=text("now()")
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=text("now()"))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=text("now()"))
 
 
 class UserIdentity(Base):
-    __tablename__ = "user_identities"
+    __tablename__ = "liminalis_user_identities"
 
     id: Mapped[str] = mapped_column(Text, primary_key=True)
     user_id: Mapped[str] = mapped_column(Text, nullable=False, index=True)
@@ -32,15 +28,12 @@ class UserIdentity(Base):
     app_id: Mapped[str] = mapped_column(Text, nullable=False)
     openid: Mapped[str] = mapped_column(Text, nullable=False)
     unionid: Mapped[str | None] = mapped_column(Text, nullable=True, index=True)
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=text("now()")
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=text("now()")
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=text("now()"))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=text("now()"))
 
     __table_args__ = (
-        UniqueConstraint("provider", "app_id", "openid", name="uq_user_identity_provider_app_openid"),
-        Index("idx_user_identities_user_provider", "user_id", "provider"),
+        UniqueConstraint(
+            "provider", "app_id", "openid", name="uq_liminalis_user_identity_provider_app_openid"
+        ),
+        Index("idx_liminalis_user_identities_user_provider", "user_id", "provider"),
     )
-

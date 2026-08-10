@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 import respx
@@ -11,7 +10,11 @@ import httpx
 
 from src.exceptions import ResearcherError
 from src.researcher import generate_report_async
-from src.agent.tools.base_report import _get_api_key, _build_system_prompt
+from src.agent.tools.base_report import (
+    _build_system_prompt,
+    _chat_completions_url,
+    _get_api_key,
+)
 
 
 class TestGetApiKey:
@@ -57,17 +60,23 @@ class TestGenerateReportAsync:
         """Test that generate_report_async returns a report string."""
         monkeypatch.setenv("LLM_API_KEY", "test-key")
         monkeypatch.setenv("LLM_BASE_URL", "https://fake-api.example.com/v1")
+        monkeypatch.setenv("WEB_SEARCH_PROVIDER", "mock")
 
-        # Mock the AsyncAnthropic client
-        mock_message = MagicMock()
-        mock_block = MagicMock()
-        mock_block.text = "# Report\nThis is the report."
-        mock_message.content = [mock_block]
-
-        with patch("src.agent.tools.base_report.AsyncAnthropic") as MockClient:
-            mock_instance = MockClient.return_value.__aenter__.return_value
-            mock_instance.messages.create = AsyncMock(return_value=mock_message)
-
+        with respx.mock:
+            respx.post("https://fake-api.example.com/v1/chat/completions").mock(
+                return_value=httpx.Response(
+                    200,
+                    json={
+                        "choices": [
+                            {
+                                "message": {
+                                    "content": "# Report\nThis is the report.",
+                                }
+                            }
+                        ]
+                    },
+                )
+            )
             result = await generate_report_async("Claude API")
             assert "Report" in result
 
@@ -78,13 +87,12 @@ class TestGenerateReportAsync:
         """Test that API errors are wrapped in ResearcherError."""
         monkeypatch.setenv("LLM_API_KEY", "test-key")
         monkeypatch.setenv("LLM_BASE_URL", "https://fake-api.example.com/v1")
+        monkeypatch.setenv("WEB_SEARCH_PROVIDER", "mock")
 
-        with patch("src.agent.tools.base_report.AsyncAnthropic") as MockClient:
-            mock_instance = MockClient.return_value.__aenter__.return_value
-            mock_instance.messages.create = AsyncMock(
-                side_effect=Exception("API error")
+        with respx.mock:
+            respx.post("https://fake-api.example.com/v1/chat/completions").mock(
+                return_value=httpx.Response(500, json={"error": "API error"})
             )
-
             with pytest.raises(ResearcherError):
                 await generate_report_async("Claude API")
 
@@ -98,3 +106,17 @@ class TestGenerateReportAsync:
 
         with pytest.raises(ResearcherError):
             await generate_report_async("Claude API")
+
+
+class TestChatCompletionsUrl:
+    def test_appends_chat_completions(self) -> None:
+        assert (
+            _chat_completions_url("https://example.com/v1")
+            == "https://example.com/v1/chat/completions"
+        )
+
+    def test_keeps_full_endpoint(self) -> None:
+        assert (
+            _chat_completions_url("https://example.com/v1/chat/completions")
+            == "https://example.com/v1/chat/completions"
+        )

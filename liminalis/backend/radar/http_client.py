@@ -6,9 +6,7 @@ Uses httpx.AsyncClient with connection limits and semaphore for concurrency cont
 
 import asyncio
 from contextlib import asynccontextmanager
-from typing import Optional
 
-import httpx
 from tenacity import (
     retry,
     retry_if_exception_type,
@@ -16,9 +14,16 @@ from tenacity import (
     wait_exponential,
 )
 
+from backend._shared.http import (
+    HTTPClientConfig,
+    HTTPError,
+    Response,
+    SharedAsyncHTTPClient,
+    TimeoutException,
+)
 from backend.radar.circuit_breaker import with_circuit_breaker
-from backend.radar.config import get_settings
 from backend.radar.logging_config import get_logger
+from backend.settings import get_settings
 
 logger = get_logger(__name__)
 
@@ -33,7 +38,7 @@ class LLMHttpClient:
     - Circuit breaker integration
     """
 
-    _instance: Optional["LLMHttpClient"] = None
+    _instance: "LLMHttpClient | None" = None
     _lock: asyncio.Lock = asyncio.Lock()
 
     def __new__(cls) -> "LLMHttpClient":
@@ -48,39 +53,24 @@ class LLMHttpClient:
         if self._initialized:
             return
 
-        self._client: httpx.AsyncClient | None = None
+        self._client: SharedAsyncHTTPClient | None = None
         self._semaphore: asyncio.Semaphore | None = None
         self._initialized = True
 
-    async def _ensure_client(self) -> httpx.AsyncClient:
-        """Ensure the AsyncClient is created with proper configuration."""
-        if self._client is None or self._client.is_closed:
+    async def _ensure_client(self) -> SharedAsyncHTTPClient:
+        """Ensure the shared async HTTP client is created with proper configuration."""
+        if self._client is None:
             settings = get_settings()
-
-            # Configure connection limits
-            limits = httpx.Limits(
-                max_connections=settings.http_max_connections,
-                max_keepalive_connections=settings.http_max_keepalive,
+            config = HTTPClientConfig.from_settings(
+                settings,
+                read_timeout=settings.llm_timeout,
             )
-
-            # Configure timeout
-            timeout = httpx.Timeout(
-                connect=10.0,
-                read=float(settings.llm_timeout),
-                write=10.0,
-                pool=5.0,
-            )
-
-            self._client = httpx.AsyncClient(
-                limits=limits,
-                timeout=timeout,
-                http2=False,  # Disabled - install httpx[http2] to enable
-            )
+            self._client = SharedAsyncHTTPClient(config)
 
             logger.debug(
                 "http_client_initialized",
-                max_connections=settings.http_max_connections,
-                max_keepalive=settings.http_max_keepalive,
+                max_connections=config.max_connections,
+                max_keepalive=config.max_keepalive_connections,
                 timeout=settings.llm_timeout,
             )
 
@@ -89,9 +79,8 @@ class LLMHttpClient:
     async def _ensure_semaphore(self) -> asyncio.Semaphore:
         """Ensure the concurrency semaphore is created."""
         if self._semaphore is None:
-            settings = get_settings()
-            # Limit concurrent requests to prevent overwhelming the API
-            max_concurrent = min(10, settings.http_max_connections // 2)
+            client = await self._ensure_client()
+            max_concurrent = client.max_concurrency
             self._semaphore = asyncio.Semaphore(max_concurrent)
             logger.debug("semaphore_initialized", max_concurrent=max_concurrent)
         return self._semaphore
@@ -110,7 +99,7 @@ class LLMHttpClient:
 
     @with_circuit_breaker
     @retry(
-        retry=retry_if_exception_type((httpx.HTTPError, httpx.TimeoutException)),
+        retry=retry_if_exception_type((HTTPError, TimeoutException)),
         stop=stop_after_attempt(3),
         wait=wait_exponential(multiplier=1, min=2, max=10),
         reraise=True,
@@ -120,7 +109,7 @@ class LLMHttpClient:
         url: str,
         headers: dict[str, str],
         json_payload: dict,
-    ) -> httpx.Response:
+    ) -> Response:
         """Make an async POST request with concurrency control and retries.
 
         Args:
@@ -133,7 +122,7 @@ class LLMHttpClient:
 
         Raises:
             CircuitBreakerOpenError: If circuit breaker is open
-            httpx.HTTPError: If request fails after retries
+            HTTPError: If request fails after retries
         """
         client = await self._ensure_client()
 
@@ -158,8 +147,9 @@ class LLMHttpClient:
 
     async def close(self) -> None:
         """Close the HTTP client and clean up resources."""
-        if self._client and not self._client.is_closed:
-            await self._client.aclose()
+        if self._client:
+            await self._client.close()
+            self._client = None
             logger.debug("http_client_closed")
 
     async def __aenter__(self) -> "LLMHttpClient":

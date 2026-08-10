@@ -1,0 +1,19 @@
+flask
+python-dotenv
+pandas
+numpy
+duckdb
+akshare
+statsmodels
+
+# Proposed data/model dependencies for the next milestone:
+# akshare
+# duckdb
+# pyarrow
+# scikit-learn
+# statsmodels
+#
+# Optional / availability-sensitive:
+# pyqlib
+# mlfinlab
+# mlfinpy

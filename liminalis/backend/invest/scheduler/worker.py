@@ -16,15 +16,11 @@ from dataclasses import dataclass
 from datetime import date
 from typing import Any
 
+from backend._shared.jobs import TaskStatus
+from backend._shared.storage import business_uow
+from backend.invest import service as invest_service
 from backend.invest.core.logger import get_logger
-from backend.invest.storage import (
-    AnalysisTask,
-    get_pending_tasks,
-    init_db,
-    save_pending_email,
-    save_report,
-    update_task_status,
-)
+from backend.invest.db_models import InvestAnalysisTask
 
 logger = get_logger("scheduler.worker")
 
@@ -67,7 +63,7 @@ class AnalysisWorker:
         self.lang = lang
         self._running = False
 
-    async def process_task(self, task: AnalysisTask) -> WorkerResult:
+    async def process_task(self, task: InvestAnalysisTask) -> WorkerResult:
         """Process a single analysis task.
 
         Args:
@@ -89,7 +85,7 @@ class AnalysisWorker:
         )
 
         # Mark task as running
-        update_task_status(task_id, "running")
+        await self._update_task_status(task_id, TaskStatus.RUNNING)
 
         try:
             # Run analysis
@@ -103,7 +99,7 @@ class AnalysisWorker:
 
             if state.error:
                 # Analysis failed
-                update_task_status(task_id, "failed", error_message=state.error)
+                await self._update_task_status(task_id, TaskStatus.FAILED, error_message=state.error)
                 return WorkerResult(
                     task_id=task_id,
                     stock_code=stock_code,
@@ -115,7 +111,7 @@ class AnalysisWorker:
             if not state.report:
                 # No report generated
                 error = "No report generated"
-                update_task_status(task_id, "failed", error_message=error)
+                await self._update_task_status(task_id, TaskStatus.FAILED, error_message=error)
                 return WorkerResult(
                     task_id=task_id,
                     stock_code=stock_code,
@@ -127,7 +123,7 @@ class AnalysisWorker:
             # Success - save report
             await self._save_report_and_create_email(task, state.report)
 
-            update_task_status(task_id, "completed")
+            await self._update_task_status(task_id, TaskStatus.COMPLETED)
             logger.info(
                 "Task completed",
                 task_id=task_id,
@@ -146,7 +142,7 @@ class AnalysisWorker:
         except TimeoutError:
             duration = time.time() - start_time
             error = f"Analysis timed out after {TASK_TIMEOUT}s"
-            update_task_status(task_id, "failed", error_message=error)
+            await self._update_task_status(task_id, TaskStatus.FAILED, error_message=error)
             logger.error("Task timeout", task_id=task_id, stock_code=stock_code)
             return WorkerResult(
                 task_id=task_id,
@@ -159,7 +155,7 @@ class AnalysisWorker:
         except Exception as e:
             duration = time.time() - start_time
             error = str(e)
-            update_task_status(task_id, "failed", error_message=error)
+            await self._update_task_status(task_id, TaskStatus.FAILED, error_message=error)
             logger.exception(
                 "Task failed with exception",
                 task_id=task_id,
@@ -176,7 +172,7 @@ class AnalysisWorker:
 
     async def _save_report_and_create_email(
         self,
-        task: AnalysisTask,
+        task: InvestAnalysisTask,
         report: Any,
     ) -> None:
         """Save report to database and create email task.
@@ -195,11 +191,6 @@ class AnalysisWorker:
 
         # Save to daily_reports
         today = date.today()
-        save_report(
-            stock_code=task.stock_code,
-            report_date=today,
-            analysis_json=json.dumps(report_dict, ensure_ascii=False),
-        )
 
         # Generate HTML email content
         html_body = format_stock_report_html(report, self.lang)
@@ -212,14 +203,35 @@ class AnalysisWorker:
         except Exception:
             pass
 
-        # Create email task (pending_email record)
-        save_pending_email(
-            recipient=recipient,
-            subject=f"[{task.stock_code}] {report.stock_name} - Daily Analysis {today}",
-            body=ReportFormatter.format(report, ReportFormat.MARKDOWN, lang=self.lang),
-            html_body=html_body,
-            task_id=task.id,
-        )
+        async with business_uow() as session:
+            await invest_service.save_report(
+                session,
+                stock_code=task.stock_code,
+                report_date=today,
+                analysis_json=json.dumps(report_dict, ensure_ascii=False),
+            )
+            await invest_service.save_pending_email(
+                session,
+                recipient=recipient,
+                subject=f"[{task.stock_code}] {report.stock_name} - Daily Analysis {today}",
+                body=ReportFormatter.format(report, ReportFormat.MARKDOWN, lang=self.lang),
+                html_body=html_body,
+                task_id=task.id,
+            )
+
+    async def _update_task_status(
+        self,
+        task_id: int,
+        status: TaskStatus,
+        error_message: str | None = None,
+    ) -> bool:
+        async with business_uow() as session:
+            return await invest_service.update_task_status(
+                session,
+                task_id,
+                status,
+                error_message=error_message,
+            )
 
     async def run_once(self, max_tasks: int = 10) -> list[WorkerResult]:
         """Run worker once, processing available tasks.
@@ -230,9 +242,8 @@ class AnalysisWorker:
         Returns:
             List of WorkerResult for each processed task.
         """
-        init_db()
-
-        tasks = get_pending_tasks(limit=max_tasks)
+        async with business_uow() as session:
+            tasks = await invest_service.get_pending_tasks(session, limit=max_tasks)
         if not tasks:
             logger.info("No pending tasks")
             return []

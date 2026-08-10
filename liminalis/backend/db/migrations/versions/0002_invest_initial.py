@@ -82,9 +82,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), autoincrement=True, primary_key=True),
         sa.Column("stock_code", sa.Text(), nullable=False),
         sa.Column("stock_name", sa.Text(), nullable=True),
-        sa.Column(
-            "status", sa.Text(), server_default=sa.text("'pending'")
-        ),
+        sa.Column("status", sa.Text(), server_default=sa.text("'pending'")),
         sa.Column("priority", sa.Integer(), server_default=sa.text("0")),
         sa.Column(
             "created_at",

@@ -9,6 +9,7 @@ import click
 
 from py_cli.commands.analyze import analyze_command
 from py_cli.commands.prompts import prompts_group
+from py_cli.commands.radar import radar_group
 from py_cli.exceptions import PyCliError
 
 
@@ -32,6 +33,7 @@ def cli() -> None:
 # Register commands
 cli.add_command(analyze_command)
 cli.add_command(prompts_group)
+cli.add_command(radar_group)
 
 
 def main() -> int:

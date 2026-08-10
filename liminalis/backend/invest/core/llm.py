@@ -4,14 +4,14 @@ from __future__ import annotations
 
 import asyncio
 import logging
-import os
 from dataclasses import dataclass
 from functools import lru_cache
-from pathlib import Path
 
-from dotenv import load_dotenv
-from openai import AsyncOpenAI, OpenAI
-from openai import RateLimitError as OpenAIRateLimitError
+from backend._shared.llm import ChatMessage, LLMRuntimeConfig
+from backend._shared.llm import LLMClient as SharedAsyncLLMClient
+from backend._shared.llm import LLMError as SharedLLMError
+from backend._shared.llm import SyncLLMClient as SharedSyncLLMClient
+from backend.settings import get_settings as get_runtime_settings
 
 logger = logging.getLogger(__name__)
 
@@ -35,25 +35,39 @@ class LLMConfig:
     temperature: float = 0.3
     max_tokens: int = 8000  # Increased from 4000 for synthesis reports
     timeout: int = 120
+    max_retries: int = 1
+    max_concurrency: int = 4
 
     @classmethod
     def from_env(cls) -> LLMConfig:
-        """Load configuration from ~/.env file.
+        """Load configuration from the unified Liminalis runtime settings.
 
         Returns:
             LLMConfig instance with values from environment.
         """
-        env_path = Path.home() / ".env"
-        if env_path.exists():
-            load_dotenv(dotenv_path=env_path)
+        settings = get_runtime_settings()
 
         return cls(
-            api_key=os.getenv("LLM_API_KEY", ""),
-            base_url=os.getenv("LLM_BASE_URL", "https://api.openai.com/v1"),
-            model_name=os.getenv("LLM_MODEL", "qwen-plus"),
-            temperature=float(os.getenv("LLM_TEMPERATURE", "0.3")),
-            max_tokens=int(os.getenv("LLM_MAX_TOKENS", "4000")),
-            timeout=int(os.getenv("LLM_TIMEOUT", "120")),
+            api_key=settings.llm_api_key or "",
+            base_url=settings.llm_base_url,
+            model_name=settings.llm_model,
+            temperature=settings.llm_temperature,
+            max_tokens=settings.llm_max_tokens,
+            timeout=int(settings.llm_timeout),
+            max_retries=settings.llm_max_retries,
+            max_concurrency=settings.llm_max_concurrency,
+        )
+
+    def to_runtime_config(self) -> LLMRuntimeConfig:
+        return LLMRuntimeConfig(
+            api_key=self.api_key,
+            base_url=self.base_url,
+            model=self.model_name,
+            temperature=self.temperature,
+            max_tokens=self.max_tokens,
+            timeout=self.timeout,
+            max_retries=self.max_retries,
+            max_concurrency=self.max_concurrency,
         )
 
 
@@ -81,8 +95,8 @@ class LLMClient:
             config: Optional LLM configuration. Uses ~/.env if not provided.
         """
         self.config = config or _get_cached_config()
-        self._sync_client: OpenAI | None = None
-        self._async_client: AsyncOpenAI | None = None
+        self._sync_client: SharedSyncLLMClient | None = None
+        self._async_client: SharedAsyncLLMClient | None = None
 
     @property
     def model(self) -> ModelProperty:
@@ -93,40 +107,24 @@ class LLMClient:
         """
         return ModelProperty(self)
 
-    def _get_async_client(self) -> AsyncOpenAI:
+    def _get_async_client(self) -> SharedAsyncLLMClient:
         """Get async OpenAI client.
 
         Returns:
-            AsyncOpenAI instance.
+            Shared async LLM client.
         """
         if self._async_client is None:
-            import httpx
-
-            # Check if we need to use proxy
-            proxy = os.getenv("https_proxy") or os.getenv("HTTP_PROXY")
-
-            # For LLM API calls, often better to bypass proxy
-            # Create client without proxy for better async compatibility
-            self._async_client = AsyncOpenAI(
-                api_key=self.config.api_key,
-                base_url=self.config.base_url,
-                timeout=self.config.timeout,
-                http_client=httpx.AsyncClient(proxy=None) if proxy else None,
-            )
+            self._async_client = SharedAsyncLLMClient(self.config.to_runtime_config())
         return self._async_client
 
-    def _get_sync_client(self) -> OpenAI:
+    def _get_sync_client(self) -> SharedSyncLLMClient:
         """Get sync OpenAI client.
 
         Returns:
-            OpenAI instance.
+            Shared sync LLM client.
         """
         if self._sync_client is None:
-            self._sync_client = OpenAI(
-                api_key=self.config.api_key,
-                base_url=self.config.base_url,
-                timeout=self.config.timeout,
-            )
+            self._sync_client = SharedSyncLLMClient(self.config.to_runtime_config())
         return self._sync_client
 
     async def chat(self, messages: list[dict], **kwargs) -> str:
@@ -134,40 +132,40 @@ class LLMClient:
 
         Args:
             messages: List of message dicts with role/content.
-            **kwargs: Additional args for chat.completions.create.
+            **kwargs: Additional chat completion options.
 
         Returns:
             Response content string.
         """
         client = self._get_async_client()
-        response = await client.chat.completions.create(
-            model=self.config.model_name,
-            messages=messages,
-            max_tokens=self.config.max_tokens,
-            temperature=self.config.temperature,
+        response = await client.complete(
+            [ChatMessage(role=msg["role"], content=str(msg["content"])) for msg in messages],
+            model=kwargs.pop("model", self.config.model_name),
+            max_tokens=kwargs.pop("max_tokens", self.config.max_tokens),
+            temperature=kwargs.pop("temperature", self.config.temperature),
             **kwargs,
         )
-        return response.choices[0].message.content
+        return response.text
 
     def chat_sync(self, messages: list[dict], **kwargs) -> str:
         """Send synchronous chat completion request.
 
         Args:
             messages: List of message dicts with role/content.
-            **kwargs: Additional args for chat.completions.create.
+            **kwargs: Additional chat completion options.
 
         Returns:
             Response content string.
         """
         client = self._get_sync_client()
-        response = client.chat.completions.create(
-            model=self.config.model_name,
-            messages=messages,
-            max_tokens=self.config.max_tokens,
-            temperature=self.config.temperature,
+        response = client.complete(
+            [ChatMessage(role=msg["role"], content=str(msg["content"])) for msg in messages],
+            model=kwargs.pop("model", self.config.model_name),
+            max_tokens=kwargs.pop("max_tokens", self.config.max_tokens),
+            temperature=kwargs.pop("temperature", self.config.temperature),
             **kwargs,
         )
-        return response.choices[0].message.content
+        return response.text
 
     def with_temperature(self, temperature: float) -> LLMClient:
         """Create new client with specified temperature.
@@ -185,6 +183,9 @@ class LLMClient:
                 model_name=self.config.model_name,
                 temperature=temperature,
                 max_tokens=self.config.max_tokens,
+                timeout=self.config.timeout,
+                max_retries=self.config.max_retries,
+                max_concurrency=self.config.max_concurrency,
             )
         )
 
@@ -204,6 +205,9 @@ class LLMClient:
                 model_name=self.config.model_name,
                 temperature=self.config.temperature,
                 max_tokens=max_tokens,
+                timeout=self.config.timeout,
+                max_retries=self.config.max_retries,
+                max_concurrency=self.config.max_concurrency,
             )
         )
 
@@ -326,7 +330,7 @@ class RateLimitedLLMClient:
 
         Args:
             messages: List of message dicts with role/content.
-            **kwargs: Additional args for chat.completions.create.
+            **kwargs: Additional chat completion options.
 
         Returns:
             Response content string.
@@ -355,7 +359,7 @@ class RateLimitedLLMClient:
 
                     return response
 
-                except OpenAIRateLimitError as e:
+                except SharedLLMError as e:
                     last_exception = e
                     await self._update_stats(rate_limit_retries=1)
 
@@ -387,7 +391,7 @@ class RateLimitedLLMClient:
 
         Args:
             messages: List of message dicts with role/content.
-            **kwargs: Additional args for chat.completions.create.
+            **kwargs: Additional chat completion options.
 
         Returns:
             Response content string.

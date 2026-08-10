@@ -46,8 +46,14 @@ class TestAnalyzeCommand:
         assert "--since" in result.output
 
     @patch("py_cli.commands.analyze.Analyzer")
-    def test_analyze_with_mock(self, mock_analyzer_class: MagicMock, git_repo: Path) -> None:
+    def test_analyze_with_mock(
+        self,
+        mock_analyzer_class: MagicMock,
+        git_repo: Path,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
         """Test analyze command with mocked analyzer."""
+        monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
         # Setup mock
         mock_analyzer = MagicMock()
         mock_analyzer.analyze.return_value = Path("/tmp/report.md")

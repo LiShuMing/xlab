@@ -4,7 +4,8 @@ import json
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 
-from backend.invest.agents.utils import format_relevant_data, parse_llm_json, strip_markdown_fences
+from backend._shared.json_tools import load_json_array
+from backend.invest.agents.utils import format_relevant_data, parse_llm_json
 from backend.invest.core.llm import HumanMessage, LLMClient
 
 # =============================================================================
@@ -101,8 +102,7 @@ Use real competitor names and approximate P/E ratios. Be specific."""
 
         try:
             response = await llm_client.model.ainvoke([HumanMessage(content=prompt)])
-            content = strip_markdown_fences(response.content)
-            comps_data = json.loads(content)
+            comps_data = load_json_array(response.content)
             comps = [
                 ComparableCompany(
                     name=c.get("name", ""),

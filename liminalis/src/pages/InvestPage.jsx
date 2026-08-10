@@ -1,6 +1,7 @@
 import { LineChart, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { Header } from '../components/Header';
+import { InvestWorkspacePanel } from '../components/invest/InvestWorkspacePanel';
 import { MarkdownReader } from '../components/MarkdownReader';
 import { SectionLabel } from '../components/SectionLabel';
 import { SiteFooter } from '../components/SiteFooter';
@@ -11,8 +12,24 @@ export function InvestPage() {
   const [query, setQuery] = useState('请从长期价值投资角度，分析商业模式、护城河、财务质量、估值安全边际、主要风险与合理买入区间。');
   const [analysisMode, setAnalysisMode] = useState('fast');
   const [report, setReport] = useState(null);
+  const [workspace, setWorkspace] = useState(null);
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState('');
+  const [savingThesis, setSavingThesis] = useState(false);
+  const [workspaceBusy, setWorkspaceBusy] = useState(false);
+
+  const normalizeWorkspace = (data) => ({
+    thesis: data.thesis ?? null,
+    watch_items: data.watch_items ?? [],
+    journal_entries: data.journal_entries ?? [],
+    reviews: data.reviews ?? [],
+  });
+
+  const loadWorkspace = async (stockCode) => {
+    if (!stockCode) return;
+    const data = await fetchJson(`/api/invest/workspace/${encodeURIComponent(stockCode)}`);
+    setWorkspace(normalizeWorkspace(data));
+  };
 
   const submitAnalysis = async (event) => {
     event.preventDefault();
@@ -21,6 +38,7 @@ export function InvestPage() {
     setStatus('loading');
     setError('');
     setReport(null);
+    setWorkspace(null);
 
     try {
       const data = await fetchJson('/api/invest/analyze-stock', {
@@ -34,10 +52,100 @@ export function InvestPage() {
         }),
       });
       setReport(data);
+      setWorkspace(normalizeWorkspace(data));
       setStatus('done');
     } catch (err) {
       setError(err.message);
       setStatus('error');
+    }
+  };
+
+  const saveThesis = async (draft) => {
+    if (!draft?.stock_code) return;
+    setSavingThesis(true);
+    setError('');
+    try {
+      const data = await fetchJson(`/api/invest/thesis/${encodeURIComponent(draft.stock_code)}`, {
+        method: 'PUT',
+        body: JSON.stringify(draft),
+      });
+      setWorkspace((current) => ({ ...(current ?? {}), thesis: data.thesis }));
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSavingThesis(false);
+    }
+  };
+
+  const createWatchItem = async (payload) => {
+    const stockCode = workspace?.thesis?.stock_code;
+    if (!stockCode) return;
+    setWorkspaceBusy(true);
+    setError('');
+    try {
+      await fetchJson(`/api/invest/watch-items/${encodeURIComponent(stockCode)}`, {
+        method: 'POST',
+        body: JSON.stringify({ ...payload, thesis_id: workspace.thesis.id }),
+      });
+      await loadWorkspace(stockCode);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setWorkspaceBusy(false);
+    }
+  };
+
+  const updateWatchStatus = async (itemId, nextStatus) => {
+    const stockCode = workspace?.thesis?.stock_code;
+    if (!stockCode) return;
+    setWorkspaceBusy(true);
+    setError('');
+    try {
+      await fetchJson(`/api/invest/watch-items/${itemId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status: nextStatus }),
+      });
+      await loadWorkspace(stockCode);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setWorkspaceBusy(false);
+    }
+  };
+
+  const createJournalEntry = async (payload) => {
+    const stockCode = workspace?.thesis?.stock_code;
+    if (!stockCode) return;
+    setWorkspaceBusy(true);
+    setError('');
+    try {
+      await fetchJson(`/api/invest/journal/${encodeURIComponent(stockCode)}`, {
+        method: 'POST',
+        body: JSON.stringify({ ...payload, thesis_id: workspace.thesis.id }),
+      });
+      await loadWorkspace(stockCode);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setWorkspaceBusy(false);
+    }
+  };
+
+  const createReview = async (payload) => {
+    const stockCode = workspace?.thesis?.stock_code;
+    if (!stockCode) return;
+    setWorkspaceBusy(true);
+    setError('');
+    try {
+      await fetchJson(`/api/invest/reviews/${encodeURIComponent(stockCode)}`, {
+        method: 'POST',
+        body: JSON.stringify({ ...payload, thesis_id: workspace.thesis.id }),
+      });
+      await loadWorkspace(stockCode);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setWorkspaceBusy(false);
     }
   };
 
@@ -54,13 +162,13 @@ export function InvestPage() {
             <span>转化为判断</span>
           </h1>
           <p>
-            复用 py-invest 的数据采集与多 Agent 分析管线，围绕一家企业生成长期价值投资报告。它关注商业模式、财务质量、估值、安全边际与风险，而不是短期交易噪音。
+            使用 Liminalis 内置的数据采集与多 Agent 分析管线，围绕一家企业生成长期价值投资报告。它关注商业模式、财务质量、估值、安全边际与风险，而不是短期交易噪音。
           </p>
         </div>
         <aside className="invest-method">
           <span>Value Lens</span>
           <p>Data collection → specialist agents → synthesis report</p>
-          <small>powered by /Users/lism/work/xlab/python/projects/py-invest</small>
+          <small>powered by Liminalis Invest</small>
         </aside>
       </section>
 
@@ -144,21 +252,34 @@ export function InvestPage() {
           )}
 
           {report?.markdown && (
-            <section className="reader-panel invest-report">
-              <div className="reader-toolbar">
-                <div>
-                  <span>Investment Report</span>
-                  <strong>{report.stock}</strong>
+            <>
+              <InvestWorkspacePanel
+                stockCode={report.stock}
+                workspace={workspace}
+                onSaveThesis={saveThesis}
+                saving={savingThesis}
+                busy={workspaceBusy}
+                onCreateWatchItem={createWatchItem}
+                onUpdateWatchStatus={updateWatchStatus}
+                onCreateJournalEntry={createJournalEntry}
+                onCreateReview={createReview}
+              />
+              <section className="reader-panel invest-report">
+                <div className="reader-toolbar">
+                  <div>
+                    <span>Investment Report</span>
+                    <strong>{report.stock}</strong>
+                  </div>
+                  <div className="reader-meta">
+                    {report.cached && <span>cached</span>}
+                    {report.mode && <span>{report.mode}</span>}
+                    {report.rating && <span>{report.rating}</span>}
+                    {report.duration && <span>{report.duration}s</span>}
+                  </div>
                 </div>
-                <div className="reader-meta">
-                  {report.cached && <span>cached</span>}
-                  {report.mode && <span>{report.mode}</span>}
-                  {report.rating && <span>{report.rating}</span>}
-                  {report.duration && <span>{report.duration}s</span>}
-                </div>
-              </div>
-              <MarkdownReader markdown={report.markdown} />
-            </section>
+                <MarkdownReader markdown={report.markdown} />
+              </section>
+            </>
           )}
         </div>
       </section>

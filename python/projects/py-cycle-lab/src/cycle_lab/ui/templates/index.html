@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LongCycle 长周期罗盘</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">LC</div>
+          <div>
+            <div class="brand-title">LongCycle</div>
+            <div class="brand-subtitle">长周期罗盘</div>
+          </div>
+        </div>
+        <nav class="nav" aria-label="Main navigation">
+          <button class="nav-item active" data-page="overview">总览</button>
+          <button class="nav-item" data-page="cycle">周期</button>
+          <button class="nav-item" data-page="valuation">估值</button>
+          <button class="nav-item" data-page="compare">对比</button>
+          <button class="nav-item" data-page="scenario">情景</button>
+          <button class="nav-item" data-page="watchlist">观察清单</button>
+          <button class="nav-item" data-page="lab">实验室</button>
+          <button class="nav-item" data-page="reports">复盘</button>
+          <button class="nav-item" data-page="settings">设置</button>
+        </nav>
+        <div class="sidebar-note">
+          <span class="status-dot experimental"></span>
+          本地研究原型
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div>
+            <div class="eyebrow">Personal long-term investment research desk</div>
+            <h1 id="page-title">总览</h1>
+          </div>
+          <div class="topbar-actions">
+            <label class="search">
+              <span>搜索</span>
+              <input id="search-input" placeholder="资产 / 指标 / 假设" />
+            </label>
+            <div class="freshness" id="freshness">数据载入中</div>
+          </div>
+        </header>
+
+        <section class="page active" id="overview">
+          <div class="state-banner">
+            <div>
+              <div class="eyebrow">今日状态</div>
+              <div class="state-title" id="market-state">读取中</div>
+            </div>
+            <button class="secondary-button" id="ai-brief-button">生成 LLM 研究简报</button>
+          </div>
+
+          <div class="kpi-grid" id="kpi-grid"></div>
+
+          <div class="overview-grid">
+            <article class="panel span-5">
+              <div class="panel-header">
+                <div>
+                  <div class="panel-title">收益率曲线</div>
+                  <div class="panel-subtitle">10Y-2Y spread with stress context</div>
+                </div>
+                <span class="chip caution">宏观风险</span>
+              </div>
+              <div class="chart" id="yield-chart"></div>
+            </article>
+
+            <article class="panel span-4">
+              <div class="panel-header">
+                <div>
+                  <div class="panel-title">Regime Probability</div>
+                  <div class="panel-subtitle">Markov switching placeholder output</div>
+                </div>
+                <span class="chip model">Experimental</span>
+              </div>
+              <div class="chart" id="regime-chart"></div>
+            </article>
+
+            <article class="panel span-3">
+              <div class="panel-header">
+                <div>
+                  <div class="panel-title">关键风险信号</div>
+                  <div class="panel-subtitle">Evidence before action</div>
+                </div>
+              </div>
+              <div class="risk-list" id="risk-list"></div>
+            </article>
+          </div>
+
+          <div class="lower-grid">
+            <article class="panel heatmap-panel">
+              <div class="panel-header">
+                <div>
+                  <div class="panel-title">资产估值热力图</div>
+                  <div class="panel-subtitle">颜色表示长期机会/风险，不表示日涨跌</div>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table class="asset-table" id="asset-table"></table>
+              </div>
+            </article>
+
+            <article class="panel hypothesis-panel">
+              <div class="panel-header">
+                <div>
+                  <div class="panel-title">我的投资假设</div>
+                  <div class="panel-subtitle">Thesis-first watchlist</div>
+                </div>
+              </div>
+              <div id="hypothesis-list"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="page" id="cycle">
+          <div class="two-column">
+            <article class="panel">
+              <div class="panel-title">收益率曲线与衰退机制</div>
+              <div class="chart large" id="cycle-yield-chart"></div>
+            </article>
+            <article class="panel">
+              <div class="panel-title">模型卡片</div>
+              <div class="model-card">
+                <div><strong>Model</strong><span>statsmodels MarkovRegression 待接入</span></div>
+                <div><strong>Input</strong><span>10Y-2Y 利差、市场收益、就业代理指标</span></div>
+                <div><strong>Current</strong><span>Stress rising</span></div>
+                <div><strong>Limitation</strong><span>Regime 概率不是确定性衰退预测</span></div>
+              </div>
+            </article>
+          </div>
+          <article class="panel">
+            <div class="panel-title">历史相似阶段</div>
+            <div class="similar-grid">
+              <button class="similar-card" data-action="period-detail" data-period="2000">2000<br /><span>估值偏热 + 曲线反转</span></button>
+              <button class="similar-card" data-action="period-detail" data-period="2006">2006<br /><span>期限利差压缩 + 信贷后周期</span></button>
+              <button class="similar-card" data-action="period-detail" data-period="2019">2019<br /><span>增长放缓 + 政策转向观察</span></button>
+            </div>
+          </article>
+        </section>
+
+        <section class="page" id="valuation">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">标准化周期指标表盘</div>
+                <div class="panel-subtitle">raw value -> percentile -> opportunity/risk score</div>
+              </div>
+              <div class="segmented-control" id="valuation-filters">
+                <button class="segment active" data-filter="all">全部</button>
+                <button class="segment" data-filter="equity">权益</button>
+                <button class="segment" data-filter="defense">防守</button>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="asset-table" id="valuation-table"></table>
+            </div>
+          </article>
+        </section>
+
+        <section class="page" id="compare">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">资产对比</div>
+                <div class="panel-subtitle">选择资产和指标，比较长期估值、情绪与动作状态</div>
+              </div>
+              <div class="segmented-control" id="compare-indicator-tabs">
+                <button class="segment active" data-group="all">全部</button>
+                <button class="segment" data-group="valuation">估值</button>
+                <button class="segment" data-group="sentiment">情绪</button>
+                <button class="segment" data-group="trend">趋势</button>
+              </div>
+            </div>
+            <div class="selector-row" id="compare-selector"></div>
+            <div class="table-wrap">
+              <table class="asset-table" id="compare-table"></table>
+            </div>
+            <div class="insight-strip" id="compare-insight"></div>
+          </article>
+        </section>
+
+        <section class="page" id="scenario">
+          <div class="two-column">
+            <article class="panel">
+              <div class="panel-title">情景模拟器</div>
+              <div class="panel-subtitle">这是条件演练，不是预测引擎</div>
+              <div class="slider-stack">
+                <label>利率冲击 <strong id="rate-shock-label">+0bp</strong><input id="rate-shock" type="range" min="-100" max="150" value="0" step="25" /></label>
+                <label>估值分位调整 <strong id="valuation-shift-label">0</strong><input id="valuation-shift" type="range" min="-30" max="30" value="0" step="5" /></label>
+                <label>情绪分位调整 <strong id="sentiment-shift-label">0</strong><input id="sentiment-shift" type="range" min="-40" max="30" value="0" step="5" /></label>
+              </div>
+            </article>
+            <article class="panel">
+              <div class="panel-title">模拟动作变化</div>
+              <div id="scenario-output" class="timeline-list"></div>
+            </article>
+          </div>
+          <article class="panel timeline-panel">
+            <div class="panel-title">可能触发的观察清单条件</div>
+            <div id="scenario-triggers" class="timeline-list"></div>
+          </article>
+        </section>
+
+        <section class="page" id="watchlist">
+          <div class="watchlist-layout">
+          <article class="panel">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">观察清单</div>
+                <div class="panel-subtitle">把观点变成可复盘的纪律</div>
+              </div>
+            </div>
+            <div class="watchlist-board" id="watchlist-board"></div>
+          </article>
+          <article class="panel">
+            <div class="panel-title" id="hypothesis-form-title">新建投资假设</div>
+            <form class="form-stack" id="hypothesis-form">
+              <input type="hidden" id="hypothesis-id" />
+              <label>标的<input id="hypothesis-asset" placeholder="例如 沪深300ETF" required /></label>
+              <label>当前动作
+                <select id="hypothesis-action">
+                  <option>观察</option>
+                  <option>分批关注</option>
+                  <option>暂停追买</option>
+                  <option>谨慎</option>
+                  <option>再平衡检查</option>
+                  <option>假设失效</option>
+                </select>
+              </label>
+              <label>投资假设<textarea id="hypothesis-thesis" rows="4" required></textarea></label>
+              <label>触发条件，每行一条<textarea id="hypothesis-conditions" rows="4"></textarea></label>
+              <label>风险清单，每行一条<textarea id="hypothesis-risks" rows="4"></textarea></label>
+              <label>复盘备注<textarea id="hypothesis-notes" rows="3"></textarea></label>
+              <div class="button-row">
+                <button class="primary-button" type="submit">保存假设</button>
+                <button class="secondary-button" type="button" id="reset-hypothesis-form">清空</button>
+              </div>
+            </form>
+          </article>
+          </div>
+          <article class="panel timeline-panel">
+            <div class="panel-header">
+              <div>
+                <div class="panel-title">证据快照</div>
+                <div class="panel-subtitle">保存做出判断时的市场状态</div>
+              </div>
+            </div>
+            <div id="snapshot-list" class="timeline-list"></div>
+          </article>
+        </section>
+
+        <section class="page" id="lab">
+          <div class="lab-grid">
+            <article class="panel">
+              <div class="panel-title">策略设置</div>
+              <form class="form-stack" id="experiment-form">
+                <label>实验名称<input id="experiment-name" value="估值+动量+利差择时实验" /></label>
+                <label>特征集<input id="experiment-features" value="估值 + 动量 + 利差" /></label>
+                <label>标签<input id="experiment-label" value="未来 3 个月收益" /></label>
+                <label>CV 方法<input id="experiment-cv" value="Purged KFold / Walk-forward" /></label>
+                <label>诊断<textarea id="experiment-diagnosis" rows="3">待验证：必须比较样本内与样本外表现。</textarea></label>
+                <button class="primary-button" type="submit">保存实验</button>
+              </form>
+            </article>
+            <article class="panel">
+              <div class="panel-title">样本内结果</div>
+              <div class="metric-list" id="sample-in"></div>
+            </article>
+            <article class="panel judgment">
+              <div class="panel-title">样本外审判</div>
+              <div class="metric-list" id="sample-out"></div>
+              <div class="diagnosis" id="lab-diagnosis"></div>
+            </article>
+          </div>
+          <article class="panel timeline-panel">
+            <div class="panel-title">实验历史</div>
+            <div id="experiment-history" class="timeline-list"></div>
+          </article>
+        </section>
+
+        <section class="page" id="reports">
+          <div class="two-column">
+            <article class="panel">
+              <div class="panel-title">月度复盘</div>
+              <form class="form-stack" id="review-form">
+                <label>月份<input id="review-month" type="month" /></label>
+                <label>复盘摘要<textarea id="review-summary" rows="5" placeholder="本月周期、估值、情绪和持仓纪律的核心结论"></textarea></label>
+                <label>决策记录，每行一条<textarea id="review-decisions" rows="5" placeholder="例如：纳指100ETF 暂停追买，因为估值与情绪均偏热"></textarea></label>
+                <button class="primary-button" type="submit">保存复盘</button>
+              </form>
+            </article>
+            <article class="panel">
+              <div class="panel-title">LLM 简报与复盘历史</div>
+              <div id="brief-history" class="timeline-list"></div>
+              <div id="review-history" class="timeline-list"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="page" id="settings">
+          <article class="panel">
+            <div class="panel-title">环境集成</div>
+            <div class="panel-subtitle">读取 ~/.env，只展示配置状态和脱敏信息</div>
+            <div class="integration-grid" id="integration-grid"></div>
+            <div class="panel-title settings-subtitle">产品存储</div>
+            <div id="storage-card" class="integration-grid"></div>
+            <div class="panel-title settings-subtitle">真实数据刷新</div>
+            <div class="button-row">
+              <button class="primary-button" id="refresh-real-data-button">刷新真实数据</button>
+              <span class="panel-subtitle">使用 AKShare 写入本地 DuckDB，可能需要几十秒。</span>
+            </div>
+            <div id="refresh-status" class="timeline-list"></div>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <aside class="detail-drawer" id="detail-drawer" aria-hidden="true">
+      <div class="drawer-header">
+        <div>
+          <div class="eyebrow" id="drawer-eyebrow">Detail</div>
+          <div class="drawer-title" id="drawer-title">详情</div>
+        </div>
+        <button class="tiny-button" id="drawer-close">关闭</button>
+      </div>
+      <div class="drawer-body" id="drawer-body"></div>
+    </aside>
+
+    <div class="toast" id="toast"></div>
+    <script src="/static/app.js"></script>
+  </body>
+</html>

@@ -71,9 +71,9 @@ export function EgoChatPage() {
   // Persist messages to local
   useEffect(() => {
     if (messages.length > 0) {
-      saveLocal(messages);
+      saveLocal(messages, roleId);
     }
-  }, [messages]);
+  }, [messages, roleId]);
 
   async function handleSend() {
     const content = draft.trim();
@@ -90,11 +90,12 @@ export function EgoChatPage() {
     setSending(true);
 
     try {
-      if (!sessionId) {
+      let sid = sessionId;
+      if (!sid) {
         const sess = await createSession(roleId);
-        setSessionId(sess.id);
+        sid = sess.id;
+        setSessionId(sid);
       }
-      const sid = sessionId || (await createSession(roleId)).id;
       const result = await sendMessage(sid, content);
       const reply = result.reply || result;
       setMessages((prev) => [...prev, reply]);

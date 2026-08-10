@@ -1,13 +1,19 @@
-"""Async SQLAlchemy service layer for invest — replaces raw sqlite3 operations."""
+"""Async SQLAlchemy repository functions for Invest business data.
+
+These functions intentionally do not commit. Transaction ownership belongs to
+the shared business unit-of-work boundary in ``backend._shared.storage``.
+"""
 
 from __future__ import annotations
 
-from datetime import UTC, date, datetime, timedelta
+from datetime import date, timedelta
 
 from sqlalchemy import delete, select, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from backend._shared.jobs import TERMINAL_TASK_STATUSES, TaskStatus
+from backend._shared.serializers import utc_now
 from backend.invest.db_models import (
     InvestAnalysisTask,
     InvestDailyReport,
@@ -38,10 +44,10 @@ async def save_report(
             index_elements=["stock_code", "report_date"],
             set_={"analysis_json": analysis_json},
         )
+        .returning(InvestDailyReport.id)
     )
     result = await session.execute(stmt)
-    await session.commit()
-    return result.inserted_primary_key[0]
+    return result.scalar_one()
 
 
 async def get_report(
@@ -80,9 +86,21 @@ async def get_reports_for_date(
     return list(result.scalars().all())
 
 
+async def get_latest_reports(session: AsyncSession, limit: int = 100) -> list[InvestDailyReport]:
+    stmt = (
+        select(InvestDailyReport)
+        .order_by(
+            InvestDailyReport.report_date.desc(),
+            InvestDailyReport.created_at.desc(),
+        )
+        .limit(limit)
+    )
+    result = await session.execute(stmt)
+    return list(result.scalars().all())
+
+
 async def delete_all_reports(session: AsyncSession) -> int:
     result = await session.execute(delete(InvestDailyReport))
-    await session.commit()
     return result.rowcount
 
 
@@ -93,7 +111,6 @@ async def delete_reports_before(
     result = await session.execute(
         delete(InvestDailyReport).where(InvestDailyReport.report_date < cutoff_date)
     )
-    await session.commit()
     return result.rowcount
 
 
@@ -142,7 +159,7 @@ async def sync_stock_configs(
             .values(is_active=False)
         )
 
-    await session.commit()
+    await session.flush()
     return count
 
 
@@ -183,7 +200,6 @@ async def save_pending_email(
         .returning(InvestPendingEmail.id)
     )
     result = await session.execute(stmt)
-    await session.commit()
     return result.scalar_one()
 
 
@@ -205,7 +221,6 @@ async def delete_pending_email(
     email_id: int,
 ) -> bool:
     result = await session.execute(delete(InvestPendingEmail).where(InvestPendingEmail.id == email_id))
-    await session.commit()
     return result.rowcount > 0
 
 
@@ -220,7 +235,6 @@ async def increment_retry_count(
         .returning(InvestPendingEmail.retry_count)
     )
     result = await session.execute(stmt)
-    await session.commit()
     row = result.fetchone()
     return row[0] if row else 0
 
@@ -250,7 +264,6 @@ async def log_email(
         .returning(InvestEmailLog.id)
     )
     result = await session.execute(stmt)
-    await session.commit()
     return result.scalar_one()
 
 
@@ -284,7 +297,6 @@ async def save_analysis_task(
         .returning(InvestAnalysisTask.id)
     )
     result = await session.execute(stmt)
-    await session.commit()
     return result.scalar_one()
 
 
@@ -294,7 +306,7 @@ async def get_pending_tasks(
 ) -> list[InvestAnalysisTask]:
     stmt = (
         select(InvestAnalysisTask)
-        .where(InvestAnalysisTask.status == "pending")
+        .where(InvestAnalysisTask.status == TaskStatus.PENDING.value)
         .order_by(
             InvestAnalysisTask.priority.desc(),
             InvestAnalysisTask.created_at.asc(),
@@ -308,22 +320,22 @@ async def get_pending_tasks(
 async def update_task_status(
     session: AsyncSession,
     task_id: int,
-    status: str,
+    status: str | TaskStatus,
     error_message: str | None = None,
 ) -> bool:
-    values: dict = {"status": status}
-    now = datetime.now(UTC)
+    task_status = TaskStatus(status)
+    values: dict = {"status": task_status.value}
+    now = utc_now()
 
-    if status == "running":
+    if task_status == TaskStatus.RUNNING:
         values["started_at"] = now
-    elif status in ("completed", "failed"):
+    elif task_status in TERMINAL_TASK_STATUSES:
         values["completed_at"] = now
         values["error_message"] = error_message
 
     result = await session.execute(
         update(InvestAnalysisTask).where(InvestAnalysisTask.id == task_id).values(**values)
     )
-    await session.commit()
     return result.rowcount > 0
 
 
@@ -340,12 +352,11 @@ async def cleanup_completed_tasks(
     session: AsyncSession,
     days: int = 7,
 ) -> int:
-    cutoff = datetime.now(UTC) - timedelta(days=days)
+    cutoff = utc_now() - timedelta(days=days)
     result = await session.execute(
         delete(InvestAnalysisTask).where(
-            InvestAnalysisTask.status.in_(["completed", "failed"]),
+            InvestAnalysisTask.status.in_([status.value for status in TERMINAL_TASK_STATUSES]),
             InvestAnalysisTask.completed_at < cutoff,
         )
     )
-    await session.commit()
     return result.rowcount

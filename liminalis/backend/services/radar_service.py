@@ -10,6 +10,7 @@ from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from backend._shared.errors import should_fallback_after_read_error
 from backend.radar.service import query_radar_items as _query_pg
 from backend.settings import Settings
 
@@ -44,7 +45,7 @@ async def read_radar_items(
         if result:
             return result
     except Exception:
-        if settings.storage_backend == "postgres":
+        if not should_fallback_after_read_error(settings):
             raise
 
     return read_snapshot_radar_items(settings, radar_query)
@@ -94,36 +95,6 @@ def read_snapshot_radar_items(settings: Settings, radar_query: RadarQuery) -> di
         "products": payload.get("products") or [],
         "contentTypes": payload.get("contentTypes") or [],
         "latestSyncBatch": payload.get("latestSyncBatch"),
-    }
-
-
-def extract_domain(url: str) -> str:
-    if not url:
-        return ""
-    try:
-        from urllib.parse import urlparse
-
-        parsed = urlparse(url)
-        return parsed.netloc.replace("www.", "") or ""
-    except Exception:
-        return ""
-
-
-def storage_item_to_api_dict(item: Any) -> dict[str, Any]:
-    return {
-        "id": item.id,
-        "title": item.title,
-        "originalTitle": item.original_title or item.title,
-        "url": item.url,
-        "site": extract_domain(item.url),
-        "product": item.product,
-        "summary": item.summary,
-        "tags": item.tags,
-        "sources": item.sources,
-        "publishedDate": item.published_date.isoformat() if item.published_date else None,
-        "contentType": item.content_type,
-        "fetchedAt": item.fetched_at.isoformat() if item.fetched_at else None,
-        "syncBatch": item.sync_batch.isoformat() if item.sync_batch else None,
     }
 
 

@@ -1,19 +1,15 @@
 """Email sender with SMTP support and retry logic."""
 
 import asyncio
-import os
 import smtplib
 from dataclasses import dataclass
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+from backend._shared.storage import business_uow
+from backend.invest import service as invest_service
 from backend.invest.core.logger import get_logger
-from backend.invest.storage import (
-    delete_pending_email,
-    increment_retry_count,
-    log_email,
-    save_pending_email,
-)
+from backend.settings import get_settings as get_runtime_settings
 
 logger = get_logger("notifier.email_sender")
 
@@ -47,7 +43,7 @@ class EmailConfig:
 
     @classmethod
     def from_env(cls) -> "EmailConfig":
-        """Create EmailConfig from environment variables.
+        """Create EmailConfig from unified runtime settings.
 
         Reads:
             GMAIL_APP_PASSWORD: Gmail App Password for SMTP authentication.
@@ -60,9 +56,10 @@ class EmailConfig:
         Raises:
             ValueError: If required environment variables are missing.
         """
-        password = os.environ.get("GMAIL_APP_PASSWORD", "")
-        recipient = os.environ.get("EMAIL_RECIPIENT", "")
-        sender = os.environ.get("EMAIL_SENDER", recipient)
+        settings = get_runtime_settings()
+        password = settings.gmail_app_password or ""
+        recipient = settings.email_recipient or ""
+        sender = settings.email_sender or recipient
 
         if not password:
             raise ValueError("GMAIL_APP_PASSWORD environment variable is required")
@@ -176,7 +173,7 @@ class EmailSender:
 
             if result:
                 # Log successful send
-                log_email(
+                await self._log_email(
                     recipient=recipient,
                     subject=subject,
                     stock_count=stock_count,
@@ -199,12 +196,12 @@ class EmailSender:
                 error=str(e),
             )
             # Save to pending queue for retry
-            save_pending_email(
+            await self._save_pending_email(
                 recipient=recipient,
                 subject=subject,
                 body=html_body or body,
             )
-            log_email(
+            await self._log_email(
                 recipient=recipient,
                 subject=subject,
                 stock_count=stock_count,
@@ -221,12 +218,12 @@ class EmailSender:
                 error=str(e),
             )
             # Save to pending queue for retry
-            save_pending_email(
+            await self._save_pending_email(
                 recipient=recipient,
                 subject=subject,
                 body=html_body or body,
             )
-            log_email(
+            await self._log_email(
                 recipient=recipient,
                 subject=subject,
                 stock_count=stock_count,
@@ -243,12 +240,12 @@ class EmailSender:
                 error=str(e),
             )
             # Save to pending queue for retry
-            save_pending_email(
+            await self._save_pending_email(
                 recipient=recipient,
                 subject=subject,
                 body=html_body or body,
             )
-            log_email(
+            await self._log_email(
                 recipient=recipient,
                 subject=subject,
                 stock_count=stock_count,
@@ -265,12 +262,12 @@ class EmailSender:
                 error=str(e),
             )
             # Save to pending queue for retry
-            save_pending_email(
+            await self._save_pending_email(
                 recipient=recipient,
                 subject=subject,
                 body=html_body or body,
             )
-            log_email(
+            await self._log_email(
                 recipient=recipient,
                 subject=subject,
                 stock_count=stock_count,
@@ -393,9 +390,11 @@ class EmailSender:
         Returns:
             Tuple of (successful_sends, failed_sends).
         """
-        from backend.invest.storage import get_pending_emails
-
-        pending = get_pending_emails(max_retries=DEFAULT_MAX_RETRIES)
+        async with business_uow() as session:
+            pending = await invest_service.get_pending_emails(
+                session,
+                max_retries=DEFAULT_MAX_RETRIES,
+            )
 
         successful = 0
         failed = 0
@@ -419,7 +418,7 @@ class EmailSender:
                     email_id=email.id,
                     retry_count=email.retry_count,
                 )
-                delete_pending_email(email.id)
+                await self._delete_pending_email(email.id)
                 failed += 1
                 continue
 
@@ -433,11 +432,11 @@ class EmailSender:
 
             if success:
                 # Remove from pending queue
-                delete_pending_email(email.id)
+                await self._delete_pending_email(email.id)
                 successful += 1
             else:
                 # Increment retry count
-                increment_retry_count(email.id)
+                await self._increment_retry_count(email.id)
                 failed += 1
 
         logger.info(
@@ -447,3 +446,47 @@ class EmailSender:
         )
 
         return successful, failed
+
+    async def _save_pending_email(
+        self,
+        *,
+        recipient: str,
+        subject: str,
+        body: str,
+        html_body: str | None = None,
+    ) -> int:
+        async with business_uow() as session:
+            return await invest_service.save_pending_email(
+                session,
+                recipient=recipient,
+                subject=subject,
+                body=body,
+                html_body=html_body,
+            )
+
+    async def _delete_pending_email(self, email_id: int) -> bool:
+        async with business_uow() as session:
+            return await invest_service.delete_pending_email(session, email_id)
+
+    async def _increment_retry_count(self, email_id: int) -> int:
+        async with business_uow() as session:
+            return await invest_service.increment_retry_count(session, email_id)
+
+    async def _log_email(
+        self,
+        *,
+        recipient: str,
+        subject: str,
+        stock_count: int,
+        status: str,
+        error_message: str | None = None,
+    ) -> int:
+        async with business_uow() as session:
+            return await invest_service.log_email(
+                session,
+                recipient=recipient,
+                subject=subject,
+                stock_count=stock_count,
+                status=status,
+                error_message=error_message,
+            )

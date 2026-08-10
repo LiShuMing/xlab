@@ -16,7 +16,8 @@ export default defineConfig({
       '/api/admin': 'http://localhost:8010',
       '/api/invest': 'http://localhost:8010',
       '/api/ego': 'http://localhost:8010',
-      '/api': 'http://localhost:5000',
+      '/api/wechat': 'http://localhost:8010',
+      '/llm-wiki': 'http://localhost:8010',
     },
   },
   build: {

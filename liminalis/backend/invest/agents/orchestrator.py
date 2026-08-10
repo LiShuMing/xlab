@@ -1,7 +1,6 @@
 """Agent orchestrator implementing ReAct pattern with LangGraph."""
 
 import asyncio
-import os
 import time
 from typing import Any
 
@@ -14,6 +13,7 @@ from backend.invest.core.llm import (
 from backend.invest.core.logger import get_logger
 from backend.invest.modules.report_generator.formatter import ReportFormat, ReportFormatter
 from backend.invest.modules.report_generator.types import Report
+from backend.settings import get_settings as get_runtime_settings
 
 logger = get_logger(__name__)
 
@@ -128,7 +128,7 @@ Analyze the stock thoroughly and provide investment recommendations."""
 
     async def collect_data(self, stock_code: str) -> dict[str, ToolResult]:
         """Collect all market data concurrently with per-tool timeouts."""
-        tool_timeout = int(os.getenv("PY_INVEST_TOOL_TIMEOUT", "20"))
+        tool_timeout = get_runtime_settings().invest_tool_timeout
         tool_calls = [
             ("query_stock_price", {"stock_code": stock_code}),
             ("query_kline_data", {"stock_code": stock_code, "days": 30}),
@@ -183,9 +183,10 @@ Analyze the stock thoroughly and provide investment recommendations."""
         )
         from backend.invest.agents.synthesis_agent import SynthesisAgent
 
+        settings = get_runtime_settings()
         deep_config = LLMConfig.from_env()
-        deep_config.max_tokens = int(os.getenv("PY_INVEST_DEEP_MAX_TOKENS", "6500"))
-        deep_config.temperature = float(os.getenv("PY_INVEST_DEEP_TEMPERATURE", "0.25"))
+        deep_config.max_tokens = settings.invest_deep_max_tokens
+        deep_config.temperature = settings.invest_deep_temperature
         llm = RateLimitedLLMClient.wrap(LLMClient(deep_config), max_concurrent=4)
 
         # Run four specialist agents in parallel
@@ -228,11 +229,11 @@ Analyze the stock thoroughly and provide investment recommendations."""
         # Synthesize into final report
         t0 = time.time()
         deep_synthesis_config = LLMConfig.from_env()
-        deep_synthesis_config.max_tokens = int(os.getenv("PY_INVEST_DEEP_SYNTHESIS_MAX_TOKENS", "9000"))
-        deep_synthesis_config.temperature = float(os.getenv("PY_INVEST_DEEP_SYNTHESIS_TEMPERATURE", "0.22"))
+        deep_synthesis_config.max_tokens = settings.invest_deep_synthesis_max_tokens
+        deep_synthesis_config.temperature = settings.invest_deep_synthesis_temperature
         deep_synthesis_llm = RateLimitedLLMClient.wrap(LLMClient(deep_synthesis_config), max_concurrent=1)
         synthesis_agent = SynthesisAgent(stock_code, deep_synthesis_llm, lang=self.lang)
-        synthesis_timeout = int(os.getenv("PY_INVEST_SYNTHESIS_TIMEOUT", "210"))
+        synthesis_timeout = settings.invest_synthesis_timeout
         try:
             report = await asyncio.wait_for(
                 synthesis_agent.synthesize(tech, fund, risk, sector, data),
@@ -282,10 +283,11 @@ Analyze the stock thoroughly and provide investment recommendations."""
         from backend.invest.agents.synthesis_agent import SynthesisAgent
 
         t0 = time.time()
-        timeout = int(os.getenv("PY_INVEST_FAST_TIMEOUT", "120"))
+        settings = get_runtime_settings()
+        timeout = settings.invest_fast_timeout
         fast_config = LLMConfig.from_env()
-        fast_config.max_tokens = int(os.getenv("PY_INVEST_FAST_MAX_TOKENS", "2200"))
-        fast_config.temperature = float(os.getenv("PY_INVEST_FAST_TEMPERATURE", "0.2"))
+        fast_config.max_tokens = settings.invest_fast_max_tokens
+        fast_config.temperature = settings.invest_fast_temperature
         fast_llm = RateLimitedLLMClient.wrap(LLMClient(fast_config), max_concurrent=1)
         synthesis_agent = SynthesisAgent(stock_code, fast_llm, lang=self.lang)
         try:

@@ -87,6 +87,73 @@
         "title": "ChatMessageResponse",
         "type": "object"
       },
+      "CreateJournalEntryRequest": {
+        "properties": {
+          "action": {
+            "default": "",
+            "title": "Action",
+            "type": "string"
+          },
+          "emotion": {
+            "default": "",
+            "title": "Emotion",
+            "type": "string"
+          },
+          "entry_type": {
+            "title": "Entry Type",
+            "type": "string"
+          },
+          "meta": {
+            "additionalProperties": true,
+            "title": "Meta",
+            "type": "object"
+          },
+          "price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price"
+          },
+          "reason": {
+            "default": "",
+            "title": "Reason",
+            "type": "string"
+          },
+          "review_at": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Review At"
+          },
+          "thesis_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Thesis Id"
+          }
+        },
+        "required": [
+          "entry_type"
+        ],
+        "title": "CreateJournalEntryRequest",
+        "type": "object"
+      },
       "CreateRecordRequest": {
         "properties": {
           "content": {
@@ -116,6 +183,59 @@
         "title": "CreateRecordRequest",
         "type": "object"
       },
+      "CreateReviewRequest": {
+        "properties": {
+          "decision": {
+            "default": "no_action",
+            "title": "Decision",
+            "type": "string"
+          },
+          "discipline_notes": {
+            "default": "",
+            "title": "Discipline Notes",
+            "type": "string"
+          },
+          "evidence_update": {
+            "default": "",
+            "title": "Evidence Update",
+            "type": "string"
+          },
+          "next_action": {
+            "default": "",
+            "title": "Next Action",
+            "type": "string"
+          },
+          "thesis_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Thesis Id"
+          },
+          "thesis_valid": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Thesis Valid"
+          },
+          "valuation_update": {
+            "default": "",
+            "title": "Valuation Update",
+            "type": "string"
+          }
+        },
+        "title": "CreateReviewRequest",
+        "type": "object"
+      },
       "CreateSessionRequest": {
         "properties": {
           "role_id": {
@@ -125,6 +245,57 @@
           }
         },
         "title": "CreateSessionRequest",
+        "type": "object"
+      },
+      "CreateWatchItemRequest": {
+        "properties": {
+          "condition": {
+            "default": "",
+            "title": "Condition",
+            "type": "string"
+          },
+          "due_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Due Date"
+          },
+          "kind": {
+            "default": "manual",
+            "title": "Kind",
+            "type": "string"
+          },
+          "priority": {
+            "default": 0,
+            "title": "Priority",
+            "type": "integer"
+          },
+          "thesis_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Thesis Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title"
+        ],
+        "title": "CreateWatchItemRequest",
         "type": "object"
       },
       "HTTPValidationError": {
@@ -310,6 +481,98 @@
           "role_id"
         ],
         "title": "UpdateCurrentRoleRequest",
+        "type": "object"
+      },
+      "UpdateWatchItemStatusRequest": {
+        "properties": {
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "UpdateWatchItemStatusRequest",
+        "type": "object"
+      },
+      "UpsertThesisRequest": {
+        "properties": {
+          "confidence": {
+            "default": "medium",
+            "title": "Confidence",
+            "type": "string"
+          },
+          "core_thesis": {
+            "default": "",
+            "title": "Core Thesis",
+            "type": "string"
+          },
+          "counter_evidence": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Counter Evidence",
+            "type": "array"
+          },
+          "disconfirming_signals": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Disconfirming Signals",
+            "type": "array"
+          },
+          "expected_holding_period": {
+            "default": "",
+            "title": "Expected Holding Period",
+            "type": "string"
+          },
+          "margin_of_safety": {
+            "default": "",
+            "title": "Margin Of Safety",
+            "type": "string"
+          },
+          "source_report_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Report Id"
+          },
+          "status": {
+            "default": "watchlist",
+            "title": "Status",
+            "type": "string"
+          },
+          "stock_code": {
+            "default": "",
+            "title": "Stock Code",
+            "type": "string"
+          },
+          "stock_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stock Name"
+          },
+          "supporting_evidence": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Supporting Evidence",
+            "type": "array"
+          }
+        },
+        "title": "UpsertThesisRequest",
         "type": "object"
       },
       "ValidationError": {
@@ -1227,6 +1490,202 @@
         ]
       }
     },
+    "/api/invest/journal/{stock_code}": {
+      "post": {
+        "operationId": "post_journal_entry_api_invest_journal__stock_code__post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "stock_code",
+            "required": true,
+            "schema": {
+              "title": "Stock Code",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateJournalEntryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Post Journal Entry Api Invest Journal  Stock Code  Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Post Journal Entry",
+        "tags": [
+          "invest"
+        ]
+      }
+    },
+    "/api/invest/report/{stock_code}": {
+      "get": {
+        "operationId": "get_report_api_invest_report__stock_code__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "stock_code",
+            "required": true,
+            "schema": {
+              "title": "Stock Code",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Report Api Invest Report  Stock Code  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Report",
+        "tags": [
+          "invest"
+        ]
+      }
+    },
+    "/api/invest/reports": {
+      "delete": {
+        "operationId": "delete_all_invest_reports_api_invest_reports_delete",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Delete All Invest Reports Api Invest Reports Delete",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Delete All Invest Reports",
+        "tags": [
+          "invest"
+        ]
+      },
+      "get": {
+        "operationId": "get_reports_api_invest_reports_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Reports Api Invest Reports Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Reports",
+        "tags": [
+          "invest"
+        ]
+      }
+    },
+    "/api/invest/reviews/{stock_code}": {
+      "post": {
+        "operationId": "post_review_api_invest_reviews__stock_code__post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "stock_code",
+            "required": true,
+            "schema": {
+              "title": "Stock Code",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateReviewRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Post Review Api Invest Reviews  Stock Code  Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Post Review",
+        "tags": [
+          "invest"
+        ]
+      }
+    },
     "/api/invest/status": {
       "get": {
         "operationId": "get_status_api_invest_status_get",
@@ -1245,6 +1704,300 @@
           }
         },
         "summary": "Get Status",
+        "tags": [
+          "invest"
+        ]
+      }
+    },
+    "/api/invest/stocks": {
+      "get": {
+        "operationId": "get_stocks_api_invest_stocks_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Stocks Api Invest Stocks Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Stocks",
+        "tags": [
+          "invest"
+        ]
+      }
+    },
+    "/api/invest/theses": {
+      "get": {
+        "operationId": "list_invest_theses_api_invest_theses_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response List Invest Theses Api Invest Theses Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Invest Theses",
+        "tags": [
+          "invest"
+        ]
+      }
+    },
+    "/api/invest/thesis/{stock_code}": {
+      "put": {
+        "operationId": "put_invest_thesis_api_invest_thesis__stock_code__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "stock_code",
+            "required": true,
+            "schema": {
+              "title": "Stock Code",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertThesisRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Put Invest Thesis Api Invest Thesis  Stock Code  Put",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Invest Thesis",
+        "tags": [
+          "invest"
+        ]
+      }
+    },
+    "/api/invest/watch-items/{item_id}": {
+      "delete": {
+        "operationId": "delete_watch_item_api_invest_watch_items__item_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "item_id",
+            "required": true,
+            "schema": {
+              "title": "Item Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Delete Watch Item Api Invest Watch Items  Item Id  Delete",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Watch Item",
+        "tags": [
+          "invest"
+        ]
+      },
+      "patch": {
+        "operationId": "patch_watch_item_status_api_invest_watch_items__item_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "item_id",
+            "required": true,
+            "schema": {
+              "title": "Item Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateWatchItemStatusRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Patch Watch Item Status Api Invest Watch Items  Item Id  Patch",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Patch Watch Item Status",
+        "tags": [
+          "invest"
+        ]
+      }
+    },
+    "/api/invest/watch-items/{stock_code}": {
+      "post": {
+        "operationId": "post_watch_item_api_invest_watch_items__stock_code__post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "stock_code",
+            "required": true,
+            "schema": {
+              "title": "Stock Code",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWatchItemRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Post Watch Item Api Invest Watch Items  Stock Code  Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Post Watch Item",
+        "tags": [
+          "invest"
+        ]
+      }
+    },
+    "/api/invest/workspace/{stock_code}": {
+      "get": {
+        "operationId": "get_workspace_api_invest_workspace__stock_code__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "stock_code",
+            "required": true,
+            "schema": {
+              "title": "Stock Code",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Workspace Api Invest Workspace  Stock Code  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Workspace",
         "tags": [
           "invest"
         ]
@@ -1486,6 +2239,25 @@
           }
         },
         "summary": "Health",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/health/deep": {
+      "get": {
+        "operationId": "deep_health_health_deep_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Deep Health",
         "tags": [
           "health"
         ]

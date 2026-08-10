@@ -4,37 +4,20 @@ from __future__ import annotations
 
 import hashlib
 import logging
-import os
 from typing import Any
 
 import numpy as np
 from numpy.typing import NDArray
 
+from backend._shared.ml_runtime import (
+    configure_ml_environment,
+    is_simple_embedding_mode,
+    suppress_ml_library_logs,
+)
 from backend.ego.config import get_settings
 
-# Configure environment before importing ML libraries
-os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"
-os.environ["CUDA_VISIBLE_DEVICES"] = ""
-os.environ["OMP_NUM_THREADS"] = "1"
-os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
-os.environ["TOKENIZERS_PARALLELISM"] = "false"
-os.environ["TRANSFORMERS_VERBOSITY"] = "error"
-os.environ["HF_HUB_DISABLE_PROGRESS_BARS"] = "1"
-
-# Suppress third-party library logs
-for _name in [
-    "sentence_transformers",
-    "transformers",
-    "urllib3",
-    "httpcore",
-    "openai",
-    "huggingface_hub",
-    "httpx",
-    "tqdm",
-    "torch",
-]:
-    logging.getLogger(_name).setLevel(logging.ERROR)
-    logging.getLogger(_name).disabled = True
+configure_ml_environment()
+suppress_ml_library_logs(level=logging.ERROR, disable=True)
 
 _local_embedder: Any = None
 
@@ -53,7 +36,7 @@ def clean_text(text: Any) -> str:
 
 def _is_simple_embedding_mode() -> bool:
     """Check if we should use simple hash embeddings."""
-    return os.getenv("USE_SIMPLE_EMBEDDING", "false").lower() == "true"
+    return is_simple_embedding_mode()
 
 
 def _get_local_embedder() -> Any:

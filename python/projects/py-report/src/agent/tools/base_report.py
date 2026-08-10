@@ -3,10 +3,9 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import TYPE_CHECKING
 
+import httpx
 import structlog
-from anthropic import AsyncAnthropic
 from dotenv import load_dotenv
 
 from ..types import ResearchMode, ResearchOptions, ResearchReport, ToolResult
@@ -17,9 +16,6 @@ from src.prompt_learner import (
     summarize_prompts,
 )
 
-if TYPE_CHECKING:
-    pass
-
 load_dotenv(Path.home() / ".env")
 load_dotenv(override=True)
 
@@ -27,6 +23,7 @@ log = structlog.get_logger()
 
 DEFAULT_BASE_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1"
 DEFAULT_MODEL = "qwen-max"
+DEFAULT_MAX_TOKENS = 8192
 
 SYSTEM_PROMPT_TEMPLATE = """\
 You are a senior AI product analyst specializing in large language model APIs and developer tooling.
@@ -81,6 +78,46 @@ def _get_api_key() -> str:
     if not key:
         raise ValueError("LLM_API_KEY environment variable is not set.")
     return key
+
+
+def _get_max_tokens() -> int:
+    """Get maximum generated tokens for the base report call."""
+    raw = os.environ.get("LLM_MAX_TOKENS", str(DEFAULT_MAX_TOKENS))
+    try:
+        value = int(raw)
+    except ValueError:
+        log.warning("invalid_llm_max_tokens", value=raw, fallback=DEFAULT_MAX_TOKENS)
+        return DEFAULT_MAX_TOKENS
+    return max(1, value)
+
+
+def _chat_completions_url(base_url: str) -> str:
+    """Return the OpenAI-compatible chat completions endpoint."""
+    normalized = base_url.rstrip("/")
+    if normalized.endswith("/chat/completions"):
+        return normalized
+    return f"{normalized}/chat/completions"
+
+
+def _extract_chat_content(payload: dict) -> str:
+    """Extract assistant content from an OpenAI-compatible response payload."""
+    choices = payload.get("choices", [])
+    if not choices:
+        return ""
+
+    message = choices[0].get("message", {})
+    content = message.get("content", "")
+    if isinstance(content, str):
+        return content
+
+    if isinstance(content, list):
+        parts = []
+        for item in content:
+            if isinstance(item, dict) and item.get("type") == "text":
+                parts.append(str(item.get("text", "")))
+        return "\n".join(part for part in parts if part)
+
+    return ""
 
 
 def _get_refined_prompts(manifest: dict) -> str:
@@ -144,7 +181,6 @@ class BaseReportTool:
 
     def __init__(self, timeout: float = 120.0):
         self.timeout = timeout
-        self._client: AsyncAnthropic | None = None
 
     async def run(
         self,
@@ -164,6 +200,7 @@ class BaseReportTool:
             api_key = _get_api_key()
             base_url = os.environ.get("LLM_BASE_URL", DEFAULT_BASE_URL)
             model = os.environ.get("LLM_MODEL", DEFAULT_MODEL)
+            max_tokens = _get_max_tokens()
 
             system_prompt = _build_system_prompt(
                 product_name, options.language, options.depth
@@ -175,39 +212,43 @@ class BaseReportTool:
                 model=model,
                 depth=options.depth,
                 base_url=base_url,
+                max_tokens=max_tokens,
             )
 
-            async with AsyncAnthropic(
-                api_key=api_key,
-                base_url=base_url,
-                timeout=self.timeout,
-            ) as client:
-                message = await client.messages.create(
-                    model=model,
-                    max_tokens=8192,
-                    temperature=0.3,
-                    system=system_prompt,
-                    messages=[
-                        {
-                            "role": "user",
-                            "content": f"Generate the full deep-research report for: {product_name}",
-                        },
-                    ],
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
+                response = await client.post(
+                    _chat_completions_url(base_url),
+                    headers={
+                        "Authorization": f"Bearer {api_key}",
+                        "Content-Type": "application/json",
+                    },
+                    json={
+                        "model": model,
+                        "max_tokens": max_tokens,
+                        "temperature": 0.3,
+                        "messages": [
+                            {"role": "system", "content": system_prompt},
+                            {
+                                "role": "user",
+                                "content": (
+                                    "Generate the full deep-research report for: "
+                                    f"{product_name}"
+                                ),
+                            },
+                        ],
+                    },
                 )
+                try:
+                    response.raise_for_status()
+                except httpx.HTTPStatusError as exc:
+                    raise RuntimeError(
+                        f"LLM request failed with HTTP {response.status_code}: "
+                        f"{response.text[:1000]}"
+                    ) from exc
+                content = _extract_chat_content(response.json())
 
-                # Handle different content block types
-                content = ""
-                for block in message.content:
-                    if hasattr(block, "text"):
-                        content = block.text
-                        break
-
-                if not content:
-                    content_block = message.content[0]
-                    if hasattr(content_block, "thinking"):
-                        content = content_block.thinking
-                    else:
-                        content = str(content_block)
+            if not content:
+                raise ValueError("LLM response did not include assistant content.")
 
             log.info("report_generated", product=product_name, chars=len(content))
 
@@ -217,5 +258,9 @@ class BaseReportTool:
             return ToolResult.ok(data=report)
 
         except Exception as exc:
-            log.error("base_report_failed", error=str(exc))
-            return ToolResult.fail(str(exc))
+            if isinstance(exc, httpx.TimeoutException):
+                error = f"LLM request timed out after {self.timeout:.0f}s"
+            else:
+                error = str(exc) or exc.__class__.__name__
+            log.error("base_report_failed", error=error)
+            return ToolResult.fail(error)

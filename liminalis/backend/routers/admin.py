@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend._shared.jobs import get_arq_pool
-from backend.db.engine import get_session
+from backend._shared.storage import business_uow, get_business_session
 from backend.services.radar_admin_service import (
     COOKIE_NAME,
     admin_username,
@@ -90,7 +90,6 @@ def me(
 async def submit_link(
     payload: LinkIngestionRequest,
     settings: Settings = Depends(get_settings),
-    session: AsyncSession = Depends(get_session),
     arq_pool: ArqRedis = Depends(get_arq_pool),
     _: str = Depends(current_admin_user),
 ) -> dict[str, object]:
@@ -98,15 +97,33 @@ async def submit_link(
     if not url:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="url is required")
 
-    job = await _create_job(
-        session=session,
-        arq_pool=arq_pool,
-        settings=settings,
-        url=url,
-        product=payload.product.strip(),
-        source=payload.source.strip(),
-        tags=payload.tags,
-        note=payload.note.strip(),
+    product = payload.product.strip()
+    source = payload.source.strip()
+    tags = payload.tags
+    note = payload.note.strip()
+
+    async with business_uow() as session:
+        job = await _create_job(
+            session=session,
+            settings=settings,
+            url=url,
+            product=product,
+            source=source,
+            tags=tags,
+            note=note,
+        )
+
+    await arq_pool.enqueue_job(
+        "ingest_link_task",
+        job_id=job["id"],
+        request_data={
+            "url": url,
+            "product": product,
+            "source": source,
+            "tags": tags or [],
+            "note": note,
+        },
+        submitted_by=job["submitted_by"],
     )
     return {"jobId": job["id"], "status": job["status"], "job": job}
 
@@ -114,7 +131,7 @@ async def submit_link(
 @router.get("/radar/jobs")
 async def list_jobs(
     limit: int = Query(default=30, ge=1, le=100),
-    session: AsyncSession = Depends(get_session),
+    session: AsyncSession = Depends(get_business_session),
     _: str = Depends(current_admin_user),
 ) -> dict[str, object]:
     return {"jobs": await _list_jobs(session, limit=limit)}
@@ -123,7 +140,7 @@ async def list_jobs(
 @router.get("/radar/jobs/{job_id}")
 async def get_job(
     job_id: str,
-    session: AsyncSession = Depends(get_session),
+    session: AsyncSession = Depends(get_business_session),
     _: str = Depends(current_admin_user),
 ) -> dict[str, object]:
     job = await _get_job(session, job_id)

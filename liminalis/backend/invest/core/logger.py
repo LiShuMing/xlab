@@ -1,51 +1,14 @@
-"""Logging system based on structlog."""
+"""Compatibility wrapper around the shared Liminalis logging setup."""
 
-import logging
-import sys
+from __future__ import annotations
 
-import structlog
-from structlog.typing import Processor
+from backend._shared.logging import configure_logging as configure_shared_logging
+from backend._shared.logging import get_logger
+from backend.settings import get_settings
 
-
-def get_logger(name: str = "invest-ai") -> structlog.BoundLogger:
-    """Get structured logger instance.
-
-    Args:
-        name: Logger name, typically the module name.
-
-    Returns:
-        Configured BoundLogger instance.
-    """
-    return structlog.get_logger(name)
+__all__ = ["get_logger", "setup_logging"]
 
 
 def setup_logging(level: str = "INFO") -> None:
-    """Configure logging system.
-
-    Args:
-        level: Logging level (DEBUG, INFO, WARNING, ERROR).
-    """
-    # Standard library logging setup
-    logging.basicConfig(
-        format="%(message)s",
-        stream=sys.stdout,
-        level=getattr(logging, level.upper()),
-    )
-
-    # structlog configuration
-    processors: list[Processor] = [
-        structlog.contextvars.merge_contextvars,
-        structlog.processors.add_log_level,
-        structlog.processors.StackInfoRenderer(),
-        structlog.dev.set_exc_info,
-        structlog.processors.TimeStamper(fmt="%Y-%m-%d %H:%M:%S", utc=False),
-        structlog.dev.ConsoleRenderer(),
-    ]
-
-    structlog.configure(
-        processors=processors,
-        wrapper_class=structlog.make_filtering_bound_logger(getattr(logging, level.upper())),
-        context_class=dict,
-        logger_factory=structlog.PrintLoggerFactory(),
-        cache_logger_on_first_use=True,
-    )
+    """Configure logging using the shared runtime implementation."""
+    configure_shared_logging(get_settings(), log_level=level)

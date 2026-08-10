@@ -4,35 +4,34 @@ from __future__ import annotations
 
 import hashlib
 import uuid
-from datetime import UTC, datetime
 
-from sqlalchemy import delete, func, select, text
+from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend._shared.auth import issue_access_token
+from backend._shared.domain_errors import DomainNotFoundError
+from backend._shared.serializers import date_key, utc_timestamp_z
+from backend.ego.chat_pipeline import EgoChatPipeline
 from backend.ego.chat_registry import get_chat_service, switch_chat_role
-from backend.ego.config import get_settings as get_ego_settings
 from backend.ego.db_models import EgoMessage, EgoRecord, EgoSession
 from backend.ego.roles.role import PREDEFINED_ROLES
 from backend.ego.schemas.chat import ChatMessageResponse, SessionResponse
 from backend.ego.schemas.record import CreateRecordRequest, RecordResponse, TimelineDay
-from backend.settings import Settings
+from backend.settings import Settings, get_settings
 
 
 def _now_iso() -> str:
-    return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return utc_timestamp_z()
 
 
 def _today() -> str:
-    return datetime.now(UTC).strftime("%Y-%m-%d")
+    return date_key()
 
 
 # ── Auth ────────────────────────────────────────────────────────────────────
 
 
-async def pin_login(
-    pin: str, client_ip: str, settings: Settings, session: AsyncSession
-) -> dict:
+async def pin_login(pin: str, client_ip: str, settings: Settings, session: AsyncSession) -> dict:
     user_id = hashlib.sha256(f"{client_ip}:{pin}".encode()).hexdigest()[:16]
     token = issue_access_token(settings, user_id=user_id)
     return {"token": token, "user": {"id": user_id}}
@@ -61,24 +60,28 @@ async def update_current_role(user_id: str, role_id: str) -> bool:
 # ── Chat ────────────────────────────────────────────────────────────────────
 
 
-async def create_chat_session(
-    user_id: str, role_id: str, session: AsyncSession
-) -> SessionResponse:
+async def _get_owned_chat_session(user_id: str, session_id: str, db_session: AsyncSession) -> EgoSession:
+    result = await db_session.execute(
+        select(EgoSession).where(EgoSession.id == session_id, EgoSession.user_id == user_id)
+    )
+    chat_session = result.scalar_one_or_none()
+    if chat_session is None:
+        raise DomainNotFoundError("chat session not found")
+    return chat_session
+
+
+async def create_chat_session(user_id: str, role_id: str, session: AsyncSession) -> SessionResponse:
     sid = uuid.uuid4().hex
     now = _now_iso()
     row = EgoSession(id=sid, user_id=user_id, role_id=role_id)
     session.add(row)
-    await session.commit()
+    await session.flush()
     return SessionResponse(id=sid, user_id=user_id, role_id=role_id, created_at=now, updated_at=now)
 
 
-async def list_chat_sessions(
-    user_id: str, session: AsyncSession
-) -> list[SessionResponse]:
+async def list_chat_sessions(user_id: str, session: AsyncSession) -> list[SessionResponse]:
     result = await session.execute(
-        select(EgoSession)
-        .where(EgoSession.user_id == user_id)
-        .order_by(EgoSession.updated_at.desc())
+        select(EgoSession).where(EgoSession.user_id == user_id).order_by(EgoSession.updated_at.desc())
     )
     rows = result.scalars().all()
     return [
@@ -86,8 +89,8 @@ async def list_chat_sessions(
             id=r.id,
             user_id=r.user_id,
             role_id=r.role_id,
-            created_at=r.created_at.strftime("%Y-%m-%dT%H:%M:%SZ"),
-            updated_at=r.updated_at.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            created_at=utc_timestamp_z(r.created_at),
+            updated_at=utc_timestamp_z(r.updated_at),
         )
         for r in rows
     ]
@@ -97,91 +100,18 @@ async def send_chat_message(
     user_id: str,
     session_id: str,
     content: str,
-    session: AsyncSession,
     settings: Settings | None = None,
 ) -> dict:
-    svc = await get_chat_service(user_id)
-
-    # Persist user message
-    user_msg_id = uuid.uuid4().hex
-    user_msg = EgoMessage(
-        id=user_msg_id,
-        session_id=session_id,
-        role="user",
-        content=content,
-        created_at=datetime.now(UTC),
-    )
-    session.add(user_msg)
-
-    # Update session timestamp
-    await session.execute(
-        text("UPDATE ego_sessions SET updated_at = now() WHERE id = :sid"),
-        {"sid": session_id},
-    )
-
-    # Load recent conversation history for context
-    ego_settings = get_ego_settings()
-    history_limit = ego_settings.chat_history_limit
-    history_result = await session.execute(
-        select(EgoMessage)
-        .where(EgoMessage.session_id == session_id)
-        .order_by(EgoMessage.created_at.desc())
-        .limit(history_limit)
-    )
-    history = [
-        {"role": r.role, "content": r.content}
-        for r in reversed(history_result.scalars().all())
-    ]
-
-    # Generate LLM reply
-    reply_text = await _call_chat_service(svc, content, history)
-    role = svc.current_role
-
-    # Persist assistant message
-    assistant_msg_id = uuid.uuid4().hex
-    assistant_msg = EgoMessage(
-        id=assistant_msg_id,
-        session_id=session_id,
-        role="assistant",
-        role_id=role.id,
-        role_label=role.name,
-        content=reply_text,
-        created_at=datetime.now(UTC),
-    )
-    session.add(assistant_msg)
-    await session.commit()
-
-    return {
-        "user_message": {
-            "id": user_msg_id,
-            "role": "user",
-            "content": content,
-            "created_at": user_msg.created_at.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        },
-        "reply": {
-            "id": assistant_msg_id,
-            "role": "assistant",
-            "role_id": role.id,
-            "role_label": role.name,
-            "content": reply_text,
-            "created_at": assistant_msg.created_at.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        },
-    }
-
-
-async def _call_chat_service(svc, content: str, history: list[dict[str, str]] | None = None) -> str:
-    import asyncio as _asyncio
-
-    return await _asyncio.to_thread(svc.chat, content, history)
+    pipeline = EgoChatPipeline(settings or get_settings())
+    return await pipeline.run(user_id=user_id, session_id=session_id, content=content)
 
 
 async def list_chat_messages(
-    session_id: str, db_session: AsyncSession
+    user_id: str, session_id: str, db_session: AsyncSession
 ) -> list[ChatMessageResponse]:
+    await _get_owned_chat_session(user_id, session_id, db_session)
     result = await db_session.execute(
-        select(EgoMessage)
-        .where(EgoMessage.session_id == session_id)
-        .order_by(EgoMessage.created_at)
+        select(EgoMessage).where(EgoMessage.session_id == session_id).order_by(EgoMessage.created_at)
     )
     rows = result.scalars().all()
     return [
@@ -191,7 +121,7 @@ async def list_chat_messages(
             role_id=r.role_id,
             role_label=r.role_label,
             content=r.content,
-            created_at=r.created_at.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            created_at=utc_timestamp_z(r.created_at),
         )
         for r in rows
     ]
@@ -214,7 +144,7 @@ async def create_record(
         record_date=_today(),
     )
     db_session.add(row)
-    await db_session.commit()
+    await db_session.flush()
     return RecordResponse(
         id=rid,
         content_type=payload.content_type,
@@ -256,20 +186,16 @@ async def list_records(
             content=r.content,
             media_url=r.media_url,
             record_date=r.record_date,
-            created_at=r.created_at.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            created_at=utc_timestamp_z(r.created_at),
         )
         for r in rows
     ]
     return {"items": items, "total": total, "page": page, "size": size}
 
 
-async def get_record(
-    record_id: str, user_id: str, db_session: AsyncSession
-) -> RecordResponse | None:
+async def get_record(record_id: str, user_id: str, db_session: AsyncSession) -> RecordResponse | None:
     result = await db_session.execute(
-        select(EgoRecord).where(
-            EgoRecord.id == record_id, EgoRecord.user_id == user_id
-        )
+        select(EgoRecord).where(EgoRecord.id == record_id, EgoRecord.user_id == user_id)
     )
     row = result.scalar_one_or_none()
     if row is None:
@@ -280,25 +206,19 @@ async def get_record(
         content=row.content,
         media_url=row.media_url,
         record_date=row.record_date,
-        created_at=row.created_at.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        created_at=utc_timestamp_z(row.created_at),
     )
 
 
-async def delete_record(
-    record_id: str, user_id: str, db_session: AsyncSession
-) -> bool:
+async def delete_record(record_id: str, user_id: str, db_session: AsyncSession) -> bool:
     result = await db_session.execute(
-        delete(EgoRecord).where(
-            EgoRecord.id == record_id, EgoRecord.user_id == user_id
-        )
+        delete(EgoRecord).where(EgoRecord.id == record_id, EgoRecord.user_id == user_id)
     )
-    await db_session.commit()
+    await db_session.flush()
     return result.rowcount > 0
 
 
-async def get_timeline(
-    user_id: str, month: str, db_session: AsyncSession
-) -> list[TimelineDay]:
+async def get_timeline(user_id: str, month: str, db_session: AsyncSession) -> list[TimelineDay]:
     q = (
         select(
             EgoRecord.record_date,

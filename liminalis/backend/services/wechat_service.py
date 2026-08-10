@@ -8,11 +8,10 @@ import uuid
 from dataclasses import dataclass
 from urllib.parse import quote
 
-from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend._shared.auth import issue_access_token
+from backend._shared.auth import SignedStateError, issue_access_token, read_timed_payload, sign_timed_payload
 from backend.settings import Settings
 from backend.wechat.client import exchange_official_oauth_code
 from backend.wechat.db_models import User, UserIdentity
@@ -54,21 +53,22 @@ class WeChatLoginResult:
 
 
 def create_oauth_state(settings: Settings, *, target: str = DEFAULT_TARGET) -> str:
-    serializer = _serializer(settings)
-    return serializer.dumps({"target": sanitize_target(target)})
+    return sign_timed_payload(settings, {"target": sanitize_target(target)}, salt="wechat-oauth-state")
 
 
 def parse_oauth_state(settings: Settings, state: str) -> dict[str, str]:
-    serializer = _serializer(settings)
     try:
-        payload = serializer.loads(
+        payload = read_timed_payload(
+            settings,
             state,
-            max_age=settings.wechat_oauth_state_max_age_seconds,
+            salt="wechat-oauth-state",
+            max_age_seconds=settings.wechat_oauth_state_max_age_seconds,
         )
-    except SignatureExpired as exc:
+    except SignedStateError as exc:
+        message = str(exc)
+        if "expired" not in message:
+            raise WeChatStateError("Invalid WeChat OAuth state") from exc
         raise WeChatStateError("WeChat OAuth state expired") from exc
-    except BadSignature as exc:
-        raise WeChatStateError("Invalid WeChat OAuth state") from exc
 
     return {"target": sanitize_target(str(payload.get("target") or DEFAULT_TARGET))}
 
@@ -146,7 +146,7 @@ async def get_or_create_identity_user(
         user = user_result.scalar_one()
         if unionid and identity.unionid != unionid:
             identity.unionid = unionid
-            await session.commit()
+            await session.flush()
         return user
 
     user = User(id=f"user_{uuid.uuid4().hex}", display_name=f"wechat-{openid[-6:]}")
@@ -159,7 +159,7 @@ async def get_or_create_identity_user(
         unionid=unionid,
     )
     session.add_all([user, identity])
-    await session.commit()
+    await session.flush()
     return user
 
 
@@ -171,7 +171,3 @@ def build_frontend_callback_url(result: WeChatLoginResult) -> str:
         f"&account_label={quote(result.account_label, safe='')}"
         f"&target={quote(result.target, safe='')}"
     )
-
-
-def _serializer(settings: Settings) -> URLSafeTimedSerializer:
-    return URLSafeTimedSerializer(settings.session_secret, salt="wechat-oauth-state")

@@ -19,6 +19,7 @@ dependencies = [
     "asyncpg>=0.29.0",
     "alembic>=1.13.0",
     "pgvector>=0.3.0",
+    "langgraph>=1.0.0",
     # M0: task queue
     "arq>=0.26.0",
     "redis>=5.0.0",
@@ -28,11 +29,29 @@ dependencies = [
     # M0: auth (JWT + WeChat OAuth carry-over from py-ego)
     "python-jose[cryptography]>=3.3.0",
     "passlib[bcrypt]>=1.7.4",
+    # Absorbed radar / invest / ego runtime dependencies
+    "httpx>=0.26.0",
+    "hishel>=1.2.0",
+    "openai>=1.0.0",
+    "python-dotenv>=1.0.0",
+    "PyYAML>=6.0.0",
+    "tenacity>=8.2.0",
+    "pybreaker>=1.2.0",
+    "python-dateutil>=2.8.2",
+    "feedparser>=6.0.0",
+    "beautifulsoup4>=4.12.0",
+    "readability-lxml>=0.8.1",
+    "trafilatura>=2.0.0",
+    "lxml>=5.0.0",
+    "lxml-html-clean>=0.4.0",
+    "yfinance>=0.2.0",
+    "pandas>=2.0.0",
+    "numpy>=1.26.0",
+    "faiss-cpu>=1.8.0",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "httpx>=0.26.0",
     "pytest>=7.4.0",
     "pytest-asyncio>=0.23.0",
     "ruff>=0.6.0",

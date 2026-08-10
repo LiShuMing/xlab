@@ -6,10 +6,11 @@ from datetime import UTC, datetime
 from html import unescape
 from urllib.parse import urljoin
 
-import feedparser
 from bs4 import BeautifulSoup
-from readability import Document
 
+from backend._shared.content import classify_content, relevance_confidence
+from backend._shared.web_extract import extract_article, extract_date_from_html, html_to_text
+from backend._shared.web_feed import is_feed_content, parse_feed_content
 from backend.radar.fetcher import FetchResult
 
 
@@ -31,45 +32,11 @@ class ExtractedItem:
 class Extractor:
     """Extract structured items from fetched content."""
 
-    # Keywords for content classification
-    RELEASE_KEYWORDS = [
-        "release",
-        "released",
-        "announcing",
-        "announcement",
-        "version",
-        "changelog",
-        "what's new",
-    ]
-    RELEASE_VERSION_RE = re.compile(r"v\d+\.")
-    ENGINE_KEYWORDS = [
-        "query",
-        "execution",
-        "optimizer",
-        "scan",
-        "join",
-        "filter",
-        "aggregate",
-        "vectorized",
-        "codegen",
-        "MPP",
-    ]
-    PERFORMANCE_KEYWORDS = [
-        "performance",
-        "benchmark",
-        "speed",
-        "optimize",
-        "fast",
-        "faster",
-        "latency",
-        "throughput",
-    ]
-
     def extract_rss_items(self, result: FetchResult) -> list[ExtractedItem]:
         """Extract items from RSS/Atom feeds."""
         items = []
         try:
-            feed = feedparser.parse(result.content)
+            feed = parse_feed_content(result.content)
         except Exception:
             return items
 
@@ -126,22 +93,14 @@ class Extractor:
         items = []
 
         try:
-            doc = Document(result.content)
-            title = doc.title().strip()
-            main_content = doc.summary()
+            article = extract_article(result.content, url=result.url)
+            if article is None:
+                raise ValueError("Unable to extract article content")
 
-            soup = BeautifulSoup(main_content, "lxml")
-
-            # Try to find article date
-            published_at = self._extract_date(soup)
-
-            # Extract links with their context
-            content_type = self._classify_content(title, soup.get_text())
-
-            # Get article text
-            article_text = soup.get_text(separator=" ", strip=True)
-            # Limit text length for efficiency
-            article_text = article_text[:5000] if len(article_text) > 5000 else article_text
+            title = article.title
+            published_at = article.published_at
+            article_text = article.text
+            content_type = self._classify_content(title, article_text)
 
             items.append(
                 ExtractedItem(
@@ -149,16 +108,16 @@ class Extractor:
                     product=result.product,
                     title=title,
                     content=article_text,
-                    html_content=main_content,
+                    html_content=article.html,
                     published_at=published_at,
-                    author=None,
+                    author=article.author,
                     content_type=content_type,
                     confidence=self._calculate_confidence(title, article_text),
                 )
             )
 
             # Try to extract individual news items from list pages
-            items.extend(self._extract_list_items(result, soup))
+            items.extend(self._extract_list_items(result, BeautifulSoup(result.content, "lxml")))
 
         except Exception as e:
             # Return a single error item
@@ -236,105 +195,25 @@ class Extractor:
 
     def _is_rss_content(self, content: str) -> bool:
         """Check if content looks like RSS/Atom."""
-        return (
-            "<rss" in content[:500]
-            or "<feed" in content[:500]
-            or 'xmlns="http://www.w3.org/2005/Atom' in content[:500]
-        )
+        return is_feed_content(content)
 
     def _html_to_text(self, html: str) -> str:
         """Convert HTML to plain text."""
         if not html:
             return ""
-        soup = BeautifulSoup(html, "lxml")
-        # Remove scripts and styles
-        for tag in soup(["script", "style", "nav", "header", "footer"]):
-            tag.decompose()
-        text = soup.get_text(separator=" ", strip=True)
-        # Clean up whitespace
-        text = re.sub(r"\s+", " ", text)
-        return text[:3000] if len(text) > 3000 else text
+        return html_to_text(html, max_chars=3000)
 
     def _extract_date(self, soup: BeautifulSoup) -> str | None:
         """Extract publication date from HTML."""
-        # <time datetime="...">
-        tag = soup.find("time", datetime=True)
-        if tag:
-            return tag["datetime"]
-
-        # <meta property="article:published_time" content="...">
-        for meta_attrs in [
-            {"property": "article:published_time"},
-            {"name": "publication-date"},
-            {"name": "date"},
-        ]:
-            tag = soup.find("meta", attrs=meta_attrs)
-            if tag and tag.get("content"):
-                return tag["content"]
-
-        # Fallback: span/div with date-like class
-        tag = soup.find(["span", "div", "p"], class_=re.compile(r"date|time|published", re.I))
-        if tag:
-            text = tag.get_text(strip=True)
-            if text:
-                return text
-
-        return None
+        return extract_date_from_html(soup)
 
     def _classify_content(self, title: str, content: str) -> str:
         """Classify the type of content."""
-        text = f"{title} {content}".lower()
-
-        if any(kw in text for kw in self.RELEASE_KEYWORDS) or self.RELEASE_VERSION_RE.search(text):
-            return "release"
-        elif any(kw in text for kw in self.ENGINE_KEYWORDS):
-            return "engine"
-        elif any(kw in text for kw in self.PERFORMANCE_KEYWORDS):
-            return "performance"
-        elif "docs" in text or "documentation" in text:
-            return "docs"
-        elif "blog" in text or "post" in text:
-            return "blog"
-        else:
-            return "other"
+        return classify_content(title, content)
 
     def _calculate_confidence(self, title: str, content: str) -> float:
         """Calculate relevance confidence score (0-1)."""
-        text = f"{title} {content}".lower()
-        score = 0.3  # Base confidence
-
-        # Boost for DB/OLAP related keywords
-        db_keywords = [
-            "database",
-            "db",
-            "olap",
-            "query",
-            "sql",
-            "analytics",
-            "storage",
-            "index",
-            "partition",
-            "materialized",
-            "view",
-            "lakehouse",
-            "warehouse",
-            "data",
-            "table",
-            "column",
-            "parquet",
-            "duckdb",
-            "clickhouse",
-            "trino",
-            "spark",
-        ]
-        score += sum(0.05 for kw in db_keywords if kw in text)
-
-        # Boost for release/announcement content
-        if any(kw in text.lower() for kw in self.RELEASE_KEYWORDS):
-            score += 0.2
-
-        # Cap at 1.0
-        return min(score, 1.0)
+        return relevance_confidence(title, content)
 
 
 def extract_items(results: list[FetchResult]) -> list[ExtractedItem]:
