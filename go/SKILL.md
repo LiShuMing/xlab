@@ -12,12 +12,18 @@ Go language laboratory focusing on cloud-native, concurrency, and systems progra
 
 ## Project Structure
 
+This directory currently holds only these conventions. There are no Go projects
+under `go/` yet — new experiments should create a module here first.
+
 ```text
 go/
-├── hello/           # Hello world / quick experiments
-├── golab/           # Main Go lab
-└── (projects)       # Various Go projects
+└── SKILL.md         # This file
 ```
+
+The repository's real Go code lives elsewhere:
+
+- `liminalis/llm-wiki/` — the substantial Go module (CLI + web context service)
+- `cc/golab/` — a single cgo-interop LeetCode file
 
 ## Key Concepts
 - **Concurrency**: Goroutines, channels, select, context

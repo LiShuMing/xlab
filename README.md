@@ -26,17 +26,34 @@ Module-level files such as `cc/SKILL.md`, `python/SKILL.md`, or
 
 ```text
 xlab/
-|-- cc/          C++ lab, algorithms, benchmarks, systems/database experiments
-|-- rust/        Rust lab, database experiments, async/concurrency projects
-|-- python/      Python lab, AI/data tooling, research prototypes
-|-- java/        Java projects, Iceberg and interview/test labs
-|-- go/          Go experiments
-|-- haskell/     Functional programming experiments
-|-- shell/       Shell utilities, Docker/MySQL/FIO helpers
-|-- docs/        MkDocs knowledge base and technical notes
-|-- skills/      Local Codex/agent skills
-`-- _templates/  Reusable note/project templates
+|-- liminalis/          Unified personal platform: FastAPI + React + Go llm-wiki
+|-- optimizer-learning/ Volcano vs Cascades query optimizer comparison tool
+|-- cc/                 C++ lab, algorithms, benchmarks, systems/database experiments
+|-- rust/               Rust lab, database experiments, async/concurrency projects
+|-- python/             Python lab, AI/data tooling, research prototypes
+|-- java/               Java projects, Iceberg and interview/test labs
+|-- go/                 Go conventions (SKILL.md); real Go code is in liminalis/llm-wiki
+|-- haskell/            Functional programming experiments
+|-- llm/                GPU/ROCm environment setup notes and scripts
+|-- shell/              Shell utilities, Docker/MySQL/FIO helpers
+|-- tools/              Repository-level maintenance scripts
+`-- docs/               Obsidian vault: notes, reports, and book-length studies
 ```
+
+### Standalone Projects
+
+These directories are self-contained projects with their own build systems,
+suitable for independent iteration or extraction:
+
+| Project | Path | Stack | Notes |
+| --- | --- | --- | --- |
+| Liminalis | `liminalis/` | FastAPI, React 19, Go | Four domains: radar, invest, ego, wechat. Architecture guarded by tests. |
+| Optimizer Learning | `optimizer-learning/` | Python | Volcano and Cascades planners over a shared relational model. |
+| TinyKV | `cc/projects/kv-store/` | C++20, CMake | LSM-tree key-value store. |
+| Query Engine | `cc/projects/query-engine/` | C++20, CMake | Vectorized execution: hash agg, hash join, sort. |
+| MiniSeastar | `cc/projects/mini-seastar/` | C++20, CMake | Coroutine scheduler, per-thread reactor. |
+| Umbra JIT | `rust/projects/umbra/` | Rust, Cargo | Data-centric JIT pipeline for OLAP. |
+| LLM Benchmark | `python/llm_benchmark/` | Python | Quantified LLM evaluation framework. |
 
 ## Quick Start
 
@@ -66,9 +83,22 @@ cargo test
 cd python/pylab
 pytest
 
-# Documentation
-mkdocs serve
+# Liminalis platform (needs pip install -e '.[dev]' for backend deps)
+cd liminalis
+npm install                     # frontend deps
+npm run dev                     # Vite dev server
+npm run api                     # FastAPI backend on :8010
+python -m pytest                # backend tests (testpaths = tests/)
+npm run check                   # combined project check
+
+# Optimizer comparison tool (needs: pip install sqlglot)
+cd optimizer-learning
+python cli.py list
+python cli.py compare --all
 ```
+
+`docs/` is an Obsidian vault of plain Markdown — there is no site generator at
+the repository root, so there is nothing to build or serve.
 
 ## Working Principles
 

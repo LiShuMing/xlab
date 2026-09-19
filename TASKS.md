@@ -13,25 +13,39 @@ Stable project navigation belongs in `README.md`; coding-agent rules belong in
 
 ## Repository Structure Analysis
 
+> **Snapshot date**: 2026-09-19. Verified against the working tree on branch
+> `chore/repo-hygiene` (from `origin/main`). Directories listed under "Projects
+> removed" no longer exist here; their tasks have been redirected.
+
 ```
 xlab/
-├── cc/                    # C++ Projects
+├── liminalis/            # Unified personal platform (NOT yet in older plans)
+│   ├── backend/          # FastAPI: radar, invest, ego, wechat, _shared
+│   ├── src/              # React 19 + Vite + Tailwind frontend
+│   ├── llm-wiki/         # Go CLI (personal context maintenance)
+│   ├── tests/            # pytest suite incl. architecture guard tests
+│   └── docs/             # PRDs, RFCs, API contracts
+├── optimizer-learning/   # Volcano vs Cascades optimizer comparison tool
+├── cc/                   # C++ Projects
 │   ├── cclab/            # Core C++ lab (CMake, Google Test)
 │   ├── algo/             # Algorithm implementations
 │   ├── ccbench/          # Benchmarks
 │   ├── srlab/            # Serialization experiments
 │   ├── simd/             # SIMD optimizations
-│   ├── projects/         # Personal C++ projects
-│   │   ├── cpython/      # Python extension
-│   │   ├── interpreter/  # Language interpreter
-│   │   ├── io-uring/     # io_uring experiments
-│   │   ├── kv-store/     # Key-value store
-│   │   ├── llvm-jit/     # LLVM JIT compiler
-│   │   ├── mini-seastar/ # Async framework
-│   │   ├── query-engine/ # Query engine
-│   │   ├── thread-pool/  # Thread pool
-│   │   └── web-server/   # Web server
-│   └── tools/            # Tools
+│   ├── nasm/             # Assembly experiments
+│   ├── extentions/       # GDB / editor extensions
+│   ├── golab/            # Go-C++ interop (single file)
+│   ├── tools/            # duckdb and misc tooling
+│   └── projects/         # Personal C++ projects
+│       ├── cpython/      # Python extension
+│       ├── interpreter/  # Language interpreter
+│       ├── io-uring/     # io_uring experiments
+│       ├── kv-store/     # Key-value store
+│       ├── llvm-jit/     # LLVM JIT compiler
+│       ├── mini-seastar/ # Async framework
+│       ├── query-engine/ # Query engine
+│       ├── thread-pool/  # Thread pool
+│       └── web-server/   # Web server
 ├── rust/                 # Rust Projects
 │   ├── rlab/             # Core Rust lab
 │   ├── rdb/              # Database implementation
@@ -41,37 +55,69 @@ xlab/
 │       └── umbra/
 ├── python/               # Python Projects
 │   ├── pylab/            # Core Python lab
+│   ├── llm_benchmark/    # LLM evaluation framework
+│   ├── ivm/              # Incremental view maintenance prototypes
+│   ├── tools/            # Python tooling
 │   └── projects/         # Projects
-│       ├── py-academic/  # Academic paper tools
-│       ├── py-ego/       # AI assistant
-│       ├── py-email/     # Email processing
-│       ├── py-invest/    # Investment analysis
-│       ├── py-lab/       # Lab tools
-│       ├── py-paper/     # Paper management
-│       ├── py-pia/       # Product info analysis
-│       ├── py-radar/     # Database monitoring
-│       ├── py-report/    # Report generation
-│       ├── py-stock/     # Stock analysis
-│       ├── py-tools/     # Tools
-│       ├── py-toydb/     # Toy database
-│       └── py-zotero/    # Zotero plugin
+│       ├── py-academic/  # VENDORED fork of binary-husky/gpt_academic
+│       ├── py-cli/       # CLI toolkit
+│       ├── py-cycle-lab/ # Long-cycle investment compass
+│       ├── py-ego/       # StarRocks MV monitor + LLM companion
+│       ├── py-email/     # Gmail newsletter digest
+│       ├── py-lab/       # Streamlit/LangChain AI platform
+│       ├── py-learn/     # Telegram daily-learning agent
+│       ├── py-optimizer1/# Optimizer analysis system
+│       ├── py-optimizer2/# Multi-engine optimizer analyzer
+│       ├── py-pia/       # Product intelligence agent
+│       ├── py-report/    # LLM API deep-research pipeline
+│       ├── py-stock/     # Stock price database
+│       ├── py-tools/     # Misc tools
+│       ├── py-torch/     # micrograd + PyTorch learning
+│       └── py-toydb/     # Toy database
 ├── java/                 # Java Projects
 │   ├── xlab-iceberg/     # Apache Iceberg
-│   └── xlab-itest/       # Integration test projects
+│   └── xlab-itest/       # Integration test projects (4 Gradle modules;
+│                         #   xlab-interview/jlib/scala/spark/spring are plain
+│                         #   dirs, NOT included in settings.gradle.kts)
 ├── haskell/              # Haskell Projects
-│   ├── hslab/            # Core Haskell lab
+│   ├── hslab/            # Core Haskell lab (single file)
 │   └── projects/         # Projects
 │       ├── dsl-transform/    # DSL transformation
 │       ├── sql-parser/       # SQL parser
 │       └── stm-engine/       # STM engine
 ├── go/                   # Go Projects
-│   └── hello/            # Hello world
-└── shell/                # Shell Projects
-    ├── bin/              # Utilities
-    ├── docker/           # Docker scripts
-    ├── fio/              # FIO tests
-    └── mysql/            # MySQL utilities
+│   └── SKILL.md          # conventions only — NO go/hello project exists
+├── llm/                  # GPU / ROCm environment notes and scripts
+│   └── cuda/
+├── tools/                # Repository maintenance scripts
+├── shell/                # Shell Projects
+│   ├── bin/              # Utilities
+│   ├── docker/           # Docker scripts
+│   ├── fio/              # FIO tests
+│   └── mysql/            # MySQL utilities
+└── docs/                 # Obsidian vault (Markdown, NOT an MkDocs site)
 ```
+
+### Projects removed since the last plan revision
+
+| Old path | Disposition |
+| --- | --- |
+| `projects/llm-wiki` | Moved to `liminalis/llm-wiki`. |
+| `go/hello` | Never materialized; `go/` holds only `SKILL.md`. |
+| `skills/`, `_templates/` | Do not exist at repo root; skills live in `docs/skills/` and `.claude/skills/`. |
+
+Do not create tasks against the paths above. Work belongs in the successor
+location.
+
+### ⚠️ Branch divergence caveat
+
+`main` contains only **3 commits** (`4176047`, `4a022f3`, `357df48`), while
+`dev1` holds **169 commits that are not on `main`**. The two lines have
+different project inventories.
+
+This backlog describes the **working tree as checked out from `main`**. Before
+executing any task here, confirm which branch you are on; tasks written against
+`main`'s layout may not apply to `dev1`.
 
 ## Common Tasks (All Projects)
 
@@ -583,45 +629,36 @@ xlab/
 
 ---
 
-#### Project: python/projects/py-radar
+#### Project: liminalis/backend/radar
 
-**现状**: Database monitoring tool with DuckDB
+**现状**: Liminalis 的情报雷达业务域（45 个跟踪文件 / 39 个 `.py`），已有测试
+`liminalis/tests/test_radar.py`、`test_radar_extractor.py`、
+`liminalis/backend/tests/radar/`。
 
 **Tasks**:
 
-1. **创建项目文件**
-   - [ ] 创建 `python/projects/py-radar/AGENTS.md`
-   - [ ] 创建 `python/projects/py-radar/RULES.md`
-   - [ ] 创建 `python/projects/py-radar/README.md`
-   - [ ] 创建 `python/projects/py-radar/CHANGELOG.md`
-
-2. **丰富单元测试**
-   - [ ] 为storage/模块添加测试
-   - [ ] 为sync/模块添加测试
-   - [ ] 为summarizer添加测试
-
-3. **代码规范检查**
-   - [ ] 完善pyproject.toml
-   - [ ] 格式化并检查代码
+1. **补齐测试**
+   - [ ] 为 `backend/radar/ranker.py`、`summarizer.py`、`seen_tracker.py` 添加测试
+   - [ ] 为 `backend/radar/sync/` 添加测试
+2. **遵循架构约束**
+   - [ ] 确认改动通过 `tests/test_architecture.py`（`_shared` 边界与事务规则守护）
 
 ---
 
-#### Project: python/projects/py-invest
+#### Project: liminalis/backend/invest
 
-**现状**: Investment analysis tool
+**现状**: Liminalis 的投资分析业务域（含 `agents/`、`core/`、`modules/`、
+`scheduler/`、`notifier/`、`web/`、`diff/`），已有测试
+`liminalis/tests/test_invest.py`、`liminalis/backend/invest/tests/`。
 
 **Tasks**:
 
-1. **创建项目文件**
-   - [ ] 创建 `python/projects/py-invest/AGENTS.md`
-   - [ ] 创建 `python/projects/py-invest/RULES.md`
-   - [ ] 创建 `python/projects/py-invest/README.md`
-   - [ ] 创建 `python/projects/py-invest/CHANGELOG.md`
-
-2. **丰富单元测试**
-   - [ ] 为agents模块添加测试
-   - [ ] 为core模块添加测试
-   - [ ] 为modules添加测试
+1. **补齐测试**
+   - [ ] 为 `backend/invest/agents/` 添加测试
+   - [ ] 为 `backend/invest/core/` 添加测试
+   - [ ] 为 `backend/invest/modules/data_collector`、`report_generator` 添加测试
+2. **遵循架构约束**
+   - [ ] 确认改动通过 `tests/test_architecture.py`
 
 ---
 
@@ -693,23 +730,6 @@ xlab/
 
 ---
 
-#### Project: python/projects/py-paper
-
-**现状**: Paper management tool
-
-**Tasks**:
-
-1. **创建项目文件**
-   - [ ] 创建 `python/projects/py-paper/AGENTS.md`
-   - [ ] 创建 `python/projects/py-paper/RULES.md`
-   - [ ] 创建 `python/projects/py-paper/README.md`
-   - [ ] 创建 `python/projects/py-paper/CHANGELOG.md`
-
-2. **丰富单元测试**
-   - [ ] 为paper-agent添加测试
-
----
-
 #### Project: python/projects/py-pia
 
 **现状**: Product information analysis
@@ -772,20 +792,6 @@ xlab/
    - [ ] 创建 `python/projects/py-stock/RULES.md`
    - [ ] 创建 `python/projects/py-stock/README.md`
    - [ ] 创建 `python/projects/py-stock/CHANGELOG.md`
-
----
-
-#### Project: python/projects/py-zotero
-
-**现状**: Zotero plugin
-
-**Tasks**:
-
-1. **创建项目文件**
-   - [ ] 创建 `python/projects/py-zotero/AGENTS.md`
-   - [ ] 创建 `python/projects/py-zotero/RULES.md`
-   - [ ] 创建 `python/projects/py-zotero/README.md`
-   - [ ] 创建 `python/projects/py-zotero/CHANGELOG.md`
 
 ---
 
@@ -896,24 +902,22 @@ xlab/
 
 ### 【Go 项目】
 
-#### Project: go/hello
+#### Project: ~~go/hello~~ → `go/` (conventions only) 与 `liminalis/llm-wiki`
 
-**现状**: Go hello world experiments
+**现状**: `go/hello` 从未创建，`go/` 目前只有 `SKILL.md`（编码约定）。
+仓库中真正的 Go 模块是 `liminalis/llm-wiki`（`go 1.25.0`，约 7,154 行，
+已有 8 个 `_test.go`）。另有 `cc/golab/src/leetcode/leetcode_433.go` 单文件。
 
 **Tasks**:
 
-1. **创建项目文件**
-   - [ ] 创建 `go/hello/AGENTS.md`
-     - Go 1.21+
-     - go modules
-   - [ ] 创建 `go/hello/RULES.md`
-     - gofmt
-     - golangci-lint
-   - [ ] 创建 `go/hello/README.md`
-   - [ ] 创建 `go/hello/CHANGELOG.md`
-
-2. **丰富单元测试**
-   - [ ] 为核心功能添加测试
+1. **修正文档**
+   - [x] `go/SKILL.md` 的 Project Structure 不再声称存在 `hello/`、`golab/`
+   - [x] 根 `AGENTS.md` / `README.md` 的 Go 段落与实际一致
+2. **`liminalis/llm-wiki` 质量**
+   - [ ] 在 CI 中执行 `go vet ./...` 与 `go test ./...`
+   - [ ] 补齐 `internal/service`、`internal/repository` 的测试覆盖
+3. **若确需 `go/` 下的独立实验**
+   - [ ] 先创建 `go/<name>/go.mod`，再补 `README.md`；不要预设 `hello/` 目录名
 
 ---
 
@@ -970,34 +974,67 @@ xlab/
 
 ## 执行优先级
 
+> **修订于 2026-09-19。** 此前被完全遗漏的 `liminalis`（及其 `radar`、`invest`
+> 业务域）、`optimizer-learning`、`python/llm_benchmark`、`rust/projects/umbra`
+> 等已补入并重新排序。
+
+### P0 - 仓库卫生（先做，影响所有后续工作）
+
+**已完成的基线修复**（2026-09-19）：
+
+- [x] 从 git 索引移除运行时 SQLite 数据库与已编译二进制（9 个文件，工作区文件保留）
+- [x] `.gitignore` 增加对应规则，防止再次被提交（已用 `git check-ignore` 逐个验证）
+- [x] 根 `README.md` / `AGENTS.md` 补全 `liminalis`、`optimizer-learning`、`llm`、`tools`
+- [x] 删除 `README.md` 中不存在的 `skills/`、`_templates/` 条目
+- [x] 修正 `AGENTS.md`：`mkdocs.yml` 不存在、`.secrect_key` 不存在、Go 版本（1.25.0 而非 1.21.0）与构建路径
+- [x] 修正 `go/SKILL.md` 的目录结构声明
+- [x] 修正本文件中指向已删除目录的任务
+
+**待办**：
+
+- [x] 提交上述改动（分支 `chore/repo-hygiene`，基于 `origin/main`）
+- [ ] 决定 `python/projects/py-academic`（283 文件 / 63k 行 vendored fork）是否改为 submodule
+- [ ] 清理空壳目录：顶层 `projects/`（0 文件）、`python/projects/py-numpy-pandas`（无 `.py`）
+- [ ] 评估 `cc/srlab/data/v1.jstack`（1MB，代码中无引用）是否仍需入库
+- [ ] 评估 `python/projects/py-pia/data/{raw,normalized}`（2.5MB 抓取缓存）是否应入库
+- [ ] 为 `liminalis` 与 `optimizer-learning` 补写本文件中的 `#### Project:` 任务段（当前缺失）
+
 ### P0 - 核心项目（优先重构）
 
-1. **cc/cclab** - C++核心实验室
-2. **cc/projects/kv-store** - KV存储实现
-3. **cc/projects/query-engine** - 查询引擎
-4. **rust/rlab** - Rust核心实验室
-5. **rust/rdb** - Rust数据库实现
-6. **python/pylab** - Python核心实验室
-7. **python/projects/py-radar** - 数据库监控工具
-8. **python/projects/py-toydb** - 玩具数据库
+1. **liminalis** - 统一平台（FastAPI + React + Go）。已有架构守护测试，优先在域内深化
+2. **optimizer-learning** - Volcano vs Cascades 对比工具。**缺 `tests/`（仅空 `__init__.py`）与 `pyproject.toml`，且依赖 `sqlglot` 未声明**
+3. **cc/cclab** - C++ 核心实验室
+4. **cc/projects/kv-store** - KV 存储实现（最接近可独立开源）
+5. **cc/projects/query-engine** - 向量化查询引擎（**无 tests 目录**）
+6. **rust/rlab** - Rust 核心实验室
+7. **rust/rdb** - Rust 数据库实现
+8. **python/pylab** - Python 核心实验室
+9. **python/llm_benchmark** - LLM 评测框架（已有 pyproject + 7 个测试）
+10. **liminalis/backend/radar** - 情报雷达域
 
 ### P1 - 重要项目（次要重构）
 
-9. **cc/algo** - 算法实现
-10. **cc/projects/mini-seastar** - 异步框架
-11. **cc/projects/thread-pool** - 线程池
-12. **cc/projects/web-server** - Web服务器
-13. **python/projects/py-invest** - 投资分析
-14. **python/projects/py-email** - 邮件处理
-15. **java/xlab-itest** - Java集成测试
+11. **cc/algo** - 算法实现（288 文件）
+12. **cc/projects/mini-seastar** - 协程异步框架
+13. **cc/projects/thread-pool** - work-stealing 线程池
+14. **cc/projects/web-server** - io_uring/kqueue 双后端 Web 服务器
+15. **rust/projects/umbra** - JIT 编译流水线（可与 query-engine、optimizer-learning 串成 OLAP 主线）
+16. **liminalis/backend/invest** - 投资分析域
+17. **python/projects/py-email** - Gmail 摘要工具
+18. **python/projects/py-cli** - 工程化最规范的 Python 子项目
+19. **python/projects/py-toydb** - 玩具数据库
+20. **java/xlab-itest** - Java 集成测试（4 个 Gradle 模块，10k 行）
 
 ### P2 - 其他项目（按需重构）
 
-16. 所有其他C++项目
-17. 所有其他Python项目
-18. 所有Rust项目
-19. 所有Haskell项目
-20. Go和Shell项目
+21. **python/projects/{py-pia, py-lab, py-optimizer1, py-optimizer2, py-torch, py-report, py-cycle-lab, py-learn, py-stock, py-ego, py-tools}**
+22. **python/ivm** - 仅 2 个文件，但与增量视图维护研究方向直接相关，值得升级为正式项目
+23. 其余 C++ 项目（`cc/projects/{cpython, interpreter, io-uring, llvm-jit, learn-balel}`）
+24. **haskell/projects/{sql-parser, stm-engine, dsl-transform}**、`haskell/hslab`
+25. **rust/projects/{fragment-tutor, subway-game}**（subway-game 仅 26 行）
+26. **liminalis/llm-wiki** - Go 模块
+27. **shell/{bin, docker, mysql, fio}**、**llm/cuda**、**tools**
+28. **docs/books** - 12 本书约 9.5 万行 Markdown，独立知识线
 
 ---
 

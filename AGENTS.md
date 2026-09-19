@@ -18,40 +18,59 @@ knowledge-management workflows, use `SKILL.md`. For active backlog items, use
 - **Origin**: https://github.com/LiShuMing/xlab
 - **Type**: Personal R&D laboratory / Code experiments collection
 - **Language Distribution**: C++ (primary), Python, Rust, Go, Java, Haskell, Shell
-- **Documentation**: Chinese (MkDocs Material), Code comments: Mixed
+- **Documentation**: Chinese (Markdown, Obsidian vault in `docs/`), Code comments: Mixed
 
 ## Project Structure
 
 ```
 xlab/
-├── cc/                    # C++ laboratory (main focus)
+├── liminalis/            # Unified personal platform (largest project)
+│   ├── backend/          # FastAPI: radar, invest, ego, wechat, _shared
+│   ├── src/              # React 19 + Vite + Tailwind frontend
+│   ├── llm-wiki/         # Go CLI for personal context maintenance
+│   ├── tests/            # pytest suite incl. architecture guard tests
+│   └── docs/             # PRDs, RFCs, API contracts
+├── optimizer-learning/   # Volcano vs Cascades optimizer comparison tool
+│   ├── optimizer/        # Shared relational model, rules, cost model
+│   ├── volcano/          # Volcano planner (Calcite-style, bottom-up)
+│   ├── cascades/         # Cascades planner (Graefe 1995, top-down)
+│   ├── compare/          # Side-by-side analysis engine
+│   └── examples/         # SQL -> RelNode example queries
+├── cc/                   # C++ laboratory (main focus)
 │   ├── cclab/            # Core C++ lab with CMake build
 │   ├── algo/             # Algorithm implementations (LeetCode, etc.)
 │   ├── ccbench/          # Benchmarks
 │   ├── srlab/            # Serialization experiments
 │   ├── simd/             # SIMD optimizations
+│   ├── nasm/             # Assembly experiments
+│   ├── extentions/       # GDB / editor extensions
 │   ├── golab/            # Go-C++ interop experiments
-│   ├── projects/         # Personal C++ projects
+│   ├── projects/         # Personal C++ projects (11 standalone systems)
 │   └── thirdparty/       # 40+ Git submodules (major deps)
 ├── rust/                 # Rust laboratory
 │   ├── rlab/             # Workspace-based Rust lab
 │   ├── rdb/              # Database implementation experiments
+│   ├── projects/         # umbra (JIT), fragment-tutor, subway-game
 │   └── thirdparty/       # Rust submodules (RisingWave, DataFusion, etc.)
 ├── python/               # Python laboratory
 │   ├── pylab/            # Core Python lab with pytest
+│   ├── llm_benchmark/    # LLM evaluation framework
+│   ├── ivm/              # Incremental view maintenance prototypes
 │   ├── projects/         # Personal Python projects
 │   └── thirdparty/       # Python submodules
-├── go/                   # Go laboratory
-│   └── hello/            # Go module experiments
+├── go/                   # Go laboratory (SKILL.md only — no projects yet)
 ├── java/                 # Java laboratory
 │   ├── xlab-iceberg/     # Apache Iceberg related
 │   └── xlab-itest/       # Interview/test projects
 ├── haskell/              # Haskell functional programming lab
+├── llm/                  # GPU / ROCm environment setup notes
 ├── shell/                # Shell scripting utilities
 │   ├── bin/              # Executable scripts
 │   ├── docker/           # Docker scripts
+│   ├── fio/              # FIO benchmark scripts
 │   └── mysql/            # MySQL utilities
-└── docs/                 # MkDocs documentation (Chinese)
+├── tools/                # Repository maintenance scripts (healthcheck.sh)
+└── docs/                 # Obsidian vault: notes, reports, book-length studies (Chinese)
 ```
 
 ## Technology Stack by Module
@@ -83,12 +102,22 @@ xlab/
 - **Environment**: Virtual environments (.venv)
 - **Testing**: pytest
 - **Key Packages**: numpy, pandas, duckdb, matplotlib, faiss-cpu
-- **Projects**: py-radar, py-invest, py-email, py-academic, py-toydb
+- **Projects**: py-academic, py-cli, py-cycle-lab, py-ego, py-email, py-lab,
+  py-learn, py-optimizer1, py-optimizer2, py-pia, py-report, py-stock,
+  py-tools, py-torch, py-toydb
+- **Standalone**: `python/llm_benchmark` (LLM eval framework), `python/ivm`
+  (incremental view maintenance prototypes)
+- ⚠️ `py-academic` is a vendored fork of `binary-husky/gpt_academic`, not
+  original code. Treat it as third-party.
 
 ### Go (go/)
-- **Version**: 1.21.0
+- **Version**: 1.25.0 (per `liminalis/llm-wiki/go.mod`)
 - **Module**: Go modules
-- **Projects**: hello (basic experiments)
+- **Status**: `go/` currently contains only `SKILL.md` (conventions). There is no
+  `go/hello` project yet, despite it appearing in older docs.
+- **Real Go code**: `liminalis/llm-wiki/` is the only substantial Go module
+  (`cmd/ctx`, `cmd/ctx-web`, `internal/{cli,config,domain,provider,repository,service,web}`).
+  `cc/golab/` holds a single cgo-interop LeetCode file.
 
 ### Java (java/)
 - **Build Tools**: Gradle (primary), Maven
@@ -142,9 +171,9 @@ cd test && make test          # All tests
 
 ### Go
 ```bash
-cd go/hello
-go build
-go test
+cd liminalis/llm-wiki
+make demo                       # or: go run ./cmd/ctx init
+go test ./...
 ```
 
 ### Java
@@ -156,10 +185,14 @@ go test
 mvn build
 ```
 
-### Documentation (MkDocs)
+### Documentation
+`docs/` is an Obsidian vault of Markdown notes — there is **no site generator
+config at the repository root**, so there is nothing to build or serve. Read and
+edit the Markdown directly.
+
 ```bash
-mkdocs serve                  # Local development server
-mkdocs build                  # Build static site
+# python/projects/py-report has its own local MkDocs site:
+cd python/projects/py-report && mkdocs serve
 ```
 
 ## Code Style Guidelines
@@ -283,9 +316,20 @@ When generating code for this repository:
 
 ## Security Considerations
 
-- `.secrect_key` file exists in shell/ (intentionally misspelled) — DO NOT commit secrets
 - Environment variables loaded via `env.sh` scripts
 - Database connection strings and credentials stored separately
+- `.secrect_key` (intentionally misspelled) and `.env` / `.env.*` are gitignored.
+  Do not commit secrets under any name.
+- **Runtime data must never be committed.** SQLite databases, fetched HTML/JSON
+  caches, and local artifacts are generated by the applications on first run and
+  may contain chat logs, OAuth tokens, or personal data. `.gitignore` already
+  excludes the known paths; when a project starts writing local state, add its
+  data directory to `.gitignore` in the same change.
+- **Compiled binaries must never be committed.** Build outputs belong in
+  `build*/` or `target/`. If a CMake target produces an extensionless binary
+  inside a source directory, add an explicit path rule to `.gitignore`.
+- Packaged installers (`.deb`, `.rpm`, `.pkg`) are fetched from upstream, not
+  vendored.
 
 ## IDE Configuration
 
@@ -298,9 +342,10 @@ When generating code for this repository:
 
 - `.clang-format` — C++ code formatting rules
 - `.clang-tidy` — C++ linting configuration  
-- `mkdocs.yml` — Documentation site configuration
-- `CLAUDE.md` — Existing Claude Code guidance
-- `**/SKILL.md` — Language/module specific guidelines
+- `CLAUDE.md` — Claude Code compatibility pointer to this file
+- `QWEN.md` — Qwen Code compatibility pointer (mirrors `CLAUDE.md`)
+- `**/SKILL.md` — Language/module specific guidelines (root, cc, go, haskell, java, python, rust, shell)
+- `**/AGENTS.md`, `**/RULES.md`, `**/TODOS.md` — Subtree-specific agent rules; these override root guidance for their directory
 
 ## Contact & Context
 
