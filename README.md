@@ -32,7 +32,7 @@ xlab/
 |-- rust/               Rust lab, database experiments, async/concurrency projects
 |-- python/             Python lab, AI/data tooling, research prototypes
 |-- java/               Java projects, Iceberg and interview/test labs
-|-- go/                 Go conventions (SKILL.md); real Go code is in liminalis/llm-wiki
+|-- go/                 Go lab: k8s-lab (mini Kubernetes control plane from scratch)
 |-- haskell/            Functional programming experiments
 |-- llm/                GPU/ROCm environment setup notes and scripts
 |-- shell/              Shell utilities, Docker/MySQL/FIO helpers
@@ -53,6 +53,7 @@ suitable for independent iteration or extraction:
 | Query Engine | `cc/projects/query-engine/` | C++20, CMake | Vectorized execution: hash agg, hash join, sort. |
 | MiniSeastar | `cc/projects/mini-seastar/` | C++20, CMake | Coroutine scheduler, per-thread reactor. |
 | Umbra JIT | `rust/projects/umbra/` | Rust, Cargo | Data-centric JIT pipeline for OLAP. |
+| K8s Lab | `go/k8s-lab/` | Go (stdlib only) | Mini Kubernetes control plane: MVCC store, apiserver, informers, workqueue, ReplicaSet controller, kubelet sim. |
 | LLM Benchmark | `python/llm_benchmark/` | Python | Quantified LLM evaluation framework. |
 
 ## Quick Start
@@ -95,6 +96,11 @@ npm run check                   # combined project check
 cd optimizer-learning
 python cli.py list
 python cli.py compare --all
+
+# k8s-lab: mini Kubernetes control plane (pure Go, zero deps)
+cd go/k8s-lab
+go run ./cmd/demo               # end-to-end: apply, self-heal, scale
+go test -race ./...             # -race is mandatory here
 ```
 
 `docs/` is an Obsidian vault of plain Markdown — there is no site generator at

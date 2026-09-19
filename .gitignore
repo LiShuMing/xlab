@@ -46,6 +46,9 @@ shell/**/*history*.db
 *.dylib
 *.dll
 *.mod
+# ...but *.mod above (C/C++ module artifacts) must not swallow Go module
+# manifests; go.mod is source, not a build artifact.
+!go.mod
 *.smod
 *.lai
 *.la

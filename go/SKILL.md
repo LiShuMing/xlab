@@ -12,15 +12,19 @@ Go language laboratory focusing on cloud-native, concurrency, and systems progra
 
 ## Project Structure
 
-This directory currently holds only these conventions. There are no Go projects
-under `go/` yet — new experiments should create a module here first.
-
 ```text
 go/
-└── SKILL.md         # This file
+├── SKILL.md         # This file
+└── k8s-lab/         # Mini Kubernetes control plane from scratch (zero deps)
 ```
 
-The repository's real Go code lives elsewhere:
+- `k8s-lab/` — a pure-stdlib implementation of the core k8s control-plane
+  machinery for learning: MVCC store (etcd-like), typed apiserver facade,
+  informers (LIST+WATCH), dedup workqueue, ReplicaSet controller with
+  expectations, kubelet simulator, and an end-to-end demo
+  (`go run ./cmd/demo`). See `k8s-lab/README.md`.
+
+Other Go code in the repository:
 
 - `liminalis/llm-wiki/` — the substantial Go module (CLI + web context service)
 - `cc/golab/` — a single cgo-interop LeetCode file

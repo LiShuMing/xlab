@@ -58,7 +58,8 @@ xlab/
 │   ├── ivm/              # Incremental view maintenance prototypes
 │   ├── projects/         # Personal Python projects
 │   └── thirdparty/       # Python submodules
-├── go/                   # Go laboratory (SKILL.md only — no projects yet)
+├── go/                   # Go laboratory
+│   └── k8s-lab/          # Mini Kubernetes control plane from scratch (zero deps)
 ├── java/                 # Java laboratory
 │   ├── xlab-iceberg/     # Apache Iceberg related
 │   └── xlab-itest/       # Interview/test projects
@@ -111,11 +112,12 @@ xlab/
   original code. Treat it as third-party.
 
 ### Go (go/)
-- **Version**: 1.25.0 (per `liminalis/llm-wiki/go.mod`)
+- **Version**: 1.26.2 (per `go/k8s-lab/go.mod`); `liminalis/llm-wiki` uses 1.25.0
 - **Module**: Go modules
-- **Status**: `go/` currently contains only `SKILL.md` (conventions). There is no
-  `go/hello` project yet, despite it appearing in older docs.
-- **Real Go code**: `liminalis/llm-wiki/` is the only substantial Go module
+- **Projects**: `go/k8s-lab/` — a from-scratch mini Kubernetes control plane
+  (pure stdlib, zero dependencies): MVCC store, apiserver facade, informers,
+  workqueue, ReplicaSet controller, kubelet simulator, `cmd/demo`.
+- **Other Go code**: `liminalis/llm-wiki/` is the other substantial Go module
   (`cmd/ctx`, `cmd/ctx-web`, `internal/{cli,config,domain,provider,repository,service,web}`).
   `cc/golab/` holds a single cgo-interop LeetCode file.
 
@@ -174,6 +176,10 @@ cd test && make test          # All tests
 cd liminalis/llm-wiki
 make demo                       # or: go run ./cmd/ctx init
 go test ./...
+
+cd go/k8s-lab
+go run ./cmd/demo               # end-to-end mini control plane demo
+go test -race ./...             # -race is mandatory (heavy concurrency)
 ```
 
 ### Java

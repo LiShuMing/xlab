@@ -86,7 +86,8 @@ xlab/
 │       ├── sql-parser/       # SQL parser
 │       └── stm-engine/       # STM engine
 ├── go/                   # Go Projects
-│   └── SKILL.md          # conventions only — NO go/hello project exists
+│   ├── SKILL.md          # conventions
+│   └── k8s-lab/          # mini Kubernetes control plane from scratch (zero deps)
 ├── llm/                  # GPU / ROCm environment notes and scripts
 │   └── cuda/
 ├── tools/                # Repository maintenance scripts
@@ -103,7 +104,7 @@ xlab/
 | Old path | Disposition |
 | --- | --- |
 | `projects/llm-wiki` | Moved to `liminalis/llm-wiki`. |
-| `go/hello` | Never materialized; `go/` holds only `SKILL.md`. |
+| `go/hello` | Never materialized; the first `go/` project is `go/k8s-lab/`. |
 | `skills/`, `_templates/` | Do not exist at repo root; skills live in `docs/skills/` and `.claude/skills/`. |
 
 Do not create tasks against the paths above. Work belongs in the successor
@@ -902,22 +903,29 @@ executing any task here, confirm which branch you are on; tasks written against
 
 ### 【Go 项目】
 
-#### Project: ~~go/hello~~ → `go/` (conventions only) 与 `liminalis/llm-wiki`
+#### Project: `go/k8s-lab` 与 `liminalis/llm-wiki`
 
-**现状**: `go/hello` 从未创建，`go/` 目前只有 `SKILL.md`（编码约定）。
-仓库中真正的 Go 模块是 `liminalis/llm-wiki`（`go 1.25.0`，约 7,154 行，
-已有 8 个 `_test.go`）。另有 `cc/golab/src/leetcode/leetcode_433.go` 单文件。
+**现状**: `go/k8s-lab` 已建成——纯标准库实现的迷你 Kubernetes 控制面
+（MVCC store / apiserver / informer / workqueue / ReplicaSet controller /
+kubelet 模拟器 / `cmd/demo`），全包测试覆盖率 82%~100%，`-race` 全绿。
+迭代路线见 `go/k8s-lab/TODOS.md`。另一个 Go 模块是 `liminalis/llm-wiki`
+（`go 1.25.0`，约 7,154 行，已有 8 个 `_test.go`）。
+另有 `cc/golab/src/leetcode/leetcode_433.go` 单文件。
 
 **Tasks**:
 
 1. **修正文档**
    - [x] `go/SKILL.md` 的 Project Structure 不再声称存在 `hello/`、`golab/`
    - [x] 根 `AGENTS.md` / `README.md` 的 Go 段落与实际一致
-2. **`liminalis/llm-wiki` 质量**
+   - [x] `go/SKILL.md` / 根 `AGENTS.md` / `TASKS.md` 收录 `k8s-lab`
+2. **`go/k8s-lab` 迭代**（详见其 TODOS.md，按教学价值排序）
+   - [ ] Deployment 控制器（滚动更新 / revision / rollback）
+   - [ ] rate-limited workqueue（指数退避）
+   - [ ] GC：ownerReferences + 级联删除
+   - [ ] scheduler 与多节点 kubelet（节点心跳 / 驱逐）
+3. **`liminalis/llm-wiki` 质量**
    - [ ] 在 CI 中执行 `go vet ./...` 与 `go test ./...`
    - [ ] 补齐 `internal/service`、`internal/repository` 的测试覆盖
-3. **若确需 `go/` 下的独立实验**
-   - [ ] 先创建 `go/<name>/go.mod`，再补 `README.md`；不要预设 `hello/` 目录名
 
 ---
 
