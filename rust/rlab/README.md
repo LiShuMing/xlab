@@ -36,6 +36,25 @@ Three probabilistic data structures for membership testing:
 cargo run --release -p bloom_filter
 ```
 
+### Reusable Spill I/O
+
+`lib/spill-io` provides temporary-file ownership, typed record codecs, buffered
+sequential I/O, cleanup, and byte/record statistics for external-memory Join,
+Aggregate, and Sort experiments.
+
+### Pointer Swizzling Lab
+
+`lib/rlab::pointer_swizzling` provides a safe, single-threaded model of Umbra's
+`PageId <-> resident pointer` transition. It includes a FIFO buffer pool,
+reverse references for safe unswizzling, dirty-page write-back, pinning,
+observable statistics, focused tests, and an executable example.
+
+```bash
+cargo run -p rlab --example pointer_swizzling
+cargo test -p rlab pointer_swizzling
+cargo test -p rlab --test test_pointer_swizzling
+```
+
 ### LeetCode Solutions
 
 - 30+ classic LeetCode problems solved in Rust

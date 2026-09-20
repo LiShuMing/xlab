@@ -841,6 +841,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e629b9b98ef3dd8afe6ca2bd0f89306cec16d43d907889945bc5d6687f2f13c7"
 
 [[package]]
+name = "grace-hash-join"
+version = "0.1.0"
+dependencies = [
+ "spill-io",
+]
+
+[[package]]
 name = "h2"
 version = "0.1.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2125,6 +2132,10 @@ dependencies = [
  "libc",
  "windows-sys 0.60.2",
 ]
+
+[[package]]
+name = "spill-io"
+version = "0.1.0"
 
 [[package]]
 name = "stable_deref_trait"

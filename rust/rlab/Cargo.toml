@@ -1,10 +1,12 @@
 [workspace]
 members = [
     "lib/rlab",
+    "lib/spill-io",
     "tools/rlab-tools",
     "tools/thread-pool",
     "tools/lockfree-queue",
     "tools/bloom_filter",
+    "tools/grace-hash-join",
     "tools/leetcode",
 ]
 resolver = "2"
@@ -20,3 +22,4 @@ repository = "https://github.com/LiShuMing/xlab"
 # Common dependencies that might be shared
 fastrand = "2.0"
 anyhow = "1.0"
+spill-io = { path = "lib/spill-io" }

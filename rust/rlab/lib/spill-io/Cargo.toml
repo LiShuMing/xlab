@@ -1,0 +1,9 @@
+[package]
+name = "spill-io"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Reusable buffered spill-file I/O primitives for external algorithms"
+
+[dependencies]
