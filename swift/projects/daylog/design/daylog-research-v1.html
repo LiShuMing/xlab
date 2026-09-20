@@ -1,0 +1,209 @@
+<div id="daylog-research-v1" aria-label="DayLog 主题订阅设计稿">
+  <style>
+    #daylog-research-v1{--dl-bg:light-dark(#fcfbf9,#232321);--dl-panel:light-dark(#f4f2ef,#2a2927);--dl-ink:light-dark(#292725,#eeebe6);--dl-muted:light-dark(#736d67,#b5ada3);--dl-line:light-dark(#e5e0da,#403c37);--dl-accent:light-dark(#955b37,#dfa475);--dl-soft:light-dark(#f0e5dc,#403226);--dl-good:light-dark(#397458,#91baa0);--dl-warn:light-dark(#8a6029,#e3b571);font:14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--dl-ink);background:var(--dl-bg);border:1px solid var(--dl-line);border-radius:12px;overflow:clip}
+    #daylog-research-v1 *{box-sizing:border-box}
+    #daylog-research-v1 button,#daylog-research-v1 input,#daylog-research-v1 textarea,#daylog-research-v1 select{font:inherit;color:inherit}
+    #daylog-research-v1 button{cursor:pointer;background:var(--dl-bg);border:1px solid var(--dl-line);border-radius:7px;padding:7px 12px}
+    #daylog-research-v1 button:disabled{cursor:default;opacity:.55}
+    #daylog-research-v1 button:hover:not(:disabled){background:var(--dl-panel)}
+    #daylog-research-v1 button.dl-primary{background:var(--dl-accent);color:var(--dl-bg);border-color:var(--dl-accent)}
+    #daylog-research-v1 button.dl-quiet{border-color:transparent;background:transparent;padding:4px 6px;color:var(--dl-muted)}
+    #daylog-research-v1 .dl-chrome{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--dl-line);flex-wrap:wrap}
+    #daylog-research-v1 .dl-dots{display:flex;gap:6px;align-items:center}
+    #daylog-research-v1 .dl-dots span{width:10px;height:10px;border-radius:50%;background:var(--dl-line)}
+    #daylog-research-v1 .dl-caption{color:var(--dl-muted);font-size:12px}
+    #daylog-research-v1 .dl-chrome .dl-caption{margin-left:auto}
+    #daylog-research-v1 .dl-layout{display:grid;grid-template-columns:72px minmax(0,1fr);min-height:650px}
+    #daylog-research-v1 .dl-rail{border-right:1px solid var(--dl-line);padding:18px 6px;display:flex;flex-direction:column;gap:12px;background:var(--dl-bg)}
+    #daylog-research-v1 .dl-nav{display:grid;justify-items:center;gap:3px;font-size:11px;border:0;background:transparent;padding:10px 3px;color:var(--dl-muted)}
+    #daylog-research-v1 .dl-nav[aria-current=page]{color:var(--dl-accent);background:var(--dl-soft)}
+    #daylog-research-v1 .dl-nav svg{width:19px;height:19px}
+    #daylog-research-v1 .dl-rail .dl-spacer{flex:1}
+    #daylog-research-v1 main{min-width:0;padding:28px 30px}
+    #daylog-research-v1 h1{font-size:26px;line-height:1.3;font-weight:500;margin:0 0 6px}
+    #daylog-research-v1 h2{font-size:18px;font-weight:500;margin:0 0 12px}
+    #daylog-research-v1 h3{font-size:14px;font-weight:500;margin:0 0 8px}
+    #daylog-research-v1 p{margin:6px 0 12px}
+    #daylog-research-v1 .dl-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    #daylog-research-v1 .dl-between{justify-content:space-between}
+    #daylog-research-v1 .dl-muted{color:var(--dl-muted)}
+    #daylog-research-v1 .dl-tag{display:inline-block;font-size:11px;color:var(--dl-accent);padding:2px 7px;background:var(--dl-soft);border-radius:5px}
+    #daylog-research-v1 .dl-section{margin-top:26px}
+    #daylog-research-v1 .dl-rule{border:0;border-top:1px solid var(--dl-line);margin:20px 0}
+    #daylog-research-v1 .dl-task{padding:12px 0;border-bottom:1px solid var(--dl-line);display:flex;gap:12px;align-items:flex-start}
+    #daylog-research-v1 input[type=checkbox]{accent-color:var(--dl-accent);margin-top:5px;width:16px;height:16px;flex-shrink:0}
+    #daylog-research-v1 .dl-task span{display:block}
+    #daylog-research-v1 .dl-today-grid{display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:30px}
+    #daylog-research-v1 .dl-aside{border-left:1px solid var(--dl-line);padding-left:22px}
+    #daylog-research-v1 .dl-brief-entry{display:flex;gap:14px;align-items:center;justify-content:space-between;padding:14px 16px;border:1px solid var(--dl-line);border-radius:9px;background:var(--dl-panel);flex-wrap:wrap;margin-top:26px}
+    #daylog-research-v1 .dl-brief-entry p{margin:4px 0 0}
+    #daylog-research-v1 .dl-paper{border-top:1px solid var(--dl-line);padding-top:16px;margin-top:16px}
+    #daylog-research-v1 .dl-worknote{border-left:2px solid var(--dl-accent);padding-left:12px;margin-top:18px}
+    #daylog-research-v1 .dl-topic-grid{display:grid;grid-template-columns:205px minmax(0,1fr);gap:26px;margin-top:24px}
+    #daylog-research-v1 .dl-topic-list{border-right:1px solid var(--dl-line);padding-right:18px}
+    #daylog-research-v1 .dl-topic-card{border-radius:8px;background:var(--dl-panel);padding:14px}
+    #daylog-research-v1 .dl-period{width:100%;text-align:left;border:0;border-radius:6px;padding:10px;margin-top:4px;background:transparent}
+    #daylog-research-v1 .dl-period[aria-pressed=true]{background:var(--dl-soft);color:var(--dl-accent)}
+    #daylog-research-v1 .dl-period span{display:block;font-size:12px}
+    #daylog-research-v1 .dl-article{min-width:0}
+    #daylog-research-v1 .dl-finding{padding:16px 0;border-bottom:1px solid var(--dl-line)}
+    #daylog-research-v1 .dl-finding p{margin-bottom:8px}
+    #daylog-research-v1 .dl-cite{display:inline;color:var(--dl-accent);border:0;background:transparent;padding:0 4px;font-size:12px}
+    #daylog-research-v1 .dl-callout{background:var(--dl-panel);border-radius:8px;padding:14px 16px;margin:16px 0}
+    #daylog-research-v1 .dl-callout[data-tone=warn]{border-left:3px solid var(--dl-warn)}
+    #daylog-research-v1 .dl-facts{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    #daylog-research-v1 label.dl-field{display:grid;gap:5px;margin:14px 0;min-width:0}
+    #daylog-research-v1 input:not([type=checkbox]),#daylog-research-v1 textarea,#daylog-research-v1 select{background:var(--dl-bg);border:1px solid var(--dl-line);border-radius:7px;padding:9px 10px;width:100%;min-width:0}
+    #daylog-research-v1 textarea{resize:vertical;min-height:84px}
+    #daylog-research-v1 .dl-check{display:flex;align-items:flex-start;gap:9px;margin:10px 0}
+    #daylog-research-v1 .dl-form{max-width:680px;margin:auto}
+    #daylog-research-v1 .dl-steps{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}
+    #daylog-research-v1 .dl-steps span{color:var(--dl-muted);padding:4px 9px;border-radius:6px;font-size:12px}
+    #daylog-research-v1 .dl-steps .dl-active{background:var(--dl-soft);color:var(--dl-accent)}
+    #daylog-research-v1 .dl-form-footer{display:flex;justify-content:space-between;gap:10px;margin-top:24px;border-top:1px solid var(--dl-line);padding-top:18px;flex-wrap:wrap}
+    #daylog-research-v1 .dl-source{padding:10px 0;border-bottom:1px solid var(--dl-line)}
+    #daylog-research-v1 details{margin-top:18px}
+    #daylog-research-v1 summary{cursor:pointer;color:var(--dl-muted)}
+    #daylog-research-v1 footer{border-top:1px solid var(--dl-line);padding:8px 18px;display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap;font-size:11px;color:var(--dl-muted)}
+    #daylog-research-v1 .dl-error{color:var(--dl-warn)}
+    #daylog-research-v1 .dl-status{min-height:20px}
+    #daylog-research-v1 .dl-task-done{text-decoration:line-through;color:var(--dl-muted)}
+    @media(max-width:800px){#daylog-research-v1 .dl-today-grid{grid-template-columns:1fr}#daylog-research-v1 .dl-aside{display:none}#daylog-research-v1 .dl-topic-grid{grid-template-columns:160px minmax(0,1fr);gap:16px}#daylog-research-v1 main{padding:22px}}
+    @media(max-width:600px){#daylog-research-v1 .dl-layout{grid-template-columns:1fr}#daylog-research-v1 .dl-rail{flex-direction:row;justify-content:space-around;border-right:0;border-bottom:1px solid var(--dl-line);padding:6px}#daylog-research-v1 .dl-rail .dl-spacer{display:none}#daylog-research-v1 .dl-nav{display:flex;padding:8px;gap:6px;font-size:12px}#daylog-research-v1 .dl-topic-grid{grid-template-columns:1fr}#daylog-research-v1 .dl-topic-list{border-right:0;border-bottom:1px solid var(--dl-line);padding:0 0 16px}#daylog-research-v1 .dl-topic-card{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}#daylog-research-v1 .dl-periods{display:flex;flex-wrap:wrap;gap:4px}#daylog-research-v1 .dl-period{width:auto;flex:1;min-width:75px}#daylog-research-v1 main{padding:20px 16px}#daylog-research-v1 .dl-facts{grid-template-columns:1fr}#daylog-research-v1 h1{font-size:23px}#daylog-research-v1 input,#daylog-research-v1 select,#daylog-research-v1 textarea{font-size:16px}}
+    @media(pointer:coarse){#daylog-research-v1 button{min-height:44px}#daylog-research-v1 .dl-cite{padding:8px}#daylog-research-v1 .dl-check{min-height:44px;align-items:center}}
+  </style>
+  <header class="dl-chrome"><div class="dl-dots" aria-hidden="true"><span></span><span></span><span></span></div><span>DayLog <span class="dl-muted">/ 个人工作空间</span></span><span class="dl-caption">主题订阅 · 设计演示</span></header>
+  <div class="dl-layout">
+    <nav class="dl-rail" aria-label="主导航">
+      <button class="dl-nav" data-action="today" aria-current="page"><i data-lucide="sun" aria-hidden="true"></i>今天</button>
+      <button class="dl-nav" data-action="research"><i data-lucide="book-open" aria-hidden="true"></i>调研</button>
+      <div class="dl-spacer"></div>
+      <button class="dl-nav" data-action="connections"><i data-lucide="sliders-horizontal" aria-hidden="true"></i>连接</button>
+    </nav>
+    <main id="dl-research-main"></main>
+  </div>
+  <footer><span>交互示例 · 资料、运行与连接状态均为演示</span><span id="dl-research-notice" class="dl-status" role="status" aria-live="polite">没有启用真实定时任务</span></footer>
+</div>
+<script>
+(() => {
+  const root=document.getElementById('daylog-research-v1');
+  const main=root.querySelector('#dl-research-main');
+  const notice=root.querySelector('#dl-research-notice');
+  const state={page:'today',period:'ready',read:false,enabled:true,note:'',task:'',action:null,step:0,dirty:false,busy:false,stage:0,runToken:0,formReturn:'research',tested:false,connected:true,done:false};
+  const draft={name:'LLM 推理与本地部署',question:'跟踪推理框架、Apple Silicon 本地部署及可复现的性能评测。关注实际变化与限制，排除重复转载。',time:'09:00',frequency:'每天',length:'3–5 分钟简报',notify:true,web:true,official:true,rss:false,rssURL:''};
+  let config={...draft};
+  const topics=[{config:{...config},period:'ready',enabled:true,read:false,note:'',task:''}];
+  let topicIndex=0;
+  const stashTopic=()=>{topics[topicIndex]={config:{...config},period:state.period,enabled:state.enabled,read:state.read,note:state.note,task:state.task};};
+  const design={entry:'compact',depth:'brief',scenario:'ready'};
+  const esc=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const hint=text=>{notice.textContent=text;};
+  const actionButton=(action,label,primary=false,disabled=false)=>`<button data-action="${action}" class="${primary?'dl-primary':''}" ${disabled?'disabled':''}>${label}</button>`;
+  const title=()=>esc(state.page==='form'?draft.name:config.name);
+  function render(){
+    root.querySelectorAll('.dl-nav').forEach(b=>{if(b.dataset.action===state.page)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
+    if(state.page==='today') main.innerHTML=today();
+    if(state.page==='research') main.innerHTML=research();
+    if(state.page==='form') main.innerHTML=form();
+    if(state.page==='connections') main.innerHTML=connections();
+    if(globalThis.lucide)lucide.createIcons({attrs:{width:18,height:18}});
+  }
+  function today(){return `
+    <div class="dl-row dl-between"><div><h1>今天</h1><div class="dl-caption">9 月 19 日，星期六 · 演示工作空间</div></div><span class="dl-tag">把注意力留给手头的事</span></div>
+    <div class="dl-today-grid dl-section"><section>
+      <div class="dl-caption">今日重点</div><p>验证一个能够每天使用的工作日记流程</p>
+      <div class="dl-section"><h3>进行中</h3><label class="dl-task"><input type="checkbox" data-field="done" ${state.done?'checked':''}><span class="${state.done?'dl-task-done':''}">打磨 DayLog 的日常使用流程<span class="dl-caption">任务详情、草稿保存与日终回顾</span></span></label>
+      <div class="dl-task"><span class="dl-muted">○</span><span>整理本周技术笔记<span class="dl-caption">接下来</span></span></div>
+      ${state.task?`<div class="dl-task"><span class="dl-muted">○</span><span>${esc(state.task)}<span class="dl-caption">来自主题简报 · 尚未完成</span></span></div>`:''}</div>
+      <div class="dl-brief-entry"><div><div class="dl-row"><strong>今日简报</strong><span class="dl-tag">${({waiting:'等待首份简报',empty:'无重要更新',failed:'需要处理',missed:'等待补跑',partial:'部分覆盖'})[state.period]||(state.read?'已读':'1 份待阅')}</span></div><p>${title()} <span class="dl-caption">${['ready','partial'].includes(state.period)?'· 约 4 分钟':''}</span></p>${design.entry==='card'&&state.period==='ready'?'<p class="dl-muted">两项变化值得进一步验证，附来源与下一步建议。</p>':''}</div>${actionButton('research',['ready','partial'].includes(state.period)?'阅读简报':'查看调研')}</div>
+      <div class="dl-section"><h3>工作记录</h3><div class="dl-paper"><span class="dl-caption">08:45</span><p>检查昨日修复，继续完善使用流程。</p></div>${state.note?`<div class="dl-worknote"><span class="dl-caption">刚刚 · 来自主题简报的摘记</span><p>${esc(state.note)}</p><span class="dl-caption">保留来源关联 · 不代表已完成工作</span></div>`:'<p class="dl-caption">读完简报后，可以把有价值的结论记在这里。</p>'}</div>
+    </section><aside class="dl-aside"><h3>今天的节奏</h3><div class="dl-paper"><span class="dl-caption">09:00</span><p>主题调研开始</p></div><div class="dl-paper"><span class="dl-caption">09:04 · 示例</span><p>简报就绪，等待阅读</p></div><div class="dl-paper"><span class="dl-caption">收尾时</span><p>回顾自己的工作进展</p></div><p class="dl-caption">自动调研产生外部资料。只有你确认的摘记和行动，才进入工作日记。</p></aside></div>`;}
+  function research(){return `
+    <div class="dl-row dl-between"><div><h1>主题订阅</h1><span class="dl-muted">持续关注，每天读一点有价值的变化。</span></div>${actionButton('new','新建订阅')}</div>
+    <div class="dl-topic-grid"><aside class="dl-topic-list">${topics.length>1?`<div class="dl-periods">${topics.map((t,i)=>`<button class="dl-period" data-topic="${i}" aria-pressed="${i===topicIndex}">${esc(t.config.name)}</button>`).join('')}</div>`:''}<div class="dl-topic-card"><div><h3>${title()}</h3><span class="dl-caption">${state.enabled?`${esc(config.frequency)} ${esc(config.time)}`:'已暂停'} · Asia/Shanghai</span></div><div class="dl-row" style="margin-top:10px">${actionButton('edit','编辑')}${actionButton('pause',state.enabled?'暂停':'恢复')}</div></div>
+    <div class="dl-section"><div class="dl-caption">最近各期</div><div class="dl-periods">${[['ready','09 / 19','待阅 · 重要变化'],['empty','09 / 18','无重要更新'],['failed','09 / 17','检索未完成']].map(([key,date,label])=>`<button class="dl-period" data-period="${key}" aria-pressed="${state.period===key}">${date}<span>${label}</span></button>`).join('')}</div></div>
+    <div class="dl-section dl-caption">${state.enabled?`下次开始<br>明天 ${esc(config.time)}`:'订阅暂停期间不自动运行'}<br>本机执行 · 退出应用后暂停</div>${state.dirty?`<div class="dl-section">${actionButton('return-form','继续未保存草稿')}</div>`:''}</aside>
+    <article class="dl-article">${state.busy?running():report()}</article></div>`;}
+  function running(){return `<h2>正在调研</h2><p class="dl-muted">${title()}</p><div class="dl-callout">${['① 检索公开来源','② 阅读原文与检查日期','③ 去重、整理并核验引用'][state.stage]}<p class="dl-caption">本次为交互演示，不会调用外部工具。</p></div>${actionButton('cancel-run','取消本次')}`;}
+  function report(){
+    if(state.period==='waiting')return `<span class="dl-tag">${state.enabled?'等待首次运行':'尚未启用'}</span><h2 style="margin-top:16px">${title()}</h2><p class="dl-muted">订阅配置已在演示中保存。可以先试跑检查结果，或等待下一次安排。</p>${actionButton('run','试跑一次（演示）',true)}`;
+    if(state.period==='empty')return `<span class="dl-tag">无重要更新</span><h2 style="margin-top:16px">今天没有需要打断你的变化</h2><p class="dl-muted">示例：已检查选定来源；重复转载和旧版本说明没有进入新一期。</p><div class="dl-callout"><h3>保留本次检查记录</h3><p>范围：09 / 17 09:00 — 09 / 18 09:00<br>来源覆盖：已完成 · 无新增重要结论</p><span class="dl-caption">无更新不等于检索失败，也不会凑满一篇报告。</span></div>${actionButton('run','重新检查（演示）')}`;
+    if(state.period==='failed')return `<span class="dl-tag">未完成</span><h2 style="margin-top:16px">公开网页检索连接不可用</h2><p class="dl-muted">本期没有形成可靠的来源集合，不能判定“无更新”。此前简报仍然保留。</p><div class="dl-row">${actionButton('connections','检查工具连接',true)}${actionButton('run','重试（演示）')}</div><details><summary>本次运行</summary><p class="dl-caption">09:00 检索开始 → 连接失败 → 未调用模型生成报告。</p></details>`;
+    if(state.period==='missed')return `<span class="dl-tag">等待补跑</span><h2 style="margin-top:16px">09:00 时设备不可用</h2><p class="dl-muted">恢复后只补最新一期，并显示实际检索截止时间。不会一次堆积多天的简报。</p>${actionButton('run','补跑最新一期（演示）',true)}<div class="dl-callout">当前设计：DayLog 运行时执行。后台运行需要后续单独开启。</div>`;
+    return `<div class="dl-row dl-between"><span class="dl-tag">${state.read?'已读':'待阅'} · 简报示例</span>${actionButton('mark-read',state.read?'已标记已读':'标记已读',false,state.read)}</div>
+      <h2 style="margin-top:16px">两项值得进一步验证的变化</h2><p class="dl-caption">${title()} · 09 / 19<br>近 24 小时 · 检索截至 09:04 · 约 4 分钟</p>
+      ${state.period==='partial'?'<div class="dl-callout" data-tone="warn">部分覆盖：示例中 2 个来源读取失败。以下仅基于成功取得的资料，不能代表完整动态。</div>':''}
+      <div class="dl-finding"><h3>01 · 先看是否改变你的部署选择</h3><p>简报会把版本发布中的适用平台、使用条件和限制整理在这里，避免只有新闻标题。<button class="dl-cite" data-source="1">[1]</button></p><span class="dl-caption">版式占位内容，不是真实的当日发布消息。</span></div>
+      <div class="dl-finding"><h3>02 · 评测结论需要可比条件</h3><p>这里展示与关注主题相关的新评测，并保留硬件、精度、批量和上下文长度等比较条件。<button class="dl-cite" data-source="2">[2]</button></p></div>
+      <div class="dl-callout"><h3>对你意味着什么 <span class="dl-tag">分析建议</span></h3><p>先用固定的小规模测试验证是否适合自己的设备，再决定是否改变现有方案。</p></div>
+      ${design.depth==='deep'?'<div class="dl-section"><h3>背景与比较</h3><p class="dl-muted">深入阅读模式补充方案差异、证据局限与待验证假设。历史背景单独标注，不计入本期新增。</p></div>':''}
+      <div class="dl-row">${actionButton('adopt',state.note?'已记入工作记录':'摘记到工作记录',true,!!state.note)}${actionButton('task',state.task?'已加入今天':'将建议转成待办',false,!!state.task)}</div>
+      ${state.action?adoption():''}
+      <details ${state.source?'open':''}><summary>查看来源 · 2 条示例</summary><div class="dl-source"><h3>[1] 官方发布说明（示例）</h3><div class="dl-caption">支持结论 01 · 发布 / 更新 / 抓取时间分别保留</div><p>真实版本将在此展示可验证原文地址与相关摘录。</p></div><div class="dl-source"><h3>[2] 可复现评测记录（示例）</h3><div class="dl-caption">支持结论 02 · 日期不明时标注“日期待核实”</div><p>只有读取了原文才计入来源，搜索摘要不冒充全文。</p></div></details>
+      <details><summary>本次运行与交付</summary><p class="dl-caption">09:00 开始 → 检索与阅读 → 整理与引用核验 → 09:04 保存完成。运行时间和结果均为演示。</p>${actionButton('run','再试跑一次（演示）')}</details>`;
+  }
+  function adoption(){const isNote=state.action==='note';return `<section class="dl-callout"><h3>${isNote?'预览摘记':'预览新待办'}</h3><label class="dl-field">${isNote?'将保存到今天的工作记录':'任务标题'}<textarea id="dl-adoption-text">${isNote?'关注部署条件和可复现评测；先做本机验证再调整方案。[1][2]':'用固定参数验证一项本地推理方案'}</textarea></label><p class="dl-caption">${isNote?'保留简报和来源关联；不会把外部结论当作已完成工作。':'新增为未完成任务，保留简报关联；原有任务不变。'}</p><div class="dl-row">${actionButton('confirm-adoption',isNote?'确认记入今天':'确认加入今天',true)}${actionButton('cancel-adoption','取消')}</div></section>`;}
+  function form(){return `<div class="dl-form"><div class="dl-row dl-between"><div><h1>${state.isNew?'新建主题订阅':'编辑主题订阅'}</h1><span class="dl-muted">先确定想知道什么，再安排每天交付。</span></div>${actionButton('leave-form','返回')}</div>
+    <div class="dl-steps">${['1 主题与来源','2 时间与交付','3 确认与试跑'].map((v,i)=>`<span class="${state.step===i?'dl-active':''}">${v}</span>`).join('')}</div>
+    ${state.step===0?`<label class="dl-field">主题名称<input data-draft="name" maxlength="80" value="${title()}" placeholder="例如：LLM 推理与本地部署"></label><label class="dl-field">关注问题与排除项<textarea data-draft="question" placeholder="想跟踪哪些变化？哪些内容不需要？">${esc(draft.question)}</textarea></label><div class="dl-section"><h3>使用哪些资料 <span class="dl-tag">演示连接</span></h3><label class="dl-check"><input type="checkbox" data-draft="web" ${draft.web?'checked':''}>公开网页检索与原文读取</label><label class="dl-check"><input type="checkbox" data-draft="official" ${draft.official?'checked':''}>官方发布与代码仓库动态</label><label class="dl-check"><input type="checkbox" data-draft="rss" ${draft.rss?'checked':''}>指定 RSS 订阅源</label>${draft.rss?`<label class="dl-field">RSS 地址<input type="url" data-draft="rssURL" value="${esc(draft.rssURL)}" placeholder="https://…"></label>`:''}<p class="dl-caption">只选择该主题需要的资料。官方来源作为优先来源；严格站点白名单在后续高级设置中指定。不会自动读取工作任务或私人日记。</p>${actionButton('connections','管理工具连接')}</div>`:''}
+    ${state.step===1?`<div class="dl-facts"><label class="dl-field">频率<select data-draft="frequency">${['每天','工作日'].map(v=>`<option ${draft.frequency===v?'selected':''}>${v}</option>`).join('')}</select></label><label class="dl-field">开始时间<input type="time" data-draft="time" value="${esc(draft.time)}"></label></div><p class="dl-caption">固定时区 Asia/Shanghai${draft.frequency==='工作日'?' · 使用现有工作周与调休设置':''}。这是开始调研的时间，完成后再通知。</p><label class="dl-field">阅读量<select data-draft="length">${['3–5 分钟简报','10–15 分钟专题报告'].map(v=>`<option ${draft.length===v?'selected':''}>${v}</option>`).join('')}</select></label><label class="dl-check"><input type="checkbox" data-draft="notify" ${draft.notify?'checked':''}><span>有重要新内容时通知我<br><span class="dl-caption">无更新静默；失败保留清晰状态。</span></span></label><div class="dl-callout"><h3>在这台 Mac 上运行</h3><p>首版：DayLog 运行且设备可用时执行。退出应用后暂停，恢复后补最新一期。</p><span class="dl-caption">关闭窗口可继续运行；睡眠和关机时不保证准时交付。</span></div><details><summary>高级选项 · 运行上限</summary><p class="dl-caption">设计默认：3 次搜索、8 篇原文、2 次模型请求、总计 5 分钟。没有足够资料就报告覆盖不足。</p></details>`:''}
+    ${state.step===2?`<h2>${title()}</h2><div class="dl-callout"><p>${esc(draft.frequency)} ${esc(draft.time)} 开始 · Asia/Shanghai<br>${esc(draft.length)} · 近 24 小时变化<br>结果进入调研待阅区${draft.notify?'，有新增时通知':''}</p><span class="dl-caption">发送给模型：主题问题与检索到的公开资料。工作日记与私人日记不包含在内。</span></div><p>模型配置 · 公开检索 · 原文读取 <span class="dl-tag">${state.connected?'演示连接可用':'检索待连接'}</span></p>${state.busy?running():`<div class="dl-row">${actionButton('trial',state.tested?'重新试跑（演示）':'试跑一次（演示）',false,!state.connected)}${state.tested?'<span style="color:var(--dl-good)">示例试跑完成，可查看简报</span>':''}</div>`}${state.tested?'<div class="dl-callout"><h3>示例预览 · 两项值得验证的变化</h3><p class="dl-caption">事实摘要 → 相关性分析 → 行动建议 → 可追溯来源。试跑成功不自动启用日程。</p></div>':''}`:''}
+    <div class="dl-form-footer"><div>${state.step>0?actionButton('back','上一步'):''}</div><div class="dl-row">${state.step<2?actionButton('next','下一步',true):`${actionButton('save-disabled','只保存配置',false,state.busy)}${actionButton('enable','保存并启用（演示）',true,!state.connected||state.busy)}`}</div></div><div class="dl-caption dl-section">${state.dirty?'有未保存的订阅输入 · 切页保留':'设计预设 · 尚未创建真实订阅'}</div></div>`;}
+  function connections(){return `<h1>模型与工具</h1><p class="dl-muted">调研需要取得当前资料，再由模型整理。</p><div class="dl-paper"><h3>模型</h3><p>复用 DayLog 的模型配置 <span class="dl-tag">设计预设</span></p><p class="dl-caption">模型连接可用不代表已具备网页检索能力。</p></div><div class="dl-paper"><div class="dl-row dl-between"><h3>公开检索与原文读取</h3><span class="dl-tag">${state.connected?'演示：已连接':'演示：未连接'}</span></div><p class="dl-muted">仅允许检索和读取公开资料。</p>${actionButton('connect',state.connected?'模拟断开连接':'模拟连接成功')}</div><div class="dl-paper"><h3>其他已有工具</h3><p class="dl-caption">按主题选择并单独接入。Codex 对话中的工具和登录状态不会自动共享给 DayLog。</p></div><div class="dl-section">${actionButton(state.dirty||state.pageBeforeConnect==='form'?'return-form':'research',state.dirty||state.pageBeforeConnect==='form'?'返回订阅草稿':'返回调研')}</div>`;}
+  function run(trial=false){
+    if(!state.connected){hint('请先连接公开检索工具（演示）。');state.pageBeforeConnect=state.page;state.page='connections';render();return;}
+    if(state.busy)return;
+    state.busy=true;state.stage=0;state.trial=trial;const token=++state.runToken;render();hint('模拟执行中；没有网络请求。');
+    [1,2,3].forEach((n)=>setTimeout(()=>{
+      if(token!==state.runToken)return;
+      if(n<3)state.stage=n;
+      else{state.busy=false;if(trial)state.tested=true;else{state.period='ready';state.read=false;}hint('演示结果已就绪；真实订阅未启用。');}
+      render();
+    },n*800));
+  }
+  root.addEventListener('input',e=>{
+    const key=e.target.dataset.draft;if(key){draft[key]=e.target.type==='checkbox'?e.target.checked:e.target.value;state.dirty=true;state.tested=false;hint('订阅草稿已在本次演示中保留。');}
+  });
+  root.addEventListener('change',e=>{if(e.target.dataset.field==='done'){state.done=e.target.checked;render();}if(['frequency','rss'].includes(e.target.dataset.draft))render();});
+  root.addEventListener('click',e=>{
+    const b=e.target.closest('button');if(!b||b.disabled)return;
+    if(b.dataset.topic!==undefined){if(state.busy){hint('本次演示执行结束后可切换主题。');return;}stashTopic();topicIndex=Number(b.dataset.topic);const selected=topics[topicIndex];config={...selected.config};Object.assign(state,{period:selected.period,enabled:selected.enabled,read:selected.read,note:selected.note,task:selected.task,source:null,action:null});render();return;}
+    if(b.dataset.period){state.period=b.dataset.period;state.action=null;render();return;}
+    if(b.dataset.source){state.source=b.dataset.source;render();return;}
+    const action=b.dataset.action;if(!action)return;
+    if(action==='today'||action==='research'){state.page=action;state.action=null;}
+    if(action==='connections'){state.pageBeforeConnect=state.page;state.page='connections';}
+    if(action==='connect'){state.connected=!state.connected;hint('仅切换连接的演示状态。');}
+    if(action==='return-form'){state.page='form';}
+    if(action==='new'||action==='edit'){if(!state.dirty){state.isNew=action==='new';Object.assign(draft,config);if(state.isNew){draft.name='';draft.question='';}state.step=0;state.tested=false;state.editingTopic=topicIndex;}state.page='form';state.formReturn='research';}
+    if(action==='leave-form'){state.page=state.formReturn;hint(state.dirty?'订阅草稿保留；可点击“编辑”继续。':'已返回调研。');}
+    if(action==='next'){
+      if(!draft.name.trim()||!draft.question.trim()||!draft.time){hint('请补充主题、关注问题与开始时间。');return;}
+      if(!draft.web&&!draft.official&&!draft.rss){hint('至少选择一种资料来源。');return;}
+      if(draft.rss&&!/^https:\/\/.+/.test(draft.rssURL)){hint('请填写 HTTPS RSS 地址。');return;}
+      state.step=Math.min(2,state.step+1);
+    }
+    if(action==='back')state.step=Math.max(0,state.step-1);
+    if(action==='save-disabled'||action==='enable'){
+      if(action==='enable'&&!state.connected){hint('检索尚未连接，无法启用。');return;}
+      stashTopic();if(state.isNew){topicIndex=topics.length;state.period='waiting';state.read=false;state.note='';state.task='';}else{topicIndex=state.editingTopic??topicIndex;const original=topics[topicIndex];Object.assign(state,{period:original.period,read:original.read,note:original.note,task:original.task});}config={...draft};state.enabled=action==='enable';stashTopic();state.dirty=false;state.page='research';design.depth=draft.length.startsWith('10')?'deep':'brief';hint(action==='enable'?'已演示启用流程；没有创建真实日程。':'演示配置已保存，订阅保持暂停。');
+    }
+    if(action==='pause'){state.enabled=!state.enabled;hint(state.enabled?'演示已恢复，从下一期开始。':'演示已暂停；已有简报保留。');}
+    if(action==='mark-read'){state.read=true;hint('已读不代表已采纳，也不改变任务进度。');}
+    if(action==='adopt')state.action='note';
+    if(action==='task')state.action='task';
+    if(action==='cancel-adoption')state.action=null;
+    if(action==='confirm-adoption'){
+      const text=main.querySelector('#dl-adoption-text').value.trim();if(!text){hint('请先填写要保存的内容。');return;}
+      if(state.action==='note')state.note=text;else state.task=text;
+      state.action=null;hint('已加入演示的今天页面，可切回查看。');
+    }
+    if(action==='run'||action==='trial'){run(action==='trial');return;}
+    if(action==='cancel-run'){state.runToken++;state.busy=false;hint('本次演示执行已取消，原有简报保留。');}
+    render();
+  });
+  render();
+  let lastScenario=design.scenario;
+  if(globalThis.Tweak){const tweak=new Tweak({container:root,onChange:()=>{if(lastScenario!==design.scenario){lastScenario=design.scenario;state.period=design.scenario;state.page='research';}render();}});tweak.addSelect(design,'entry',{label:'今日页的简报入口',options:[{label:'紧凑待阅条（推荐）',value:'compact'},{label:'附一句摘要',value:'card'}]});tweak.addSelect(design,'depth',{label:'阅读层次',options:[{label:'一页简报',value:'brief'},{label:'增加背景比较',value:'deep'}]});tweak.addSelect(design,'scenario',{label:'运行状态预览',options:[{label:'简报就绪',value:'ready'},{label:'无重要更新',value:'empty'},{label:'部分覆盖',value:'partial'},{label:'检索失败',value:'failed'},{label:'错过执行',value:'missed'}]});}
+})();
+</script>

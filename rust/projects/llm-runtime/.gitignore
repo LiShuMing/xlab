@@ -1,0 +1,6 @@
+target/
+runs/
+artifacts/
+.env
+.env.*
+!.env.example

@@ -1,0 +1,354 @@
+<style>
+#daylog-design {
+  --dl-paper: light-dark(#faf9f5, #242824); --dl-sidebar: light-dark(#f1f2ec, #1d211e);
+  --dl-surface: light-dark(#ffffff, #2c312d); --dl-ink: light-dark(#29372f, #e3e9e1);
+  --dl-muted: light-dark(#69756b, #a9b6aa); --dl-accent: light-dark(#3e6950, #a4cfab);
+  --dl-soft: light-dark(#e7eee3, #354b3a); --dl-line: light-dark(#dee3da, #424b43);
+  --dl-button: light-dark(#3e6950, #b4d4b8); --dl-button-text: light-dark(#ffffff, #213126);
+  --dl-shadow: light-dark(#29372f18, #00000040);
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
+  font-size: 14px; line-height: 1.55; color: var(--dl-ink); position: relative;
+}
+#daylog-design[data-tone="native"] { --dl-paper: light-dark(#fafafa,#242426); --dl-sidebar: light-dark(#f0f0f2,#1e1e20); --dl-surface: light-dark(#ffffff,#303033); --dl-ink: light-dark(#27292e,#ededf0); --dl-muted: light-dark(#676a73,#b4b5bd); --dl-accent: light-dark(#2467b2,#96c4ff); --dl-soft: light-dark(#e8effa,#2b3d55); --dl-line: light-dark(#dedee4,#46464e); --dl-button: light-dark(#2467b2,#a2c9fa); --dl-button-text: light-dark(#fff,#1d3048); }
+#daylog-design[data-tone="playful"] { --dl-paper: light-dark(#faf8ff,#292631); --dl-sidebar: light-dark(#f0eaf8,#211d2a); --dl-surface: light-dark(#fff,#332e3e); --dl-ink: light-dark(#3e3351,#eee5fb); --dl-muted: light-dark(#776982,#baadc9); --dl-accent: light-dark(#7553a0,#c9b0ec); --dl-soft: light-dark(#ede4f7,#4a3a61); --dl-line: light-dark(#e1d8ea,#53485f); --dl-button: light-dark(#7553a0,#ceb7ef); --dl-button-text: light-dark(#fff,#302140); }
+#daylog-design * { box-sizing: border-box; }
+#daylog-design [hidden] { display: none !important; }
+#daylog-design button, #daylog-design input, #daylog-design textarea, #daylog-design select { font: inherit; color: inherit; }
+#daylog-design button { cursor: pointer; }
+#daylog-design button:disabled { cursor: default; opacity: .55; }
+#daylog-design button:focus-visible, #daylog-design input:focus-visible, #daylog-design textarea:focus-visible { outline: 2px solid var(--dl-accent); outline-offset: 3px; }
+#daylog-design h1, #daylog-design h2, #daylog-design p { margin: 0; }
+#daylog-design h1 { font-size: 28px; font-weight: 500; letter-spacing: -.8px; line-height: 1.35; }
+#daylog-design h2 { font-size: 15px; font-weight: 500; }
+#daylog-design svg { flex-shrink: 0; }
+#daylog-design .dl-system { display: flex; align-items: center; justify-content: space-between; padding: 7px 14px; margin-bottom: 10px; background: var(--dl-sidebar); border-radius: 9px; gap: 12px; font-size: 12px; }
+#daylog-design .dl-system-name { font-weight: 500; }
+#daylog-design .dl-system-right { display: flex; align-items: center; gap: 18px; }
+#daylog-design .dl-menu-trigger { display: flex; align-items: center; gap: 7px; border: 0; background: transparent; color: var(--dl-accent); padding: 3px 7px; border-radius: 5px; }
+#daylog-design .dl-menu-trigger[aria-expanded="true"] { background: var(--dl-soft); }
+#daylog-design .dl-window { border: 1px solid var(--dl-line); border-radius: 14px; background: var(--dl-paper); overflow: clip; }
+#daylog-design .dl-chrome { display: grid; grid-template-columns: 180px 1fr auto; min-height: 48px; align-items: center; border-bottom: 1px solid var(--dl-line); }
+#daylog-design .dl-lights { align-self: stretch; display: flex; align-items: center; gap: 8px; padding-left: 19px; background: var(--dl-sidebar); }
+#daylog-design .dl-lights span { height: 11px; width: 11px; border-radius: 50%; background: light-dark(#fa6b63,#b95852); }
+#daylog-design .dl-lights span:nth-child(2) { background: light-dark(#eebd4b,#bd9342); }
+#daylog-design .dl-lights span:nth-child(3) { background: light-dark(#65bd78,#4b9161); }
+#daylog-design .dl-breadcrumb { padding-left: 28px; font-size: 12px; color: var(--dl-muted); }
+#daylog-design .dl-demo { margin: 0 17px; font-size: 11px; color: var(--dl-muted); }
+#daylog-design .dl-body { display: grid; grid-template-columns: 180px minmax(0,1fr); min-height: 650px; }
+#daylog-design .dl-sidebar { background: var(--dl-sidebar); padding: 24px 12px 18px; display: flex; flex-direction: column; gap: 7px; }
+#daylog-design .dl-brand { display: flex; align-items: center; gap: 9px; padding: 0 10px 24px; font-size: 18px; font-weight: 500; letter-spacing: -.5px; }
+#daylog-design .dl-brand-mark { width: 29px; height: 29px; border-radius: 9px; background: var(--dl-accent); color: var(--dl-paper); display: grid; place-items: center; }
+#daylog-design .dl-nav { display: flex; align-items: center; gap: 10px; border: 0; padding: 10px 12px; text-align: left; background: transparent; border-radius: 7px; color: var(--dl-muted); width: 100%; }
+#daylog-design .dl-nav[aria-current="page"] { background: var(--dl-soft); color: var(--dl-accent); font-weight: 500; }
+#daylog-design .dl-side-caption { padding: 18px 12px 3px; color: var(--dl-muted); font-size: 11px; }
+#daylog-design .dl-side-bottom { margin-top: auto; padding-top: 38px; }
+#daylog-design .dl-companion { margin: 0 12px 20px; padding-top: 14px; border-top: 1px solid var(--dl-line); color: var(--dl-muted); font-size: 12px; }
+#daylog-design .dl-companion-icon { color: var(--dl-accent); margin-bottom: 9px; display: block; }
+#daylog-design .dl-main { min-width: 0; padding: 30px 38px 24px; }
+#daylog-design .dl-main section { min-width: 0; }
+#daylog-design .dl-eyebrow { color: var(--dl-muted); font-size: 12px; letter-spacing: .7px; margin-bottom: 9px; }
+#daylog-design .dl-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+#daylog-design .dl-progress { color: var(--dl-accent); background: var(--dl-soft); padding: 5px 10px; border-radius: 20px; font-size: 12px; white-space: nowrap; }
+#daylog-design .dl-intro { color: var(--dl-muted); font-size: 13px; margin-top: 8px; }
+#daylog-design .dl-focus { margin: 25px 0 26px; border-left: 3px solid var(--dl-accent); padding: 10px 14px; background: var(--dl-soft); border-radius: 0 8px 8px 0; }
+#daylog-design .dl-focus label { color: var(--dl-accent); font-size: 11px; display: block; margin-bottom: 4px; }
+#daylog-design .dl-focus input { background: transparent; border: 0; width: 100%; padding: 0; font-weight: 500; }
+#daylog-design .dl-section-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 0 10px; }
+#daylog-design .dl-small { color: var(--dl-muted); font-size: 12px; }
+#daylog-design .dl-form { display: flex; align-items: center; border: 1px solid var(--dl-line); border-radius: 8px; background: var(--dl-surface); padding: 5px 5px 5px 12px; gap: 5px; }
+#daylog-design .dl-form input { background: transparent; border: 0; min-width: 0; width: 100%; padding: 6px 0; }
+#daylog-design input::placeholder, #daylog-design textarea::placeholder { color: var(--dl-muted); opacity: 1; }
+#daylog-design .dl-action { border: 1px solid var(--dl-line); border-radius: 7px; padding: 6px 10px; background: var(--dl-surface); white-space: nowrap; font-size: 12px; }
+#daylog-design .dl-primary { background: var(--dl-button); border-color: transparent; color: var(--dl-button-text); }
+#daylog-design .dl-quiet { border: 0; background: transparent; color: var(--dl-accent); padding: 6px; font-size: 12px; }
+#daylog-design .dl-tasks { margin: 7px 0 0; }
+#daylog-design .dl-task { padding: 13px 0; border-bottom: 1px solid var(--dl-line); }
+#daylog-design .dl-task-line { display: flex; gap: 11px; align-items: center; }
+#daylog-design .dl-task input[type="checkbox"] { appearance: auto; accent-color: var(--dl-accent); width: 17px; height: 17px; flex-shrink: 0; margin: 0; cursor: pointer; }
+#daylog-design .dl-task-title { width: 100%; min-width: 0; border: 0; padding: 2px 0; background: transparent; }
+#daylog-design .dl-task.is-done .dl-task-title { text-decoration: line-through; color: var(--dl-muted); }
+#daylog-design .dl-task-label { font-size: 11px; color: var(--dl-accent); white-space: nowrap; }
+#daylog-design .dl-task-detail { padding: 9px 0 0 28px; }
+#daylog-design .dl-task-detail textarea { width: 100%; resize: vertical; min-height: 60px; padding: 8px; border-radius: 6px; border: 1px solid var(--dl-line); background: var(--dl-surface); }
+#daylog-design .dl-notes-section { margin-top: 26px; }
+#daylog-design .dl-notes { margin: 10px 0 13px; }
+#daylog-design .dl-note { display: grid; grid-template-columns: 44px minmax(0,1fr); gap: 10px; padding: 6px 0; font-size: 13px; }
+#daylog-design .dl-note time { color: var(--dl-muted); font-size: 11px; padding-top: 2px; }
+#daylog-design .dl-note p { white-space: pre-wrap; overflow-wrap: anywhere; }
+#daylog-design .dl-footer { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding-top: 24px; }
+#daylog-design .dl-summary { margin-top: 18px; background: var(--dl-surface); border: 1px solid var(--dl-line); border-radius: 10px; padding: 18px; }
+#daylog-design .dl-editor { display: block; width: 100%; min-height: 190px; resize: vertical; background: var(--dl-surface); border: 1px solid var(--dl-line); border-radius: 8px; padding: 13px; margin: 16px 0; line-height: 1.8; }
+#daylog-design .dl-summary .dl-editor { min-height: 230px; }
+#daylog-design .dl-summary-actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+#daylog-design .dl-status { min-height: 20px; margin-top: 12px; color: var(--dl-muted); font-size: 12px; }
+#daylog-design .dl-popover { position: absolute; z-index: 10; right: 8px; top: 43px; width: min(360px,100%); padding: 21px; background: var(--dl-surface); border: 1px solid var(--dl-line); border-radius: 13px; box-shadow: 0 12px 36px var(--dl-shadow); }
+#daylog-design .dl-popover .dl-form { margin-top: 16px; }
+#daylog-design .dl-menu-task { display: flex; align-items: center; gap: 10px; padding: 11px 0; border-bottom: 1px solid var(--dl-line); }
+#daylog-design .dl-menu-task input { accent-color: var(--dl-accent); flex-shrink: 0; }
+#daylog-design .dl-menu-task span { overflow-wrap: anywhere; }
+#daylog-design .dl-popover-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 18px; gap: 7px; }
+#daylog-design .dl-history-row { border-bottom: 1px solid var(--dl-line); padding: 14px 0; }
+#daylog-design .dl-history-toggle { display: flex; width: 100%; text-align: left; align-items: center; justify-content: space-between; gap: 12px; border: 0; background: transparent; padding: 7px 0; }
+#daylog-design .dl-history-title { display: block; font-weight: 500; }
+#daylog-design .dl-history-detail { margin: 12px 0 4px; padding: 12px; background: var(--dl-soft); border-radius: 8px; white-space: pre-wrap; }
+#daylog-design .dl-settings-group { margin-top: 25px; border: 1px solid var(--dl-line); border-radius: 10px; padding: 3px 16px; background: var(--dl-surface); }
+#daylog-design .dl-setting { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 0; }
+#daylog-design .dl-setting + .dl-setting { border-top: 1px solid var(--dl-line); }
+#daylog-design .dl-setting input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--dl-accent); }
+#daylog-design .dl-setting input[type="time"] { padding: 5px; background: var(--dl-paper); border: 1px solid var(--dl-line); border-radius: 6px; }
+#daylog-design .dl-setting-control { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+#daylog-design[data-density="compact"] .dl-task { padding-top: 8px; padding-bottom: 8px; }
+#daylog-design[data-density="compact"] .dl-main { padding-top: 24px; }
+#daylog-design[data-density="compact"] .dl-focus { margin-top: 18px; margin-bottom: 18px; }
+@media (max-width: 760px) { #daylog-design .dl-chrome { grid-template-columns: 145px 1fr auto; } #daylog-design .dl-body { grid-template-columns: 145px minmax(0,1fr); } #daylog-design .dl-main { padding: 25px 22px; } #daylog-design .dl-sidebar { padding-left: 8px; padding-right: 8px; } }
+@media (max-width: 540px) {
+  #daylog-design .dl-chrome { grid-template-columns: 72px 1fr auto; } #daylog-design .dl-lights { gap: 5px; padding-left: 12px; }
+  #daylog-design .dl-breadcrumb { padding-left: 12px; } #daylog-design .dl-system-right time { display: none; }
+  #daylog-design .dl-body { display: block; min-height: 0; } #daylog-design .dl-sidebar { flex-direction: row; padding: 9px; gap: 4px; flex-wrap: wrap; }
+  #daylog-design .dl-nav { width: auto; padding: 7px 10px; gap: 5px; } #daylog-design .dl-nav svg { display: none; }
+  #daylog-design .dl-brand, #daylog-design .dl-side-caption, #daylog-design .dl-companion { display: none; }
+  #daylog-design .dl-side-bottom { margin: 0; padding: 0; } #daylog-design .dl-main { padding: 22px 17px; }
+  #daylog-design h1 { font-size: 25px; } #daylog-design .dl-task-line { gap: 7px; }
+  #daylog-design .dl-task-label { display: none; } #daylog-design .dl-setting { flex-wrap: wrap; }
+  #daylog-design .dl-popover { position: relative; top: auto; right: auto; margin: 0 0 12px; width: 100%; box-shadow: none; }
+}
+@media (pointer: coarse) { #daylog-design button { min-height: 44px; } #daylog-design input:not([type="checkbox"]), #daylog-design textarea { font-size: 16px; } #daylog-design .dl-task { padding: 12px 0; } }
+</style>
+
+<div id="daylog-design" data-tone="native" data-density="comfortable" aria-label="DayLog 界面设计">
+  <div class="dl-system">
+    <span class="dl-system-name">DayLog</span>
+    <div class="dl-system-right">
+      <button class="dl-menu-trigger" type="button" aria-expanded="false" aria-controls="dl-menu" aria-label="打开 DayLog 菜单栏面板"><i data-lucide="square-check" aria-hidden="true"></i><span>DayLog</span><span data-progress>1/4</span></button>
+      <time>9 月 18 日 周五 16:42</time>
+    </div>
+  </div>
+  <section id="dl-menu" class="dl-popover" aria-label="菜单栏快速记录" hidden>
+    <div class="dl-section-heading"><h2>今日待办</h2><button type="button" class="dl-quiet" data-close-menu>收起</button></div>
+    <span class="dl-small">9 月 18 日 · 已完成 <span data-progress>1/4</span></span>
+    <form class="dl-form" data-add-form><input aria-label="菜单栏新增待办" placeholder="下一件想做的事…" maxlength="200"><button class="dl-action dl-primary" type="submit">添加</button></form>
+    <div id="dl-menu-tasks"></div>
+    <div class="dl-popover-footer"><span class="dl-small">演示数据</span><button class="dl-quiet" type="button" data-open-today>打开工作日记 ↗</button></div>
+  </section>
+  <div class="dl-window">
+    <div class="dl-chrome"><div class="dl-lights" aria-hidden="true"><span></span><span></span><span></span></div><span class="dl-breadcrumb" id="dl-breadcrumb">工作空间 / 今天</span><span class="dl-demo">交互稿 · 演示数据</span></div>
+    <div class="dl-body">
+      <nav class="dl-sidebar" aria-label="主导航">
+        <div class="dl-brand"><span class="dl-brand-mark"><i data-lucide="square-check" aria-hidden="true"></i></span>DayLog</div>
+        <button type="button" class="dl-nav" data-page="today" aria-current="page"><i data-lucide="sun" aria-hidden="true"></i>今天</button>
+        <button type="button" class="dl-nav" data-page="history"><i data-lucide="calendar-days" aria-hidden="true"></i>历史</button>
+        <span class="dl-side-caption">个人</span>
+        <button type="button" class="dl-nav" data-page="journal"><i data-lucide="notebook-pen" aria-hidden="true"></i>日记</button>
+        <div class="dl-side-bottom"><div class="dl-companion" hidden><span class="dl-companion-icon"><i data-lucide="sprout" aria-hidden="true"></i></span><span id="dl-companion-copy">不必做完所有事，<br>记下今天的每一步。</span></div><button type="button" class="dl-nav" data-page="settings"><i data-lucide="settings-2" aria-hidden="true"></i>设置</button></div>
+      </nav>
+      <main class="dl-main">
+        <section data-screen="today" aria-label="今日工作日记">
+          <div class="dl-eyebrow">2026 年 9 月 18 日 · 星期五</div>
+          <div class="dl-heading"><h1 id="dl-today-title">今天</h1><span class="dl-progress">已完成 <span data-progress>1/4</span></span></div>
+          <p class="dl-intro" id="dl-intro">记录任务、更新进展、回顾今天。</p>
+          <div class="dl-focus"><label for="dl-focus-input">今天最重要的一件事</label><input id="dl-focus-input" value="把工作日记的第一版界面想清楚" maxlength="200"></div>
+          <div class="dl-section-heading"><h2>待办事项</h2><span class="dl-small">点击标题可编辑</span></div>
+          <form class="dl-form" data-add-form><input aria-label="新增今日待办" placeholder="写下接下来要做的事…" maxlength="200"><button class="dl-action" type="submit">＋ 添加</button></form>
+          <div id="dl-tasks" class="dl-tasks"></div>
+          <div class="dl-notes-section"><div class="dl-section-heading"><h2>工作记录</h2><span class="dl-small">按时间记录进展</span></div><div class="dl-notes" id="dl-notes"></div>
+            <form class="dl-form" id="dl-note-form"><input aria-label="新增工作随记" placeholder="刚刚有什么进展或想法？" maxlength="2000"><button type="submit" class="dl-action">记一笔</button></form>
+          </div>
+          <div class="dl-footer"><span class="dl-small">仅包含今日工作内容</span><button type="button" class="dl-action dl-primary" id="dl-generate">生成今日回顾</button></div>
+          <section class="dl-summary" id="dl-summary" aria-label="今日回顾草稿" hidden>
+            <div class="dl-section-heading"><h2>今日回顾</h2><span class="dl-small">演示草稿 · 待采纳</span></div>
+            <p class="dl-small" id="dl-summary-source"></p>
+            <textarea class="dl-editor" id="dl-summary-text" aria-label="编辑回顾草稿"></textarea>
+            <div class="dl-summary-actions"><button class="dl-quiet" type="button" id="dl-hide-summary">收起</button><button class="dl-action" type="button" id="dl-regenerate">重新整理</button><button class="dl-action dl-primary" type="button" id="dl-adopt">采纳为随记</button></div>
+          </section>
+        </section>
+        <section data-screen="history" aria-label="历史工作记录" hidden>
+          <div class="dl-eyebrow">工作空间</div><h1>历史记录</h1><p class="dl-intro">查看每天的计划、完成情况和工作记录。</p>
+          <div class="dl-form" style="margin-top:24px"><input id="dl-search" aria-label="搜索历史工作记录" placeholder="搜索工作记录…"></div>
+          <div id="dl-history-list"></div>
+        </section>
+        <section data-screen="journal" aria-label="个人日记" hidden>
+          <div class="dl-eyebrow">2026 年 9 月 18 日</div><h1>个人日记</h1><p class="dl-intro">独立记录，默认不参与工作总结。</p>
+          <textarea class="dl-editor" id="dl-journal" aria-label="个人日记正文" style="min-height:320px" placeholder="今天有什么想留住的？">下班前，想把这一周慢慢收好。
+
+把脑子里的事写下来以后，好像真的轻了一点。</textarea>
+          <span class="dl-small">仅在本次演示中保留，刷新后重置。</span>
+        </section>
+        <section data-screen="settings" aria-label="偏好设置" hidden>
+          <div class="dl-eyebrow">偏好设置</div><h1>提醒</h1><p class="dl-intro">原型中的设置不会更改系统通知。</p>
+          <div class="dl-settings-group">
+            <div class="dl-setting"><div><label for="dl-morning-on">开始一天</label><p class="dl-small">留几分钟，安排今天</p></div><div class="dl-setting-control"><input type="time" value="09:30" aria-label="上班提醒时间"><input type="checkbox" id="dl-morning-on" checked></div></div>
+            <div class="dl-setting"><div><label for="dl-evening-on">收好今天</label><p class="dl-small">回顾进展，放下待办</p></div><div class="dl-setting-control"><input type="time" value="18:00" aria-label="下班提醒时间"><input type="checkbox" id="dl-evening-on" checked></div></div>
+            <div class="dl-setting"><span>工作日</span><span class="dl-small">周一至周五 · 示例</span></div>
+          </div>
+          <div class="dl-settings-group"><div class="dl-setting"><span>智能整理</span><span class="dl-small">未连接模型 · 使用演示草稿</span></div><div class="dl-setting"><span>个人日记</span><span class="dl-small">默认不参与工作总结</span></div></div>
+          <p class="dl-intro" style="margin-top:20px">真实通知授权、调休配置和模型接入将在原生版本中完成。</p>
+        </section>
+        <p id="dl-status" class="dl-status" role="status" aria-live="polite">演示内容不会保存到磁盘。</p>
+      </main>
+    </div>
+  </div>
+</div>
+<script>
+(() => {
+  const root = document.getElementById('daylog-design');
+  const $ = (selector) => root.querySelector(selector);
+  const $$ = (selector) => [...root.querySelectorAll(selector)];
+    const design = { tone: 'native', appearance: 'system', density: 'comfortable', companion: false };
+  const tasks = [
+    { id: 1, title: '敲定 DayLog 的 UI 方向', done: false, active: true, note: '先确认今日页和菜单栏的操作，再决定细节。' },
+    { id: 2, title: '补齐工作日记的设计文档', done: false, active: false, note: '' },
+    { id: 3, title: '整理这周的优化器阅读笔记', done: false, active: false, note: '' },
+    { id: 4, title: '检查 Mac 的 Swift 开发环境', done: true, active: false, note: '命令行工具可用，原生工程准备待完成。' }
+  ];
+  const notes = [{ time: '14:20', text: '菜单栏负责随手记，主窗口留给整理和回顾。' }];
+  const history = [
+    { date: '9 月 17 日 · 星期四', title: '把问题拆小一点', detail: '当日完成：整理查询回归的复现步骤、完成 Code Review。\n当日遗留：阅读物化视图相关实现。', count: '2 / 3' },
+    { date: '9 月 16 日 · 星期三', title: '留住一次有用的发现', detail: '当日完成：对比两份执行计划、记录性能实验结果。\n工作随记：先检查输入变化，再分析算子耗时。', count: '2 / 2' },
+    { date: '9 月 15 日 · 星期二', title: '慢慢搭好工作节奏', detail: '当日完成：整理本周计划。\n当日遗留：完善开发环境、阅读优化器资料。', count: '1 / 3' }
+  ];
+  let nextId = 5, revision = 0, summaryRevision = -1;
+  const status = (message) => { $('#dl-status').textContent = message; };
+  function sourceChanged() {
+    revision++;
+    if (summaryRevision >= 0) {
+      $('#dl-summary-source').textContent = '来源已有变化，请重新整理后再采纳。';
+      $('#dl-adopt').disabled = true;
+    }
+  }
+  function node(tag, className, text) {
+    const el = document.createElement(tag);
+    if (className) el.className = className;
+    if (text !== undefined) el.textContent = text;
+    return el;
+  }
+  function progress() {
+    const done = tasks.filter(t => t.done).length;
+    $$('[data-progress]').forEach(el => { el.textContent = `${done}/${tasks.length}`; });
+  }
+  function toggleTask(task, done) {
+    task.done = done; sourceChanged(); renderTasks(); renderMenu();
+    status(done ? '已在演示中完成一项，可以再次勾选撤销。' : '已在演示中恢复为待办。');
+  }
+  function renderTasks() {
+    const container = $('#dl-tasks'); container.replaceChildren();
+    [...tasks].sort((a,b) => Number(a.done) - Number(b.done)).forEach(task => {
+      const row = node('div', `dl-task${task.done ? ' is-done' : ''}`);
+      const line = node('div', 'dl-task-line');
+      const check = node('input'); check.type = 'checkbox'; check.checked = task.done; check.setAttribute('aria-label', `完成或撤销：${task.title}`);
+      check.addEventListener('change', () => toggleTask(task, check.checked));
+      const title = node('input', 'dl-task-title'); title.value = task.title; title.maxLength = 200; title.setAttribute('aria-label', '编辑任务标题');
+      title.addEventListener('change', () => {
+        const value = title.value.trim();
+        if (value && value !== task.title) { task.title = value; sourceChanged(); renderMenu(); check.setAttribute('aria-label', `完成或撤销：${value}`); status('任务标题已在演示中更新。'); }
+        title.value = task.title;
+      });
+      const detail = node('div', 'dl-task-detail'); detail.hidden = true; detail.id = `dl-task-detail-${task.id}`;
+      const memo = node('textarea'); memo.value = task.note; memo.placeholder = '记下这件事的进展…'; memo.setAttribute('aria-label', `${task.title}的进展备注`);
+      memo.addEventListener('input', () => { task.note = memo.value; sourceChanged(); }); detail.append(memo);
+      const more = node('button', 'dl-quiet', '进展'); more.type = 'button'; more.setAttribute('aria-expanded', 'false'); more.setAttribute('aria-controls', detail.id);
+      more.addEventListener('click', () => { detail.hidden = !detail.hidden; more.setAttribute('aria-expanded', String(!detail.hidden)); if (!detail.hidden) memo.focus(); });
+      line.append(check, title);
+      if (task.active && !task.done) line.append(node('span', 'dl-task-label', '进行中'));
+      line.append(more); row.append(line, detail); container.append(row);
+    });
+    progress();
+  }
+  function renderMenu() {
+    const container = $('#dl-menu-tasks'); container.replaceChildren();
+    [...tasks].sort((a,b) => Number(a.done)-Number(b.done)).slice(0,5).forEach(task => {
+      const label = node('label', 'dl-menu-task'); const check = node('input'); check.type = 'checkbox'; check.checked = task.done;
+      check.addEventListener('change', () => toggleTask(task, check.checked));
+      const text = node('span', '', task.title); if(task.done) text.style.textDecoration = 'line-through';
+      label.append(check, text); container.append(label);
+    });
+    if (tasks.length > 5) container.append(node('p', 'dl-small', `另有 ${tasks.length-5} 项，打开工作日记查看`));
+    progress();
+  }
+  function renderNotes() {
+    const container = $('#dl-notes'); container.replaceChildren();
+    notes.forEach(note => { const row = node('div', 'dl-note'); row.append(node('time', '', note.time), node('p', '', note.text)); container.append(row); });
+  }
+  function closeMenu() { $('#dl-menu').hidden = true; $('.dl-menu-trigger').setAttribute('aria-expanded','false'); }
+  function navigate(page) {
+    $$('[data-screen]').forEach(el => { el.hidden = el.dataset.screen !== page; });
+    $$('[data-page]').forEach(el => { if (el.dataset.page === page) el.setAttribute('aria-current','page'); else el.removeAttribute('aria-current'); });
+    const labels = { today: '今天', history: '历史', journal: '日记', settings: '设置' };
+    $('#dl-breadcrumb').textContent = `工作空间 / ${labels[page]}`;
+    closeMenu(); status('演示内容不会保存到磁盘。');
+  }
+  $$('[data-page]').forEach(el => el.addEventListener('click', () => navigate(el.dataset.page)));
+  $$('[data-add-form]').forEach(form => {
+    const input = form.querySelector('input'); let composing = false;
+    input.addEventListener('compositionstart', () => { composing = true; });
+    input.addEventListener('compositionend', () => { composing = false; });
+    input.addEventListener('keydown', event => { if(event.key === 'Enter' && (event.isComposing || composing || event.keyCode === 229)) event.preventDefault(); });
+    form.addEventListener('submit', event => {
+      event.preventDefault(); if(composing) return;
+      const title = input.value.trim(); if (!title) return;
+      tasks.push({ id: nextId++, title, done: false, active: false, note: '' }); input.value = ''; sourceChanged(); renderTasks(); renderMenu(); input.focus(); status('已添加到今日待办（演示）。');
+    });
+  });
+  const noteInput = $('#dl-note-form input'); let noteComposing = false;
+  noteInput.addEventListener('compositionstart', () => { noteComposing = true; });
+  noteInput.addEventListener('compositionend', () => { noteComposing = false; });
+  noteInput.addEventListener('keydown', event => { if(event.key === 'Enter' && (event.isComposing || noteComposing || event.keyCode === 229)) event.preventDefault(); });
+  $('#dl-note-form').addEventListener('submit', event => {
+    event.preventDefault(); if(noteComposing) return;
+    const text = noteInput.value.trim(); if(!text) return;
+    notes.push({ time: '刚刚', text }); noteInput.value = ''; sourceChanged(); renderNotes(); status('已添加一条工作随记（演示）。');
+  });
+  $('#dl-focus-input').addEventListener('input', sourceChanged);
+  $('#dl-journal').addEventListener('input', () => status('日记仅保留在本次演示中，刷新后重置。'));
+  $$('[data-screen="settings"] input').forEach(input => input.addEventListener('change', () => status('演示设置已更新，系统通知没有改变。')));
+  $('.dl-menu-trigger').addEventListener('click', () => {
+    const menu = $('#dl-menu'); menu.hidden = !menu.hidden; $('.dl-menu-trigger').setAttribute('aria-expanded', String(!menu.hidden));
+    if(!menu.hidden) $('#dl-menu input').focus();
+  });
+  $('[data-close-menu]').addEventListener('click', () => { closeMenu(); $('.dl-menu-trigger').focus(); });
+  $('[data-open-today]').addEventListener('click', () => navigate('today'));
+  root.addEventListener('keydown', event => { if(event.key === 'Escape' && !$('#dl-menu').hidden) { closeMenu(); $('.dl-menu-trigger').focus(); } });
+  function generateSummary() {
+    const done = tasks.filter(t => t.done), pending = tasks.filter(t => !t.done);
+    const lines = [ '已完成', ...(done.length ? done.map(t => `• ${t.title}`) : ['• 暂无完成记录']), '', '仍在推进', ...(pending.length ? pending.map(t => `• ${t.title}`) : ['• 今日计划已完成']), '', '下一步建议', pending.length ? `• 可先为「${pending[0].title}」补充一个具体的下一步。` : '• 留一点时间回顾今天的收获。' ];
+    $('#dl-summary-text').value = lines.join('\n'); summaryRevision = revision;
+    $('#dl-summary-source').textContent = `依据当前 ${tasks.length} 项待办生成 · 本地规则演示，未调用模型`;
+    $('#dl-summary').hidden = false; $('#dl-adopt').disabled = false; $('#dl-adopt').textContent = '采纳为随记';
+    status('演示草稿已生成，可编辑后采纳。');
+  }
+  $('#dl-generate').addEventListener('click', generateSummary); $('#dl-regenerate').addEventListener('click', generateSummary);
+  $('#dl-hide-summary').addEventListener('click', () => { $('#dl-summary').hidden = true; });
+  $('#dl-adopt').addEventListener('click', () => {
+    if(summaryRevision !== revision) return;
+    const text = $('#dl-summary-text').value.trim(); if(!text) { status('草稿为空，请先写一点内容。'); return; }
+    notes.push({ time: '回顾', text }); renderNotes(); $('#dl-adopt').disabled = true; $('#dl-adopt').textContent = '已采纳'; status('回顾已加入演示随记，原始任务保持不变。');
+  });
+  function renderHistory(query = '') {
+    const container = $('#dl-history-list'); container.replaceChildren();
+    const filtered = history.filter(item => `${item.date}${item.title}${item.detail}`.includes(query));
+    filtered.forEach(item => {
+      const row = node('div','dl-history-row'), button = node('button','dl-history-toggle'), title = node('span'); button.type = 'button'; button.setAttribute('aria-expanded','false');
+      title.append(node('span','dl-small',item.date),node('span','dl-history-title',item.title)); button.append(title,node('span','dl-small',`当日完成 ${item.count}`));
+      const detail = node('div','dl-history-detail',item.detail); detail.hidden = true;
+      button.addEventListener('click', () => { detail.hidden = !detail.hidden; button.setAttribute('aria-expanded',String(!detail.hidden)); }); row.append(button,detail); container.append(row);
+    });
+    if(!filtered.length) container.append(node('p','dl-intro','没有找到相关工作记录。'));
+  }
+  $('#dl-search').addEventListener('input', event => renderHistory(event.target.value.trim()));
+  function renderDesign() {
+    root.dataset.tone = design.tone; root.dataset.density = design.density;
+    if(design.appearance === 'system') root.style.removeProperty('color-scheme'); else root.style.colorScheme = design.appearance;
+    $('.dl-companion').hidden = !design.companion;
+    const intros = { warm:'一件件推进，也留住过程中的小发现。', native:'记录任务、更新进展、回顾今天。', playful:'今天的灵感，和待办一起发芽。' };
+    $('#dl-intro').textContent = intros[design.tone];
+    $('#dl-today-title').textContent = design.tone === 'native' ? '今天' : '把今天，记下来。';
+  }
+  renderTasks(); renderMenu(); renderNotes(); renderHistory(); renderDesign();
+  if(globalThis.Tweak) {
+    const tweak = new Tweak({ container: root, onChange: renderDesign });
+    tweak.addSelect(design, 'tone', { label: '视觉方向', options: [{label:'原生极简（已选方向）',value:'native'},{label:'温暖纸感 · 对照',value:'warm'},{label:'轻松活泼 · 对照',value:'playful'}] });
+    tweak.addSelect(design, 'appearance', { label: '外观', options: [{label:'跟随系统',value:'system'},{label:'浅色',value:'light'},{label:'深色',value:'dark'}] });
+    tweak.addSelect(design, 'density', { label: '列表密度', options: [{label:'舒展',value:'comfortable'},{label:'紧凑',value:'compact'}] });
+    tweak.addToggle(design, 'companion', { label: '轻陪伴文案' });
+  }
+})();
+</script>

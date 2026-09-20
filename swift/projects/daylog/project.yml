@@ -1,0 +1,120 @@
+name: DayLog
+options:
+  minimumXcodeGenVersion: 2.46.0
+  xcodeVersion: "26.6"
+  deploymentTarget:
+    macOS: "14.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    CODE_SIGN_STYLE: Manual
+    CODE_SIGN_IDENTITY: "-"
+    ENABLE_APP_SANDBOX: NO
+    ENABLE_HARDENED_RUNTIME: NO
+    GENERATE_INFOPLIST_FILE: YES
+  configs:
+    Debug:
+      SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) DEBUG DAYLOG_DEVELOPMENT"
+fileGroups:
+  - README.md
+  - docs/xcode-development.md
+  - project.yml
+targets:
+  DayLogCore:
+    type: framework
+    platform: macOS
+    sources: [DayLog/Core]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.daylog.core
+  DayLog:
+    type: application
+    platform: macOS
+    info:
+      path: DayLog/Resources/Xcode-Info.plist
+      properties:
+        CFBundleName: $(KEBAI_DISPLAY_NAME)
+        CFBundleDisplayName: $(KEBAI_DISPLAY_NAME)
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSMinimumSystemVersion: $(MACOSX_DEPLOYMENT_TARGET)
+        LSApplicationCategoryType: public.app-category.productivity
+        NSPrincipalClass: NSApplication
+        NSHighResolutionCapable: true
+        CFBundleDevelopmentRegion: zh_CN
+        CFBundleLocalizations: [zh_CN, en]
+    sources:
+      - path: DayLog
+        excludes: [Core, README.md, Resources]
+      - path: DayLogPreviews
+      - path: DayLog/Resources/Assets.xcassets
+    dependencies:
+      - target: DayLogCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.daylog.desktop
+        GENERATE_INFOPLIST_FILE: NO
+        KEBAI_DISPLAY_NAME: 刻白
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.productivity
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: 1
+        ENABLE_PREVIEWS: YES
+      configs:
+        Debug:
+          PRODUCT_BUNDLE_IDENTIFIER: app.daylog.development
+          KEBAI_DISPLAY_NAME: 刻白 Dev
+  DayLogRegressionTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - XcodeTests
+      - DayLogTests/CoreChecks.swift
+      - qa/PersistenceChecks.swift
+      - qa/WorkflowChecks.swift
+      - qa/DraftChecks.swift
+      - DayLog/App/AppStore.swift
+      - DayLog/App/Drafts.swift
+      - DayLog/Services
+    dependencies:
+      - target: DayLogCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.daylog.regression-tests
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) XCODE_TESTING"
+  KebaiAppearanceChecks:
+    type: tool
+    platform: macOS
+    sources:
+      - qa/AppearanceChecks.swift
+      - DayLog/App/AppStore.swift
+      - DayLog/App/Drafts.swift
+      - DayLog/Services
+      - DayLog/Features
+    dependencies:
+      - target: DayLogCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.daylog.appearance-checks
+        LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path"
+schemes:
+  DayLog:
+    build:
+      targets:
+        DayLog: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - name: DayLogRegressionTests
+          parallelizable: false
+    profile:
+      config: Release
+      commandLineArguments:
+        "--demo": true
+    archive:
+      config: Release
+    management:
+      orderHint: 0

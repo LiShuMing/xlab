@@ -1,0 +1,20 @@
+.DS_Store
+DerivedData/
+build/
+.build/
+.swiftpm/
+*.xcuserstate
+xcuserdata/
+design/daylog-preview.html
+
+# Runtime data and local publishing workspace
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+qa/gallery-site/
+# Local QA captures, exported test data, and build logs
+qa/evidence/
+
+# Keep the production icon; exploratory image renders stay local
+design/brand/*.png
+!design/brand/kebai-daylight-production.png

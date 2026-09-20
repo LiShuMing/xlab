@@ -1,0 +1,23 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+runs/
+artifacts/
+data/*
+!data/README.md
+!data/fixtures/
+.env
+.env.*
+!.env.example
+
+.tools/
+.uv-cache/
+.python/
+
+# The setup script uses --locked; retain the reproducible dependency lock.
+!uv.lock

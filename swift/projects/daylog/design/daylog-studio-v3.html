@@ -1,0 +1,346 @@
+<style>
+#daylog-studio-v3 {
+ --v-bg:light-dark(#efefef,#17191b); --v-canvas:light-dark(#fafafa,#1c1e21);
+ --v-panel:light-dark(#fff,#222529); --v-ink:light-dark(#2d3135,#eceef1);
+ --v-muted:light-dark(#72777e,#a3a9b1); --v-line:light-dark(#e4e5e7,#33373d);
+ --v-accent:light-dark(#a05a34,#e8b590); --v-soft:light-dark(#f4ebe3,#3b3028);
+ --v-hover:light-dark(#f0f1f2,#2b2e33); --v-button:light-dark(#30343a,#e8eaed);
+ --v-onbutton:light-dark(#fff,#24282d); --v-green:light-dark(#45705a,#a2c9b0);
+ --v-inspector:350px;
+ font:13px/1.55 -apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif;color:var(--v-ink);
+}
+#daylog-studio-v3 * {box-sizing:border-box}
+#daylog-studio-v3 [hidden] {display:none!important}
+#daylog-studio-v3 button,#daylog-studio-v3 input,#daylog-studio-v3 select,#daylog-studio-v3 textarea {font:inherit;color:inherit}
+#daylog-studio-v3 button {cursor:pointer}
+#daylog-studio-v3 button:disabled {opacity:.45;cursor:default}
+#daylog-studio-v3 :is(button,input,select,textarea):focus-visible {outline:2px solid var(--v-accent);outline-offset:3px}
+#daylog-studio-v3 p,#daylog-studio-v3 h1,#daylog-studio-v3 h2,#daylog-studio-v3 h3 {margin:0}
+#daylog-studio-v3 h1 {font-size:30px;font-weight:500;letter-spacing:-1.1px;line-height:1.25}
+#daylog-studio-v3 h2 {font-size:14px;font-weight:500}
+#daylog-studio-v3 h3 {font-size:12px;font-weight:500}
+#daylog-studio-v3 svg {flex-shrink:0}
+#daylog-studio-v3 .v-app {background:var(--v-canvas);border:1px solid var(--v-line);border-radius:16px;overflow:clip}
+#daylog-studio-v3 .v-chrome {min-height:45px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:7px 18px;border-bottom:1px solid var(--v-line);background:var(--v-bg);font-size:11px;color:var(--v-muted)}
+#daylog-studio-v3 .v-windowname {display:flex;align-items:center;gap:18px}
+#daylog-studio-v3 .v-lights {display:flex;gap:6px}
+#daylog-studio-v3 .v-lights span {width:9px;height:9px;border-radius:50%;background:var(--v-muted);opacity:.4}
+#daylog-studio-v3 .v-chrome-label {letter-spacing:.3px}
+#daylog-studio-v3 .v-layout {display:grid;grid-template-columns:62px minmax(0,1fr)}
+#daylog-studio-v3 .v-rail {background:var(--v-bg);border-right:1px solid var(--v-line);display:flex;flex-direction:column;align-items:center;padding:20px 7px;gap:15px}
+#daylog-studio-v3 .v-logo {width:31px;height:31px;border-radius:9px;display:grid;place-items:center;background:var(--v-button);color:var(--v-onbutton);margin-bottom:10px}
+#daylog-studio-v3 .v-nav {display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 6px;border:0;border-radius:9px;background:transparent;color:var(--v-muted);font-size:11px;min-width:43px}
+#daylog-studio-v3 .v-nav[aria-current=page] {background:var(--v-soft);color:var(--v-accent)}
+#daylog-studio-v3 .v-rail-end {margin-top:auto;padding-top:40px;font:11px ui-monospace,SFMono-Regular,monospace;color:var(--v-muted)}
+#daylog-studio-v3 .v-content {min-width:0}
+#daylog-studio-v3 .v-toolbar {display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 24px;border-bottom:1px solid var(--v-line);min-height:57px}
+#daylog-studio-v3 .v-breadcrumb {display:flex;gap:9px;align-items:center;color:var(--v-muted);font-size:11px}
+#daylog-studio-v3 .v-breadcrumb strong {font-weight:500;color:var(--v-ink)}
+#daylog-studio-v3 .v-actions {display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+#daylog-studio-v3 .v-btn {border:1px solid var(--v-line);border-radius:7px;background:var(--v-panel);padding:6px 10px;display:inline-flex;align-items:center;justify-content:center;gap:7px;font-size:12px;white-space:nowrap}
+#daylog-studio-v3 .v-btn:hover {background:var(--v-hover)}
+#daylog-studio-v3 .v-primary {background:var(--v-button);border-color:var(--v-button);color:var(--v-onbutton)}
+#daylog-studio-v3 .v-primary:hover {background:var(--v-button);opacity:.9}
+#daylog-studio-v3 .v-quiet {border:0;background:transparent;padding:5px;color:var(--v-muted);font-size:11px}
+#daylog-studio-v3 .v-shortcut {font:10px ui-monospace,SFMono-Regular,monospace;border:1px solid currentColor;border-radius:3px;padding:0 3px;opacity:.7}
+#daylog-studio-v3 .v-workspace {display:grid;grid-template-columns:minmax(0,1fr) var(--v-inspector);min-height:630px}
+#daylog-studio-v3[data-inspector=closed] .v-workspace {grid-template-columns:minmax(0,1fr)}
+#daylog-studio-v3[data-inspector=closed] .v-inspector {display:none}
+#daylog-studio-v3 .v-center {padding:27px 25px 23px;min-width:0}
+#daylog-studio-v3 .v-dayhead {display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:21px}
+#daylog-studio-v3 .v-daytitle {display:flex;align-items:center;gap:11px}
+#daylog-studio-v3 .v-dayicon {color:var(--v-accent);width:30px;height:30px;display:grid;place-items:center}
+#daylog-studio-v3 .v-caption {color:var(--v-muted);font-size:11px;margin-top:7px}
+#daylog-studio-v3 .v-progress {display:flex;align-items:center;gap:8px;color:var(--v-muted);font-size:11px;white-space:nowrap}
+#daylog-studio-v3 .v-meter {display:flex;gap:3px;align-items:center;max-width:80px;flex-wrap:wrap}
+#daylog-studio-v3 .v-meter span {height:13px;width:4px;border-radius:2px;background:var(--v-line)}
+#daylog-studio-v3 .v-meter span[data-done=true] {background:var(--v-accent)}
+#daylog-studio-v3 .v-focus {display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--v-line);border-radius:7px;background:var(--v-panel);margin-bottom:23px}
+#daylog-studio-v3 .v-focus svg {color:var(--v-accent)}
+#daylog-studio-v3 .v-focus input {min-width:0;width:100%;border:0;background:transparent;padding:2px;font-size:12px}
+#daylog-studio-v3 .v-focus label {font-size:11px;color:var(--v-muted);white-space:nowrap}
+#daylog-studio-v3 .v-group {margin:19px 0 0}
+#daylog-studio-v3 .v-group:first-child {margin-top:0}
+#daylog-studio-v3 .v-grouphead {display:flex;align-items:center;gap:7px;font-size:11px;color:var(--v-muted);margin-bottom:5px}
+#daylog-studio-v3 .v-groupcount {color:var(--v-muted);font:10px ui-monospace,SFMono-Regular,monospace;padding:0 4px;background:var(--v-hover);border-radius:3px}
+#daylog-studio-v3 .v-task {display:flex;gap:9px;align-items:center;padding:11px 10px;margin:3px -10px;border:1px solid transparent;border-radius:7px;position:relative}
+#daylog-studio-v3 .v-task:hover {background:var(--v-hover)}
+#daylog-studio-v3 .v-task[data-selected=true] {background:var(--v-soft);border-color:var(--v-line);box-shadow:inset 2px 0 var(--v-accent)}
+#daylog-studio-v3 .v-task input {width:15px;height:15px;accent-color:var(--v-accent);margin:0;flex-shrink:0}
+#daylog-studio-v3 .v-task-main {border:0;background:transparent;text-align:left;min-width:0;flex:1;padding:0}
+#daylog-studio-v3 .v-task-title {display:block;overflow-wrap:anywhere;font-size:13px}
+#daylog-studio-v3 .v-task-meta {font-size:11px;color:var(--v-muted);margin-top:4px;display:flex;gap:8px;flex-wrap:wrap}
+#daylog-studio-v3 .v-task[data-done=true] .v-task-title {color:var(--v-muted);text-decoration:line-through}
+#daylog-studio-v3 .v-task[data-done=true] .v-task-meta {display:none}
+#daylog-studio-v3 .v-form {display:flex;align-items:center;gap:7px;margin-top:14px;padding:5px 6px 5px 10px;border:1px solid var(--v-line);border-radius:7px;background:var(--v-panel)}
+#daylog-studio-v3 .v-form input {min-width:0;width:100%;border:0;background:transparent;padding:5px 0;font-size:12px}
+#daylog-studio-v3 input::placeholder,#daylog-studio-v3 textarea::placeholder {color:var(--v-muted);opacity:1}
+#daylog-studio-v3 .v-timeline {margin-top:28px;padding-top:22px;border-top:1px solid var(--v-line)}
+#daylog-studio-v3 .v-sectionhead {display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px}
+#daylog-studio-v3 .v-note {display:grid;grid-template-columns:34px minmax(0,1fr);gap:12px;padding:7px 0;font-size:12px}
+#daylog-studio-v3 .v-note time {color:var(--v-muted);font:10px/1.9 ui-monospace,SFMono-Regular,monospace}
+#daylog-studio-v3 .v-note p {white-space:pre-wrap;overflow-wrap:anywhere}
+#daylog-studio-v3 .v-inspector {border-left:1px solid var(--v-line);background:var(--v-panel);min-width:0}
+#daylog-studio-v3 .v-inspectorhead {display:flex;justify-content:space-between;align-items:center;padding:13px 18px;border-bottom:1px solid var(--v-line);gap:10px}
+#daylog-studio-v3 .v-tabs {display:flex;gap:15px}
+#daylog-studio-v3 .v-tabs button {background:transparent;border:0;color:var(--v-muted);padding:3px 0;font-size:11px}
+#daylog-studio-v3 .v-tabs button[aria-pressed=true] {color:var(--v-ink);font-weight:500;box-shadow:0 2px var(--v-accent)}
+#daylog-studio-v3 .v-detail {padding:23px}
+#daylog-studio-v3 .v-overline {font:10px ui-monospace,SFMono-Regular,monospace;letter-spacing:1px;color:var(--v-muted);margin-bottom:13px}
+#daylog-studio-v3 .v-title-editor {font-size:22px;line-height:1.4;font-weight:500;letter-spacing:-.5px;width:100%;resize:vertical;border:0;background:transparent;padding:0;min-height:63px}
+#daylog-studio-v3 .v-properties {display:grid;grid-template-columns:50px minmax(0,1fr);align-items:center;row-gap:12px;margin:18px 0 25px;font-size:12px}
+#daylog-studio-v3 .v-properties label {color:var(--v-muted);font-size:11px}
+#daylog-studio-v3 .v-properties select {max-width:160px;border:1px solid var(--v-line);border-radius:6px;padding:5px 8px;background:var(--v-canvas);font-size:11px}
+#daylog-studio-v3 .v-field-label {font-size:11px;color:var(--v-muted);display:block;margin-bottom:9px}
+#daylog-studio-v3 .v-description {border:1px solid var(--v-line);background:var(--v-canvas);padding:11px 12px;width:100%;border-radius:7px;resize:vertical;min-height:97px;line-height:1.8;font-size:12px}
+#daylog-studio-v3 .v-checks {margin-top:22px}
+#daylog-studio-v3 .v-step {display:flex;gap:9px;align-items:flex-start;font-size:12px;margin:11px 0}
+#daylog-studio-v3 .v-step input {width:13px;height:13px;accent-color:var(--v-accent);margin-top:3px;flex-shrink:0}
+#daylog-studio-v3 .v-step span {overflow-wrap:anywhere}
+#daylog-studio-v3 .v-step:has(input:checked) span {color:var(--v-muted);text-decoration:line-through}
+#daylog-studio-v3 .v-stepform {display:flex;gap:5px;align-items:center;margin-top:8px}
+#daylog-studio-v3 .v-stepform input {background:transparent;border:0;border-bottom:1px solid var(--v-line);min-width:0;width:100%;padding:6px 0;font-size:11px}
+#daylog-studio-v3 .v-activity {margin-top:24px;padding-top:18px;border-top:1px solid var(--v-line)}
+#daylog-studio-v3 .v-event {font-size:11px;color:var(--v-muted);padding:6px 0;overflow-wrap:anywhere}
+#daylog-studio-v3 .v-event time {font:10px ui-monospace,SFMono-Regular,monospace;margin-right:8px}
+#daylog-studio-v3 .v-review-head {display:flex;align-items:center;gap:9px;margin-bottom:14px}
+#daylog-studio-v3 .v-review-head svg {color:var(--v-accent)}
+#daylog-studio-v3 .v-review-text {width:100%;min-height:325px;resize:vertical;background:var(--v-canvas);border:1px solid var(--v-line);border-radius:8px;padding:14px;font-size:12px;line-height:1.9;margin:17px 0}
+#daylog-studio-v3 .v-source {font-size:11px;color:var(--v-muted);line-height:1.8}
+#daylog-studio-v3 .v-stale {color:var(--v-accent);font-size:11px;margin-top:8px}
+#daylog-studio-v3 .v-altpage {padding:30px;min-height:590px}
+#daylog-studio-v3 .v-history-row {display:block;border-bottom:1px solid var(--v-line);padding:20px 0}
+#daylog-studio-v3 .v-history-row summary {cursor:pointer;display:flex;justify-content:space-between;gap:12px;font-size:13px}
+#daylog-studio-v3 .v-history-row p {font-size:12px;color:var(--v-muted);margin-top:14px;white-space:pre-wrap}
+#daylog-studio-v3 .v-journal {width:100%;min-height:350px;padding:18px;margin-top:20px;background:var(--v-panel);border:1px solid var(--v-line);border-radius:8px;resize:vertical;line-height:1.9}
+#daylog-studio-v3 .v-footer {display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;border-top:1px solid var(--v-line);padding:10px 23px;color:var(--v-muted);font-size:11px}
+#daylog-studio-v3 .v-footer-actions {display:flex;align-items:center;gap:10px}
+#daylog-studio-v3[data-density=compact] .v-task {padding-top:7px;padding-bottom:7px}
+#daylog-studio-v3[data-density=compact] .v-task-meta {margin-top:2px}
+#daylog-studio-v3[data-density=compact] .v-center {padding-top:22px}
+@media(max-width:850px) {#daylog-studio-v3 .v-workspace {grid-template-columns:minmax(0,1fr) 290px}#daylog-studio-v3 .v-center {padding:22px 18px}#daylog-studio-v3 .v-detail {padding:20px 17px}#daylog-studio-v3 .v-inspectorhead {padding:13px 14px}}
+@media(max-width:690px) {#daylog-studio-v3 .v-workspace {display:block;min-height:0}#daylog-studio-v3 .v-inspector {border-left:0;border-top:1px solid var(--v-line)}#daylog-studio-v3 .v-toolbar {padding:12px 17px;flex-wrap:wrap}#daylog-studio-v3 .v-breadcrumb {display:none}#daylog-studio-v3 .v-focus {gap:7px}#daylog-studio-v3 .v-progress {flex-direction:column;gap:4px}#daylog-studio-v3 .v-review-text {min-height:240px}}
+@media(max-width:420px) {#daylog-studio-v3 .v-layout {display:block}#daylog-studio-v3 .v-rail {flex-direction:row;padding:8px 14px;border-right:0;border-bottom:1px solid var(--v-line);gap:8px}#daylog-studio-v3 .v-logo {margin:0;width:27px;height:27px}#daylog-studio-v3 .v-nav {flex-direction:row;padding:7px;font-size:12px}#daylog-studio-v3 .v-nav svg,#daylog-studio-v3 .v-rail-end,#daylog-studio-v3 .v-chrome-label {display:none}#daylog-studio-v3 .v-chrome {min-height:33px}#daylog-studio-v3 .v-focus label {display:none}#daylog-studio-v3 .v-center {padding:22px 17px}#daylog-studio-v3 .v-footer {padding:12px 17px}#daylog-studio-v3 .v-task {margin-left:-5px;margin-right:-5px;padding-left:5px;padding-right:5px}}
+@media(pointer:coarse) {#daylog-studio-v3 button {min-height:44px}#daylog-studio-v3 input:not([type=checkbox]),#daylog-studio-v3 textarea,#daylog-studio-v3 select {font-size:16px}}
+</style>
+
+<div id="daylog-studio-v3" data-inspector="open" data-density="comfortable" aria-label="DayLog Studio C · 第三版设计">
+ <div class="v-app">
+  <div class="v-chrome"><div class="v-windowname"><div class="v-lights" aria-hidden="true"><span></span><span></span><span></span></div><span>DayLog</span></div><span class="v-chrome-label">个人工作空间 · 交互稿</span></div>
+  <div class="v-layout">
+   <nav class="v-rail" aria-label="主导航"><span class="v-logo"><i data-lucide="command" aria-hidden="true"></i></span><button class="v-nav" data-page="today" aria-current="page"><i data-lucide="sun" aria-hidden="true"></i>今天</button><button class="v-nav" data-page="history"><i data-lucide="history" aria-hidden="true"></i>历史</button><button class="v-nav" data-page="journal"><i data-lucide="notebook" aria-hidden="true"></i>日记</button><span class="v-rail-end">DL</span></nav>
+   <div class="v-content">
+    <div class="v-toolbar"><div class="v-breadcrumb"><span>工作空间</span><span>/</span><strong data-breadcrumb>今天</strong></div><div class="v-actions"><button class="v-btn" data-open-review><i data-lucide="sparkles" aria-hidden="true"></i>今日回顾</button><button class="v-btn" data-show-detail hidden>显示详情</button><button class="v-btn v-primary" data-new-task><i data-lucide="plus" aria-hidden="true"></i>新建待办 <span class="v-shortcut" aria-hidden="true">N</span></button></div></div>
+    <div class="v-workspace" data-screen="today">
+     <main class="v-center">
+      <header class="v-dayhead"><div><div class="v-daytitle"><span class="v-dayicon"><i data-lucide="sun" aria-hidden="true"></i></span><h1>今天</h1></div><p class="v-caption">9 月 18 日 · 星期五</p></div><div class="v-progress"><span class="v-meter" data-meter aria-hidden="true"></span><span data-progress>1 / 4 完成</span></div></header>
+      <div class="v-focus"><i data-lucide="crosshair" aria-hidden="true"></i><label for="v3-focus">今日重点</label><input id="v3-focus" value="敲定工作日记的核心交互" maxlength="180"></div>
+      <div data-task-groups aria-label="今日任务列表"></div>
+      <form class="v-form" data-task-form><input aria-label="新增今日待办" placeholder="添加待办，回车确认…" maxlength="160"><button class="v-quiet" type="submit">添加</button></form>
+      <section class="v-timeline"><div class="v-sectionhead"><h2>工作记录</h2><span class="v-caption" data-note-count>2 条记录</span></div><div data-notes></div><form class="v-form" data-note-form><input aria-label="新增工作记录" placeholder="刚刚有什么进展？" maxlength="1000"><button class="v-quiet" type="submit">记下</button></form></section>
+     </main>
+     <aside class="v-inspector" aria-label="任务详情与今日回顾">
+      <div class="v-inspectorhead"><div class="v-tabs"><button data-tab="task" aria-pressed="true">任务详情</button><button data-tab="review" aria-pressed="false">今日回顾</button></div><button class="v-quiet" data-close-detail aria-label="收起详情面板"><i data-lucide="panel-right-close" aria-hidden="true"></i></button></div>
+      <div class="v-detail" data-panel="task">
+       <div class="v-overline" data-detail-category>设计 / 今日任务</div>
+       <textarea class="v-title-editor" data-task-title aria-label="编辑任务标题" maxlength="160" rows="2">确定应用的视觉方向</textarea>
+       <div class="v-properties"><label for="v3-status">状态</label><select id="v3-status"><option value="todo">待开始</option><option value="doing">进行中</option><option value="done">已完成</option></select><label for="v3-slot">安排</label><select id="v3-slot"><option value="day">今天</option><option value="closing">收尾时</option></select></div>
+       <label class="v-field-label" for="v3-description">目标与备注</label><textarea id="v3-description" class="v-description" placeholder="写下目标、背景或相关信息…"></textarea>
+       <section class="v-checks"><div class="v-sectionhead"><h3>步骤清单</h3><span class="v-caption" data-step-count></span></div><div data-steps></div><form class="v-stepform" data-step-form><input aria-label="添加任务步骤" placeholder="添加一个步骤…" maxlength="160"><button class="v-quiet" type="submit">＋</button></form></section>
+       <section class="v-activity"><div class="v-sectionhead"><h3>进展记录</h3><span class="v-caption">当前任务</span></div><div data-events></div><form class="v-form" data-event-form><input aria-label="补充当前任务进展" placeholder="补充进展…" maxlength="800"><button class="v-quiet" type="submit">记录</button></form></section>
+      </div>
+      <div class="v-detail" data-panel="review" hidden><div class="v-review-head"><i data-lucide="sparkles" aria-hidden="true"></i><h2>今天的工作回顾</h2></div><p class="v-source">仅包含今日任务和工作记录。<br>当前使用本地规则演示，未调用模型。</p><p class="v-stale" data-draft-status>尚未生成</p><textarea class="v-review-text" data-draft-text aria-label="编辑今日回顾草稿" placeholder="点击生成，整理今天的完成项与进展。"></textarea><div class="v-actions"><button class="v-btn" data-generate>生成草稿</button><button class="v-btn v-primary" data-adopt disabled>采纳为工作记录</button></div></div>
+     </aside>
+    </div>
+    <section class="v-altpage" data-screen="history" hidden><h1>历史记录</h1><p class="v-caption">保留当时的计划与完成情况 · 示例记录</p><details class="v-history-row"><summary><span>9 月 17 日 · 星期四</span><span class="v-caption">当日完成 2 / 3</span></summary><p>已完成：查询回归复现、Code Review。<br>当日遗留：整理阅读笔记。</p></details><details class="v-history-row"><summary><span>9 月 16 日 · 星期三</span><span class="v-caption">当日完成 2 / 2</span></summary><p>已完成：执行计划对比、性能实验记录。</p></details></section>
+    <section class="v-altpage" data-screen="journal" hidden><h1>个人日记</h1><p class="v-caption">9 月 18 日 · 默认不参与工作总结</p><textarea class="v-journal" aria-label="个人日记正文" placeholder="写一点工作之外的事…"></textarea></section>
+    <footer class="v-footer"><span data-feedback role="status" aria-live="polite">演示数据，仅在本次预览中保留。</span><div class="v-footer-actions"><button class="v-quiet" data-undo hidden>撤销状态修改</button><span>任务行 ↑ ↓ 切换 · Space 预览</span></div></footer>
+   </div>
+  </div>
+ </div>
+</div>
+
+<script>
+(() => {
+ const root = document.getElementById('daylog-studio-v3');
+ const $ = selector => root.querySelector(selector);
+ const $$ = selector => [...root.querySelectorAll(selector)];
+ const tasks = [
+  { id:1, title:'确定应用的视觉方向', status:'doing', resume:'doing', slot:'day', category:'设计', description:'以 C 方案为基础，明确任务列表、侧边详情和每日回顾之间的关系。', steps:[{text:'确定工作台的整体方向',done:true},{text:'完善任务详情与进展交互',done:false},{text:'确认浅色与深色表现',done:false}], events:[{time:'14:20',text:'选定 C，继续细化核心交互。'}]},
+  { id:2, title:'完善工作日记设计文档', status:'todo', resume:'todo', slot:'day', category:'设计', description:'明确跨日任务、历史快照和保存失败的处理。', steps:[{text:'梳理跨日状态',done:false},{text:'更新交互规范',done:false}], events:[{time:'11:30',text:'记录需要补齐的设计边界。'}]},
+  { id:3, title:'整理本周阅读笔记', status:'todo', resume:'todo', slot:'closing', category:'阅读', description:'收尾时整理查询优化器与物化视图的阅读笔记。', steps:[], events:[]},
+  { id:4, title:'检查 Swift 开发环境', status:'done', resume:'todo', slot:'day', category:'开发', description:'命令行工具已检查，原生 Xcode 工程准备待完成。', steps:[{text:'检查 Swift 与 SDK',done:true}], events:[{time:'10:05',text:'开发环境检查完成。'}]}
+ ];
+ const notes = [{time:'14:20',text:'选定 C 方案，开始细化任务详情与每日记录。',kind:'work'},{time:'10:05',text:'Swift 命令行可用，后续准备原生工程。',kind:'work'}];
+ const labels = {todo:'待开始',doing:'进行中',done:'已完成'};
+ const settings = {appearance:'system',density:'comfortable',inspectorWidth:350};
+ let selected=1, nextId=5, page='today', tab='task', revision=0, draftRevision=-1, adopted=false, undo=null;
+ const current = () => tasks.find(t => t.id===selected);
+ const say = text => { $('[data-feedback]').textContent=text; };
+ function element(tag,className,text) {
+  const el=document.createElement(tag); if(className)el.className=className; if(text!==undefined)el.textContent=text; return el;
+ }
+ function changed() {
+  revision++;
+  if(draftRevision>=0) {
+   $('[data-draft-status]').textContent='来源已变化，请重新生成后再采纳。';
+   $('[data-adopt]').disabled=true;
+  }
+ }
+ function renderProgress() {
+  const done=tasks.filter(t=>t.status==='done').length;
+  $('[data-progress]').textContent=`${done} / ${tasks.length} 完成`;
+  const meter=$('[data-meter]'); meter.replaceChildren();
+  tasks.forEach((_,i)=>{const tick=element('span');tick.dataset.done=String(i<done);meter.append(tick)});
+ }
+ function renderTasks(focusId=null) {
+  const container=$('[data-task-groups]');container.replaceChildren();
+  const groups=[['进行中',t=>t.status==='doing'],['接下来',t=>t.status==='todo'&&t.slot==='day'],['收尾时',t=>t.status==='todo'&&t.slot==='closing'],['已完成',t=>t.status==='done']];
+  for(const [name,include] of groups) {
+   const items=tasks.filter(include); if(!items.length)continue;
+   const group=element('section','v-group'), heading=element('div','v-grouphead',name);
+   heading.append(element('span','v-groupcount',String(items.length)));group.append(heading);
+   for(const task of items) {
+    const row=element('div','v-task');row.dataset.id=task.id;row.dataset.selected=String(task.id===selected);row.dataset.done=String(task.status==='done');
+    const check=element('input');check.type='checkbox';check.checked=task.status==='done';check.setAttribute('aria-label',`完成或撤销：${task.title}`);
+    check.addEventListener('change',()=>setStatus(task,check.checked?'done':task.resume));
+    const button=element('button','v-task-main');button.type='button';button.dataset.taskButton=task.id;button.setAttribute('aria-pressed',String(task.id===selected));
+    button.append(element('span','v-task-title',task.title));
+    const meta=element('span','v-task-meta');meta.append(element('span','',task.category));
+    if(task.steps.length)meta.append(element('span','',`${task.steps.filter(s=>s.done).length}/${task.steps.length} 步骤`));
+    if(task.slot==='closing'&&task.status==='doing')meta.append(element('span','','收尾时'));
+    button.append(meta);button.addEventListener('click',()=>selectTask(task.id));
+    row.append(check,button);group.append(row);
+   }
+   container.append(group);
+  }
+  renderProgress();
+  if(focusId!==null)$(`[data-task-button="${focusId}"]`)?.focus();
+ }
+ function setStatus(task,value) {
+  if(task.status===value)return;
+  const restoreRowFocus=document.activeElement?.matches('.v-task input')?task.id:null;
+  undo={id:task.id,status:task.status,resume:task.resume};
+  if(value==='done'&&task.status!=='done')task.resume=task.status;
+  task.status=value;
+  task.events.push({time:'刚刚',text:`状态改为${labels[value]}`});
+  changed();renderTasks(restoreRowFocus);if(task.id===selected)renderDetail();
+  $('[data-undo]').hidden=false;say(`「${task.title}」已改为${labels[value]}（演示）。`);
+ }
+ function selectTask(id) {
+  selected=id;openInspector('task');renderTasks(id);renderDetail();
+ }
+ function renderDetail() {
+  const task=current();
+  $('[data-detail-category]').textContent=`${task.category} / 今日任务`;
+  $('[data-task-title]').value=task.title;$('#v3-status').value=task.status;$('#v3-slot').value=task.slot;
+  $('#v3-description').value=task.description;
+  renderSteps();renderEvents();
+ }
+ function renderSteps() {
+  const task=current(),container=$('[data-steps]');container.replaceChildren();
+  $('[data-step-count]').textContent=`${task.steps.filter(s=>s.done).length} / ${task.steps.length}`;
+  task.steps.forEach((step,index)=>{
+   const label=element('label','v-step'),check=element('input');check.type='checkbox';check.checked=step.done;check.dataset.step=index;
+   check.addEventListener('change',()=>{step.done=check.checked;changed();renderSteps();renderTasks();$(`[data-step="${index}"]`)?.focus();say('步骤已更新；任务完成状态由你单独确认。')});
+   label.append(check,element('span','',step.text));container.append(label);
+  });
+ }
+ function renderEvents() {
+  const container=$('[data-events]');container.replaceChildren();
+  const events=current().events.slice(-3);
+  if(!events.length)container.append(element('p','v-event','还没有进展记录。'));
+  events.forEach(event=>{const row=element('div','v-event');row.append(element('time','',event.time),document.createTextNode(event.text));container.append(row)});
+ }
+ function renderNotes() {
+  const container=$('[data-notes]');container.replaceChildren();
+  $('[data-note-count]').textContent=`${notes.length} 条记录`;
+  notes.forEach(note=>{const row=element('div','v-note');row.append(element('time','',note.time),element('p','',note.text));container.append(row)});
+ }
+ function openInspector(name) {
+  tab=name;root.dataset.inspector='open';$('[data-show-detail]').hidden=true;
+  $$('[data-panel]').forEach(el=>el.hidden=el.dataset.panel!==name);
+  $$('[data-tab]').forEach(el=>el.setAttribute('aria-pressed',String(el.dataset.tab===name)));
+ }
+ function closeInspector() {root.dataset.inspector='closed';$('[data-show-detail]').hidden=page!=='today'}
+ function navigate(name) {
+  page=name;$$('[data-screen]').forEach(el=>el.hidden=el.dataset.screen!==name);
+  $$('[data-page]').forEach(el=>{if(el.dataset.page===name)el.setAttribute('aria-current','page');else el.removeAttribute('aria-current')});
+  $('[data-breadcrumb]').textContent={today:'今天',history:'历史记录',journal:'个人日记'}[name];
+  $('[data-show-detail]').hidden=page!=='today'||root.dataset.inspector==='open';
+ }
+ function wireForm(selector,callback) {
+  const form=$(selector),input=form.querySelector('input');let composing=false;
+  input.addEventListener('compositionstart',()=>composing=true);
+  input.addEventListener('compositionend',()=>composing=false);
+  input.addEventListener('keydown',event=>{if(event.key==='Enter'&&(event.isComposing||event.keyCode===229))event.preventDefault()});
+  form.addEventListener('submit',event=>{event.preventDefault();if(composing)return;const value=input.value.trim();if(!value)return;callback(value);input.value=''});
+ }
+ wireForm('[data-task-form]',title=>{
+  const task={id:nextId++,title,status:'todo',resume:'todo',slot:'day',category:'工作',description:'',steps:[],events:[]};
+  tasks.push(task);changed();selectTask(task.id);say('新待办已加入今天（演示）。');
+ });
+ wireForm('[data-note-form]',text=>{notes.unshift({time:'刚刚',text,kind:'work'});changed();renderNotes();say('已加入今日工作记录（演示）。')});
+ wireForm('[data-step-form]',text=>{current().steps.push({text,done:false});changed();renderSteps();renderTasks()});
+ wireForm('[data-event-form]',text=>{
+  const task=current();task.events.push({time:'刚刚',text});notes.unshift({time:'刚刚',text:`${task.title}：${text}`,kind:'work'});
+  changed();renderEvents();renderNotes();say('进展已关联当前任务，并加入今日记录（演示）。');
+ });
+ $('[data-task-title]').addEventListener('change',event=>{
+  const task=current(),title=event.target.value.trim();
+  if(!title){event.target.value=task.title;return}
+  if(title!==task.title){task.title=title;changed();renderTasks();say('任务标题已更新（演示）。')}
+ });
+ $('#v3-description').addEventListener('input',event=>{current().description=event.target.value;changed()});
+ $('#v3-status').addEventListener('change',event=>setStatus(current(),event.target.value));
+ $('#v3-slot').addEventListener('change',event=>{
+  const task=current();task.slot=event.target.value;task.events.push({time:'刚刚',text:`安排在${task.slot==='closing'?'收尾时':'今天'}`});changed();renderTasks();renderEvents();
+ });
+ $('#v3-focus').addEventListener('input',changed);
+ $$('[data-page]').forEach(button=>button.addEventListener('click',()=>navigate(button.dataset.page)));
+ $$('[data-tab]').forEach(button=>button.addEventListener('click',()=>openInspector(button.dataset.tab)));
+ $('[data-close-detail]').addEventListener('click',closeInspector);
+ $('[data-show-detail]').addEventListener('click',()=>openInspector(tab));
+ function newTask(){navigate('today');$('[data-task-form] input').focus()}
+ $('[data-new-task]').addEventListener('click',newTask);
+ $('[data-open-review]').addEventListener('click',()=>{navigate('today');openInspector('review')});
+ $('[data-undo]').addEventListener('click',()=>{
+  if(!undo)return;const task=tasks.find(t=>t.id===undo.id);task.status=undo.status;task.resume=undo.resume;task.events.push({time:'刚刚',text:'撤销上一次状态修改'});
+  undo=null;changed();renderTasks();renderDetail();$('[data-undo]').hidden=true;say('已撤销最近一次状态修改。');
+ });
+ $('[data-generate]').addEventListener('click',()=>{
+  const done=tasks.filter(t=>t.status==='done'),pending=tasks.filter(t=>t.status!=='done');
+  const text=['今日重点', $('#v3-focus').value.trim()||'未填写', '', '已完成', ...(done.length?done.map(t=>`• ${t.title}`):['• 暂无完成记录']), '', '仍在推进', ...(pending.length?pending.map(t=>`• ${t.title}（${labels[t.status]}）`):['• 今日任务已全部完成']), '', '工作记录', ...notes.filter(n=>n.kind!=='summary').map(n=>`• ${n.text}`), '', '下一步建议', pending.length?`• 为「${pending[0].title}」确认一个可以继续推进的步骤。`:'• 回看今天的工作，确认是否还有需要补记的内容。'].join('\n');
+  $('[data-draft-text]').value=text;draftRevision=revision;adopted=false;
+  $('[data-draft-status]').textContent=`演示草稿 · ${tasks.length} 项任务 / ${notes.filter(n=>n.kind!=='summary').length} 条工作记录`;
+  $('[data-generate]').textContent='重新生成';$('[data-adopt]').disabled=false;$('[data-adopt]').textContent='采纳为工作记录';
+ });
+ $('[data-adopt]').addEventListener('click',()=>{
+  if(draftRevision!==revision||adopted)return;const text=$('[data-draft-text]').value.trim();if(!text){say('草稿为空，请先填写内容。');return}
+  notes.unshift({time:'回顾',text,kind:'summary'});adopted=true;renderNotes();$('[data-adopt]').disabled=true;$('[data-adopt]').textContent='已采纳';say('回顾已加入工作记录，原始任务没有改动（演示）。');
+ });
+ root.addEventListener('keydown',event=>{
+  if(event.isComposing||event.keyCode===229||event.ctrlKey||event.metaKey||event.altKey)return;
+  if(event.target.closest('input,textarea,select,[contenteditable=true]'))return;
+  if(event.key==='n'||event.key==='N'){event.preventDefault();newTask();return}
+  if(page!=='today')return;
+  const taskButton=event.target.closest('[data-task-button]');
+  if(taskButton&&(event.key==='ArrowDown'||event.key==='ArrowUp')){
+   event.preventDefault();const buttons=$$('[data-task-button]'),index=buttons.indexOf(taskButton),next=Math.max(0,Math.min(buttons.length-1,index+(event.key==='ArrowDown'?1:-1)));
+   const id=Number(buttons[next].dataset.taskButton);selectTask(id);$(`[data-task-button="${id}"]`)?.focus();
+  }else if(taskButton&&event.key===' '){event.preventDefault();root.dataset.inspector==='open'?closeInspector():openInspector('task')}
+  else if(event.key==='Escape'&&root.dataset.inspector==='open'){event.preventDefault();closeInspector();$(`[data-task-button="${selected}"]`)?.focus()}
+ });
+ function renderDesign() {
+  settings.appearance==='system'?root.style.removeProperty('color-scheme'):root.style.colorScheme=settings.appearance;
+  root.dataset.density=settings.density;root.style.setProperty('--v-inspector',`${settings.inspectorWidth}px`);
+ }
+ renderTasks();renderDetail();renderNotes();renderDesign();
+ if(globalThis.Tweak) {
+  const tweak=new Tweak({container:root,onChange:renderDesign});
+  tweak.addSelect(settings,'appearance',{label:'外观',options:[{label:'跟随系统',value:'system'},{label:'浅色',value:'light'},{label:'深色',value:'dark'}]});
+  tweak.addSelect(settings,'density',{label:'任务密度',options:[{label:'舒展',value:'comfortable'},{label:'紧凑',value:'compact'}]});
+  tweak.addSlider(settings,'inspectorWidth',{label:'详情宽度（宽窗口）',min:310,max:390,step:10,unit:'px'});
+ }
+})();
+</script>

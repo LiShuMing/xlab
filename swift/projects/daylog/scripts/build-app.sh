@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+DAYLOG_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$DAYLOG_ROOT"
+DAYLOG_CONFIGURATION="${1:-release}"
+swift build -c "$DAYLOG_CONFIGURATION"
+DAYLOG_BIN="$(swift build -c "$DAYLOG_CONFIGURATION" --show-bin-path)"
+DAYLOG_APP="$DAYLOG_ROOT/build/DayLog.app"
+mkdir -p "$DAYLOG_APP/Contents/MacOS" "$DAYLOG_APP/Contents/Resources"
+cp "$DAYLOG_BIN/DayLog" "$DAYLOG_APP/Contents/MacOS/DayLog.next"
+mv -f "$DAYLOG_APP/Contents/MacOS/DayLog.next" "$DAYLOG_APP/Contents/MacOS/DayLog"
+cp DayLog/Resources/Info.plist "$DAYLOG_APP/Contents/Info.plist"
+cp DayLog/Resources/Kebai.icns "$DAYLOG_APP/Contents/Resources/Kebai.icns"
+codesign --force --sign - "$DAYLOG_APP"
+codesign --verify --deep --strict "$DAYLOG_APP"
+printf '%s\n' "$DAYLOG_APP"
