@@ -53,6 +53,7 @@ suitable for independent iteration or extraction:
 | Project | Path | Stack | Notes |
 | --- | --- | --- | --- |
 | Liminalis | `liminalis/` | FastAPI, React 19, Go | Four domains: radar, invest, ego, wechat. Architecture guarded by tests. |
+| Panming / 盘铭 | [panming/](panming/README.md) | Python/FastAPI, PostgreSQL, React/TypeScript | Running local prototype: capture, daily reports, blog editing, and a personal library. Includes full product/technical design. |
 | Optimizer Learning | `optimizer-learning/` | Python | Volcano and Cascades planners over a shared relational model. |
 | TinyKV | `cc/projects/kv-store/` | C++20, CMake | LSM-tree key-value store. |
 | Query Engine | `cc/projects/query-engine/` | C++20, CMake | Vectorized execution: hash agg, hash join, sort. |

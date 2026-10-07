@@ -1,0 +1,16 @@
+# Future runtime content: original materials, private notes, jobs and exports.
+data/
+exports/
+backups/
+logs/
+.env
+.env.*
+!.env.example
+uploads/
+spool/
+build/
+dist/
+node_modules/
+.test-build/
+__pycache__/
+.venv/
