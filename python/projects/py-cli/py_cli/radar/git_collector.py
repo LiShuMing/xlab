@@ -47,19 +47,20 @@ class GitRadarClient:
                         return branch
         return "main"
 
-    def fetch(self, branch: str) -> None:
-        """Fetch the selected default branch and tags."""
+    def fetch(self, branch: str, *, include_tags: bool = False) -> None:
+        """Fetch the selected default branch, optionally including tags."""
+        args = ["fetch", self.repo.remote_name, branch, "--prune"]
+        if include_tags:
+            args.append("--tags")
         self._git(
-            "fetch",
-            self.repo.remote_name,
-            branch,
-            "--prune",
-            "--tags",
+            *args,
             check=True,
             timeout=_env_float("RADAR_GIT_TIMEOUT", 120.0),
         )
 
-    def commits(self, branch: str, since: datetime, until: datetime) -> list[CommitFact]:
+    def commits(
+        self, branch: str, since: datetime, until: datetime
+    ) -> list[CommitFact]:
         """Collect commits in the time window from origin/default branch."""
         ref = f"{self.repo.remote_name}/{branch}"
         fmt = "%H%x00%ad%x00%an%x00%s"
@@ -143,7 +144,7 @@ class GitRadarClient:
 
 
 def _git_dt(value: datetime) -> str:
-    return value.strftime("%Y-%m-%d %H:%M:%S")
+    return value.isoformat(sep=" ", timespec="seconds")
 
 
 def _numstat_int(value: str) -> int:

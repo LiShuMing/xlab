@@ -1,27 +1,29 @@
 [radar]
-root = "/Users/lism/xwork/projects"
+root = "~/xwork"
 since = "2026-06-22"
 until = "2026-06-28"
 timezone = "Asia/Shanghai"
-out = "/Users/lism/xwork/reports/github-weekly/2026-W26.md"
-cache_dir = "/Users/lism/xwork/reports/github-weekly/cache"
+out = "~/xwork/reports/github-weekly/2026-W26.md"
+cache_dir = "~/xwork/reports/github-weekly/cache"
 
 # Set fetch/github to true for a fully fresh report.
 # Use false when you want a fast local-only dry run.
 fetch = false
+fetch_tags = false
 github = false
 
 llm_summary = true
 llm_max_repos = 10
+repo_concurrency = 4
 include_inactive = true
 
 # When projects are listed, radar analyzes exactly these repos.
 # limit_repos is ignored in this mode.
 [[projects]]
-path = "/Users/lism/xwork/projects/omnigent"
+path = "~/xwork/omnigent"
 
 [[projects]]
-path = "/Users/lism/xwork/projects/paimon"
+path = "~/xwork/paimon"
 
 [[projects]]
-path = "/Users/lism/xwork/projects/feldera"
+path = "~/xwork/feldera"

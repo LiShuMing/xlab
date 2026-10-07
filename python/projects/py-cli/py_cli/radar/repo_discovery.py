@@ -9,7 +9,9 @@ from pathlib import Path
 
 from py_cli.radar.models import GitHubRepo, LocalRepo
 
-HTTPS_RE = re.compile(r"^https://github\.com/(?P<owner>[^/]+)/(?P<repo>[^/]+?)(?:\.git)?/?$")
+HTTPS_RE = re.compile(
+    r"^https://github\.com/(?P<owner>[^/]+)/(?P<repo>[^/]+?)(?:\.git)?/?$"
+)
 SSH_RE = re.compile(r"^git@github\.com:(?P<owner>[^/]+)/(?P<repo>[^/]+?)(?:\.git)?$")
 SSH_SCHEME_RE = re.compile(
     r"^ssh://git@github\.com/(?P<owner>[^/]+)/(?P<repo>[^/]+?)(?:\.git)?/?$"
@@ -87,6 +89,11 @@ class RepoDiscovery:
             git_entry = path / ".git"
             if git_entry.is_dir() or git_entry.is_file():
                 found.append(path)
+                # A repository can contain millions of files. Once its root is
+                # found, do not walk through its working tree looking for more
+                # repositories. Container directories without a .git entry
+                # (for example, ~/xwork/rl-course) are still traversed.
+                dirnames[:] = []
 
         return sorted(found, key=lambda p: str(p).lower())
 

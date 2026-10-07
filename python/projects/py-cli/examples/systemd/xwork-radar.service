@@ -1,0 +1,10 @@
+[Unit]
+Description=Generate the xwork weekly open-source project radar
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/work/xlab/python/projects/py-cli
+Environment=RADAR_CLEAR_GITHUB_TOKENS=1
+ExecStart=%h/work/xlab/python/projects/py-cli/scripts/run-xwork-radar.sh

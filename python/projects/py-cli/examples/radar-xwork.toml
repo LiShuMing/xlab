@@ -1,0 +1,17 @@
+[radar]
+# Discover GitHub repositories directly below ~/xwork and inside container
+# directories such as ~/xwork/rl-course.
+root = "~/xwork"
+timezone = "Asia/Shanghai"
+
+# Runtime reports and fact caches stay outside the xlab repository.
+cache_dir = "~/xwork/reports/github-weekly/cache"
+
+fetch = true
+fetch_tags = false
+github = true
+
+llm_summary = true
+llm_max_repos = 15
+repo_concurrency = 4
+include_inactive = false

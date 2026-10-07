@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, is_dataclass, replace
 from datetime import datetime
 from pathlib import Path
@@ -29,9 +30,11 @@ class WeeklyRadar:
         timezone: str,
         output: Path,
         fetch: bool = True,
+        fetch_tags: bool = False,
         collect_github: bool = True,
         llm_summary: bool = False,
         llm_max_repos: int = 5,
+        repo_concurrency: int = 1,
         limit_repos: int | None = None,
         project_paths: list[Path] | None = None,
         include_inactive: bool = False,
@@ -43,13 +46,19 @@ class WeeklyRadar:
         self.timezone = timezone
         self.output = output.expanduser().resolve()
         self.fetch = fetch
+        self.fetch_tags = fetch_tags
         self.collect_github = collect_github
         self.llm_summary = llm_summary
         self.llm_max_repos = llm_max_repos
+        self.repo_concurrency = max(1, repo_concurrency)
         self.limit_repos = limit_repos
         self.project_paths = project_paths or []
         self.include_inactive = include_inactive
-        self.cache_dir = cache_dir.expanduser().resolve() if cache_dir else self.output.parent / "cache"
+        self.cache_dir = (
+            cache_dir.expanduser().resolve()
+            if cache_dir
+            else self.output.parent / "cache"
+        )
         self.github = GitHubCollector()
 
     def run(self) -> Path:
@@ -68,16 +77,13 @@ class WeeklyRadar:
             )[: self.limit_repos]
 
         _progress(f"radar: discovered {len(local_repos)} GitHub repositories")
-        repo_facts = []
-        for index, repo in enumerate(local_repos, start=1):
-            _progress(f"radar: [{index}/{len(local_repos)}] collecting {repo.github.full_name}")
-            repo_facts.append(self._collect_repo(repo))
+        repo_facts = self._collect_repos(local_repos)
 
         if self.llm_summary:
             _progress("radar: generating per-project LLM learning notes")
-            summaries = RadarLlmSummarizer(max_repos=self.llm_max_repos).summarize_repos(
-                repo_facts
-            )
+            summaries = RadarLlmSummarizer(
+                max_repos=self.llm_max_repos
+            ).summarize_repos(repo_facts)
             repo_facts = [
                 _with_llm_summary(facts, summaries.get(facts.repo.slug))
                 for facts in repo_facts
@@ -99,6 +105,22 @@ class WeeklyRadar:
         self.output.write_text(render_weekly_report(report), encoding="utf-8")
         return self.output
 
+    def _collect_repos(self, repos: list[LocalRepo]) -> list[RepoRadarFacts]:
+        if self.repo_concurrency == 1 or len(repos) <= 1:
+            facts = []
+            for index, repo in enumerate(repos, start=1):
+                _progress(
+                    f"radar: [{index}/{len(repos)}] collecting {repo.github.full_name}"
+                )
+                facts.append(self._collect_repo(repo))
+            return facts
+
+        workers = min(self.repo_concurrency, len(repos))
+        _progress(f"radar: collecting repositories with concurrency={workers}")
+        with ThreadPoolExecutor(max_workers=workers) as executor:
+            # executor.map preserves discovery order, keeping reports stable.
+            return list(executor.map(self._collect_repo, repos))
+
     def _collect_repo(self, repo: LocalRepo) -> RepoRadarFacts:
         errors: list[str] = []
         git = GitRadarClient(repo)
@@ -113,7 +135,7 @@ class WeeklyRadar:
         if self.fetch:
             try:
                 _progress(f"radar: {repo.github.full_name} fetching {branch}")
-                git.fetch(branch)
+                git.fetch(branch, include_tags=self.fetch_tags)
             except Exception as exc:
                 errors.append(f"fetch failed: {exc}")
 
@@ -134,7 +156,9 @@ class WeeklyRadar:
             )
             errors.extend(pr_errors)
 
-            releases, release_errors = self.github.releases(repo.github, self.since, self.until)
+            releases, release_errors = self.github.releases(
+                repo.github, self.since, self.until
+            )
             errors.extend(release_errors)
         else:
             pull_requests = []

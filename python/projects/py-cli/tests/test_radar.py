@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 from zoneinfo import ZoneInfo
@@ -10,16 +10,19 @@ from zoneinfo import ZoneInfo
 from click.testing import CliRunner
 
 from py_cli.cli import cli
+from py_cli.commands.radar import _default_output, _previous_week_dates
 from py_cli.radar.config import load_radar_config
+from py_cli.radar.git_collector import GitRadarClient, _git_dt
 from py_cli.radar.models import (
     CommitFact,
     GitHubRepo,
+    LocalRepo,
     PullRequestFact,
     RepoRadarFacts,
     WeeklyRadarReport,
 )
 from py_cli.radar.renderer import render_weekly_report
-from py_cli.radar.repo_discovery import parse_github_remote
+from py_cli.radar.repo_discovery import RepoDiscovery, parse_github_remote
 from py_cli.radar.scorer import score_pull_request
 
 
@@ -38,6 +41,69 @@ class TestParseGithubRemote:
 
     def test_non_github_remote(self) -> None:
         assert parse_github_remote("https://gitlab.com/org/name.git") is None
+
+
+class TestRepoDiscovery:
+    """Tests for bounded repository discovery."""
+
+    def test_prunes_working_tree_after_finding_repository(self, tmp_path: Path) -> None:
+        repo = tmp_path / "large-repo"
+        nested = repo / "vendor" / "nested-repo"
+        (repo / ".git").mkdir(parents=True)
+        (nested / ".git").mkdir(parents=True)
+
+        found = RepoDiscovery(tmp_path)._iter_repo_roots()
+
+        assert found == [repo]
+
+    def test_discovers_repositories_below_container_directories(
+        self, tmp_path: Path
+    ) -> None:
+        repo = tmp_path / "group" / "repo"
+        (repo / ".git").mkdir(parents=True)
+
+        assert RepoDiscovery(tmp_path)._iter_repo_roots() == [repo]
+
+
+class TestGitRadarClient:
+    """Tests for bounded Git collection behavior."""
+
+    def _client(self, tmp_path: Path) -> GitRadarClient:
+        return GitRadarClient(
+            LocalRepo(
+                path=tmp_path,
+                remote_url="https://github.com/org/repo.git",
+                remote_name="origin",
+                github=GitHubRepo("org", "repo"),
+            )
+        )
+
+    def test_fetch_skips_tags_by_default(self, tmp_path: Path) -> None:
+        client = self._client(tmp_path)
+        client._git = MagicMock(return_value=None)  # type: ignore[method-assign]
+
+        client.fetch("main")
+
+        assert client._git.call_args.args == ("fetch", "origin", "main", "--prune")
+
+    def test_fetch_can_include_tags(self, tmp_path: Path) -> None:
+        client = self._client(tmp_path)
+        client._git = MagicMock(return_value=None)  # type: ignore[method-assign]
+
+        client.fetch("main", include_tags=True)
+
+        assert client._git.call_args.args == (
+            "fetch",
+            "origin",
+            "main",
+            "--prune",
+            "--tags",
+        )
+
+    def test_git_datetime_preserves_timezone_offset(self) -> None:
+        value = datetime(2026, 9, 14, 0, 0, tzinfo=ZoneInfo("Asia/Shanghai"))
+
+        assert _git_dt(value) == "2026-09-14 00:00:00+08:00"
 
 
 class TestScorer:
@@ -146,9 +212,11 @@ since = "2026-06-22"
 until = "2026-06-28"
 out = "{tmp_path / "weekly.md"}"
 fetch = false
+fetch_tags = true
 github = false
 llm_summary = true
 llm_max_repos = 2
+repo_concurrency = 4
 include_inactive = true
 
 [[projects]]
@@ -167,9 +235,11 @@ path = "{repo_b}"
         assert config.until == "2026-06-28"
         assert config.output == tmp_path / "weekly.md"
         assert config.fetch is False
+        assert config.fetch_tags is True
         assert config.github is False
         assert config.llm_summary is True
         assert config.llm_max_repos == 2
+        assert config.repo_concurrency == 4
         assert config.include_inactive is True
         assert config.projects == [repo_a, repo_b]
 
@@ -206,6 +276,89 @@ class TestRadarCli:
         mock_radar.run.assert_called_once()
 
     @patch("py_cli.commands.radar.WeeklyRadar")
+    @patch(
+        "py_cli.commands.radar._previous_week_dates",
+        return_value=(date(2026, 9, 14), date(2026, 9, 20)),
+    )
+    def test_previous_week_builds_complete_week(
+        self,
+        _mock_dates: MagicMock,
+        mock_radar_class: MagicMock,
+        tmp_path: Path,
+    ) -> None:
+        output = tmp_path / "weekly.md"
+        mock_radar = MagicMock()
+        mock_radar.run.return_value = output
+        mock_radar_class.return_value = mock_radar
+
+        result = CliRunner().invoke(
+            cli,
+            [
+                "radar",
+                "weekly",
+                "--root",
+                str(tmp_path),
+                "--previous-week",
+                "--out",
+                str(output),
+                "--no-fetch",
+            ],
+        )
+
+        assert result.exit_code == 0
+        kwargs = mock_radar_class.call_args.kwargs
+        assert kwargs["since"] == datetime(
+            2026,
+            9,
+            14,
+            tzinfo=ZoneInfo("Asia/Shanghai"),
+        )
+        assert kwargs["until"] == datetime(
+            2026,
+            9,
+            20,
+            23,
+            59,
+            59,
+            tzinfo=ZoneInfo("Asia/Shanghai"),
+        )
+        assert kwargs["fetch_tags"] is False
+
+    def test_previous_week_date_math(self) -> None:
+        assert _previous_week_dates(date(2026, 9, 21)) == (
+            date(2026, 9, 14),
+            date(2026, 9, 20),
+        )
+        assert _previous_week_dates(date(2026, 9, 24)) == (
+            date(2026, 9, 14),
+            date(2026, 9, 20),
+        )
+
+    def test_previous_week_rejects_explicit_dates(self, tmp_path: Path) -> None:
+        result = CliRunner().invoke(
+            cli,
+            [
+                "radar",
+                "weekly",
+                "--root",
+                str(tmp_path),
+                "--previous-week",
+                "--since",
+                "2026-09-14",
+            ],
+        )
+
+        assert result.exit_code != 0
+        assert "cannot be combined" in result.output
+
+    def test_default_output_is_under_home_xwork(self) -> None:
+        since = datetime(2026, 9, 14, tzinfo=ZoneInfo("Asia/Shanghai"))
+        with patch("py_cli.commands.radar.Path.home", return_value=Path("/home/test")):
+            assert _default_output(since) == Path(
+                "/home/test/xwork/reports/github-weekly/2026-W38.md"
+            )
+
+    @patch("py_cli.commands.radar.WeeklyRadar")
     def test_weekly_command_uses_config_projects(
         self,
         mock_radar_class: MagicMock,
@@ -223,9 +376,11 @@ since = "2026-06-22"
 until = "2026-06-28"
 out = "{output}"
 fetch = false
+fetch_tags = true
 github = false
 llm_summary = true
 llm_max_repos = 3
+repo_concurrency = 4
 include_inactive = true
 
 [[projects]]
@@ -256,9 +411,11 @@ path = "{repo_b}"
         assert kwargs["root"] == tmp_path
         assert kwargs["output"] == output
         assert kwargs["fetch"] is False
+        assert kwargs["fetch_tags"] is True
         assert kwargs["collect_github"] is False
         assert kwargs["llm_summary"] is False
         assert kwargs["llm_max_repos"] == 3
+        assert kwargs["repo_concurrency"] == 4
         assert kwargs["project_paths"] == [repo_a, repo_b]
         assert kwargs["include_inactive"] is True
         mock_radar.run.assert_called_once()

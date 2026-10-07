@@ -20,9 +20,11 @@ class RadarConfig:
     output: Path | None = None
     cache_dir: Path | None = None
     fetch: bool | None = None
+    fetch_tags: bool | None = None
     github: bool | None = None
     llm_summary: bool | None = None
     llm_max_repos: int | None = None
+    repo_concurrency: int | None = None
     limit_repos: int | None = None
     include_inactive: bool | None = None
     projects: list[Path] = field(default_factory=list)
@@ -42,9 +44,11 @@ def load_radar_config(path: Path) -> RadarConfig:
         output=_path_or_none(data.get("out") or data.get("output")),
         cache_dir=_path_or_none(data.get("cache_dir")),
         fetch=_bool_or_none(data.get("fetch")),
+        fetch_tags=_bool_or_none(data.get("fetch_tags")),
         github=_bool_or_none(data.get("github")),
         llm_summary=_bool_or_none(data.get("llm_summary")),
         llm_max_repos=_int_or_none(data.get("llm_max_repos")),
+        repo_concurrency=_int_or_none(data.get("repo_concurrency")),
         limit_repos=_int_or_none(data.get("limit_repos")),
         include_inactive=_bool_or_none(data.get("include_inactive")),
         projects=_project_paths(projects),

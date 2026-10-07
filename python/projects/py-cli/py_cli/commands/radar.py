@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -35,6 +35,11 @@ def radar_group() -> None:
 @click.option("--since", default=None, help="Start date, YYYY-MM-DD.")
 @click.option("--until", default=None, help="End date, YYYY-MM-DD.")
 @click.option(
+    "--previous-week",
+    is_flag=True,
+    help="Use the previous complete Monday-Sunday week in --timezone.",
+)
+@click.option(
     "--timezone",
     "timezone_name",
     default=None,
@@ -59,6 +64,11 @@ def radar_group() -> None:
     help="Fetch default branches before collecting commits.",
 )
 @click.option(
+    "--fetch-tags/--no-fetch-tags",
+    default=None,
+    help="Include tags when fetching repositories (disabled by default).",
+)
+@click.option(
     "--github/--no-github",
     "collect_github",
     default=None,
@@ -76,6 +86,12 @@ def radar_group() -> None:
     help="Maximum active repos to include in the LLM summary prompt.",
 )
 @click.option(
+    "--repo-concurrency",
+    type=click.IntRange(min=1),
+    default=None,
+    help="Maximum repositories collected concurrently.",
+)
+@click.option(
     "--limit-repos",
     type=int,
     default=None,
@@ -91,30 +107,34 @@ def weekly_command(
     root: Path | None,
     since: str | None,
     until: str | None,
+    previous_week: bool,
     timezone_name: str | None,
     out: Path | None,
     cache_dir: Path | None,
     fetch: bool | None,
+    fetch_tags: bool | None,
     collect_github: bool | None,
     llm_summary: bool | None,
     llm_max_repos: int | None,
+    repo_concurrency: int | None,
     limit_repos: int | None,
     include_inactive: bool | None,
 ) -> None:
     """Generate a weekly GitHub radar report."""
     try:
         config = load_radar_config(config_path) if config_path else RadarConfig()
-        root_value = root or config.root or Path("/Users/lism/xwork/projects")
-        since_value = since or config.since
-        until_value = until or config.until
-        if not since_value or not until_value:
-            raise click.ClickException("--since and --until are required unless set in --config")
-
+        root_value = root or config.root or Path.home() / "xwork"
         timezone_value = timezone_name or config.timezone or "Asia/Shanghai"
         fetch_value = _pick_bool(fetch, config.fetch, default=True)
+        fetch_tags_value = _pick_bool(fetch_tags, config.fetch_tags, default=False)
         github_value = _pick_bool(collect_github, config.github, default=True)
         llm_summary_value = _pick_bool(llm_summary, config.llm_summary, default=False)
         llm_max_repos_value = _pick_int(llm_max_repos, config.llm_max_repos, default=5)
+        repo_concurrency_value = _pick_int(
+            repo_concurrency,
+            config.repo_concurrency,
+            default=1,
+        )
         limit_repos_value = _pick_optional_int(limit_repos, config.limit_repos)
         include_inactive_value = _pick_bool(
             include_inactive,
@@ -124,9 +144,29 @@ def weekly_command(
         cache_dir_value = cache_dir or config.cache_dir
 
         tz = ZoneInfo(timezone_value)
-        since_dt = datetime.combine(_parse_date(since_value), time.min, tzinfo=tz)
+        if previous_week:
+            if since or until:
+                raise click.ClickException(
+                    "--previous-week cannot be combined with --since or --until"
+                )
+            since_date, until_date = _previous_week_dates(datetime.now(tz).date())
+        else:
+            since_value = since or config.since
+            until_value = until or config.until
+            if not since_value or not until_value:
+                raise click.ClickException(
+                    "--since and --until are required unless set in --config; "
+                    "use --previous-week for the last complete week"
+                )
+            since_date = _parse_date(since_value)
+            until_date = _parse_date(until_value)
+
+        if since_date > until_date:
+            raise click.ClickException("--since must not be later than --until")
+
+        since_dt = datetime.combine(since_date, time.min, tzinfo=tz)
         until_dt = datetime.combine(
-            _parse_date(until_value),
+            until_date,
             time.max.replace(microsecond=0),
             tzinfo=tz,
         )
@@ -139,9 +179,11 @@ def weekly_command(
             timezone=timezone_value,
             output=output,
             fetch=fetch_value,
+            fetch_tags=fetch_tags_value,
             collect_github=github_value,
             llm_summary=llm_summary_value,
             llm_max_repos=llm_max_repos_value,
+            repo_concurrency=repo_concurrency_value,
             limit_repos=limit_repos_value,
             project_paths=config.projects,
             include_inactive=include_inactive_value,
@@ -157,12 +199,21 @@ def _parse_date(value: str) -> date:
     try:
         return datetime.strptime(value, "%Y-%m-%d").date()
     except ValueError as exc:
-        raise click.BadParameter(f"Invalid date {value!r}; expected YYYY-MM-DD") from exc
+        raise click.BadParameter(
+            f"Invalid date {value!r}; expected YYYY-MM-DD"
+        ) from exc
 
 
 def _default_output(since: datetime) -> Path:
     year, week, _weekday = since.isocalendar()
-    return Path(f"/Users/lism/xwork/reports/github-weekly/{year}-W{week:02d}.md")
+    return (
+        Path.home() / "xwork" / "reports" / "github-weekly" / f"{year}-W{week:02d}.md"
+    )
+
+
+def _previous_week_dates(today: date) -> tuple[date, date]:
+    current_monday = today - timedelta(days=today.weekday())
+    return current_monday - timedelta(days=7), current_monday - timedelta(days=1)
 
 
 def _pick_bool(value: bool | None, config_value: bool | None, *, default: bool) -> bool:
