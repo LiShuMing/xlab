@@ -1,7 +1,11 @@
 #include "tinykv/memtable/arena.hpp"
 
+#include <algorithm>
 #include <cstdlib>
 #include <cstring>
+#include <limits>
+#include <stdexcept>
+#include <utility>
 
 namespace tinykv {
 
@@ -12,16 +16,16 @@ Arena::~Arena() {
     Block* block = current_block_;
     while (block != nullptr) {
         Block* prev = block->prev;
-        std::free(block);  // Free entire block (header + data)
+        std::free(block); // Free entire block (header + data)
         block = prev;
     }
 }
 
 Arena::Arena(Arena&& other) noexcept
-    : current_block_(other.current_block_),
-      current_(other.current_),
-      limit_(other.limit_),
-      memory_usage_(other.memory_usage_) {
+        : current_block_(other.current_block_),
+          current_(other.current_),
+          limit_(other.limit_),
+          memory_usage_(other.memory_usage_) {
     other.current_block_ = nullptr;
     other.current_ = nullptr;
     other.limit_ = nullptr;
@@ -30,20 +34,11 @@ Arena::Arena(Arena&& other) noexcept
 
 Arena& Arena::operator=(Arena&& other) noexcept {
     if (this != &other) {
-        // Free existing blocks
-        this->~Arena();
-
-        // Move state
-        current_block_ = other.current_block_;
-        current_ = other.current_;
-        limit_ = other.limit_;
-        memory_usage_ = other.memory_usage_;
-
-        // Reset source
-        other.current_block_ = nullptr;
-        other.current_ = nullptr;
-        other.limit_ = nullptr;
-        other.memory_usage_ = 0;
+        Arena moved(std::move(other));
+        std::swap(current_block_, moved.current_block_);
+        std::swap(current_, moved.current_);
+        std::swap(limit_, moved.limit_);
+        std::swap(memory_usage_, moved.memory_usage_);
     }
     return *this;
 }
@@ -74,28 +69,33 @@ auto Arena::AllocateBlock(size_t size) -> Block* {
 }
 
 auto Arena::Allocate(size_t bytes) -> char* {
-    if (bytes == 0) {
-        return nullptr;
-    }
-
-    // Simple case: fits in current block
-    if (current_block_ != nullptr && current_ + bytes <= limit_) {
-        char* result = current_;
-        current_ += bytes;
-        return result;
-    }
-
-    // Need to allocate a new block
-    return AllocateAligned(bytes, kAlignment);
+    return AllocateAligned(bytes, alignof(std::max_align_t));
 }
 
 auto Arena::AllocateAligned(size_t bytes, size_t alignment) -> char* {
+    if (alignment == 0 || (alignment & (alignment - 1)) != 0) {
+        throw std::invalid_argument("alignment must be a nonzero power of 2");
+    }
     if (bytes == 0) {
         return nullptr;
     }
 
-    // Allocate new block large enough for request plus potential waste
-    size_t block_size = (bytes + alignment - 1) + kBlockSize;
+    if (current_block_ != nullptr) {
+        size_t available = static_cast<size_t>(limit_ - current_);
+        size_t misaligned = reinterpret_cast<uintptr_t>(current_) & (alignment - 1);
+        size_t padding = (alignment - misaligned) & (alignment - 1);
+        if (padding <= available && bytes <= available - padding) {
+            char* result = current_ + padding;
+            current_ = result + bytes;
+            return result;
+        }
+    }
+    size_t payload_size = std::max(bytes, kBlockSize);
+    if (alignment - 1 > std::numeric_limits<size_t>::max() - sizeof(Block) ||
+        payload_size > std::numeric_limits<size_t>::max() - sizeof(Block) - (alignment - 1)) {
+        throw std::bad_alloc();
+    }
+    size_t block_size = payload_size + alignment - 1;
     Block* block = AllocateBlock(block_size);
     current_block_ = block;
 
@@ -104,9 +104,9 @@ auto Arena::AllocateAligned(size_t bytes, size_t alignment) -> char* {
     current_ = result + bytes;
     limit_ = block->data + block->size;
 
-    memory_usage_ += block_size;
+    memory_usage_ += sizeof(Block) + block_size;
 
     return result;
 }
 
-}  // namespace tinykv
+} // namespace tinykv

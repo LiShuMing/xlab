@@ -25,6 +25,9 @@ class ModelConfig:
     max_tokens: int = 4096
     max_concurrent: int = 4
     timeout: float = 120.0
+    reasoning_effort: str | None = None
+    trust_env: bool = True
+    max_retries: int = 5
 
 
 @dataclass
@@ -132,6 +135,4 @@ def get_model_config(config: BenchmarkConfig, model_name: Optional[str] = None) 
         return config.models[config.default_model]
     if config.models:
         return next(iter(config.models.values()))
-    raise ValueError(
-        "No model configured. Set LLM_MODEL, LLM_BASE_URL, and LLM_API_KEY in ~/.env"
-    )
+    raise ValueError("No model configured. Set LLM_MODEL, LLM_BASE_URL, and LLM_API_KEY in ~/.env")

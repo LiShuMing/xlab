@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import re
+from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -11,6 +12,8 @@ from typing import Any
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend._shared.errors import should_fallback_after_read_error
+from backend.radar.identity import deduplicate_radar_items
+from backend.radar.refresh import load_radar_artifact
 from backend.radar.service import query_radar_items as _query_pg
 from backend.settings import Settings
 
@@ -53,7 +56,10 @@ async def read_radar_items(
 
 def read_snapshot_radar_items(settings: Settings, radar_query: RadarQuery) -> dict[str, Any]:
     snapshot_path = settings.xlab_root / "liminalis" / "src" / "data" / "pyRadarFeed.js"
-    payload = load_py_radar_snapshot(snapshot_path)
+    payload = merge_radar_payloads(
+        load_radar_artifact(settings),
+        load_py_radar_snapshot(snapshot_path),
+    )
     items = payload.get("items") or []
 
     page = max(radar_query.page, 1)
@@ -108,4 +114,43 @@ def load_py_radar_snapshot(path: Path) -> dict[str, Any]:
     )
     if not match:
         return {"items": [], "products": [], "contentTypes": []}
-    return json.loads(match.group(1))
+    payload = json.loads(match.group(1))
+    source_total = payload.get("sourceTotalItems") or payload.get("totalItems") or 0
+    items = deduplicate_radar_items(payload.get("items") or [])
+    payload["sourceTotalItems"] = source_total
+    payload["items"] = items
+    payload["totalItems"] = len(items)
+    payload["products"] = _facet_counts(items, "product")
+    payload["contentTypes"] = _facet_counts(items, "contentType")
+    return payload
+
+
+def merge_radar_payloads(primary: dict[str, Any], fallback: dict[str, Any]) -> dict[str, Any]:
+    """Merge refreshed and bundled items, preferring refreshed enrichment."""
+    items = deduplicate_radar_items(
+        [*(primary.get("items") or []), *(fallback.get("items") or [])]
+    )
+    latest_batches = [
+        str(value)
+        for value in (primary.get("latestSyncBatch"), fallback.get("latestSyncBatch"))
+        if value
+    ]
+    return {
+        **fallback,
+        "sourceTotalItems": fallback.get("sourceTotalItems") or fallback.get("totalItems") or 0,
+        "generatedAt": primary.get("generatedAt") or fallback.get("generatedAt"),
+        "latestSyncBatch": max(latest_batches) if latest_batches else None,
+        "items": items,
+        "totalItems": len(items),
+        "products": _facet_counts(items, "product"),
+        "contentTypes": _facet_counts(items, "contentType"),
+    }
+
+
+def _facet_counts(items: list[dict[str, Any]], field: str) -> list[dict[str, Any]]:
+    counts = Counter(str(item.get(field) or "") for item in items)
+    return [
+        {"name": name, "count": count}
+        for name, count in counts.most_common()
+        if name
+    ]

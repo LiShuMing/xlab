@@ -1,6 +1,7 @@
 #ifndef VAGG_HT_HASH_H_
 #define VAGG_HT_HASH_H_
 
+#include <bit>
 #include <cstdint>
 
 namespace vagg {
@@ -37,10 +38,9 @@ inline uint64_t HashUInt32(uint32_t x) {
 }
 
 // Hash for double (bit pattern hash)
-// Note: std::bit_cast requires C++20 and compiler support
-// Using reinterpret_cast as fallback for AppleClang
+// Preserve the bit pattern without violating strict aliasing under optimization.
 inline uint64_t HashDouble(double x) {
-  return SplitMix64(*reinterpret_cast<uint64_t*>(&x));
+  return SplitMix64(std::bit_cast<uint64_t>(x));
 }
 
 // Template for generic types - requires specialization

@@ -234,8 +234,40 @@ class Settings(BaseSettings):
         validation_alias=AliasChoices("radar_output_dir", "RADAR_OUTPUT_DIR", "DB_RADAR_OUTPUT_DIR"),
     )
     radar_feeds_file: Path = Field(
-        default=Path("feeds.json"),
+        default_factory=lambda: Path(__file__).resolve().parent / "radar" / "data" / "feeds.json",
         validation_alias=AliasChoices("radar_feeds_file", "RADAR_FEEDS_FILE", "DB_RADAR_FEEDS_FILE"),
+    )
+    radar_refresh_on_startup: bool = Field(
+        default=True,
+        validation_alias=AliasChoices(
+            "radar_refresh_on_startup",
+            "RADAR_REFRESH_ON_STARTUP",
+            "DB_RADAR_REFRESH_ON_STARTUP",
+        ),
+    )
+    radar_refresh_startup_delay: float = Field(
+        default=2.0,
+        ge=0,
+        le=60,
+        validation_alias=AliasChoices(
+            "radar_refresh_startup_delay",
+            "RADAR_REFRESH_STARTUP_DELAY",
+        ),
+    )
+    radar_refresh_timeout: float = Field(
+        default=180.0,
+        ge=10,
+        le=900,
+        validation_alias=AliasChoices("radar_refresh_timeout", "RADAR_REFRESH_TIMEOUT"),
+    )
+    radar_refresh_min_interval_minutes: int = Field(
+        default=15,
+        ge=0,
+        le=1440,
+        validation_alias=AliasChoices(
+            "radar_refresh_min_interval_minutes",
+            "RADAR_REFRESH_MIN_INTERVAL_MINUTES",
+        ),
     )
     radar_max_items: int = Field(
         default=80,

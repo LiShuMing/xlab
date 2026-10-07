@@ -56,6 +56,9 @@ dev = [
     "pytest-asyncio>=0.23.0",
     "ruff>=0.6.0",
 ]
+legacy-radar = [
+    "duckdb>=1.0.0",
+]
 
 [project.scripts]
 liminalis = "backend.cli:main"

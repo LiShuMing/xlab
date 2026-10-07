@@ -50,24 +50,17 @@ ThreadPool::ThreadPool(size_t num_threads, bool use_work_stealing)
 ThreadPool::~ThreadPool() { Stop(); }
 
 void ThreadPool::Stop() {
+  std::lock_guard stop_lock(stop_mutex_);
   // Set stop flag with release semantics
   // This ensures all workers see the flag before we wait
   bool expected = false;
+  std::unique_lock submission_lock(global_queue_->mu);
   if (stopped_.compare_exchange_strong(expected, true,
                                        std::memory_order_acq_rel,
                                        std::memory_order_acquire)) {
-    if (use_work_stealing_) {
-      // For work-stealing: notify all workers to wake up and check stop flag
-      // Use a simple mechanism - threads will wake up and exit when queue is empty
-      // Phase 2: could use a condition variable for faster wakeup
-    } else {
-      // Signal global queue workers
-      {
-        std::lock_guard<std::mutex> lock(global_queue_->mu);
-        global_queue_->shutting_down = true;
-      }
-      global_queue_->cv.notify_all();
-    }
+    global_queue_->shutting_down = true;
+    submission_lock.unlock();
+    global_queue_->cv.notify_all();
 
     // Wait for all workers to finish
     for (auto& worker : workers_) {
@@ -85,6 +78,9 @@ void ThreadPool::SubmitGlobalQueue(Task task) {
   }
   {
     std::lock_guard<std::mutex> lock(global_queue_->mu);
+    if (stopped_.load(std::memory_order_acquire)) {
+      return;
+    }
     global_queue_->queue.push(std::move(task));
   }
   // Notify one worker
@@ -121,6 +117,10 @@ void ThreadPool::WorkerLoopGlobalQueue() {
 }
 
 void ThreadPool::SubmitWorkStealing(Task task) {
+  std::lock_guard submission_lock(global_queue_->mu);
+  if (stopped_.load(std::memory_order_acquire)) {
+    return;
+  }
   // Round-robin submission to spread work across deques
   // This improves initial work distribution
   static std::atomic<size_t> round_robin{0};
@@ -135,7 +135,15 @@ void ThreadPool::WorkerLoopWorkStealing(size_t worker_id) {
 
   WSDeque& my_deque = *deques_[worker_id];
 
-  while (!stopped_.load(std::memory_order_acquire)) {
+  std::vector<size_t> candidates;
+  candidates.reserve(num_threads_ - 1);
+  for (size_t i = 0; i < num_threads_; ++i) {
+    if (i != worker_id) {
+      candidates.push_back(i);
+    }
+  }
+
+  while (true) {
     // Try to pop from local deque (fast path)
     Task task = my_deque.PopBottom();
     if (task) {
@@ -145,13 +153,6 @@ void ThreadPool::WorkerLoopWorkStealing(size_t worker_id) {
 
     // Local deque is empty, try to steal
     // Random victim selection to avoid thundering herd
-    std::vector<size_t> candidates;
-    candidates.reserve(num_threads_ - 1);
-    for (size_t i = 0; i < num_threads_; ++i) {
-      if (i != worker_id) {
-        candidates.push_back(i);
-      }
-    }
     std::shuffle(candidates.begin(), candidates.end(), rng);
 
     for (size_t victim_id : candidates) {
@@ -167,6 +168,17 @@ void ThreadPool::WorkerLoopWorkStealing(size_t worker_id) {
       continue;
     }
 
+    // Stop only after draining tasks accepted before shutdown.
+    if (stopped_.load(std::memory_order_acquire)) {
+      // Recheck after observing stop: a producer may have queued work after
+      // the preceding scan, but before Stop closed admission.
+      bool pending = std::any_of(deques_.begin(), deques_.end(),
+                                 [](const auto& deque) { return !deque->Empty(); });
+      if (!pending) {
+        break;
+      }
+      continue;
+    }
     // All deques empty, sleep briefly
     // Phase 3: Add exponential backoff here
     std::this_thread::sleep_for(std::chrono::microseconds(100));

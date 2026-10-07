@@ -13,6 +13,7 @@ import httpx
 from bs4 import BeautifulSoup
 
 from backend._shared.http import HTTPClientConfig, SharedSyncHTTPClient
+from backend._shared.urls import TRACKING_PARAMS, normalize_url
 from backend._shared.web_feed import is_feed_content
 from backend.settings import get_settings as get_runtime_settings
 
@@ -76,46 +77,12 @@ class CrawlRule:
 class URLNormalizer:
     """Normalize URLs for deduplication."""
 
-    TRACKING_PARAMS = {
-        "utm_source",
-        "utm_medium",
-        "utm_campaign",
-        "utm_term",
-        "utm_content",
-        "fbclid",
-        "gclid",
-        "ref",
-        "referrer",
-        "source",
-    }
+    TRACKING_PARAMS = TRACKING_PARAMS
 
     @classmethod
     def normalize(cls, url: str) -> str:
         """Normalize a URL for comparison."""
-        parsed = urlparse(url)
-
-        scheme = parsed.scheme.lower()
-        netloc = parsed.netloc.lower()
-        if netloc.startswith("www."):
-            netloc = netloc[4:]
-
-        path = parsed.path or "/"
-
-        if parsed.query:
-            params = []
-            for param in parsed.query.split("&"):
-                if "=" in param:
-                    key = param.split("=")[0].lower()
-                    if key not in cls.TRACKING_PARAMS:
-                        params.append(param)
-            query = "&".join(params) if params else ""
-        else:
-            query = ""
-
-        normalized = f"{scheme}://{netloc}{path}"
-        if query:
-            normalized += f"?{query}"
-        return normalized
+        return normalize_url(url, cls.TRACKING_PARAMS)
 
     @classmethod
     def get_canonical_url(cls, url: str, html_content: str) -> str:

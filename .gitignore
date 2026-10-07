@@ -130,6 +130,11 @@ coverage.xml
 *.cover
 *.py,cover
 
+# Runtime artifacts left by the retired standalone py-radar project.
+/python/projects/py-radar/cache/
+/python/projects/py-radar/data/
+/python/projects/py-radar/out/
+
 # Node/frontend
 node_modules/
 dist/

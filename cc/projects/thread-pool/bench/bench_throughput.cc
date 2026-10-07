@@ -139,19 +139,22 @@ static void BM_ForkJoin_LinearChain_GlobalQueue(benchmark::State& state) {
   for (auto _ : state) {
     ThreadPool pool(num_threads, false);
 
-    // Linear chain: submit A, which submits B, which submits C...
-    std::function<void(int)> chain_task = [&pool, &counter, &chain_task](int depth) {
+    // Wait outside the pool so a long chain cannot exhaust workers with blocked parents.
+    std::promise<void> completed;
+    auto done = completed.get_future();
+    std::function<void(int)> chain_task = [&pool, &counter, &chain_task, &completed](int depth) {
       if (depth == 0) {
         counter.fetch_add(1, std::memory_order_relaxed);
+        completed.set_value();
         return;
       }
-      pool.Submit([&pool, &counter, &chain_task, depth]() { chain_task(depth - 1); })
-          .get();
+      pool.Submit([&chain_task, depth]() { chain_task(depth - 1); });
     };
 
     pool.Submit([&pool, &counter, &chain_task, chain_length]() {
       chain_task(chain_length);
-    }).get();
+    });
+    done.get();
 
     pool.Stop();
   }
@@ -165,18 +168,21 @@ static void BM_ForkJoin_LinearChain_WorkStealing(benchmark::State& state) {
   for (auto _ : state) {
     ThreadPool pool(num_threads, true);
 
-    std::function<void(int)> chain_task = [&pool, &counter, &chain_task](int depth) {
+    std::promise<void> completed;
+    auto done = completed.get_future();
+    std::function<void(int)> chain_task = [&pool, &counter, &chain_task, &completed](int depth) {
       if (depth == 0) {
         counter.fetch_add(1, std::memory_order_relaxed);
+        completed.set_value();
         return;
       }
-      pool.Submit([&pool, &counter, &chain_task, depth]() { chain_task(depth - 1); })
-          .get();
+      pool.Submit([&chain_task, depth]() { chain_task(depth - 1); });
     };
 
     pool.Submit([&pool, &counter, &chain_task, chain_length]() {
       chain_task(chain_length);
-    }).get();
+    });
+    done.get();
 
     pool.Stop();
   }

@@ -177,6 +177,45 @@ TEST(ThreadPoolTest, WorkStealingStop) {
   EXPECT_EQ(counter.load(), 100);
 }
 
+TEST(ThreadPoolTest, ConcurrentStopWaitsForAcceptedTasks) {
+  for (bool stealing : {false, true}) {
+    ThreadPool pool(4, stealing);
+    std::atomic<int> completed{0};
+    for (int i = 0; i < 2000; ++i) {
+      pool.Submit([&completed] { completed.fetch_add(1); });
+    }
+    std::thread first([&pool] { pool.Stop(); });
+    std::thread second([&pool] { pool.Stop(); });
+    first.join();
+    second.join();
+    EXPECT_EQ(completed.load(), 2000);
+    EXPECT_THROW(pool.Submit([] { return 1; }).get(), std::runtime_error);
+  }
+}
+
+TEST(ThreadPoolTest, SubmissionRacingWithStopResolvesEveryFuture) {
+  for (bool stealing : {false, true}) {
+    ThreadPool pool(2, stealing);
+    std::vector<std::future<int>> futures;
+    std::promise<void> started;
+    auto ready = started.get_future();
+    std::thread producer([&] {
+      for (int i = 0; i < 1000; ++i) {
+        futures.push_back(pool.Submit([i] { return i; }));
+        if (i == 15) {
+          started.set_value();
+        }
+      }
+    });
+    ready.wait();
+    pool.Stop();
+    producer.join();
+    for (auto& future : futures) {
+      EXPECT_EQ(future.wait_for(std::chrono::seconds(0)), std::future_status::ready);
+    }
+  }
+}
+
 // Stress test
 TEST(ThreadPoolTest, StressTest) {
   ThreadPool pool(4, false);

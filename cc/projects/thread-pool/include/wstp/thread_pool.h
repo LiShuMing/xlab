@@ -3,9 +3,15 @@
 
 #include <atomic>
 #include <cstddef>
+#include <cstdint>
+#include <functional>
 #include <future>
 #include <memory>
+#include <mutex>
+#include <stdexcept>
 #include <thread>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "wstp/cache_padding.h"
@@ -128,6 +134,9 @@ class ThreadPool {
 
   // Whether to use work-stealing mode
   const bool use_work_stealing_;
+
+  // Concurrent Stop calls must all wait for worker termination.
+  std::mutex stop_mutex_;
 
   // Stop flag - acquire semantics for visibility
   WSTP_CACHELINE_ALIGN std::atomic<bool> stopped_{false};

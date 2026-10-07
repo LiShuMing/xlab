@@ -1,0 +1,84 @@
+[app]
+database = "var/demo-v3.sqlite3"
+timezone = "Asia/Shanghai"
+fail_fast = false
+
+[collectors.opencli]
+require_read_only = true
+
+[processing]
+plugins = ["quality-filter", "keyword-score", "topic-rule", "openai-enrich"]
+keywords = ["C++", "Rust", "database", "OLAP", "optimizer", "storage"]
+keyword_weight = 10.0
+priority_weight = 2.0
+
+[processing.quality]
+minimum_length = 24
+protect_priority = 100
+negative_keywords = ["giveaway", "airdrop", "sponsored", "promo code"]
+
+[processing.author_weights]
+rustlang = 30
+duckdb = 30
+ClickHouseDB = 25
+ApacheArrow = 25
+andy_pavlo = 30
+BrendanGregg = 30
+jonhoo = 25
+matklad = 25
+
+[processing.openai]
+enabled = false
+model = ""
+
+[[targets]]
+id = "demo-x"
+collector = "opencli"
+platform = "twitter"
+command = "likes"
+tags = ["x", "liked", "demo"]
+priority = 100
+fixture = "tests/fixtures/twitter_timeline.json"
+
+[[targets]]
+id = "demo-reddit"
+collector = "opencli"
+platform = "reddit"
+command = "upvoted"
+tags = ["reddit", "upvoted", "demo"]
+priority = 100
+fixture = "tests/fixtures/reddit_posts.json"
+
+[[publishers]]
+id = "demo-v3-markdown"
+plugin = "markdown"
+directory = "output/demo"
+curated_threshold = 100
+limit = 300
+priority_read_limit = 20
+writing_candidate_limit = 30
+topic_candidate_limit = 8
+people_limit = 15
+max_top_picks_per_author = 2
+max_top_picks_per_topic = 6
+enabled = true
+
+[[publishers]]
+id = "demo-v3-jsonl"
+plugin = "jsonl"
+directory = "output/demo"
+enabled = true
+
+[[publishers]]
+id = "demo-v3-windows-markdown"
+plugin = "markdown"
+directory = "/mnt/c/Users/JoJo/Documents/TechRadar/demo"
+curated_threshold = 100
+limit = 300
+priority_read_limit = 20
+writing_candidate_limit = 30
+topic_candidate_limit = 8
+people_limit = 15
+max_top_picks_per_author = 2
+max_top_picks_per_topic = 6
+enabled = true

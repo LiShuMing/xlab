@@ -1,6 +1,7 @@
 #include "tinykv/memtable/memtable.hpp"
 
 #include <cstring>
+#include <mutex>
 
 namespace tinykv {
 

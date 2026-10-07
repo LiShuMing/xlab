@@ -16,6 +16,7 @@ import click
 
 from backend._shared.storage import business_uow
 from backend.radar import service as radar_service
+from backend.radar.legacy import LegacyRadarDataset, load_legacy_parquet
 from backend.services.radar_service import load_py_radar_snapshot
 from backend.settings import get_settings
 
@@ -120,6 +121,53 @@ async def _import_snapshot(snapshot: Path | None) -> None:
             count += 1
 
     click.echo(f"Imported {count} Radar items into {settings.business_database_name}")
+
+
+@cli.command("migrate-legacy")
+@click.argument("path", type=click.Path(exists=True, path_type=Path))
+@click.option(
+    "--apply",
+    is_flag=True,
+    help="Write the merged rows to PostgreSQL. Without this flag the command only inspects data.",
+)
+def migrate_legacy(path: Path, apply: bool) -> None:
+    """Inspect or import retired py-radar Parquet exports."""
+    try:
+        dataset = load_legacy_parquet(path)
+    except (RuntimeError, ValueError) as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    if not apply:
+        click.echo(json.dumps(dataset.summary(), ensure_ascii=False, indent=2))
+        return
+
+    settings = get_settings()
+    if not settings.postgres_configured:
+        raise click.ClickException("PostgreSQL is not configured; refusing to discard legacy data")
+    asyncio.run(_migrate_legacy(dataset))
+
+
+async def _migrate_legacy(dataset: LegacyRadarDataset) -> None:
+    settings = get_settings()
+    async with business_uow() as session:
+        imported = await radar_service.upsert_radar_items_bulk(session, dataset.items)
+        result = await radar_service.query_radar_items(
+            session,
+            page=1,
+            per_page=1,
+            content_type="all",
+            product="all",
+            query="",
+        )
+    summary = dataset.summary()
+    summary.update(
+        {
+            "upserted": imported,
+            "databaseItems": (result or {}).get("total_items", 0),
+            "database": settings.business_database_name,
+        }
+    )
+    click.echo(json.dumps(summary, ensure_ascii=False, indent=2))
 
 
 @cli.command("add-url")

@@ -60,9 +60,6 @@ private:
     // but not too large to waste memory.
     static constexpr size_t kBlockSize = 4096;
 
-    // Minimum allocation alignment for aligned allocations.
-    static constexpr size_t kAlignment = 8;
-
     struct Block {
         Block* prev;
         char* data;

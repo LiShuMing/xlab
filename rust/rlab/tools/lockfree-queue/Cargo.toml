@@ -6,6 +6,7 @@ description = "Lock-free queue implementations for learning concurrency and atom
 
 [dependencies]
 crossbeam-utils = "0.8"
+crossbeam-queue = "0.3"
 
 [dev-dependencies]
 criterion = "0.5"

@@ -14,6 +14,43 @@ TEST(WSDequeTest, EmptyDeques) {
   EXPECT_EQ(deque.Capacity(), 1024);
 }
 
+TEST(WSDequeTest, PopEmptyDoesNotUnderflow) {
+  WSDeque deque(2);
+  for (int i = 0; i < 100; ++i) {
+    EXPECT_EQ(deque.PopBottom(), nullptr);
+    EXPECT_EQ(deque.StealTop(), nullptr);
+    EXPECT_EQ(deque.Size(), 0);
+  }
+  int value = 0;
+  deque.PushBottom([&value] { value = 42; });
+  auto task = deque.PopBottom();
+  ASSERT_TRUE(task);
+  task();
+  EXPECT_EQ(value, 42);
+}
+
+TEST(WSDequeTest, GrowthPreservesEveryTaskInFifoOrder) {
+  WSDeque deque(2);
+  std::vector<int> values;
+  for (int i = 0; i < 1000; ++i) {
+    deque.PushBottom([&values, i] { values.push_back(i); });
+  }
+  EXPECT_GE(deque.Capacity(), 1000);
+  while (auto task = deque.StealTop()) {
+    task();
+  }
+  ASSERT_EQ(values.size(), 1000);
+  for (int i = 0; i < 1000; ++i) {
+    EXPECT_EQ(values[i], i);
+  }
+  EXPECT_TRUE(deque.Empty());
+}
+
+TEST(WSDequeTest, InvalidCapacityIsRejected) {
+  EXPECT_THROW(WSDeque(0), std::invalid_argument);
+  EXPECT_THROW(WSDeque(3), std::invalid_argument);
+}
+
 TEST(WSDequeTest, PushPop) {
   WSDeque deque(1024);
 
@@ -160,8 +197,7 @@ TEST(WSDequeTest, StressTest) {
 TEST(WSDequeTest, CapacityNotExceeded) {
   WSDeque deque(64);  // Small capacity
 
-  // Push more than capacity - this will overwrite
-  // In a real implementation, we'd handle this differently
+  // Exceeding the initial capacity must grow without losing tasks.
   for (int i = 0; i < 100; ++i) {
     deque.PushBottom([i]() { return i; });
   }
@@ -172,7 +208,7 @@ TEST(WSDequeTest, CapacityNotExceeded) {
     count++;
   }
 
-  EXPECT_GE(count, 64);  // At least capacity elements were processed
+  EXPECT_EQ(count, 100);
 }
 
 }  // namespace wstp

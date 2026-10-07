@@ -15,6 +15,7 @@ from backend._shared.jobs import dispose_arq_pool
 from backend._shared.llm import dispose_llm_client
 from backend._shared.logging import configure_logging
 from backend.db.engine import dispose_engine
+from backend.radar.refresh import schedule_startup_radar_refresh, stop_startup_radar_refresh
 from backend.routers import admin, ego, health, invest, llm_wiki, radar, wechat
 from backend.routers.llm_wiki import dispose_proxy_client
 from backend.settings import Settings, get_settings
@@ -106,9 +107,11 @@ def register_cors(app: FastAPI, settings: Settings) -> None:
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+    refresh_task = schedule_startup_radar_refresh(get_settings())
     try:
         yield
     finally:
+        await stop_startup_radar_refresh(refresh_task)
         await dispose_proxy_client()
         await dispose_llm_client()
         await dispose_arq_pool()

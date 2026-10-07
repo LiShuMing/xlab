@@ -11,6 +11,13 @@ def test_url_normalizer_removes_common_tracking_params() -> None:
     assert normalized == "https://example.test/Post?keep=1"
 
 
+def test_url_normalizer_produces_stable_query_and_default_port_order() -> None:
+    left = URLNormalizer.normalize("https://www.example.test:443/post?b=2&utm_id=x&a=1#top")
+    right = URLNormalizer.normalize("https://example.test/post?a=1&b=2")
+
+    assert left == right == "https://example.test/post?a=1&b=2"
+
+
 def test_content_fingerprinter_matches_normalized_text() -> None:
     left = ContentFingerprinter.fingerprint("Hello,   Shared Fetcher!")
     right = ContentFingerprinter.fingerprint("hello shared fetcher")

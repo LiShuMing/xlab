@@ -1,0 +1,78 @@
+name: native-build
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - CMakeLists.txt
+      - cmake/**
+      - tools/build-windows.ps1
+      - cc/cclab/**
+      - cc/projects/kv-store/**
+      - cc/projects/query-engine/**
+      - cc/projects/thread-pool/**
+      - rust/rlab/**
+      - rust/rdb/**
+      - python/projects/py-toydb/**
+      - .github/workflows/native-build.yml
+  pull_request:
+    paths:
+      - CMakeLists.txt
+      - cmake/**
+      - tools/build-windows.ps1
+      - cc/cclab/**
+      - cc/projects/kv-store/**
+      - cc/projects/query-engine/**
+      - cc/projects/thread-pool/**
+      - rust/rlab/**
+      - rust/rdb/**
+      - python/projects/py-toydb/**
+      - .github/workflows/native-build.yml
+
+permissions:
+  contents: read
+
+jobs:
+  cpp:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+        configuration: [Debug, Release]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Windows build and tests
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./tools/build-windows.ps1 -Project cpp -Configuration ${{ matrix.configuration }} -Benchmarks
+      - name: Linux configure
+        if: runner.os == 'Linux'
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.configuration }} -DXLAB_FETCH_DEPENDENCIES=ON -DXLAB_BUILD_BENCHMARKS=ON
+      - name: Linux build
+        if: runner.os == 'Linux'
+        run: cmake --build build --parallel 4
+      - name: Linux tests
+        if: runner.os == 'Linux'
+        run: ctest --test-dir build --output-on-failure --no-tests=error --timeout 60
+
+  rust:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Workspace tests including doctests
+        run: cargo test --manifest-path rust/rlab/Cargo.toml --workspace --locked --release
+      - name: RDB tests
+        run: cargo test --manifest-path rust/rdb/Cargo.toml --locked
+
+  python:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install and test ToyDB in an isolated environment
+        shell: pwsh
+        run: ./tools/build-windows.ps1 -Project toydb

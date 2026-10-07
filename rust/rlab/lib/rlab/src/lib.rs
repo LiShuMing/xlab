@@ -43,9 +43,13 @@ pub use common::sort;
 ///
 /// This function will panic in debug mode on overflow:
 ///
-/// ```should_panic
+/// ```
 /// use rlab::add;
-/// let _ = add(usize::MAX, 1); // panics!
+/// let result = std::panic::catch_unwind(|| add(usize::MAX, 1));
+/// // The library's overflow checks depend on its build profile.
+/// if let Ok(value) = result {
+///     assert_eq!(value, 0);
+/// }
 /// ```
 ///
 /// In release mode, it will wrap around (two's complement).

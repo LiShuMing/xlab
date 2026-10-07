@@ -2,13 +2,10 @@
 name = "toydb"
 version = "4.8.2"
 description = "toydb is a tiny, document oriented database optimized for your happiness :)"
-authors = [""]
+authors = ["Li ShuMing <ming.moriarty@gmail.com>"]
 license = "MIT"
 
-readme = "README.rst"
-
-homepage = ""
-documentation = ""
+readme = "README.md"
 
 keywords = ["database", "nosql"]
 
@@ -40,7 +37,7 @@ packages = [
 
 [tool.poetry.urls]
 "Changelog" = "https://toydb.readthedocs.io/en/latest/changelog.html"
-"Issues" = "https://github.com/msiemens/toydb/issues"
+"Issues" = "https://github.com/LiShuMing/xlab/issues"
 
 [tool.poetry.dependencies]
 python = "^3.8"

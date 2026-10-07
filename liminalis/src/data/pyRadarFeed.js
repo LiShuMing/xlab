@@ -3,134 +3,103 @@ const pyRadarFeed = {
   "sourcePath": "liminalis/src/data/pyRadarFeed.js",
   "generatedAt": "2026-05-03T21:33:32",
   "limit": 160,
-  "totalItems": 1621,
+  "sourceTotalItems": 1621,
+  "totalItems": 160,
   "latestSyncBatch": "2026-03-29",
   "products": [
-    {
-      "name": "Supabase Blog",
-      "count": 393
-    },
-    {
-      "name": "PlanetScale Blog",
-      "count": 280
-    },
-    {
-      "name": "Stack - Convex Blog",
-      "count": 221
-    },
-    {
-      "name": "Phil Eaton",
-      "count": 182
-    },
-    {
-      "name": "Vitess Blog",
-      "count": 80
-    },
-    {
-      "name": "Avinash Sajjanshetty",
-      "count": 69
-    },
-    {
-      "name": "Hack MySQL",
-      "count": 53
-    },
-    {
-      "name": "Alex Miller",
-      "count": 45
-    },
-    {
-      "name": "CedarDB Blog",
-      "count": 32
-    },
-    {
-      "name": "Murat Demirbas",
-      "count": 27
-    },
-    {
-      "name": "The New Stack - Data",
-      "count": 26
-    },
-    {
-      "name": "Andy Pavlo",
-      "count": 25
-    },
     {
       "name": "Reddit r/Database",
       "count": 25
     },
     {
-      "name": "Small Datum - Mark Callaghan",
-      "count": 25
-    },
-    {
-      "name": "Database Architects",
+      "name": "Phil Eaton",
       "count": 23
     },
     {
-      "name": "Percona Database Performance Blog",
+      "name": "Small Datum - Mark Callaghan",
       "count": 22
     },
     {
-      "name": "AWS Database Blog - Amazon Aurora",
-      "count": 20
+      "name": "PlanetScale Blog",
+      "count": 18
     },
     {
-      "name": "ScyllaDB Blog",
-      "count": 20
+      "name": "Murat Demirbas",
+      "count": 14
     },
     {
-      "name": "Franck Pachot",
-      "count": 13
-    },
-    {
-      "name": "Kyle Kingsbury (Aphyr / Jepsen)",
+      "name": "Percona Database Performance Blog",
       "count": 12
     },
     {
-      "name": "Airbnb Tech Blog",
-      "count": 10
+      "name": "ScyllaDB Blog",
+      "count": 9
+    },
+    {
+      "name": "Franck Pachot",
+      "count": 7
     },
     {
       "name": "Meta Engineering Blog",
-      "count": 9
+      "count": 7
     },
     {
-      "name": "Openark - Shlomi Noach",
-      "count": 9
+      "name": "Kyle Kingsbury (Aphyr / Jepsen)",
+      "count": 5
+    },
+    {
+      "name": "Stack - Convex Blog",
+      "count": 4
+    },
+    {
+      "name": "Airbnb Tech Blog",
+      "count": 4
+    },
+    {
+      "name": "The New Stack - Data",
+      "count": 4
+    },
+    {
+      "name": "AWS Database Blog - Amazon Aurora",
+      "count": 3
+    },
+    {
+      "name": "Supabase Blog",
+      "count": 2
+    },
+    {
+      "name": "CedarDB Blog",
+      "count": 1
     }
   ],
   "contentTypes": [
     {
-      "name": "blog",
-      "count": 715
-    },
-    {
       "name": "other",
-      "count": 649
-    },
-    {
-      "name": "news",
-      "count": 98
+      "count": 69
     },
     {
       "name": "release",
-      "count": 78
+      "count": 63
     },
     {
-      "name": "tutorial",
-      "count": 56
-    },
-    {
-      "name": "benchmark",
-      "count": 15
+      "name": "blog",
+      "count": 13
     },
     {
       "name": "engine",
       "count": 5
     },
     {
-      "name": "performance",
+      "name": "tutorial",
       "count": 5
+    },
+    {
+      "name": "performance",
+      "count": 4
+    },
+    {
+      "name": "benchmark",
+      "count": 1
     }
   ],
   "items": [

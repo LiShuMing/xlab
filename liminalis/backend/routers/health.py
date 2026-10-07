@@ -9,6 +9,7 @@ from sqlalchemy import bindparam, text
 from backend._shared.serializers import utc_now_iso
 from backend._shared.storage import describe_storage
 from backend.db.engine import get_engine
+from backend.radar.refresh import get_radar_refresh_status
 from backend.settings import get_settings
 
 router = APIRouter(tags=["health"])
@@ -49,6 +50,7 @@ def health() -> dict[str, object]:
                 "path": str(storage.local_artifact_dir),
             },
         },
+        "radarRefresh": get_radar_refresh_status(),
         "timestamp": utc_now_iso(),
     }
 
@@ -69,6 +71,10 @@ async def deep_health() -> JSONResponse:
         "llmWiki": {
             "mode": "socket" if settings.llm_wiki_socket else "url",
             "target": str(settings.llm_wiki_socket or settings.llm_wiki_url),
+        },
+        "radarRefresh": {
+            "enabled": settings.radar_refresh_on_startup,
+            **get_radar_refresh_status(),
         },
     }
 

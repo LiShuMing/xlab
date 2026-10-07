@@ -15,9 +15,11 @@ def pass_at_k(n: int, c: int, k: int) -> float:
 
     Returns:
         Estimated probability that at least one of k samples is correct.
-        Returns 0.0 if n - c < k (insufficient incorrect samples for unbiased estimate).
-        Returns 1.0 if c > 0 and k == 1 (at least one correct in n samples).
+        Returns 1.0 if fewer than k incorrect candidates exist; pass@1 is c/n.
+        Raises ValueError when k exceeds the actual number of candidates.
     """
+    if n < 1 or not 0 <= c <= n or not 1 <= k <= n:
+        raise ValueError("pass@k requires n >= k >= 1 and 0 <= c <= n")
     if c == 0:
         return 0.0
     if n - c < k:
@@ -64,14 +66,15 @@ def compute_pass_at_k_scores(
     Returns:
         Dict mapping k -> average pass@k score across all problems.
     """
-    n = len(results_per_problem[0]) if results_per_problem else 0
     scores: dict[int, float] = {}
 
     for k in k_values:
+        if results_per_problem and any(len(samples) < k for samples in results_per_problem):
+            continue  # An unavailable pass@k must not be reported as a measured score.
         problem_scores = []
         for samples in results_per_problem:
             c = sum(samples)
-            problem_scores.append(pass_at_k(n, c, k))
+            problem_scores.append(pass_at_k(len(samples), c, k))
         scores[k] = sum(problem_scores) / len(problem_scores) if problem_scores else 0.0
 
     return scores

@@ -197,7 +197,7 @@ export function RadarPage({ radarItems, pyRadarFeed }) {
               onClick={() => setActiveProduct('all')}
             >
               <span>All sources</span>
-              <small>{pyRadarFeed.totalItems}</small>
+              <small>{feedPayload.total_items ?? visibleItems.length}</small>
             </button>
             {productFilters.map((product) => (
               <button

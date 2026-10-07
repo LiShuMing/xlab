@@ -29,6 +29,7 @@ from llm_benchmark.metrics.math_metrics import math_score
 from llm_benchmark.reporter.html_reporter import save_html_report
 from llm_benchmark.reporter.json_reporter import build_result_json, diff_results, save_results
 from llm_benchmark.runner.sandbox import CodeSandbox
+from llm_benchmark.strata_bench import strata
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
@@ -604,6 +605,9 @@ def report(result_path: str, output: str | None):
 
     html_path = save_html_report(result, output_path)
     click.echo(f"HTML report generated: {html_path}")
+
+
+main.add_command(strata)
 
 
 if __name__ == "__main__":

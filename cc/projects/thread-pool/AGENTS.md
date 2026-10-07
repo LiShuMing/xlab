@@ -6,7 +6,14 @@ This document provides guidelines for AI Agents working on the Work-Stealing Thr
 
 ## Project Architecture
 
-WSTP is a production-quality work-stealing thread pool implementation in modern C++20, designed for high-performance parallel task execution.
+WSTP is a work-stealing thread pool experiment in modern C++20.
+
+The current deque uses a mutex-protected growing ring buffer to preserve task
+ownership; it is not lock-free. Local pops are LIFO and steals are FIFO. The
+Chase-Lev and index-ordering examples in this document describe the historical
+design. `Stop()` drains accepted tasks, and concurrent stop calls wait for joins.
+Use `../../../tools/build-windows.ps1 -Project thread-pool` from this directory,
+or consult the root `WINDOWS.md`. Benchmarks require `XLAB_BUILD_BENCHMARKS=ON`.
 
 ```
 cc/projects/thread-pool/

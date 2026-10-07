@@ -35,9 +35,10 @@ export function radarReadingSignal(item) {
 }
 
 export function fallbackRadarPayload() {
+  const items = pyRadarFeed.items ?? [];
   return {
-    items: pyRadarFeed.items ?? [],
-    total_items: pyRadarFeed.totalItems ?? pyRadarFeed.items?.length ?? 0,
+    items,
+    total_items: items.length,
     products: pyRadarFeed.products ?? [],
     contentTypes: pyRadarFeed.contentTypes ?? [],
     latestSyncBatch: pyRadarFeed.latestSyncBatch,

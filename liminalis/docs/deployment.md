@@ -69,7 +69,26 @@ PSQL_DEFAULT_DB=liminalis_db
 - 运行缓存：本地 HTTP/feed/cache 文件，只用于加速和重试，不作为业务事实来源。
 - 静态快照：打包在前端中的只读数据，用于 Radar 无数据库数据时的降级展示。
 
-旧 SQLite/DuckDB 文件仍保留为 CLI、导入导出和离线同步的 legacy compatibility，不再是 HTTP 主链路业务存储。
+旧 SQLite/DuckDB 文件只作为一次性迁移输入保留，不再承担持续导入导出或离线同步职责。
+Radar 的历史 Parquet 数据通过统一 CLI 审计和迁移，不需要恢复旧项目源码。
+
+### 迁移旧 py-radar 数据
+
+旧目录中的多个 Parquet 导出可能互相重叠。先安装一次性迁移依赖并审计，命令默认不写库：
+
+```bash
+uv sync --extra legacy-radar
+uv run liminalis radar migrate-legacy ../python/projects/py-radar/data/sync
+```
+
+确认 `inputRows`、`items`、`duplicateRows` 和 `invalidRows` 后，再显式写入 PostgreSQL：
+
+```bash
+uv run liminalis radar migrate-legacy ../python/projects/py-radar/data/sync --apply
+```
+
+只有当命令成功返回 `upserted`，并确认 `databaseItems` 不少于迁移后的 `items` 时，才删除
+`python/projects/py-radar/`。该目录没有独立源码或服务职责，不应继续作为 project 保留。
 
 通用 LLM 配置优先放在 `~/.env`：
 
@@ -98,6 +117,30 @@ WECHAT_OFFICIAL_MOCK_OPENID=local_openid_001
 ```
 
 ## 启动
+
+### Radar 启动刷新
+
+统一 API 启动后会在后台刷新数据库新闻，HTTP 服务启动不等待抓取完成。默认读取
+`backend/radar/data/feeds.json`，抓取最近 7 天内容并按 canonical URL 去重：
+
+- PostgreSQL 已配置：upsert 到 `radar_items`，同时更新本地最新数据 artifact。
+- PostgreSQL 未配置：写入 `~/.liminalis/artifacts/radar/latest.json`，读取接口会与内置快照合并。
+- 15 分钟内重复启动：复用已有 artifact，避免热重载或快速重启重复请求来源站点。
+
+可通过环境变量调整：
+
+```bash
+RADAR_REFRESH_ON_STARTUP=true
+RADAR_REFRESH_STARTUP_DELAY=2
+RADAR_REFRESH_TIMEOUT=180
+RADAR_REFRESH_MIN_INTERVAL_MINUTES=15
+RADAR_DAYS=7
+RADAR_MAX_ITEMS=80
+RADAR_FEEDS_FILE=/path/to/feeds.json
+```
+
+刷新状态可从 `GET /health` 的 `radarRefresh` 字段查看。设置
+`RADAR_REFRESH_ON_STARTUP=false` 可以禁用。
 
 推荐一键启动：
 

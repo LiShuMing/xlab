@@ -10,6 +10,10 @@ For human-facing project navigation, use `README.md`. For personal
 knowledge-management workflows, use `SKILL.md`. For active backlog items, use
 `TASKS.md`.
 
+Use `PROJECTS.md` for project discovery and task routing. Before editing a
+module, read its local instructions and build manifest. When adding, moving,
+or removing a project, update its entry and routing in `PROJECTS.md`.
+
 ## Project Overview
 
 **xlab** is a multi-language laboratory codebase primarily written in Chinese context but with English code/documentation. It serves as a personal research and experimentation platform covering systems programming, data structures, algorithms, and database internals. The repository owner is a senior database kernel engineer with focus on OLAP systems, query optimizers, and distributed systems.
@@ -134,6 +138,19 @@ xlab/
 - **Tools**: bin/ utilities, Docker scripts, MySQL utilities
 
 ## Build Commands
+
+### Native Windows
+
+```powershell
+./tools/build-windows.ps1                                # Portable C++ build and tests
+./tools/build-windows.ps1 -Project all -Configuration Release
+./tools/build-windows.ps1 -Project rlab -Configuration Release
+```
+
+See `WINDOWS.md` for the supported module matrix. The script discovers Visual
+Studio's MSVC/CMake/Ninja tools and writes outputs to `%LOCALAPPDATA%/xlab-build`.
+Use Ninja with `\\wsl.localhost` source paths for WSL-hosted checkouts. The native
+`cclab` path builds a portable subset; Linux kernel/POSIX experiments use WSL.
 
 ### C++ (cc/cclab)
 ```bash

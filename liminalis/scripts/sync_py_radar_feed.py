@@ -11,6 +11,7 @@ from pathlib import Path
 
 from backend._shared.storage import business_uow
 from backend.radar import service as radar_service
+from backend.radar.identity import deduplicate_radar_items
 from backend.settings import get_settings
 
 DEFAULT_OUTPUT = Path(__file__).resolve().parents[1] / "src" / "data" / "pyRadarFeed.js"
@@ -35,16 +36,18 @@ async def export_feed(output: Path, limit: int) -> int:
         )
 
     result = result or {"items": [], "products": [], "contentTypes": [], "total_items": 0}
+    items = deduplicate_radar_items(result.get("items") or [])
     payload = {
         "source": "radar",
         "sourcePath": settings.business_database_name,
         "generatedAt": datetime.now().isoformat(timespec="seconds"),
         "limit": limit,
-        "totalItems": result.get("total_items", 0),
+        "sourceTotalItems": result.get("total_items", 0),
+        "totalItems": len(items),
         "latestSyncBatch": serialize_value(result.get("latestSyncBatch")),
         "products": result.get("products") or [],
         "contentTypes": result.get("contentTypes") or [],
-        "items": result.get("items") or [],
+        "items": items,
     }
 
     output.parent.mkdir(parents=True, exist_ok=True)

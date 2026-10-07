@@ -1,0 +1,58 @@
+[
+  {
+    "title": "Storage engine design notes for an embedded OLAP database",
+    "subreddit": "r/Database",
+    "score": 86,
+    "comments": 17,
+    "url": "https://www.reddit.com/r/Database/comments/example/storage_engine/"
+  },
+  {
+    "title": "Query optimizer memo structures and Cascades implementation notes",
+    "subreddit": "r/Database",
+    "score": 142,
+    "comments": 38,
+    "url": "https://www.reddit.com/r/Database/comments/example/optimizer_memo/"
+  },
+  {
+    "title": "Rust async runtime benchmarks under mixed storage workloads",
+    "subreddit": "r/rust",
+    "score": 231,
+    "comments": 64,
+    "url": "https://www.reddit.com/r/rust/comments/example/async_storage/"
+  },
+  {
+    "title": "C++ SIMD parsing techniques for columnar execution engines",
+    "subreddit": "r/cpp",
+    "score": 194,
+    "comments": 47,
+    "url": "https://www.reddit.com/r/cpp/comments/example/simd_parsing/"
+  },
+  {
+    "title": "Linux page cache behavior during sustained NVMe writes",
+    "subreddit": "r/linux",
+    "score": 175,
+    "comments": 52,
+    "url": "https://www.reddit.com/r/linux/comments/example/page_cache_nvme/"
+  },
+  {
+    "title": "Data engineering lessons from operating a lakehouse metadata service",
+    "subreddit": "r/dataengineering",
+    "score": 207,
+    "comments": 71,
+    "url": "https://www.reddit.com/r/dataengineering/comments/example/lakehouse_metadata/"
+  },
+  {
+    "title": "Self-hosted observability stack for database and storage latency",
+    "subreddit": "r/selfhosted",
+    "score": 153,
+    "comments": 44,
+    "url": "https://www.reddit.com/r/selfhosted/comments/example/database_observability/"
+  },
+  {
+    "title": "Homelab experiments with ZFS compression and database snapshots",
+    "subreddit": "r/homelab",
+    "score": 119,
+    "comments": 35,
+    "url": "https://www.reddit.com/r/homelab/comments/example/zfs_database/"
+  }
+]

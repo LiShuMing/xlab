@@ -35,8 +35,9 @@ public:
     auto NewIterator() const -> Iterator;
 
 private:
-    std::unique_ptr<SkipList<Slice, Slice>> list_;
+    // The SkipList constructor allocates from the arena; initialize it first.
     Arena arena_;
+    std::unique_ptr<SkipList<Slice, Slice>> list_;
     mutable std::shared_mutex mutex_;
 };
 

@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <atomic>
+#include <array>
 #include <cassert>
 #include <cstring>
 #include <functional>

@@ -162,13 +162,15 @@ class ConcreteColumn2 final
 
 
     void for_each_subcolumn(ColumnCallback callback) override {
-        ColumnPtr inner_column;;
+        ColumnPtr inner_column = std::move(_inner);
         callback(inner_column);
         _inner = ConcreteColumn::static_pointer_cast(std::move(inner_column));
 
-        ColumnPtr null_column;
-        callback(null_column);
-        _null_column = MNullColumn::static_pointer_cast(std::move(null_column));
+        if (_null_column) {
+            ColumnPtr null_column = std::move(_null_column);
+            callback(null_column);
+            _null_column = MNullColumn::static_pointer_cast(std::move(null_column));
+        }
     }
 
   public:
@@ -222,11 +224,16 @@ TEST_F(ColumnTest, TestMutate2) {
 TEST_F(ColumnTest, TestMutate3) {
     ColumnPtr x = ConcreteColumn2::create(ConcreteColumn::create(1));
     {
-        ColumnPtr y = IColumn::mutate(x);
+        MutableColumnPtr y = IColumn::mutate(x);
+        y->set(2);
+        EXPECT_EQ(x->get(), 1);
+        EXPECT_EQ(y->get(), 2);
         TRACE_COW("x, y", x, y);
     }
     {
         ColumnPtr y = IColumn::mutate(std::move(x));
+        EXPECT_FALSE(x);
+        EXPECT_EQ(y->get(), 1);
         TRACE_COW("x, y", x, y);
     }
 }

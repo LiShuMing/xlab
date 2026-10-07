@@ -1,0 +1,30 @@
+[
+  {
+    "title": "PostgreSQL News",
+    "url": "https://www.postgresql.org/news.rss"
+  },
+  {
+    "title": "ClickHouse Blog",
+    "url": "https://clickhouse.com/rss.xml"
+  },
+  {
+    "title": "CockroachDB Blog",
+    "url": "https://www.cockroachlabs.com/blog/index.xml"
+  },
+  {
+    "title": "Percona Database Performance Blog",
+    "url": "https://www.percona.com/blog/feed/"
+  },
+  {
+    "title": "ScyllaDB Blog",
+    "url": "https://www.scylladb.com/feed/"
+  },
+  {
+    "title": "PlanetScale Blog",
+    "url": "https://planetscale.com/blog/rss.xml"
+  },
+  {
+    "title": "Supabase Blog",
+    "url": "https://supabase.com/rss.xml"
+  }
+]

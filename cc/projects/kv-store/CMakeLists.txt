@@ -7,13 +7,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Build type
-if(NOT CMAKE_BUILD_TYPE)
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Build type" FORCE)
 endif()
 
 # Enable tests and benchmarks
 include(CTest)
-enable_testing()
+include(../../../cmake/XlabDependencies.cmake)
 
 # Use local thirdparty dependencies
 set(THIRDPARTY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../thirdparty)
@@ -28,49 +28,50 @@ target_include_directories(tinykv PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
-target_compile_options(tinykv PRIVATE
-    -Wall -Wextra -Wpedantic
-    -Werror=return-type
-    -Werror=uninitialized
-)
+xlab_target_defaults(tinykv)
 
 # GoogleTest from local submodule (out-of-tree requires binary dir)
-add_subdirectory(${THIRDPARTY_DIR}/googletest googletest-build EXCLUDE_FROM_ALL)
-add_subdirectory(${THIRDPARTY_DIR}/benchmark benchmark-build EXCLUDE_FROM_ALL)
+if(BUILD_TESTING)
+    xlab_require_googletest()
 
-# Unit tests
-add_executable(tinykv_memtable_test
-    tests/memtable/skiplist_test.cpp
-    tests/memtable/memtable_test.cpp
-)
-target_link_libraries(tinykv_memtable_test
-    tinykv
-    gtest_main
-)
-add_test(NAME tinykv_memtable_test COMMAND tinykv_memtable_test)
+    # Unit tests
+    add_executable(tinykv_memtable_test
+        tests/memtable/arena_test.cpp
+        tests/memtable/skiplist_test.cpp
+        tests/memtable/memtable_test.cpp
+    )
+    target_link_libraries(tinykv_memtable_test
+        tinykv
+        GTest::gtest_main
+    )
+    add_test(NAME tinykv_memtable_test COMMAND tinykv_memtable_test)
+    set_tests_properties(tinykv_memtable_test PROPERTIES TIMEOUT 60)
+    xlab_target_defaults(tinykv_memtable_test)
+endif()
 
 # Benchmarks
-add_executable(tinykv_memtable_bench
-    bench/memtable/memtable_bench.cpp
-)
-target_link_libraries(tinykv_memtable_bench
-    tinykv
-    benchmark::benchmark
-)
-set_target_properties(tinykv_memtable_bench PROPERTIES
-    EXCLUDE_FROM_ALL TRUE
-    EXCLUDE_FROM_DEFAULT_BUILD TRUE
-)
+if(XLAB_BUILD_BENCHMARKS)
+    xlab_require_benchmark()
+    add_executable(tinykv_memtable_bench
+        bench/memtable/memtable_bench.cpp
+    )
+    target_link_libraries(tinykv_memtable_bench
+        tinykv
+        benchmark::benchmark
+    )
+    xlab_target_defaults(tinykv_memtable_bench)
+endif()
 
 # Code style check (optional)
-add_custom_target(format
-    COMMAND clang-format -i
-        ${CMAKE_CURRENT_SOURCE_DIR}/include/tinykv/**/*.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/**/*.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/tests/**/*.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/bench/**/*.cpp
-    COMMENT "Formatting code with clang-format"
-)
+find_program(XLAB_CLANG_FORMAT clang-format)
+if(XLAB_CLANG_FORMAT)
+    file(GLOB_RECURSE format_sources CONFIGURE_DEPENDS
+        "include/tinykv/*.hpp" "src/*.cpp" "tests/*.cpp" "bench/*.cpp")
+    add_custom_target(format
+        COMMAND "${XLAB_CLANG_FORMAT}" -i ${format_sources}
+        COMMENT "Formatting code with clang-format"
+        VERBATIM)
+endif()
 
 # Install rules
 install(DIRECTORY include/tinykv DESTINATION include)

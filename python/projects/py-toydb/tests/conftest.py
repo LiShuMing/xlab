@@ -18,7 +18,10 @@ def db(request, tmp_path: Path):
     db_.drop_tables()
     db_.insert_multiple({'int': 1, 'char': c} for c in 'abc')
 
-    yield db_
+    try:
+        yield db_
+    finally:
+        db_.close()
 
 
 @pytest.fixture

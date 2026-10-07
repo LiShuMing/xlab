@@ -7,7 +7,6 @@ that write through async SQLAlchemy to PostgreSQL.
 from __future__ import annotations
 
 import asyncio
-import hashlib
 import ipaddress
 import logging
 import socket
@@ -23,6 +22,7 @@ from backend._shared.storage import business_uow
 from backend.radar.analysis import IngestionRequest, analyze_with_llm
 from backend.radar.extractor import ExtractedItem, Extractor
 from backend.radar.fetcher import Fetcher
+from backend.radar.identity import canonicalize_radar_url, radar_item_id
 from backend.radar.service import (
     get_radar_item_by_url,
     radar_item_to_dict,
@@ -91,6 +91,12 @@ async def ingest_link_task(
             await _mark_status(session, job_id, JobStatus.FAILED, error="抓取失败")
             raise
 
+        canonical_url = canonicalize_radar_url(result.get("url") or url)
+        existing = await get_radar_item_by_url(session, canonical_url)
+        if existing:
+            await _mark_status(session, job_id, JobStatus.DUPLICATE, item_id=existing.id)
+            return {"status": JobStatus.DUPLICATE.value, "item": radar_item_to_dict(existing)}
+
         try:
             analysis = await loop.run_in_executor(None, _llm_analyze, result, product, source, tags, note)
         except Exception:
@@ -98,10 +104,10 @@ async def ingest_link_task(
             raise
 
         # Save to PG
-        item_id = _hash_url(url)
+        item_id = radar_item_id(canonical_url)
         item_data = {
             "id": item_id,
-            "url": url,
+            "url": canonical_url,
             "title": analysis["title"],
             "original_title": result.get("title", ""),
             "published_date": _parse_date(result.get("published_at")),
@@ -114,10 +120,10 @@ async def ingest_link_task(
             "raw_content": result.get("content", ""),
             "sync_batch": date.today(),
         }
-        await upsert_radar_item(session, item_data)
-        await _mark_status(session, job_id, JobStatus.COMPLETED, item_id=item_id)
+        item = await upsert_radar_item(session, item_data)
+        await _mark_status(session, job_id, JobStatus.COMPLETED, item_id=item.id)
 
-        return {"status": JobStatus.COMPLETED.value, "item": item_data}
+        return {"status": JobStatus.COMPLETED.value, "item": radar_item_to_dict(item)}
 
 
 async def _mark_status(
@@ -197,10 +203,6 @@ def _select_best_item(items: list[ExtractedItem], url: str) -> ExtractedItem:
         )
     items.sort(key=lambda item: item.confidence, reverse=True)
     return items[0]
-
-
-def _hash_url(url: str) -> str:
-    return hashlib.sha256(url.strip().lower().encode()).hexdigest()[:16]
 
 
 def _parse_date(value: str | None) -> date | None:

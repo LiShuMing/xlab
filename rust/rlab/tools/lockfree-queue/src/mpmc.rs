@@ -1,194 +1,38 @@
-//! Multi-Producer Multi-Consumer Lock-free Queue
+//! Multi-producer multi-consumer queue with Crossbeam-managed reclamation.
 //!
-//! Implementation based on the Michael-Scott queue algorithm.
-//! This is the classic lock-free queue using CAS (Compare-And-Swap) operations.
-//!
-//! # Algorithm Overview
-//!
-//! ```text
-//! Head -> Node1 -> Node2 -> Node3 -> Tail
-//!         ↑                          ↑
-//!         │                          │
-//!       pop()                      push()
-//! ```
-//!
-//! ## Push Operation
-//! 1. Create new node
-//! 2. CAS tail.next from null to new node
-//! 3. If successful, CAS tail to new node
-//! 4. If step 3 fails (another thread succeeded), help advance tail
-//!
-//! ## Pop Operation
-//! 1. Load head pointer
-//! 2. Load head.next (first real node)
-//! 3. If null, queue is empty
-//! 4. CAS head to head.next
-//! 5. Return data from the node
-//!
-//! # Memory Ordering
-//!
-//! - `Acquire` on loads: Ensures we see all writes from other threads
-//! - `Release` on stores: Ensures other threads see our writes
-//! - `AcqRel` on CAS: Both acquire and release semantics
+//! The public API retains nonblocking push/pop semantics. Crossbeam's SegQueue
+//! owns queued values so no thread can access a freed dummy node.
 
-use crate::{Node, QueueError, ordering};
-use std::ptr::null_mut;
-use std::sync::atomic::{AtomicPtr, Ordering};
+use crate::QueueError;
+use crossbeam_queue::SegQueue;
 
-/// A lock-free multi-producer multi-consumer queue
-///
-/// This queue is unbounded and uses the Michael-Scott algorithm.
-/// It is safe to share between multiple threads.
+/// An unbounded, thread-safe multi-producer multi-consumer queue.
 pub struct MpmcQueue<T> {
-    /// Pointer to the dummy head node
-    /// Pop operations move this forward
-    head: AtomicPtr<Node<T>>,
-    /// Pointer to the tail node
-    /// Push operations append to this
-    tail: AtomicPtr<Node<T>>,
+    inner: SegQueue<T>,
 }
 
 impl<T> MpmcQueue<T> {
-    /// Create a new empty queue
+    /// Create an empty queue.
     pub fn new() -> Self {
-        // Create a dummy node that head and tail both point to
-        let dummy = Box::into_raw(Box::new(Node::dummy()));
-
         Self {
-            head: AtomicPtr::new(dummy),
-            tail: AtomicPtr::new(dummy),
+            inner: SegQueue::new(),
         }
     }
 
-    /// Push an item into the queue
+    /// Enqueue one owned value.
     pub fn push(&self, item: T) -> Result<(), QueueError> {
-        let new_node = Box::into_raw(Box::new(Node::new(item)));
-
-        loop {
-            // Load current tail
-            let tail = self.tail.load(ordering::LOAD);
-
-            // Load tail's next pointer
-            let next = unsafe { (*tail).next.load(ordering::LOAD) };
-
-            // Check if tail is still valid
-            if tail != self.tail.load(ordering::LOAD) {
-                continue; // Tail has changed, retry
-            }
-
-            if next.is_null() {
-                // Try to link new node at the end
-                match unsafe {
-                    (*tail)
-                        .next
-                        .compare_exchange(next, new_node, ordering::RMW, ordering::LOAD)
-                } {
-                    Ok(_) => {
-                        // Successfully linked, try to advance tail
-                        let _ = self.tail.compare_exchange(
-                            tail,
-                            new_node,
-                            ordering::RMW,
-                            ordering::LOAD,
-                        );
-                        return Ok(());
-                    }
-                    Err(_) => {
-                        // CAS failed, another thread succeeded
-                        // Help advance tail and retry
-                        let actual_next = unsafe { (*tail).next.load(ordering::LOAD) };
-                        if !actual_next.is_null() {
-                            let _ = self.tail.compare_exchange(
-                                tail,
-                                actual_next,
-                                ordering::RMW,
-                                ordering::LOAD,
-                            );
-                        }
-                    }
-                }
-            } else {
-                // Tail is lagging, help advance it
-                let _ = self
-                    .tail
-                    .compare_exchange(tail, next, ordering::RMW, ordering::LOAD);
-            }
-        }
+        self.inner.push(item);
+        Ok(())
     }
 
-    /// Pop an item from the queue
+    /// Remove the oldest value, or report that the queue is empty.
     pub fn pop(&self) -> Result<T, QueueError> {
-        loop {
-            // Load head
-            let head = self.head.load(ordering::LOAD);
-
-            // Load tail
-            let tail = self.tail.load(ordering::LOAD);
-
-            // Load head.next (first real node)
-            let next = unsafe { (*head).next.load(ordering::LOAD) };
-
-            // Check consistency
-            if head != self.head.load(ordering::LOAD) {
-                continue; // Head has changed, retry
-            }
-
-            if head == tail {
-                // Head equals tail, check if queue is empty
-                if next.is_null() {
-                    return Err(QueueError::Empty);
-                }
-                // Tail is lagging, help advance it
-                let _ = self
-                    .tail
-                    .compare_exchange(tail, next, ordering::RMW, ordering::LOAD);
-            } else {
-                // Queue is not empty
-                if next.is_null() {
-                    // Race condition: queue became empty
-                    return Err(QueueError::Empty);
-                }
-
-                // Try to move head forward
-                match self
-                    .head
-                    .compare_exchange(head, next, ordering::RMW, ordering::LOAD)
-                {
-                    Ok(_) => {
-                        // Successfully moved head
-                        // Extract data from the node
-                        let data = unsafe {
-                            let mut node = Box::from_raw(next);
-                            node.data.take().unwrap()
-                        };
-
-                        // Free the old dummy node
-                        unsafe {
-                            let _ = Box::from_raw(head);
-                        }
-
-                        return Ok(data);
-                    }
-                    Err(_) => {
-                        // CAS failed, retry
-                        continue;
-                    }
-                }
-            }
-        }
+        self.inner.pop().ok_or(QueueError::Empty)
     }
 
-    /// Check if the queue is empty
+    /// Return an instantaneous snapshot of the queue's empty state.
     pub fn is_empty(&self) -> bool {
-        let head = self.head.load(ordering::LOAD);
-        let tail = self.tail.load(ordering::LOAD);
-
-        if head == tail {
-            let next = unsafe { (*head).next.load(ordering::LOAD) };
-            next.is_null()
-        } else {
-            false
-        }
+        self.inner.is_empty()
     }
 }
 
@@ -197,25 +41,6 @@ impl<T> Default for MpmcQueue<T> {
         Self::new()
     }
 }
-
-impl<T> Drop for MpmcQueue<T> {
-    fn drop(&mut self) {
-        // Pop all remaining items
-        while self.pop().is_ok() {}
-
-        // Free the remaining dummy node
-        let head = self.head.load(Ordering::Relaxed);
-        if !head.is_null() {
-            unsafe {
-                let _ = Box::from_raw(head);
-            }
-        }
-    }
-}
-
-// SAFETY: MpmcQueue is safe to share between threads
-unsafe impl<T: Send> Send for MpmcQueue<T> {}
-unsafe impl<T: Send> Sync for MpmcQueue<T> {}
 
 #[cfg(test)]
 mod tests {

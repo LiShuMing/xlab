@@ -164,8 +164,8 @@ class FlatVector : public VectorBase {
   void SetNull(size_t index, bool is_null = true) { validity_.SetValid(index, !is_null); }
 
   // Slice access
-  Slice<T> Slice(size_t offset, size_t length) {
-    return Slice<T>(&data_[offset], length);
+  vagg::Slice<T> Slice(size_t offset, size_t length) {
+    return vagg::Slice<T>(&data_[offset], length);
   }
 
  private:

@@ -1,0 +1,215 @@
+[app]
+database = "var/tech-radar.sqlite3"
+timezone = "Asia/Shanghai"
+fail_fast = false
+
+[collectors.opencli]
+timeout_seconds = 120
+require_read_only = true
+# WSL cannot execute a Windows .cmd directly. Usually auto-detection works.
+# If needed, uncomment:
+# command = ["cmd.exe", "/d", "/s", "/c", "opencli"]
+
+[processing]
+plugins = ["quality-filter", "keyword-score", "topic-rule", "openai-enrich"]
+keywords = [
+  "C++", "Rust", "database", "OLAP", "optimizer", "storage",
+  "Linux", "kernel", "SIMD", "ClickHouse", "StarRocks", "DataFusion",
+]
+keyword_weight = 10.0
+priority_weight = 2.0
+
+[processing.quality]
+minimum_length = 24
+protect_priority = 100
+negative_keywords = [
+  "giveaway", "airdrop", "sponsored", "promo code", "crypto pump",
+  "free course", "free courses", "coupon", "udemy",
+]
+hard_negative_keywords = [
+  "nsfw", "porn", "onlyfans", "creampie", "nude", "xxx",
+]
+personal_relevance_keywords = [
+  "database", "sql", "olap", "query", "optimizer", "storage",
+  "linux", "kernel", "ebpf", "rust", "cargo", "c++", "cpp",
+  "compiler", "llvm", "simd", "cpu", "gpu", "nvme", "io_uring",
+  "distributed", "open source", "github", "benchmark", "performance",
+  "engineering", "observability", "kubernetes", "networking", "llm", "ai",
+]
+required_keywords = [
+  "database", "sql", "olap", "query", "optimizer", "storage",
+  "linux", "kernel", "ebpf", "rust", "cargo", "c++", "cpp",
+  "compiler", "llvm", "simd", "cpu", "gpu", "nvme", "io_uring",
+  "distributed", "open source", "github", "benchmark", "performance",
+  "programming", "software", "systems", "hardware", "algorithm",
+  "architecture", "security", "server", "code", "devops", "cloud",
+  "data", "observability", "kubernetes", "network", "llm", "ai", "agent",
+]
+
+[processing.author_weights]
+rustlang = 30
+duckdb = 30
+ClickHouseDB = 25
+ApacheArrow = 25
+andy_pavlo = 30
+BrendanGregg = 30
+jonhoo = 25
+matklad = 25
+
+# Optional LLM enrichment. The API key is read only from OPENAI_API_KEY.
+[processing.openai]
+enabled = false
+model = ""
+batch_size = 10
+relevance_weight = 0.5
+fail_open = true
+
+# One target can represent an account, list, personalized feed, search, or topic.
+# Personal actions are the highest-signal sources and always appear first.
+[[targets]]
+id = "x-liked"
+collector = "opencli"
+platform = "twitter"
+command = "likes"
+arguments = ["--limit", "100"]
+tags = ["x", "personal-curation", "liked"]
+priority = 100
+enabled = true
+
+[[targets]]
+id = "x-people-watchlist"
+collector = "opencli"
+platform = "twitter"
+command = "tweets"
+arguments = ["{subject}", "--limit", "15", "--page-delay", "1"]
+subjects = [
+  "ClickHouseDB", "duckdb", "rustlang", "andy_pavlo",
+  "BrendanGregg", "ApacheArrow", "jonhoo", "matklad",
+]
+tags = ["people", "watchlist", "trusted-author"]
+priority = 65
+enabled = true
+
+[[targets]]
+id = "x-topic-discovery"
+collector = "opencli"
+platform = "twitter"
+command = "search"
+arguments = [
+  "{subject}", "--product", "top", "--limit", "30",
+  "--exclude", "replies", "--top-by-engagement", "20",
+]
+subjects = [
+  "database internals OR query optimizer lang:en",
+  "ClickHouse OR StarRocks OR DuckDB OR DataFusion lang:en",
+  "storage engine OR NVMe OR io_uring lang:en",
+  "C++ compiler OR LLVM OR SIMD lang:en",
+  "Rust systems programming lang:en",
+  "Linux kernel OR eBPF OR scheduler lang:en",
+]
+tags = ["topic-discovery", "x"]
+priority = 50
+enabled = true
+
+[[targets]]
+id = "reddit-community-top"
+collector = "opencli"
+platform = "reddit"
+command = "subreddit"
+arguments = [
+  "{subject}", "--sort", "top", "--time", "week", "--limit", "30",
+]
+subjects = [
+  "Database", "rust", "cpp", "linux", "dataengineering",
+  "selfhosted", "homelab",
+]
+tags = ["community-top", "reddit"]
+priority = 45
+enabled = true
+
+[[targets]]
+id = "reddit-topic-discovery"
+collector = "opencli"
+platform = "reddit"
+command = "search"
+arguments = [
+  "{subject}", "--sort", "top", "--time", "week", "--limit", "25",
+]
+subjects = [
+  "query optimizer", "storage engine", "OLAP database",
+  "Rust database", "C++ performance", "Linux kernel performance",
+]
+tags = ["topic-discovery", "reddit"]
+priority = 50
+enabled = true
+
+[[targets]]
+id = "reddit-upvoted"
+collector = "opencli"
+platform = "reddit"
+command = "upvoted"
+arguments = ["--limit", "100"]
+tags = ["reddit", "personal-curation", "upvoted"]
+priority = 100
+enabled = true
+
+[[targets]]
+id = "x-following"
+collector = "opencli"
+platform = "twitter"
+command = "timeline"
+arguments = ["--type", "following", "--limit", "50"]
+tags = ["x", "following"]
+priority = 20
+enabled = true
+
+[[targets]]
+id = "x-clickhouse"
+collector = "opencli"
+platform = "twitter"
+command = "tweets"
+arguments = ["ClickHouseDB", "--limit", "20"]
+tags = ["database", "olap"]
+priority = 40
+enabled = true
+
+[[targets]]
+id = "reddit-database"
+collector = "opencli"
+platform = "reddit"
+command = "subreddit"
+arguments = ["Database", "--sort", "new", "--limit", "30"]
+tags = ["database", "reddit"]
+priority = 20
+enabled = true
+
+[[targets]]
+id = "reddit-rust"
+collector = "opencli"
+platform = "reddit"
+command = "subreddit"
+arguments = ["rust", "--sort", "new", "--limit", "30"]
+tags = ["rust", "reddit"]
+priority = 20
+enabled = true
+
+[[publishers]]
+id = "daily-markdown"
+plugin = "markdown"
+directory = "output/daily"
+limit = 300
+curated_threshold = 100
+priority_read_limit = 30
+writing_candidate_limit = 50
+topic_candidate_limit = 15
+people_limit = 25
+max_top_picks_per_author = 2
+max_top_picks_per_topic = 8
+enabled = true
+
+[[publishers]]
+id = "daily-jsonl"
+plugin = "jsonl"
+directory = "output/jsonl"
+limit = 2000
+enabled = true

@@ -1,6 +1,17 @@
 # Work-Stealing Thread Pool (WSTP)
 
-A production-quality work-stealing thread pool implementation in modern C++20, designed for learning and real-world use on macOS.
+A work-stealing thread pool experiment in modern C++20, with native Windows,
+Linux, and macOS build support.
+
+The current deque is a mutex-protected growing ring buffer, not a lock-free
+Chase-Lev implementation. It safely transfers task ownership between external
+producers, local workers, and thieves. `Stop()` drains accepted tasks and
+concurrent callers wait for worker termination. The memory-ordering examples
+below describe the earlier educational design.
+
+For Windows, run `./tools/build-windows.ps1 -Project thread-pool` from the
+repository root. Benchmarks are opt-in with `-Benchmarks`; manual CMake builds
+use `XLAB_BUILD_BENCHMARKS=ON`. See [Windows builds](../../../WINDOWS.md).
 
 ## Table of Contents
 
@@ -108,7 +119,7 @@ ThreadPool pool(4, false);  // false = use global mutex queue
 ThreadPool pool(4, true);   // true = use per-thread deques
 ```
 
-## Memory Ordering Deep Dive
+## Memory Ordering Deep Dive (Historical)
 
 This is the most important part for understanding concurrent programming.
 

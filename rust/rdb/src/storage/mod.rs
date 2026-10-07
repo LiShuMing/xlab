@@ -283,14 +283,17 @@ mod tests {
     
     #[tokio::test]
     async fn test_storage_engine_creation() {
-        let object_store = Arc::new(LocalFileSystemStore::new("/tmp/rdb_test".to_string()));
-        let engine = StorageEngine::new(object_store, "/tmp/rdb_test".to_string()).await;
+        let directory = tempfile::tempdir().unwrap();
+        let test_dir = directory.path().to_str().unwrap();
+        let object_store = Arc::new(LocalFileSystemStore::new(test_dir.to_string()));
+        let engine = StorageEngine::new(object_store, test_dir.to_string()).await;
         assert!(engine.is_ok());
     }
     
     #[tokio::test]
     async fn test_create_table() {
-        let test_dir = "/tmp/rdb_test_create_table";
+        let directory = tempfile::tempdir().unwrap();
+        let test_dir = directory.path().to_str().unwrap();
         let object_store = Arc::new(LocalFileSystemStore::new(test_dir.to_string()));
         let engine = StorageEngine::new(object_store, test_dir.to_string()).await.unwrap();
         
@@ -313,7 +316,8 @@ mod tests {
     
     #[tokio::test]
     async fn test_begin_txn() {
-        let test_dir = "/tmp/rdb_test_begin_txn";
+        let directory = tempfile::tempdir().unwrap();
+        let test_dir = directory.path().to_str().unwrap();
         let object_store = Arc::new(LocalFileSystemStore::new(test_dir.to_string()));
         let engine = StorageEngine::new(object_store, test_dir.to_string()).await.unwrap();
         
@@ -323,9 +327,8 @@ mod tests {
     
     #[tokio::test]
     async fn test_insert_and_scan() {
-        let test_dir = "/tmp/rdb_test_insert_scan";
-        // Clean up test directory
-        let _ = tokio::fs::remove_dir_all(test_dir).await;
+        let directory = tempfile::tempdir().unwrap();
+        let test_dir = directory.path().to_str().unwrap();
         
         let object_store = Arc::new(LocalFileSystemStore::new(test_dir.to_string()));
         let engine = StorageEngine::new(object_store, test_dir.to_string()).await.unwrap();

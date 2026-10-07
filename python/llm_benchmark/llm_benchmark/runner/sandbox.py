@@ -1,7 +1,8 @@
 """Subprocess-based code execution sandbox.
 
-Provides basic isolation: timeout, memory limit, blacklisted modules,
-and temporary directory execution.
+Legacy trusted-code runner: timeout, import blacklist and temporary working directory.
+NOT a security sandbox: it does not isolate filesystem/network or enforce max_memory_mb.
+Do not use it to execute untrusted model output on a normal user account.
 """
 
 from __future__ import annotations

@@ -14,6 +14,7 @@ Use the root documents by audience:
 | File | Audience | Purpose |
 | --- | --- | --- |
 | `README.md` | Humans | Project overview, navigation, and quick start. |
+| `PROJECTS.md` | Humans/agents | Complete project index, language map, and task routing. |
 | `AGENTS.md` | Coding agents | Repository rules, build/test commands, style conventions, and safety notes. |
 | `CLAUDE.md` | Claude Code compatibility | Thin pointer to `AGENTS.md` to avoid duplicated agent instructions. |
 | `SKILL.md` | Knowledge workflows | Personal knowledge-base and technical writing/capture workflow. |
@@ -23,6 +24,10 @@ Module-level files such as `cc/SKILL.md`, `python/SKILL.md`, or
 `rust/rlab/AGENTS.md` override or refine the root guidance for that subtree.
 
 ## Repository Map
+
+For every project path, nested workspace member, and third-party reference, see
+[PROJECTS.md](PROJECTS.md). It also maps common tasks to the relevant modules
+and identifies legacy directories without current source code.
 
 ```text
 xlab/
@@ -105,6 +110,21 @@ go test -race ./...             # -race is mandatory here
 
 `docs/` is an Obsidian vault of plain Markdown — there is no site generator at
 the repository root, so there is nothing to build or serve.
+
+## Windows Builds
+
+Native Windows build instructions and the module support matrix are in
+[WINDOWS.md](WINDOWS.md). From PowerShell, build/test the portable C++ projects
+or the selected multi-language group:
+
+```powershell
+./tools/build-windows.ps1
+./tools/build-windows.ps1 -Project all -Configuration Release
+```
+
+The script discovers Visual Studio's CMake/MSVC/Ninja tools and supports the
+current WSL share checkout, with outputs on the Windows disk. Linux-specific
+experiments continue to use WSL.
 
 ## Working Principles
 

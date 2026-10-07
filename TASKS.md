@@ -7,6 +7,19 @@ quality work. Keep task lists, migration notes, and refactoring plans here.
 Stable project navigation belongs in `README.md`; coding-agent rules belong in
 `AGENTS.md`; knowledge capture workflows belong in `SKILL.md`.
 
+## Windows Portability
+
+- [x] Add a native PowerShell build/test entry point with Visual Studio tool discovery.
+- [x] Share CMake test dependencies and separate MSVC/Unix compiler options.
+- [x] Build a portable cclab subset, TinyKV, query-engine, and thread-pool together.
+- [x] Repair queue ownership, shutdown, Arena alignment, and initialization defects found by Windows tests.
+- [x] Package and test ToyDB, and isolate RDB tests from hard-coded Unix directories.
+- [x] Add Windows/Ubuntu CI definitions and a module support matrix in `WINDOWS.md`.
+- [ ] Complete Windows ports of the remaining cclab components and serialization/SIMD labs.
+- [ ] Audit native extensions, LLVM/ANTLR, Tauri, and service-dependent applications separately.
+- [ ] Validate Java, Go, and Haskell with their Windows toolchains.
+- [ ] Keep Linux kernel/POSIX API experiments runnable in WSL.
+
 ## Overview
 
 重构多语言实验室仓库xlab，将各语言项目拆分为独立项目，每个项目使用独立Context，并创建现代LLM项目必备文件，丰富测试覆盖率，标记无用文件。

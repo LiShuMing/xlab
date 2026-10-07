@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime
+from datetime import UTC, date, datetime
 from typing import Any
 
 from sqlalchemy import func, select, text
@@ -12,6 +12,7 @@ from backend._shared.jobs import TERMINAL_JOB_STATUSES, JobStatus
 from backend._shared.schemas import page_response
 from backend._shared.serializers import domain_from_url, isoformat
 from backend.radar.db_models import RadarIngestionJob, RadarItem
+from backend.radar.identity import canonicalize_radar_url, radar_item_id
 
 
 async def query_radar_items(
@@ -109,9 +110,11 @@ async def query_radar_items(
 
 
 async def upsert_radar_item(session: AsyncSession, item_data: dict[str, Any]) -> RadarItem:
+    canonical_url = canonicalize_radar_url(item_data["url"])
+    stable_id = radar_item_id(canonical_url)
     item = RadarItem(
-        id=item_data["id"],
-        url=item_data["url"],
+        id=stable_id,
+        url=canonical_url,
         title=item_data.get("title") or "",
         original_title=item_data.get("original_title")
         or item_data.get("originalTitle")
@@ -127,23 +130,37 @@ async def upsert_radar_item(session: AsyncSession, item_data: dict[str, Any]) ->
         raw_content=item_data.get("raw_content") or item_data.get("rawContent") or "",
         sync_batch=_parse_date(item_data.get("sync_batch") or item_data.get("syncBatch")),
     )
-    existing = await session.get(RadarItem, item.id)
+    candidate_ids = [stable_id, item_data.get("id"), *(item_data.get("legacy_ids") or [])]
+    existing = None
+    for candidate_id in dict.fromkeys(value for value in candidate_ids if value):
+        existing = await session.get(RadarItem, candidate_id)
+        if existing is not None:
+            break
+    if existing is None:
+        candidate_urls = [item_data["url"], *(item_data.get("legacy_urls") or [])]
+        existing = await _get_radar_item_by_urls(session, candidate_urls)
     if existing:
+        existing.url = canonical_url
         for key in (
-            "url",
             "title",
             "original_title",
-            "published_date",
             "product",
-            "content_type",
-            "summary",
-            "tags",
-            "sources",
-            "fetched_at",
-            "raw_content",
-            "sync_batch",
         ):
-            setattr(existing, key, getattr(item, key))
+            incoming = getattr(item, key)
+            if incoming:
+                setattr(existing, key, incoming)
+        for key in ("summary", "raw_content"):
+            incoming = getattr(item, key)
+            if len(incoming) > len(getattr(existing, key)):
+                setattr(existing, key, incoming)
+        incoming_content_type = item_data.get("content_type") or item_data.get("contentType")
+        if incoming_content_type:
+            existing.content_type = incoming_content_type
+        existing.tags = _merge_values(existing.tags, item.tags)
+        existing.sources = _merge_values(existing.sources, item.sources)
+        existing.published_date = item.published_date or existing.published_date
+        existing.fetched_at = _latest_value(existing.fetched_at, _parse_datetime_value(item.fetched_at))
+        existing.sync_batch = _latest_value(existing.sync_batch, item.sync_batch)
         session.add(existing)
         return existing
     session.add(item)
@@ -151,7 +168,15 @@ async def upsert_radar_item(session: AsyncSession, item_data: dict[str, Any]) ->
 
 
 async def get_radar_item_by_url(session: AsyncSession, url: str) -> RadarItem | None:
-    result = await session.execute(select(RadarItem).where(RadarItem.url == url).limit(1))
+    return await _get_radar_item_by_urls(session, [url])
+
+
+async def _get_radar_item_by_urls(session: AsyncSession, urls: list[str]) -> RadarItem | None:
+    candidates: set[str] = set()
+    for url in urls:
+        candidates.add(url.strip())
+        candidates.add(canonicalize_radar_url(url))
+    result = await session.execute(select(RadarItem).where(RadarItem.url.in_(candidates)).limit(1))
     return result.scalar_one_or_none()
 
 
@@ -172,7 +197,7 @@ async def create_ingestion_job(
 ) -> RadarIngestionJob:
     job = RadarIngestionJob(
         id=job_id,
-        url=url,
+        url=canonicalize_radar_url(url),
         status=JobStatus.QUEUED.value,
         submitted_by=submitted_by,
         submitted_at=func.now(),
@@ -263,17 +288,41 @@ def ingestion_job_to_dict(job: RadarIngestionJob) -> dict[str, Any]:
 
 def _parse_date(value: Any) -> date | None:
     if isinstance(value, date) and not isinstance(value, datetime):
-        return value
+        parsed = value
+        return parsed if parsed.year > 1900 else None
     if isinstance(value, datetime):
-        return value.date()
+        parsed = value.date()
+        return parsed if parsed.year > 1900 else None
     if isinstance(value, str) and value:
-        return date.fromisoformat(value[:10])
+        parsed = date.fromisoformat(value[:10])
+        return parsed if parsed.year > 1900 else None
     return None
 
 
 def _parse_datetime(value: Any) -> datetime | None:
     if isinstance(value, datetime):
-        return value
+        parsed = value
+        return parsed if parsed.tzinfo else parsed.replace(tzinfo=UTC)
     if isinstance(value, str) and value:
-        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        return parsed if parsed.tzinfo else parsed.replace(tzinfo=UTC)
     return None
+
+
+def _parse_datetime_value(value: Any) -> datetime | None:
+    return value if isinstance(value, datetime) else None
+
+
+def _merge_values(existing: list[str] | None, incoming: list[str] | None) -> list[str]:
+    return list(dict.fromkeys([*(existing or []), *(incoming or [])]))
+
+
+def _latest_value(existing: Any, incoming: Any) -> Any:
+    if incoming is None:
+        return existing
+    if existing is None:
+        return incoming
+    try:
+        return max(existing, incoming)
+    except TypeError:
+        return incoming

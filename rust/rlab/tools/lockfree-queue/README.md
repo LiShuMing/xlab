@@ -2,6 +2,13 @@
 
 用于学习并发编程和原子操作的线程安全队列实现。
 
+当前可运行实现通过 Crossbeam `SegQueue` 管理无界队列的所有权和内存回收，
+有界队列使用 `ArrayQueue`，保留原有 push/pop API。原始裸指针实现会释放仍被
+队列引用的节点，在 Windows 测试中触发堆损坏；下文 Michael-Scott 和消费者
+缓存说明是历史设计资料。MPSC 接口现在也支持安全的多消费者访问。
+
+Windows 构建入口见仓库根目录的 `WINDOWS.md`。
+
 ## 项目结构
 
 

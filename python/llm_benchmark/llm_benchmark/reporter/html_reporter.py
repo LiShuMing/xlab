@@ -281,12 +281,12 @@ def generate_html_report(result: dict[str, Any]) -> str:
     Returns:
         Complete HTML string ready to write to a file.
     """
-    from jinja2 import Template
+    from jinja2 import Environment
 
     meta = result["meta"]
     results = result["results"]
 
-    template = Template(RESULT_VIS_HTML)
+    template = Environment(autoescape=True).from_string(RESULT_VIS_HTML)
     return template.render(
         dataset=meta["dataset"],
         model=meta["model"],
