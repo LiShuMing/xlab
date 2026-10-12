@@ -119,6 +119,42 @@ export function AboutContent({ compact = false }) {
           </div>
         )}
 
+        {!compact && (
+          <div className="growth-panel">
+            <div>
+              <SectionLabel>关于我们 · Company</SectionLabel>
+              <h3>杭州普昇商贸有限公司</h3>
+            </div>
+            <div className="manifesto-body" style={{ marginTop: '1rem' }}>
+              <p>
+                Liminalis 是杭州普昇商贸有限公司旗下的知识品牌。
+                <br />
+                普昇商贸是一家综合贸易企业，业务涵盖多品类的商品贸易与供应链服务，
+                致力于为客户提供高效、可靠的贸易解决方案。
+              </p>
+              <p>
+                公司秉承「务实、开放、长期主义」的经营理念，
+                在商业实践中追求品质与效率的平衡，
+                同时通过 Liminalis 等品牌探索知识传播与个人成长的新可能。
+              </p>
+            </div>
+            <div className="growth-grid">
+              <article>
+                <h4>主营业务</h4>
+                <p>多品类综合贸易，覆盖商品采购、渠道拓展与供应链管理服务。</p>
+              </article>
+              <article>
+                <h4>核心价值</h4>
+                <p>务实诚信、品质优先、长期合作，与客户和伙伴共同成长。</p>
+              </article>
+              <article>
+                <h4>品牌延伸</h4>
+                <p>通过 Liminalis 等知识品牌，将商业经验转化为可分享的知识与洞察。</p>
+              </article>
+            </div>
+          </div>
+        )}
+
         {compact && (
           <a href="/about" className="manifesto-link">
             阅读完整介绍 <ArrowRight size={15} />
