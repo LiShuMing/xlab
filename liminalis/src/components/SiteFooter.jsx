@@ -10,6 +10,9 @@ export function SiteFooter() {
         <a href="/about">关于我们</a>
         <a href="mailto:ming.moriarty@gmail.com">联系</a>
       </div>
+      <p className="footer-company">
+        Liminalis 是杭州普昇商贸有限公司旗下知识品牌，专注综合贸易与知识探索。
+      </p>
       <p>© 2026 Liminalis. 为自驱者而建。</p>
     </footer>
   );
