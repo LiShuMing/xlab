@@ -18,6 +18,13 @@ def _reset_settings_cache(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
     monkeypatch.delenv("RADAR_ADMIN_PASSWORD_HASH", raising=False)
     monkeypatch.delenv("CORS_ORIGINS", raising=False)
     monkeypatch.delenv("COOKIE_SECURE", raising=False)
+    # Blank out WeChat OAuth config that may come from a real ~/.env.
+    for name in (
+        "WECHAT_OFFICIAL_APP_ID",
+        "WECHAT_OFFICIAL_APP_SECRET",
+        "WECHAT_OFFICIAL_OAUTH_REDIRECT_URI",
+    ):
+        monkeypatch.setenv(name, "")
 
     from backend.settings import get_settings
 

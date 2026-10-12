@@ -37,7 +37,7 @@ const pyRadarFeed = {
 """.strip(),
         encoding="utf-8",
     )
-    client.app.dependency_overrides[get_settings] = lambda: Settings(xlab_root=tmp_path, _env_file=None)
+    client.app.dependency_overrides[get_settings] = lambda: Settings(xlab_root=tmp_path, data_dir=tmp_path / "data", _env_file=None)
     try:
         response = client.get("/api/radar/items?per_page=1")
     finally:

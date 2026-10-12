@@ -26,5 +26,37 @@
   {
     "title": "Supabase Blog",
     "url": "https://supabase.com/rss.xml"
+  },
+  {
+    "title": "DuckDB News",
+    "url": "https://duckdb.org/feed.xml"
+  },
+  {
+    "title": "DuckDB Releases",
+    "url": "https://github.com/duckdb/duckdb/releases.atom"
+  },
+  {
+    "title": "ClickHouse Releases",
+    "url": "https://github.com/ClickHouse/ClickHouse/releases.atom"
+  },
+  {
+    "title": "Trino Blog",
+    "url": "https://trino.io/feed.xml"
+  },
+  {
+    "title": "Trino Releases",
+    "url": "https://github.com/trinodb/trino/releases.atom"
+  },
+  {
+    "title": "Apache Iceberg Releases",
+    "url": "https://github.com/apache/iceberg/releases.atom"
+  },
+  {
+    "title": "ReadySet Releases",
+    "url": "https://github.com/readysettech/readyset/releases.atom"
+  },
+  {
+    "title": "Daniel Lemire Blog",
+    "url": "https://lemire.me/blog/feed/"
   }
 ]

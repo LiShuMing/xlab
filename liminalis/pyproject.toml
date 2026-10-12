@@ -30,7 +30,7 @@ dependencies = [
     "python-jose[cryptography]>=3.3.0",
     "passlib[bcrypt]>=1.7.4",
     # Absorbed radar / invest / ego runtime dependencies
-    "httpx>=0.26.0",
+    "httpx>=0.26.0,<0.28",  # starlette<0.36 TestClient needs httpx<0.28
     "hishel>=1.2.0",
     "openai>=1.0.0",
     "python-dotenv>=1.0.0",
