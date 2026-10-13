@@ -229,7 +229,10 @@ FragmentTutor、知识库、排除项和运行数据在白名单清理后仍保�
   每个路由对应现存构建清单。当前云端无 PowerShell/MSVC，原生执行由远程 Windows CI 核验。
 - 96 个迁移目的地文档链接与已验收目标树匹配；git diff --check 通过。
   逐 blob 对比确认除明确列出的源码/导航/构建变更外，原有跟踪内容保持一致。
-- 远程 Windows/Linux CI 将按最终 PR HEAD 单独核验；结果记录在 PR 中，不能以本地通过替代。
+- 首次远程运行 [38437060710](https://github.com/LiShuMing/xlab/actions/runs/38437060710)
+  的 Windows jobs 在 checkout 阶段因既有 Java 尾空格文件名失败，未执行测试；Linux 构建不受影响。
+  修复仅将 Windows checkout 缩小至各 job 的真实项目范围，保留原 Java 文件和全部剩余项目代码。
+- 远程 Windows/Linux CI 按最终 PR HEAD 单独核验；结果记录在 PR 中，不能以本地通过替代。
 
 ## 回滚方案
 
