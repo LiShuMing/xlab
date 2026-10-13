@@ -8,6 +8,8 @@ export const radarTypeLabels = {
   tutorial: '教程',
   engine: '引擎',
   paper: '论文',
+  performance: '性能',
+  docs: '文档',
   other: '文章',
 };
 

@@ -61,7 +61,8 @@ cd /Users/lism/work/xlab/liminalis
 PostgreSQL lets Liminalis simplify around one durable store:
 
 - Radar feed: keep `radar_items` normalized enough for filters, but store tags and sources as arrays for simple ingestion.
-- Search: current migration keeps query semantics first. For performance, add a maintained `tsvector` search column with a GIN index instead of an expression index.
+- Search: Radar uses a matching `to_tsvector` expression and GIN index over title, product,
+  summary, and tags. A maintained generated column remains an option if the indexed document grows.
 - Admin jobs: use `radar_ingestion_jobs` for status tracking.
 - Invest reports: today's report cache now uses `invest_daily_reports` through SQLAlchemy. CLI, scheduler, notifier, and HTTP routes all share the same service layer.
 - Ego state: keep role definitions in code for now, but move chat sessions, records, memories, and profile snapshots into namespaced tables under the same DB.
@@ -72,6 +73,25 @@ For module-level boundaries and shared library conventions, see
 
 ## Suggested Next Refactor Steps
 
-1. Add a maintained `tsvector` column/index for Radar search if query volume grows.
-2. Split long-running Radar fetch/LLM work so database transactions are opened only for status/item writes.
-3. Add storage drift checks to CI for Alembic head, table presence, and service-layer transaction boundaries.
+1. Move startup collection to a singleton scheduled worker when the API runs with multiple workers.
+2. Add storage drift checks to CI for Alembic head, table presence, and service-layer transaction boundaries.
+3. Add a reviewed relevance corpus for ranking and summary factuality regression tests.
+
+## Password-file authentication
+
+Set `PGSQL_PASSFILE=~/.pgpass` (or `PGPASSFILE`) to let libpq/asyncpg read the
+password file directly. Keep it at mode `0600`; libpq ignores group/world-readable
+password files. An explicitly selected passfile takes precedence over an old
+password in environment settings or a DSN, so the generated sync/async DSNs do
+not contain that password. Host, port, user and database must still be selected
+explicitly; a password file with multiple instances does not select a server.
+
+```bash
+PGSQL_URL=db.example.com PGSQL_PORT=5432 PGSQL_USER=xlab_admin \
+PGSQL_DATABASE=llm_wiki PGSQL_PASSFILE="$HOME/.pgpass" PGSQL_SSLMODE=require \
+.venv/bin/python -m scripts.radar_quality --refresh --rounds 2
+```
+
+A VPC-only endpoint additionally needs a reachable network route or an existing
+bastion/tunnel. Password-file authentication cannot resolve a TCP timeout. Do not
+replace the intended remote database with an empty local database to pass an audit.

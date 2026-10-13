@@ -21,6 +21,7 @@ import {
 
 export function RadarPage({ radarItems, pyRadarFeed }) {
   const [query, setQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
   const [activeType, setActiveType] = useState('all');
   const [activeProduct, setActiveProduct] = useState('all');
   const [feedPayload, setFeedPayload] = useState(fallbackRadarPayload);
@@ -32,45 +33,47 @@ export function RadarPage({ radarItems, pyRadarFeed }) {
   const [linkForm, setLinkForm] = useState({ url: '', product: '', source: '', tags: '', note: '' });
   const [job, setJob] = useState(null);
   const [adminError, setAdminError] = useState('');
-  const typeFilters = ['all', ...new Set((feedPayload.contentTypes ?? []).map((item) => item.name).filter(Boolean))].slice(0, 7);
-  const productFilters = (feedPayload.products ?? []).slice(0, 10);
+  const typeFilters = ['all', ...new Set((feedPayload.contentTypes ?? []).map((item) => item.name).filter(Boolean))];
+  const productFilters = feedPayload.products ?? [];
   const visibleItems = feedPayload.items ?? [];
 
   useEffect(() => {
-    let cancelled = false;
+    const timer = window.setTimeout(() => setDebouncedQuery(query), 300);
+    return () => window.clearTimeout(timer);
+  }, [query]);
+
+  useEffect(() => {
+    const controller = new AbortController();
     const params = new URLSearchParams({
       page: '1',
       per_page: '80',
       type: activeType,
       product: activeProduct,
-      q: query,
+      q: debouncedQuery,
     });
 
     setFeedLoading(true);
-    fetchJson(`/api/radar/items?${params.toString()}`)
+    fetchJson(`/api/radar/items?${params.toString()}`, { signal: controller.signal })
       .then((data) => {
-        if (!cancelled) {
-          setFeedPayload({
-            ...data,
-            latestSyncBatch: data.latestSyncBatch ?? pyRadarFeed.latestSyncBatch,
-          });
-          setFeedError('');
-        }
+        setFeedPayload({
+          ...data,
+          latestSyncBatch: data.latestSyncBatch ?? pyRadarFeed.latestSyncBatch,
+        });
+        setFeedError(data.degraded ? '数据库暂不可用，当前显示缓存快照。' : '');
       })
       .catch((error) => {
-        if (!cancelled) {
-          setFeedPayload(fallbackRadarPayload());
-          setFeedError(error.message);
-        }
+        if (error.name === 'AbortError') return;
+        setFeedPayload(fallbackRadarPayload());
+        setFeedError(`服务端请求失败，当前显示本地快照：${error.message}`);
       })
       .finally(() => {
-        if (!cancelled) setFeedLoading(false);
+        if (!controller.signal.aborted) setFeedLoading(false);
       });
 
     return () => {
-      cancelled = true;
+      controller.abort();
     };
-  }, [activeType, activeProduct, query]);
+  }, [activeType, activeProduct, debouncedQuery, pyRadarFeed.latestSyncBatch]);
 
   useEffect(() => {
     fetchJson('/api/admin/me')
@@ -149,7 +152,10 @@ export function RadarPage({ radarItems, pyRadarFeed }) {
           <p>
             把数据库世界里值得停下来的变化，整理成一条安静的研究流：新版本、架构文章、性能讨论和工程实践，都可以按主题与来源慢慢读。
           </p>
-          {feedError && <p className="radar-api-note">当前使用本地快照，服务端暂不可用：{feedError}</p>}
+          {feedPayload.storage === 'artifact' && !feedPayload.degraded && (
+            <p className="radar-api-note">本地采集模式 · 展示当前采集结果</p>
+          )}
+          {feedError && <p className="radar-api-note">{feedError}</p>}
         </div>
         <div className="radar-hero-panel">
           <div>
@@ -231,13 +237,15 @@ export function RadarPage({ radarItems, pyRadarFeed }) {
               <article key={item.id} className="radar-item">
                 <div className="radar-item-date">
                   <CalendarDays size={15} />
-                  <span>{formatRadarDate(item.publishedDate)}</span>
+                  <span>{item.channel === 'release' && item.site === 'github.com' ? '源更新 · ' : ''}{formatRadarDate(item.publishedDate)}</span>
                 </div>
                 <div className="radar-item-main">
                   <div className="radar-item-meta">
                     <span>{item.product}</span>
                     <span>{radarTypeLabel(item.contentType)}</span>
                     <span>{radarReadingSignal(item)}</span>
+                    {item.channel && <span>{item.channel}</span>}
+                    <span>{item.analysisProvider === 'llm' ? 'AI 摘要 · 附原文摘录' : '原文摘录'}</span>
                   </div>
                   <h3>
                     <a href={item.url} target="_blank" rel="noreferrer">
@@ -246,6 +254,18 @@ export function RadarPage({ radarItems, pyRadarFeed }) {
                   </h3>
                   {item.originalTitle !== item.title && <p className="radar-original">{item.originalTitle}</p>}
                   <p className="radar-summary">{item.summary || '暂无摘要，保留原始链接以便继续阅读。'}</p>
+                  {item.evidence?.length > 0 && (
+                    <details className="radar-evidence">
+                      <summary>核对原文依据（{item.evidence.length}）</summary>
+                      {item.evidence.map((entry, index) => (
+                        <blockquote key={`${item.id}-evidence-${index}`}>
+                          {entry.claim && <p>{entry.claim}</p>}
+                          <p>{entry.text}</p>
+                          <a href={entry.url || item.url} target="_blank" rel="noreferrer">查看来源</a>
+                        </blockquote>
+                      ))}
+                    </details>
+                  )}
                   <div className="radar-tags">
                     {(item.tags?.length ? item.tags : [item.site]).slice(0, 5).map((tag) => (
                       <span key={`${item.id}-${tag}`}>{tag}</span>

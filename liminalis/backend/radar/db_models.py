@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import date, datetime
 from typing import Any
 
-from sqlalchemy import ARRAY, JSON, Date, DateTime, ForeignKey, Index, Text
+from sqlalchemy import ARRAY, JSON, Date, DateTime, Float, ForeignKey, Index, Integer, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.db.base import Base
@@ -20,6 +20,10 @@ class RadarItem(Base):
     original_title: Mapped[str] = mapped_column(Text, nullable=False, server_default="")
     published_date: Mapped[date | None] = mapped_column(Date, nullable=True)
     product: Mapped[str] = mapped_column(Text, nullable=False, server_default="")
+    channel: Mapped[str] = mapped_column(Text, nullable=False, server_default="web")
+    source_id: Mapped[str] = mapped_column(Text, nullable=False, server_default="")
+    authority: Mapped[str] = mapped_column(Text, nullable=False, server_default="community")
+    author: Mapped[str | None] = mapped_column(Text, nullable=True)
     content_type: Mapped[str] = mapped_column(Text, nullable=False, server_default="blog")
     summary: Mapped[str] = mapped_column(Text, nullable=False, server_default="")
     tags: Mapped[list[str]] = mapped_column(ARRAY(Text), nullable=False, server_default="{}")
@@ -29,6 +33,17 @@ class RadarItem(Base):
     )
     raw_content: Mapped[str] = mapped_column(Text, nullable=False, server_default="")
     sync_batch: Mapped[date | None] = mapped_column(Date, nullable=True)
+    version: Mapped[str | None] = mapped_column(Text, nullable=True)
+    components: Mapped[list[str]] = mapped_column(ARRAY(Text), nullable=False, server_default="{}")
+    evidence: Mapped[list[dict[str, Any]]] = mapped_column(JSON, nullable=False, server_default="[]")
+    confidence: Mapped[float] = mapped_column(Float, nullable=False, server_default="0")
+    score: Mapped[float] = mapped_column(Float, nullable=False, server_default="0")
+    rank: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    rank_reasons: Mapped[list[str]] = mapped_column(ARRAY(Text), nullable=False, server_default="{}")
+    content_hash: Mapped[str] = mapped_column(Text, nullable=False, server_default="")
+    analysis_provider: Mapped[str] = mapped_column(Text, nullable=False, server_default="extractive")
+    analysis_model: Mapped[str | None] = mapped_column(Text, nullable=True)
+    prompt_version: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     ingestion_jobs: Mapped[list[RadarIngestionJob]] = relationship(back_populates="item", lazy="raise")
 
@@ -41,6 +56,8 @@ class RadarItem(Base):
         ),
         Index("idx_radar_items_product", product),
         Index("idx_radar_items_content_type", content_type),
+        Index("idx_radar_items_source_id", source_id),
+        Index("idx_radar_items_score", score.desc(), published_date.desc().nullslast()),
         Index("idx_radar_items_published_date", published_date.desc().nullslast()),
         Index("idx_radar_items_tags", tags, postgresql_using="gin"),
     )

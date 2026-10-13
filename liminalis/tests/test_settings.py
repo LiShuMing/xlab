@@ -413,3 +413,40 @@ def test_production_passes_with_real_secrets(monkeypatch: pytest.MonkeyPatch) ->
     settings = Settings()
     assert settings.is_production is True
     assert len(settings.session_secret) >= 32
+
+
+@pytest.mark.parametrize("url", [None, "postgresql://admin:stale-password@db.example:5432/lab"])
+def test_explicit_pgpass_removes_stale_password_from_driver_urls(tmp_path, url):
+    from urllib.parse import parse_qs, urlsplit
+
+    from backend.settings import Settings
+
+    passfile = tmp_path / "pgpass"
+    settings = Settings(
+        _env_file=None,
+        pgsql_url=url,
+        pgsql_host="db.example",
+        pgsql_port=5432,
+        pgsql_user="admin",
+        pgsql_password="stale-password",
+        pgsql_database="lab",
+        pgsql_passfile=passfile,
+        pgsql_sslmode="require",
+    )
+    assert settings.postgres_configured
+    for dsn in [settings.postgres_dsn, settings.postgres_async_dsn]:
+        assert "stale-password" not in dsn
+        parsed = urlsplit(dsn)
+        assert parsed.username == "admin"
+        assert parsed.password is None
+        assert parse_qs(parsed.query)["passfile"] == [str(passfile)]
+
+
+def test_pgpass_can_configure_postgres_without_env_password(tmp_path):
+    from backend.settings import Settings
+
+    settings = Settings(
+        _env_file=None, pgsql_host="db.example", pgsql_user="admin", pgsql_passfile=tmp_path / "pgpass"
+    )
+    assert settings.postgres_configured
+    assert settings.postgres_async_dsn.startswith("postgresql+asyncpg://admin@db.example:5432/")

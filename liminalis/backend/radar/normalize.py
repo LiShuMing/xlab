@@ -1,13 +1,14 @@
 """Normalize and deduplicate extracted items."""
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from difflib import SequenceMatcher
 
-from backend._shared.content import keyword_snippets
+from backend._shared.content import extract_versions, keyword_snippets
 from backend._shared.serializers import domain_from_url, parse_datetime, utc_now
 from backend.radar.extractor import ExtractedItem
+from backend.radar.identity import canonicalize_radar_url
 
 
 @dataclass
@@ -33,6 +34,12 @@ class NormalizedItem:
 
     # Evidence
     snippets: list[str]
+    tags: list[str] = field(default_factory=list)
+    channel: str = "web"
+    source_id: str = ""
+    authority: str = "community"
+    author: str | None = None
+    feed_hash: str = ""
 
 
 class Normalizer:
@@ -121,33 +128,39 @@ class Normalizer:
             return []
 
         normalized: list[NormalizedItem] = []
+        by_url: dict[str, NormalizedItem] = {}
+        buckets: dict[tuple[str, str], list[NormalizedItem]] = {}
 
         for item in items:
             # Skip error items with zero confidence
             if item.confidence <= 0:
                 continue
 
-            # Check for duplicates
-            is_duplicate = False
-            for _i, existing in enumerate(normalized):
-                # Same URL
-                if item.url == existing.url:
-                    is_duplicate = True
-                    break
+            date_hash = self.extract_date_hash(item)
+            canonical_url = canonicalize_radar_url(item.url)
+            existing = by_url.get(canonical_url)
+            if existing is None:
+                bucket_key = (item.product.casefold(), date_hash)
+                item_versions = set(extract_versions(item.title, ""))
+                existing = next(
+                    (
+                        candidate
+                        for candidate in buckets.get(bucket_key, [])
+                        if self.is_similar(item.title, candidate.title)
+                        and item_versions == set(extract_versions(candidate.title, ""))
+                    ),
+                    None,
+                )
 
-                # Similar title + same product + same date
-                if (
-                    self.is_similar(item.title, existing.title)
-                    and item.product == existing.product
-                    and self.extract_date_hash(item) == existing.date_hash
-                ):
-                    # Merge sources
-                    if item.url not in existing.sources:
-                        existing.sources.append(item.url)
-                    is_duplicate = True
-                    break
-
-            if is_duplicate:
+            if existing is not None:
+                if item.url not in existing.sources:
+                    existing.sources.append(item.url)
+                existing.tags = list(dict.fromkeys([*existing.tags, *item.tags]))[:8]
+                if len(item.content) > len(existing.content):
+                    existing.content = item.content
+                    existing.snippets = self.extract_snippets(item.content, item.title)
+                    existing.feed_hash = item.feed_hash
+                by_url[canonical_url] = existing
                 continue
 
             # Create normalized item
@@ -159,14 +172,22 @@ class Normalizer:
                 published_at=item.published_at,
                 normalized_title=self.normalize_title(item.title),
                 domain=self.extract_domain(item.url),
-                date_hash=self.extract_date_hash(item),
+                date_hash=date_hash,
                 content_type=item.content_type,
                 confidence=item.confidence,
                 sources=[item.url],
                 snippets=self.extract_snippets(item.content, item.title),
+                tags=item.tags,
+                channel=item.channel,
+                source_id=item.source_id,
+                authority=item.authority,
+                author=item.author,
+                feed_hash=item.feed_hash,
             )
 
             normalized.append(norm_item)
+            by_url[canonical_url] = norm_item
+            buckets.setdefault((item.product.casefold(), date_hash), []).append(norm_item)
 
         # Sort by confidence and date
         normalized.sort(key=lambda x: (-x.confidence, x.date_hash))

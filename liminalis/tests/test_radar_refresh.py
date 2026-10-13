@@ -1,15 +1,25 @@
 from __future__ import annotations
 
 import json
+import os
+import threading
+import time
+from contextlib import nullcontext
 from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 
 import pytest
 
+from backend.radar.cache import Cache
 from backend.radar.extractor import ExtractedItem
+from backend.radar.feeds import FeedSource
+from backend.radar.fetcher import Fetcher
 from backend.radar.normalize import Normalizer
 from backend.radar.refresh import (
+    _acquire_refresh_lock,
+    _enrich_with_full_articles,
     _filter_recent_extracted_items,
+    _merge_incremental_items,
     _ranked_item_to_data,
     get_radar_refresh_status,
     load_radar_artifact,
@@ -26,6 +36,7 @@ def test_default_radar_feed_file_is_packaged() -> None:
     assert settings.radar_feeds_file.is_file()
     feeds = json.loads(settings.radar_feeds_file.read_text(encoding="utf-8"))
     assert len(feeds) >= 5
+    assert all({"product", "channel", "source_id", "authority"}.issubset(feed) for feed in feeds)
 
 
 def test_ranked_item_conversion_produces_api_and_upsert_shape() -> None:
@@ -45,6 +56,121 @@ def test_ranked_item_conversion_produces_api_and_upsert_shape() -> None:
     assert item["contentType"] == "release"
     assert item["summary"] == "A useful database release summary."
     assert item["rawContent"] == normalized.content
+    assert item["analysisProvider"] == "extractive"
+    assert item["contentHash"]
+
+
+def test_feed_fetcher_runs_requests_concurrently_and_preserves_order(monkeypatch, tmp_path) -> None:
+    fetcher = Fetcher(cache=Cache(tmp_path), max_workers=4)
+    feeds = [
+        FeedSource(title=f"Feed {index}", url=f"https://example.test/{index}", product="DB")
+        for index in range(4)
+    ]
+    thread_ids: set[int] = set()
+
+    def fake_fetch(_client, url, *, product, filter_tags, assume_rss, **metadata):
+        thread_ids.add(threading.get_ident())
+        time.sleep(0.02)
+        from backend.radar.fetcher import FetchResult
+
+        return FetchResult(
+            url=url,
+            product=product,
+            content="<rss/>",
+            content_type="rss",
+            status_code=200,
+            filter_tags=filter_tags,
+            **metadata,
+        )
+
+    monkeypatch.setattr(fetcher, "_http_client", lambda: nullcontext(object()))
+    monkeypatch.setattr(fetcher, "_fetch_single", fake_fetch)
+
+    results = fetcher.fetch_feeds(feeds, use_cache=True)
+
+    assert [result.url for result in results] == [feed.url for feed in feeds]
+    assert len(thread_ids) > 1
+
+
+def test_incremental_artifact_keeps_recent_items_from_failed_source() -> None:
+    today = datetime.now(UTC).date().isoformat()
+    current = [{"url": "https://example.test/new", "publishedDate": today, "score": 1.0}]
+    previous = [
+        {"url": "https://example.test/old", "publishedDate": today, "score": 0.5},
+        {"url": "https://example.test/stale", "publishedDate": "2020-01-01", "score": 2.0},
+    ]
+
+    result = _merge_incremental_items(current, previous, max_days=7)
+
+    assert [item["url"] for item in result] == [
+        "https://example.test/new",
+        "https://example.test/old",
+    ]
+
+
+def test_full_article_enrichment_replaces_short_feed_summary() -> None:
+    from backend.radar.fetcher import FetchResult
+
+    item = ExtractedItem(
+        url="https://example.test/article",
+        product="ExampleDB",
+        title="ExampleDB 2.0 released",
+        content="Short feed summary",
+        html_content="",
+        published_at="2026-10-13T00:00:00+00:00",
+        author=None,
+        content_type="release",
+        confidence=0.8,
+    )
+    body = " ".join(["optimizer storage execution improvement"] * 40)
+
+    class FakeFetcher:
+        def fetch_targets_concurrent(self, _targets, *, use_cache):
+            assert use_cache is True
+            return [
+                FetchResult(
+                    url=item.url,
+                    product=item.product,
+                    content=f"<article><h1>{item.title}</h1><p>{body}</p></article>",
+                    content_type="html",
+                    status_code=200,
+                )
+            ]
+
+    result = _enrich_with_full_articles([item], fetcher=FakeFetcher(), limit=1)
+
+    assert len(result[0].content) > len("Short feed summary")
+    assert "optimizer" in result[0].tags
+
+
+def test_unchanged_feed_still_reuses_article_http_cache() -> None:
+    item = ExtractedItem(
+        url="https://example.test/article",
+        product="ExampleDB",
+        title="ExampleDB update",
+        content="Unchanged summary",
+        html_content="",
+        published_at="2026-10-13T00:00:00+00:00",
+        author=None,
+        content_type="blog",
+        confidence=0.8,
+        feed_hash="same-hash",
+    )
+
+    class FakeFetcher:
+        def fetch_targets_concurrent(self, targets, *, use_cache):
+            assert [target.url for target in targets] == [item.url]
+            assert use_cache is True
+            return []
+
+    result = _enrich_with_full_articles(
+        [item],
+        fetcher=FakeFetcher(),
+        limit=1,
+        previous_items=[{"url": item.url, "feedHash": "same-hash"}],
+    )
+
+    assert result[0].content == "Unchanged summary"
 
 
 def test_filter_recent_items_before_similarity_deduplication() -> None:
@@ -130,6 +256,18 @@ def test_disabled_startup_refresh_does_not_create_task(tmp_path) -> None:
 
     assert schedule_startup_radar_refresh(settings) is None
     assert get_radar_refresh_status()["state"] == "disabled"
+
+
+def test_refresh_lock_allows_only_one_process(tmp_path) -> None:
+    path = tmp_path / "refresh.lock"
+    first = _acquire_refresh_lock(path, stale_after_seconds=30)
+    try:
+        assert first is not None
+        assert _acquire_refresh_lock(path, stale_after_seconds=30) is None
+    finally:
+        if first is not None:
+            os.close(first)
+        path.unlink(missing_ok=True)
 
 
 @pytest.mark.asyncio

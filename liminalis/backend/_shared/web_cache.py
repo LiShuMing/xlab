@@ -102,7 +102,7 @@ class Cache:
 
         return entry
 
-    def is_stale(self, url: str, max_age_hours: int = 24) -> bool:
+    def is_stale(self, url: str, max_age_hours: float = 24) -> bool:
         """Check if a cached entry is stale or missing."""
         entry = self.get(url)
         if entry is None:

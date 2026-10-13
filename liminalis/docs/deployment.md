@@ -121,7 +121,9 @@ WECHAT_OFFICIAL_MOCK_OPENID=local_openid_001
 ### Radar 启动刷新
 
 统一 API 启动后会在后台刷新数据库新闻，HTTP 服务启动不等待抓取完成。默认读取
-`backend/radar/data/feeds.json`，抓取最近 7 天内容并按 canonical URL 去重：
+`backend/radar/data/feeds.json`。Feed 会并发条件抓取，新增内容继续抓取正文，并按
+canonical URL、产品、版本和日期聚合同一事件。最近 7 天内容完成结构化标签、证据摘要、
+排名和来源多样性控制后写入存储：
 
 - PostgreSQL 已配置：upsert 到 `radar_items`，同时更新本地最新数据 artifact。
 - PostgreSQL 未配置：写入 `~/.liminalis/artifacts/radar/latest.json`，读取接口会与内置快照合并。
@@ -136,8 +138,16 @@ RADAR_REFRESH_TIMEOUT=180
 RADAR_REFRESH_MIN_INTERVAL_MINUTES=15
 RADAR_DAYS=7
 RADAR_MAX_ITEMS=80
+RADAR_FETCH_WORKERS=8
+RADAR_FETCH_FULL_ARTICLES=true
+RADAR_ARTICLE_FETCH_LIMIT=80
+RADAR_LLM_ENRICHMENT_ENABLED=true
 RADAR_FEEDS_FILE=/path/to/feeds.json
 ```
+
+LLM enrichment 仅在配置 Radar 或共享 LLM API key 时运行；否则自动使用可复现的正文
+抽取摘要。来源健康度和正文补抓数量写入 artifact 的 `feedHealth` 与 `metrics`。详细设计见
+[`radar-pipeline.md`](radar-pipeline.md)。
 
 刷新状态可从 `GET /health` 的 `radarRefresh` 字段查看。设置
 `RADAR_REFRESH_ON_STARTUP=false` 可以禁用。

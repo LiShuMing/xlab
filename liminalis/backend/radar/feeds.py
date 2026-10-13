@@ -23,6 +23,10 @@ class FeedSource:
 
     title: str
     url: str
+    product: str = ""
+    channel: str = "blog"
+    source_id: str = ""
+    authority: str = "official"
     filter_tags: list[str] = field(default_factory=list)
 
     def has_filters(self) -> bool:
@@ -87,6 +91,10 @@ def parse_feeds_file(file_path: Path) -> list[FeedSource]:
             title = item.get("title", "")
             url = item.get("url", "")
             filter_tags = item.get("filter_tags", [])
+            product = item.get("product", "") or title
+            channel = item.get("channel", "blog")
+            source_id = item.get("source_id", "")
+            authority = item.get("authority", "official")
 
             if not title or not url:
                 continue
@@ -99,6 +107,10 @@ def parse_feeds_file(file_path: Path) -> list[FeedSource]:
                 FeedSource(
                     title=title,
                     url=url,
+                    product=product,
+                    channel=channel,
+                    source_id=source_id,
+                    authority=authority,
                     filter_tags=filter_tags,
                 )
             )
@@ -148,7 +160,7 @@ def feeds_to_sources(feeds: list[FeedSource]) -> list[Source]:
     for feed in feeds:
         sources.append(
             Source(
-                product=feed.title,
+                product=feed.product or feed.title,
                 urls=[feed.url],
             )
         )

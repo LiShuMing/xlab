@@ -7,6 +7,7 @@ that write through async SQLAlchemy to PostgreSQL.
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import ipaddress
 import logging
 import socket
@@ -112,10 +113,24 @@ async def ingest_link_task(
             "original_title": result.get("title", ""),
             "published_date": _parse_date(result.get("published_at")),
             "product": analysis["product"],
+            "channel": "manual",
+            "source_id": source or domain_from_url(canonical_url),
+            "authority": "curated",
+            "author": result.get("author"),
             "content_type": analysis["content_type"],
             "summary": analysis["summary"],
             "tags": analysis["tags"],
-            "sources": [],
+            "evidence": [
+                {
+                    "text": " ".join(result.get("content", "").split())[:240],
+                    "url": canonical_url,
+                }
+            ],
+            "confidence": result.get("confidence", 0.8),
+            "content_hash": hashlib.sha256(result.get("content", "").encode("utf-8")).hexdigest(),
+            "analysis_provider": analysis.get("analysis_provider", "llm"),
+            "prompt_version": "radar-item-v1",
+            "sources": [canonical_url],
             "fetched_at": utc_now(),
             "raw_content": result.get("content", ""),
             "sync_batch": date.today(),
@@ -173,6 +188,7 @@ def _llm_analyze(
         product=result["product"],
         title=result["title"],
         content=result["content"],
+        html_content="",
         published_at=result["published_at"],
         content_type=result.get("content_type", "blog"),
         author=result.get("author", ""),
@@ -196,6 +212,7 @@ def _select_best_item(items: list[ExtractedItem], url: str) -> ExtractedItem:
             product="",
             title="",
             content="",
+            html_content="",
             published_at="",
             content_type="blog",
             author="",

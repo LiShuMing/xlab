@@ -46,20 +46,21 @@ async def read_radar_items(
             query=query,
         )
         if result:
-            return result
+            return {**result, "storage": "postgres", "degraded": False}
     except Exception:
         if not should_fallback_after_read_error(settings):
             raise
 
-    return read_snapshot_radar_items(settings, radar_query)
+    return {**read_snapshot_radar_items(settings, radar_query), "degraded": True}
 
 
 def read_snapshot_radar_items(settings: Settings, radar_query: RadarQuery) -> dict[str, Any]:
     snapshot_path = settings.xlab_root / "liminalis" / "src" / "data" / "pyRadarFeed.js"
-    payload = merge_radar_payloads(
-        load_radar_artifact(settings),
-        load_py_radar_snapshot(snapshot_path),
-    )
+    artifact = load_radar_artifact(settings)
+    # A published collection is authoritative, including an intentionally empty
+    # one. Mixing the bundled sample back in masks filters and stale data.
+    has_artifact = bool(artifact.get("generatedAt"))
+    payload = merge_radar_payloads(artifact, {}) if has_artifact else load_py_radar_snapshot(snapshot_path)
     items = payload.get("items") or []
 
     page = max(radar_query.page, 1)
@@ -91,6 +92,8 @@ def read_snapshot_radar_items(settings: Settings, radar_query: RadarQuery) -> di
     offset = (page - 1) * per_page
 
     return {
+        "storage": "artifact" if has_artifact else "snapshot",
+        "degraded": False,
         "items": filtered[offset : offset + per_page],
         "page": page,
         "per_page": per_page,
@@ -127,18 +130,16 @@ def load_py_radar_snapshot(path: Path) -> dict[str, Any]:
 
 def merge_radar_payloads(primary: dict[str, Any], fallback: dict[str, Any]) -> dict[str, Any]:
     """Merge refreshed and bundled items, preferring refreshed enrichment."""
-    items = deduplicate_radar_items(
-        [*(primary.get("items") or []), *(fallback.get("items") or [])]
-    )
+    items = deduplicate_radar_items([*(primary.get("items") or []), *(fallback.get("items") or [])])
     latest_batches = [
-        str(value)
-        for value in (primary.get("latestSyncBatch"), fallback.get("latestSyncBatch"))
-        if value
+        str(value) for value in (primary.get("latestSyncBatch"), fallback.get("latestSyncBatch")) if value
     ]
     return {
         **fallback,
         "sourceTotalItems": fallback.get("sourceTotalItems") or fallback.get("totalItems") or 0,
         "generatedAt": primary.get("generatedAt") or fallback.get("generatedAt"),
+        "metrics": primary.get("metrics") or fallback.get("metrics") or {},
+        "feedHealth": primary.get("feedHealth") or fallback.get("feedHealth") or [],
         "latestSyncBatch": max(latest_batches) if latest_batches else None,
         "items": items,
         "totalItems": len(items),
@@ -149,8 +150,4 @@ def merge_radar_payloads(primary: dict[str, Any], fallback: dict[str, Any]) -> d
 
 def _facet_counts(items: list[dict[str, Any]], field: str) -> list[dict[str, Any]]:
     counts = Counter(str(item.get(field) or "") for item in items)
-    return [
-        {"name": name, "count": count}
-        for name, count in counts.most_common()
-        if name
-    ]
+    return [{"name": name, "count": count} for name, count in counts.most_common() if name]

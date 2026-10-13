@@ -2,15 +2,17 @@
 
 from __future__ import annotations
 
+import re
 from datetime import UTC, date, datetime
 from typing import Any
 
-from sqlalchemy import func, select, text
+from sqlalchemy import case, func, literal, select, text
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend._shared.jobs import TERMINAL_JOB_STATUSES, JobStatus
 from backend._shared.schemas import page_response
-from backend._shared.serializers import domain_from_url, isoformat
+from backend._shared.serializers import domain_from_url, isoformat, utc_now
 from backend.radar.db_models import RadarIngestionJob, RadarItem
 from backend.radar.identity import canonicalize_radar_url, radar_item_id
 
@@ -23,7 +25,7 @@ async def query_radar_items(
     content_type: str,
     product: str,
     query: str,
-) -> dict[str, Any] | None:
+) -> dict[str, Any]:
     stmt = select(RadarItem)
     count_stmt = select(func.count(RadarItem.id))
 
@@ -35,28 +37,36 @@ async def query_radar_items(
         count_stmt = count_stmt.where(RadarItem.product == product)
     if query:
         ts_query = func.plainto_tsquery("simple", query)
-        ts_vector = func.to_tsvector(
-            "simple",
-            func.concat(
-                func.coalesce(RadarItem.title, ""),
-                " ",
-                func.coalesce(RadarItem.original_title, ""),
-                " ",
-                func.coalesce(RadarItem.product, ""),
-                " ",
-                func.coalesce(RadarItem.content_type, ""),
-                " ",
-                func.coalesce(RadarItem.summary, ""),
-                " ",
-                func.array_to_string(RadarItem.tags, " "),
-            ),
+        searchable = (
+            func.coalesce(RadarItem.title, "")
+            + literal(" ")
+            + func.coalesce(RadarItem.original_title, "")
+            + literal(" ")
+            + func.coalesce(RadarItem.product, "")
+            + literal(" ")
+            + func.coalesce(RadarItem.summary, "")
         )
-        stmt = stmt.where(ts_vector.op("@@")(ts_query))
-        count_stmt = count_stmt.where(ts_vector.op("@@")(ts_query))
+        ts_vector = func.to_tsvector("simple", searchable)
+        predicate = ts_vector.op("@@")(ts_query) | func.array_to_string(RadarItem.tags, " ").icontains(
+            query, autoescape=True
+        )
+        # PostgreSQL's simple dictionary does not segment Chinese words.
+        if re.search(r"[\u4e00-\u9fff]", query):
+            predicate = predicate | searchable.icontains(query, autoescape=True)
+        stmt = stmt.where(predicate)
+        count_stmt = count_stmt.where(predicate)
 
     total_items: int = (await session.execute(count_stmt)).scalar_one()
     if total_items == 0:
-        return None
+        return page_response(
+            items=[],
+            page=page,
+            per_page=per_page,
+            total_items=0,
+            products=[],
+            contentTypes=[],
+            latestSyncBatch=None,
+        )
 
     offset = (page - 1) * per_page
     rows = (
@@ -64,6 +74,7 @@ async def query_radar_items(
             await session.execute(
                 stmt.order_by(
                     RadarItem.sync_batch.desc().nullslast(),
+                    RadarItem.score.desc(),
                     RadarItem.published_date.desc().nullslast(),
                     RadarItem.fetched_at.desc(),
                 )
@@ -112,24 +123,7 @@ async def query_radar_items(
 async def upsert_radar_item(session: AsyncSession, item_data: dict[str, Any]) -> RadarItem:
     canonical_url = canonicalize_radar_url(item_data["url"])
     stable_id = radar_item_id(canonical_url)
-    item = RadarItem(
-        id=stable_id,
-        url=canonical_url,
-        title=item_data.get("title") or "",
-        original_title=item_data.get("original_title")
-        or item_data.get("originalTitle")
-        or item_data.get("title")
-        or "",
-        published_date=_parse_date(item_data.get("published_date") or item_data.get("publishedDate")),
-        product=item_data.get("product") or "",
-        content_type=item_data.get("content_type") or item_data.get("contentType") or "blog",
-        summary=item_data.get("summary") or "",
-        tags=item_data.get("tags") or [],
-        sources=item_data.get("sources") or [],
-        fetched_at=_parse_datetime(item_data.get("fetched_at") or item_data.get("fetchedAt")) or func.now(),
-        raw_content=item_data.get("raw_content") or item_data.get("rawContent") or "",
-        sync_batch=_parse_date(item_data.get("sync_batch") or item_data.get("syncBatch")),
-    )
+    item = RadarItem(**_radar_item_values(item_data, canonical_url, stable_id))
     candidate_ids = [stable_id, item_data.get("id"), *(item_data.get("legacy_ids") or [])]
     existing = None
     for candidate_id in dict.fromkeys(value for value in candidate_ids if value):
@@ -140,31 +134,93 @@ async def upsert_radar_item(session: AsyncSession, item_data: dict[str, Any]) ->
         candidate_urls = [item_data["url"], *(item_data.get("legacy_urls") or [])]
         existing = await _get_radar_item_by_urls(session, candidate_urls)
     if existing:
-        existing.url = canonical_url
-        for key in (
-            "title",
-            "original_title",
-            "product",
-        ):
-            incoming = getattr(item, key)
-            if incoming:
-                setattr(existing, key, incoming)
-        for key in ("summary", "raw_content"):
-            incoming = getattr(item, key)
-            if len(incoming) > len(getattr(existing, key)):
-                setattr(existing, key, incoming)
-        incoming_content_type = item_data.get("content_type") or item_data.get("contentType")
-        if incoming_content_type:
-            existing.content_type = incoming_content_type
-        existing.tags = _merge_values(existing.tags, item.tags)
-        existing.sources = _merge_values(existing.sources, item.sources)
-        existing.published_date = item.published_date or existing.published_date
-        existing.fetched_at = _latest_value(existing.fetched_at, _parse_datetime_value(item.fetched_at))
-        existing.sync_batch = _latest_value(existing.sync_batch, item.sync_batch)
+        _merge_radar_model(existing, item, item_data)
         session.add(existing)
         return existing
     session.add(item)
     return item
+
+
+def _radar_item_values(item_data: dict[str, Any], canonical_url: str, stable_id: str) -> dict[str, Any]:
+    return {
+        "id": stable_id,
+        "url": canonical_url,
+        "title": item_data.get("title") or "",
+        "original_title": item_data.get("original_title")
+        or item_data.get("originalTitle")
+        or item_data.get("title")
+        or "",
+        "published_date": _parse_date(item_data.get("published_date") or item_data.get("publishedDate")),
+        "product": item_data.get("product") or "",
+        "channel": item_data.get("channel") or "web",
+        "source_id": item_data.get("source_id") or item_data.get("sourceId") or "",
+        "authority": item_data.get("authority") or "community",
+        "author": item_data.get("author"),
+        "content_type": item_data.get("content_type") or item_data.get("contentType") or "blog",
+        "summary": item_data.get("summary") or "",
+        "tags": item_data.get("tags") or [],
+        "sources": item_data.get("sources") or [],
+        "fetched_at": _parse_datetime(item_data.get("fetched_at") or item_data.get("fetchedAt")) or utc_now(),
+        "raw_content": item_data.get("raw_content") or item_data.get("rawContent") or "",
+        "sync_batch": _parse_date(item_data.get("sync_batch") or item_data.get("syncBatch")),
+        "version": item_data.get("version"),
+        "components": item_data.get("components") or [],
+        "evidence": item_data.get("evidence") or [],
+        "confidence": float(item_data.get("confidence") or 0),
+        "score": float(item_data.get("score") or 0),
+        "rank": item_data.get("rank"),
+        "rank_reasons": item_data.get("rank_reasons") or item_data.get("rankReasons") or [],
+        "content_hash": item_data.get("content_hash") or item_data.get("contentHash") or "",
+        "analysis_provider": item_data.get("analysis_provider")
+        or item_data.get("analysisProvider")
+        or "extractive",
+        "analysis_model": item_data.get("analysis_model") or item_data.get("analysisModel"),
+        "prompt_version": item_data.get("prompt_version") or item_data.get("promptVersion"),
+    }
+
+
+def _merge_radar_model(existing: RadarItem, item: RadarItem, item_data: dict[str, Any]) -> None:
+    existing.url = item.url
+    for key in (
+        "title",
+        "original_title",
+        "product",
+        "channel",
+        "source_id",
+        "authority",
+        "author",
+    ):
+        incoming = getattr(item, key)
+        if incoming:
+            setattr(existing, key, incoming)
+    for key in ("summary", "raw_content"):
+        incoming = getattr(item, key)
+        if len(incoming) > len(getattr(existing, key)):
+            setattr(existing, key, incoming)
+    incoming_content_type = item_data.get("content_type") or item_data.get("contentType")
+    if incoming_content_type:
+        existing.content_type = incoming_content_type
+    existing.tags = _merge_values(existing.tags, item.tags)
+    existing.sources = _merge_values(existing.sources, item.sources)
+    existing.components = _merge_values(existing.components, item.components)
+    existing.rank_reasons = item.rank_reasons or existing.rank_reasons
+    existing.evidence = item.evidence or existing.evidence
+    for key in (
+        "version",
+        "content_hash",
+        "analysis_provider",
+        "analysis_model",
+        "prompt_version",
+        "rank",
+    ):
+        incoming = getattr(item, key)
+        if incoming not in (None, ""):
+            setattr(existing, key, incoming)
+    existing.confidence = max(existing.confidence or 0, item.confidence or 0)
+    existing.score = item.score or existing.score
+    existing.published_date = item.published_date or existing.published_date
+    existing.fetched_at = _latest_value(existing.fetched_at, _parse_datetime_value(item.fetched_at))
+    existing.sync_batch = _latest_value(existing.sync_batch, item.sync_batch)
 
 
 async def get_radar_item_by_url(session: AsyncSession, url: str) -> RadarItem | None:
@@ -181,10 +237,59 @@ async def _get_radar_item_by_urls(session: AsyncSession, urls: list[str]) -> Rad
 
 
 async def upsert_radar_items_bulk(session: AsyncSession, items: list[dict[str, Any]]) -> int:
+    if not items:
+        return 0
+
+    rows_by_url: dict[str, dict[str, Any]] = {}
     for item_data in items:
-        await upsert_radar_item(session, item_data)
+        canonical_url = canonicalize_radar_url(item_data["url"])
+        rows_by_url[canonical_url] = _radar_item_values(
+            item_data,
+            canonical_url,
+            radar_item_id(canonical_url),
+        )
+
+    insert_stmt = pg_insert(RadarItem).values(list(rows_by_url.values()))
+    incoming = insert_stmt.excluded
+    stmt = insert_stmt.on_conflict_do_update(
+        index_elements=[RadarItem.url],
+        set_={
+            "title": case((incoming.title != "", incoming.title), else_=RadarItem.title),
+            "original_title": case(
+                (incoming.original_title != "", incoming.original_title),
+                else_=RadarItem.original_title,
+            ),
+            "published_date": func.coalesce(incoming.published_date, RadarItem.published_date),
+            "product": case((incoming.product != "", incoming.product), else_=RadarItem.product),
+            "channel": incoming.channel,
+            "source_id": case((incoming.source_id != "", incoming.source_id), else_=RadarItem.source_id),
+            "authority": incoming.authority,
+            "author": func.coalesce(incoming.author, RadarItem.author),
+            "content_type": incoming.content_type,
+            "summary": incoming.summary,
+            "tags": case((func.cardinality(incoming.tags) > 0, incoming.tags), else_=RadarItem.tags),
+            "sources": case(
+                (func.cardinality(incoming.sources) > 0, incoming.sources), else_=RadarItem.sources
+            ),
+            "fetched_at": func.greatest(incoming.fetched_at, RadarItem.fetched_at),
+            "raw_content": incoming.raw_content,
+            "sync_batch": func.greatest(incoming.sync_batch, RadarItem.sync_batch),
+            "version": incoming.version,
+            "components": incoming.components,
+            "evidence": incoming.evidence,
+            "confidence": func.greatest(incoming.confidence, RadarItem.confidence),
+            "score": incoming.score,
+            "rank": incoming.rank,
+            "rank_reasons": incoming.rank_reasons,
+            "content_hash": incoming.content_hash,
+            "analysis_provider": incoming.analysis_provider,
+            "analysis_model": incoming.analysis_model,
+            "prompt_version": incoming.prompt_version,
+        },
+    )
+    await session.execute(stmt)
     await session.flush()
-    return len(items)
+    return len(rows_by_url)
 
 
 async def create_ingestion_job(
@@ -256,11 +361,26 @@ def radar_item_to_dict(item: RadarItem) -> dict[str, Any]:
         "url": item.url,
         "site": domain_from_url(item.url),
         "product": item.product,
+        "channel": item.channel,
+        "sourceId": item.source_id,
+        "authority": item.authority,
+        "author": item.author,
         "summary": item.summary,
         "tags": item.tags or [],
         "sources": item.sources or [],
         "publishedDate": isoformat(item.published_date),
         "contentType": item.content_type,
+        "version": item.version,
+        "components": item.components or [],
+        "evidence": item.evidence or [],
+        "confidence": item.confidence,
+        "score": item.score,
+        "rank": item.rank,
+        "rankReasons": item.rank_reasons or [],
+        "contentHash": item.content_hash,
+        "analysisProvider": item.analysis_provider,
+        "analysisModel": item.analysis_model,
+        "promptVersion": item.prompt_version,
         "fetchedAt": isoformat(item.fetched_at),
         "syncBatch": isoformat(item.sync_batch),
     }

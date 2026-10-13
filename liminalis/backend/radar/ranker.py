@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from math import ceil
 from typing import TYPE_CHECKING
 
 from backend.radar.normalize import NormalizedItem
@@ -154,6 +155,10 @@ class Ranker:
 
     def _calculate_source_score(self, item: NormalizedItem) -> float:
         """Calculate source authority score."""
+        if item.authority == "official":
+            return 1.3
+        if item.authority == "curated":
+            return 1.15
         domain = item.domain.lower()
 
         # Official sources get higher scores
@@ -255,6 +260,8 @@ class Ranker:
 
             # Source authority
             source_score = self._calculate_source_score(item)
+            if source_score >= 1.2:
+                reasons.append("Official source")
 
             # Confidence from extractor
             confidence = item.confidence
@@ -286,7 +293,26 @@ class Ranker:
         for i, r in enumerate(ranked):
             r.rank = i + 1
 
-        return ranked[:max_items]
+        # Keep one prolific release feed from crowding every other engine out.
+        per_product_limit = max(3, ceil(max_items * 0.25))
+        selected: list[RankedItem] = []
+        deferred: list[RankedItem] = []
+        product_counts: dict[str, int] = {}
+        for item in ranked:
+            product_key = item.item.product.casefold()
+            if product_counts.get(product_key, 0) >= per_product_limit:
+                deferred.append(item)
+                continue
+            selected.append(item)
+            product_counts[product_key] = product_counts.get(product_key, 0) + 1
+            if len(selected) == max_items:
+                break
+
+        if len(selected) < max_items:
+            selected.extend(deferred[: max_items - len(selected)])
+        for index, item in enumerate(selected, start=1):
+            item.rank = index
+        return selected
 
     def get_top_k(self, items: list[RankedItem], k: int = 10) -> list[RankedItem]:
         """Get top K items."""

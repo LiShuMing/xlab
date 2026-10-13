@@ -6,7 +6,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 import httpx
-from tqdm import tqdm
 
 from backend._shared.http import HTTPClientConfig, SharedCachedSyncHTTPClient, SharedSyncHTTPClient
 from backend._shared.web_cache import Cache
@@ -22,6 +21,9 @@ class FetchTarget:
     product: str
     filter_tags: list[str] = field(default_factory=list)
     assume_rss: bool = False
+    channel: str = "web"
+    source_id: str = ""
+    authority: str = "community"
 
 
 @dataclass
@@ -36,6 +38,9 @@ class FetchResult:
     error_message: str | None = None
     is_cached: bool = False
     filter_tags: list[str] | None = None
+    channel: str = "web"
+    source_id: str = ""
+    authority: str = "community"
 
     def __post_init__(self) -> None:
         if self.filter_tags is None:
@@ -69,6 +74,7 @@ class WebFetcher:
         config = HTTPClientConfig.from_settings(
             get_runtime_settings(),
             read_timeout=self.timeout,
+            follow_redirects=True,
         )
         if self.enable_http_cache:
             return SharedCachedSyncHTTPClient(
@@ -103,6 +109,9 @@ class WebFetcher:
             status_code=status_code if status_code is not None else entry.status_code,
             is_cached=True,
             filter_tags=target.filter_tags,
+            channel=target.channel,
+            source_id=target.source_id,
+            authority=target.authority,
         )
 
     def _fetch_single(
@@ -112,6 +121,9 @@ class WebFetcher:
         product: str,
         filter_tags: list[str] | None = None,
         assume_rss: bool = False,
+        channel: str = "web",
+        source_id: str = "",
+        authority: str = "community",
     ) -> FetchResult:
         """Fetch a single URL."""
         target = FetchTarget(
@@ -119,6 +131,9 @@ class WebFetcher:
             product=product,
             filter_tags=filter_tags or [],
             assume_rss=assume_rss,
+            channel=channel,
+            source_id=source_id,
+            authority=authority,
         )
         try:
             headers = {"User-Agent": self.USER_AGENT}
@@ -145,6 +160,9 @@ class WebFetcher:
                     status_code=response.status_code,
                     error_message=f"HTTP {response.status_code}",
                     filter_tags=target.filter_tags,
+                    channel=target.channel,
+                    source_id=target.source_id,
+                    authority=target.authority,
                 )
 
             content_type = self._content_type_for(target.url, target.assume_rss, response.text)
@@ -172,6 +190,9 @@ class WebFetcher:
                 status_code=response.status_code,
                 is_cached=False,
                 filter_tags=target.filter_tags,
+                channel=target.channel,
+                source_id=target.source_id,
+                authority=target.authority,
             )
 
         except httpx.TimeoutException:
@@ -183,6 +204,9 @@ class WebFetcher:
                 status_code=None,
                 error_message="Request timeout",
                 filter_tags=target.filter_tags,
+                channel=target.channel,
+                source_id=target.source_id,
+                authority=target.authority,
             )
         except httpx.RequestError as exc:
             return FetchResult(
@@ -193,6 +217,9 @@ class WebFetcher:
                 status_code=None,
                 error_message=f"Request error: {exc}",
                 filter_tags=target.filter_tags,
+                channel=target.channel,
+                source_id=target.source_id,
+                authority=target.authority,
             )
         except Exception as exc:
             return FetchResult(
@@ -203,6 +230,9 @@ class WebFetcher:
                 status_code=None,
                 error_message=f"Unexpected error: {exc}",
                 filter_tags=target.filter_tags,
+                channel=target.channel,
+                source_id=target.source_id,
+                authority=target.authority,
             )
 
     def fetch_target(self, target: FetchTarget, use_cache: bool = True) -> FetchResult:
@@ -219,6 +249,9 @@ class WebFetcher:
                 product=target.product,
                 filter_tags=target.filter_tags,
                 assume_rss=target.assume_rss,
+                channel=target.channel,
+                source_id=target.source_id,
+                authority=target.authority,
             )
 
     def fetch_targets(
@@ -243,13 +276,16 @@ class WebFetcher:
             return results
 
         with self._http_client() as client:
-            for target in tqdm(targets_to_fetch, desc=description):
+            for target in targets_to_fetch:
                 result = self._fetch_single(
                     client,
                     target.url,
                     product=target.product,
                     filter_tags=target.filter_tags,
                     assume_rss=target.assume_rss,
+                    channel=target.channel,
+                    source_id=target.source_id,
+                    authority=target.authority,
                 )
                 results.append(result)
 

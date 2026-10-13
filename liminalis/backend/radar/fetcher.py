@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import TYPE_CHECKING
-
-from tqdm import tqdm
 
 from backend._shared.web_fetcher import FetchResult, FetchTarget, WebFetcher
 from backend.radar.cache import Cache, get_cache
@@ -19,8 +18,16 @@ class Fetcher(WebFetcher):
 
     USER_AGENT = "Mozilla/5.0 (compatible; LiminalisRadar/1.0; +https://github.com/xlab/liminalis)"
 
-    def __init__(self, cache: Cache | None = None, timeout: float = 10.0):
+    def __init__(
+        self,
+        cache: Cache | None = None,
+        timeout: float = 10.0,
+        max_workers: int = 8,
+        cache_max_age_hours: float = 24.0,
+    ):
         super().__init__(cache=cache or get_cache(), timeout=timeout)
+        self.max_workers = max(1, min(max_workers, 16))
+        self.cache_max_age_hours = max(cache_max_age_hours, 0.0)
 
     def fetch_source(self, source: Source, use_cache: bool = True) -> list[FetchResult]:
         """Fetch all URLs for a Radar source."""
@@ -49,46 +56,103 @@ class Fetcher(WebFetcher):
         """Fetch a single Radar feed source."""
         target = FetchTarget(
             url=feed.url,
-            product=feed.title,
+            product=feed.product or feed.title,
             filter_tags=feed.filter_tags,
             assume_rss=True,
+            channel=feed.channel,
+            source_id=feed.source_id,
+            authority=feed.authority,
         )
         return self.fetch_target(target, use_cache=use_cache)
 
     def fetch_feeds(self, feeds: list[FeedSource], use_cache: bool = True) -> list[FetchResult]:
         """Fetch content from multiple Radar feed sources."""
-        all_results: list[FetchResult] = []
+        results_by_url: dict[str, FetchResult] = {}
         feeds_to_fetch: list[FeedSource] = []
 
         for feed in feeds:
             target = FetchTarget(
                 url=feed.url,
-                product=feed.title,
+                product=feed.product or feed.title,
                 filter_tags=feed.filter_tags,
                 assume_rss=True,
+                channel=feed.channel,
+                source_id=feed.source_id,
+                authority=feed.authority,
             )
-            if use_cache and not self.cache.is_stale(feed.url):
+            if use_cache and not self.cache.is_stale(feed.url, self.cache_max_age_hours):
                 cached = self._cached_result(target, status_code=None)
                 if cached is not None:
-                    all_results.append(cached)
+                    results_by_url[feed.url] = cached
                     continue
             feeds_to_fetch.append(feed)
 
         if not feeds_to_fetch:
-            return all_results
+            return [results_by_url[feed.url] for feed in feeds if feed.url in results_by_url]
 
-        with self._http_client() as client:
-            for feed in tqdm(feeds_to_fetch, desc="Fetching feeds"):
-                result = self._fetch_single(
+        with (
+            self._http_client() as client,
+            ThreadPoolExecutor(max_workers=min(self.max_workers, len(feeds_to_fetch))) as executor,
+        ):
+            futures = {
+                executor.submit(
+                    self._fetch_single,
                     client,
                     feed.url,
-                    product=feed.title,
+                    product=feed.product or feed.title,
                     filter_tags=feed.filter_tags,
                     assume_rss=True,
-                )
-                all_results.append(result)
+                    channel=feed.channel,
+                    source_id=feed.source_id,
+                    authority=feed.authority,
+                ): feed.url
+                for feed in feeds_to_fetch
+            }
+            for future in as_completed(futures):
+                results_by_url[futures[future]] = future.result()
 
-        return all_results
+        return [results_by_url[feed.url] for feed in feeds if feed.url in results_by_url]
+
+    def fetch_targets_concurrent(
+        self, targets: list[FetchTarget], *, use_cache: bool = True
+    ) -> list[FetchResult]:
+        """Fetch arbitrary targets concurrently while preserving input order."""
+        if not targets:
+            return []
+
+        results: list[FetchResult | None] = [None] * len(targets)
+        pending: list[tuple[int, FetchTarget]] = []
+        for index, target in enumerate(targets):
+            if use_cache and not self.cache.is_stale(target.url, self.cache_max_age_hours):
+                cached = self._cached_result(target, status_code=None)
+                if cached is not None:
+                    results[index] = cached
+                    continue
+            pending.append((index, target))
+
+        if pending:
+            with (
+                self._http_client() as client,
+                ThreadPoolExecutor(max_workers=min(self.max_workers, len(pending))) as executor,
+            ):
+                futures = {
+                    executor.submit(
+                        self._fetch_single,
+                        client,
+                        target.url,
+                        product=target.product,
+                        filter_tags=target.filter_tags,
+                        assume_rss=target.assume_rss,
+                        channel=target.channel,
+                        source_id=target.source_id,
+                        authority=target.authority,
+                    ): index
+                    for index, target in pending
+                }
+                for future in as_completed(futures):
+                    results[futures[future]] = future.result()
+
+        return [result for result in results if result is not None]
 
 
 def fetch_sources(sources: list[Source], use_cache: bool = True) -> list[FetchResult]:

@@ -176,6 +176,10 @@ class Settings(BaseSettings):
         default=None,
         validation_alias=AliasChoices("pgsql_password", "PGSQL_PASSWORD", "psql_password", "PSQL_PASSWORD"),
     )
+    pgsql_passfile: Path | None = Field(
+        default=None,
+        validation_alias=AliasChoices("pgsql_passfile", "PGSQL_PASSFILE", "PGPASSFILE"),
+    )
     pgsql_database: str = Field(
         default="liminalis_db",
         validation_alias=AliasChoices(
@@ -255,7 +259,7 @@ class Settings(BaseSettings):
         ),
     )
     radar_refresh_timeout: float = Field(
-        default=180.0,
+        default=600.0,
         ge=10,
         le=900,
         validation_alias=AliasChoices("radar_refresh_timeout", "RADAR_REFRESH_TIMEOUT"),
@@ -286,6 +290,26 @@ class Settings(BaseSettings):
         ge=1,
         le=30,
         validation_alias=AliasChoices("radar_days", "RADAR_DAYS", "DB_RADAR_DAYS"),
+    )
+    radar_fetch_workers: int = Field(
+        default=8,
+        ge=1,
+        le=16,
+        validation_alias=AliasChoices("radar_fetch_workers", "RADAR_FETCH_WORKERS"),
+    )
+    radar_fetch_full_articles: bool = Field(
+        default=True,
+        validation_alias=AliasChoices("radar_fetch_full_articles", "RADAR_FETCH_FULL_ARTICLES"),
+    )
+    radar_article_fetch_limit: int = Field(
+        default=80,
+        ge=0,
+        le=500,
+        validation_alias=AliasChoices("radar_article_fetch_limit", "RADAR_ARTICLE_FETCH_LIMIT"),
+    )
+    radar_llm_enrichment_enabled: bool = Field(
+        default=True,
+        validation_alias=AliasChoices("radar_llm_enrichment_enabled", "RADAR_LLM_ENRICHMENT_ENABLED"),
     )
     radar_language: str = Field(
         default="en",
@@ -538,15 +562,14 @@ class Settings(BaseSettings):
 
     @property
     def postgres_configured(self) -> bool:
+        auth = self.pgsql_password or self.pgsql_passfile
         if self.pgsql_url:
             parsed = urlsplit(self.pgsql_url)
             if parsed.scheme.startswith("postgres") and parsed.hostname:
-                return bool(
-                    (parsed.username and parsed.password) or (self.pgsql_user and self.pgsql_password)
-                )
+                return bool((parsed.username or self.pgsql_user) and (parsed.password or auth))
             if not parsed.scheme:
-                return bool(self.pgsql_user and self.pgsql_password)
-        return bool(self.pgsql_host and self.pgsql_user and self.pgsql_password)
+                return bool(self.pgsql_user and auth)
+        return bool(self.pgsql_host and self.pgsql_user and auth)
 
     @property
     def business_database_backend(self) -> str:
@@ -599,12 +622,17 @@ class Settings(BaseSettings):
         user = quote(self.pgsql_user or "", safe="")
         password = quote(self.pgsql_password or "", safe="")
         scheme = f"postgresql+{driver}" if driver else "postgresql"
-        dsn = f"{scheme}://{user}:{password}@{host}:{port}/{quote(database, safe='')}"
+        # An explicitly selected passfile is authoritative over legacy env passwords.
+        credentials = user if self.pgsql_passfile else f"{user}:{password}"
+        dsn = f"{scheme}://{credentials}@{host}:{port}/{quote(database, safe='')}"
+        query = {}
         if self.pgsql_sslmode:
             # asyncpg uses 'ssl' in URL params instead of 'sslmode'
             param = "ssl" if driver == "asyncpg" else "sslmode"
-            dsn = f"{dsn}?{param}={quote(self.pgsql_sslmode, safe='')}"
-        return dsn
+            query[param] = self.pgsql_sslmode
+        if self.pgsql_passfile:
+            query["passfile"] = str(self.pgsql_passfile.expanduser())
+        return f"{dsn}?{urlencode(query)}" if query else dsn
 
     def _postgres_dsn_from_url(self, database: str, *, driver: str | None = None) -> str:
         parsed = urlsplit(self.pgsql_url or "")
@@ -618,10 +646,15 @@ class Settings(BaseSettings):
         elif driver == "asyncpg" and "sslmode" in query_items and "ssl" not in query_items:
             query_items["ssl"] = query_items.pop("sslmode")
 
+        netloc = parsed.netloc
+        if self.pgsql_passfile:
+            query_items["passfile"] = str(self.pgsql_passfile.expanduser())
+            user = parsed.username or quote(self.pgsql_user or "", safe="")
+            netloc = f"{user}@{parsed.netloc.rsplit('@', 1)[-1]}"
         return urlunsplit(
             (
                 scheme,
-                parsed.netloc,
+                netloc,
                 path,
                 urlencode(query_items),
                 "",

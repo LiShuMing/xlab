@@ -7,12 +7,17 @@ import pytest
 
 from backend.radar.db_models import RadarItem
 from backend.radar.identity import canonicalize_radar_url, deduplicate_radar_items, radar_item_id
-from backend.radar.service import upsert_radar_item
+from backend.radar.service import query_radar_items, upsert_radar_item
 
 
 class _EmptyResult:
     def scalar_one_or_none(self) -> None:
         return None
+
+
+class _ZeroCountResult:
+    def scalar_one(self) -> int:
+        return 0
 
 
 class _FakeSession:
@@ -128,3 +133,23 @@ async def test_upsert_does_not_erase_existing_enrichment_with_empty_values() -> 
     assert item.content_type == "paper"
     assert item.published_date == date(2026, 3, 20)
     assert item.tags == ["database", "olap"]
+
+
+@pytest.mark.asyncio
+async def test_query_with_zero_matches_returns_empty_page_instead_of_fallback_signal() -> None:
+    class ZeroSession:
+        async def execute(self, _statement: Any) -> _ZeroCountResult:
+            return _ZeroCountResult()
+
+    result = await query_radar_items(
+        ZeroSession(),  # type: ignore[arg-type]
+        page=1,
+        per_page=20,
+        content_type="release",
+        product="MissingDB",
+        query="",
+    )
+
+    assert result is not None
+    assert result["items"] == []
+    assert result["total_items"] == 0

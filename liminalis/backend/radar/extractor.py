@@ -1,15 +1,20 @@
 """Extract structured data from fetched HTML/RSS content."""
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from html import unescape
 from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
 
-from backend._shared.content import classify_content, relevance_confidence
-from backend._shared.web_extract import extract_article, extract_date_from_html, html_to_text
+from backend._shared.content import classify_content, extract_technical_tags, relevance_confidence
+from backend._shared.web_extract import (
+    ArticleExtraction,
+    extract_article,
+    extract_date_from_html,
+    html_to_text,
+)
 from backend._shared.web_feed import is_feed_content, parse_feed_content
 from backend.radar.fetcher import FetchResult
 
@@ -27,6 +32,11 @@ class ExtractedItem:
     author: str | None
     content_type: str  # "release", "blog", "news", "docs", "other"
     confidence: float  # 0-1, relevance confidence
+    tags: list[str] = field(default_factory=list)
+    channel: str = "web"
+    source_id: str = ""
+    authority: str = "community"
+    feed_hash: str = ""
 
 
 class Extractor:
@@ -41,6 +51,15 @@ class Extractor:
             return items
 
         for entry in feed.entries:
+            entry_tags = [
+                str(tag.get("term") or "").strip()
+                for tag in entry.get("tags", [])
+                if isinstance(tag, dict) and tag.get("term")
+            ]
+            if result.filter_tags and not {tag.casefold() for tag in entry_tags}.intersection(
+                tag.casefold() for tag in result.filter_tags
+            ):
+                continue
             # Try to extract publication date
             published_at = None
             if hasattr(entry, "published_parsed") and entry.published_parsed:
@@ -58,6 +77,8 @@ class Extractor:
 
             # Determine content type
             content_type = self._classify_content(entry.get("title", ""), entry.get("summary", ""))
+            if result.channel == "release":
+                content_type = "release"
 
             # Get content (prefer full content if available)
             html_content = ""
@@ -77,12 +98,29 @@ class Extractor:
                     url=link,
                     product=result.product,
                     title=unescape(entry.get("title", "")).strip(),
-                    content=self._html_to_text(html_content),
+                    content=""
+                    if self._html_to_text(html_content).strip() in {"No content.", "No content"}
+                    else self._html_to_text(html_content),
                     html_content=html_content,
                     published_at=published_at,
                     author=entry.get("author"),
                     content_type=content_type,
                     confidence=self._calculate_confidence(entry.get("title", ""), entry.get("summary", "")),
+                    tags=list(
+                        dict.fromkeys(
+                            [
+                                *entry_tags,
+                                *extract_technical_tags(
+                                    entry.get("title", ""),
+                                    entry.get("summary", ""),
+                                    result.product,
+                                ),
+                            ]
+                        )
+                    )[:8],
+                    channel=result.channel,
+                    source_id=result.source_id,
+                    authority=result.authority,
                 )
             )
 
@@ -93,7 +131,31 @@ class Extractor:
         items = []
 
         try:
-            article = extract_article(result.content, url=result.url)
+            # Prefer the release/news body for known layouts; site banners and
+            # GitHub navigation must not become source evidence.
+            soup = BeautifulSoup(result.content, "lxml")
+            from urllib.parse import urlparse
+
+            host = urlparse(result.url).hostname or ""
+            body = None
+            if host == "github.com" and "/releases/tag/" in result.url:
+                body = soup.select_one(".markdown-body")
+                if body is None:
+                    return []
+            elif host in {"www.postgresql.org", "postgresql.org"}:
+                body = soup.select_one("#pgContentWrap")
+            html = str(body) if body is not None else result.content
+            if body is not None:
+                # Preserve version headings: generic article extractors can drop
+                # them and accidentally merge current and historical changelogs.
+                heading = body.find(["h1", "h2"])
+                article = ArticleExtraction(
+                    title=heading.get_text(" ", strip=True) if heading else "",
+                    text=html_to_text(html, max_chars=14000),
+                    html=html,
+                )
+            else:
+                article = extract_article(html, url=result.url, max_chars=14000)
             if article is None:
                 raise ValueError("Unable to extract article content")
 
@@ -113,6 +175,10 @@ class Extractor:
                     author=article.author,
                     content_type=content_type,
                     confidence=self._calculate_confidence(title, article_text),
+                    tags=extract_technical_tags(title, article_text, result.product),
+                    channel=result.channel,
+                    source_id=result.source_id,
+                    authority=result.authority,
                 )
             )
 
@@ -201,7 +267,7 @@ class Extractor:
         """Convert HTML to plain text."""
         if not html:
             return ""
-        return html_to_text(html, max_chars=3000)
+        return html_to_text(html, max_chars=14000)
 
     def _extract_date(self, soup: BeautifulSoup) -> str | None:
         """Extract publication date from HTML."""

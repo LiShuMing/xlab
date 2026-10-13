@@ -96,7 +96,7 @@ class IntelligenceAgent:
 
         # Step 2: Run intelligence tools in parallel if enabled
         if options.enable_trends or options.enable_competition:
-            self._run_parallel_analysis(context, options)
+            self._run_parallel_analysis(context, options, items)
 
         # Step 3: Synthesize final report
         return IntelligenceReport(
@@ -115,6 +115,7 @@ class IntelligenceAgent:
         self,
         context: AnalysisContext,
         options: AnalysisOptions,
+        items: list[RankedItem],
     ) -> None:
         """Run enabled analysis tools in parallel using ThreadPoolExecutor."""
 
@@ -126,7 +127,7 @@ class IntelligenceAgent:
 
         # Prepare competition analysis task
         if options.enable_competition:
-            products = {i.item.product for i in []}  # Will be extracted from summary
+            products = {item.item.product for item in items if item.item.product}
             tasks.append(("competition", self._run_competition_analysis, context.summary_result, products))
 
         if not tasks:
