@@ -18,7 +18,8 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 ## Constellation 独立候选（迁移验收中）
 
 以下私有仓库已有独立代码候选和本地验证，整体迁移尚未验收。
-Lyra、Carina 代码发布待完成，远程目前仅有引导内容；
+Lyra 代码发布待完成，远程目前仅有引导内容；
+Carina 已发布到 [draft PR #1](https://github.com/LiShuMing/carina/pull/1)，对应提交 CI 通过，尚未合并；
 Vela 私有远程实现提交和最终文档提交及各自 CI 均已核验。
 原目录继续保留并可用于定位。
 完整映射、修复、测试范围、未完成等价迁移及删除门槛见

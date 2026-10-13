@@ -4,14 +4,15 @@
 
 **独立代码候选已完成本地构建、测试与专项审查；迁移尚未整体验收，原项目全部保留。**
 Vela 已核验私有远程提交、文件树，以及实现提交和最终文档提交各自的七项 CI。
-联合发布验收、生产部署和真实数据迁移均未宣称完成。Lyra、Carina 代码发布待完成；
-两者远程目前仅有引导内容，不能视为代码已经上传。
+Carina 已发布到私有仓库的 draft PR，提交、文件树和对应 PR CI 已核验；尚未合并。
+联合发布验收、生产部署和真实数据迁移均未宣称完成。Lyra 代码发布待完成，
+其远程目前仅有引导内容，不能视为代码已经上传。
 任何本地提交号都不能代替远程提交验证。本文仅为文档变更，不删除源码。
 
 源仓库：<https://github.com/LiShuMing/xlab>。
 共同提取基线：`fd15e65059ff7d0d01ed48b6347cd75881fb4b36`。
-协调任务在 2026-10-13 15:28 UTC 和 15:51 UTC fetch 后确认该提交仍为 `origin/main`，
-后一次检查源 checkout 也保持干净；
+协调任务最近在 2026-10-13 16:10:28 UTC fetch 后确认该提交仍为 `origin/main`，
+源 checkout 也保持干净；
 发布和清理前必须重新检查，不能把这次观察当成持续有效的保证。
 
 ## 源码映射与保留边界
@@ -53,7 +54,7 @@ Git 历史，提取清单记录原始路径、目标路径和源字节 SHA-256�
 | 仓库 | 本地 HEAD | 首次提取提交 | 验证定位 |
 | --- | --- | --- | --- |
 | Lyra | `1fea7259d9465b44ce73c72bb8ffc1408db58463` | `1921459` | 候选 `docs/migration.md` 最终附录 |
-| Carina | `d0393d021cb97a6f29a75b6490351330667dc9e0` | `728d74b` | 候选 `docs/migration.md` 验证账本 |
+| Carina | `1a4072aefe6208bd66abd9185bca3a95456438e4` | `728d74b` | 候选 `docs/migration.md` 验证账本 |
 | Vela | `410aaa9bf23aa3fb591696b4754adc93f67ee521` | `9671913` | 候选 `docs/migration.md` 验证与独立审查 |
 
 每个目标均有自己的 README、AGENTS.md、构建/依赖清单、格式化配置、测试和迁移记录。
@@ -74,10 +75,23 @@ Git 历史，提取清单记录原始路径、目标路径和源字节 SHA-256�
   本地/远程映射：`9671913` → `52f32f8`（提取），`3e48ddf` → `d059c15`，
   `6d60d9b` → `6fe9109`，`9d5cdab` → `944d76b`，`410aaa9` → `5ed9fc6`（最终）。
   比较文件树而不是假定 SHA 相同；远程回退应使用对应远程提交。
-- Lyra、Carina：代码发布待完成，远程目前仅有引导内容；
+- Carina 私有仓库 [draft PR #1](https://github.com/LiShuMing/carina/pull/1)：
+  分支 `migration/constellation-import`，远程 HEAD `62da1b3c27889d1ede979b0f463a5e99fc5c60b4`，
+  文件树 `0ada2f9d987dae26cd4c443e46fb3b8c738ce65a` 与本地仅文档更新后的
+  `1a4072aefe6208bd66abd9185bca3a95456438e4` 完全一致。
+  PR 含 11 个分阶段提交、119 个变更文件；尚未合并，`main` 仍保留引导提交 `3c55537`。
+  [PR CI](https://github.com/LiShuMing/carina/actions/runs/38429279649) 已成功，
+  对应上述精确 HEAD，job `115406880577` 的全部步骤（含完整 `scripts/check.sh`）通过。
+  下文测试数量来自本地验证账本，不用它们替代远程逐项日志计数。
+  目标 `docs/publication-map.json` 保存先前阶段的本地/远程 SHA 和相等文件树；
+  本地提取 `728d74b` 对应远程 `428b090c063a6dc452a613a810fdbb87996fa302`，
+  原验证快照 `d0393d0` 对应远程 `fd73fde50b87507f13798db5e306fb2f90c10ffb`。
+  文件树一致不意味着提交 SHA 相同，回退需选择对应的远程提交。
+- Lyra：代码发布待完成，远程目前仅有引导内容；
   最终代码远程 SHA、文件树和 CI 均未核验。
 
-完成联合远程验收还需补充 Lyra、Carina 的远程提交、完整文件树与 CI。
+完成联合远程验收还需补充 Lyra 的远程提交、完整文件树与 CI。
+Carina 的 draft PR 发布并不表示合并或原项目删除。
 
 ### Lyra：应用边界与可靠性修复
 
