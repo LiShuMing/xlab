@@ -31,8 +31,6 @@ and identifies legacy directories without current source code.
 
 ```text
 xlab/
-|-- liminalis/          Unified personal platform: FastAPI + React + Go llm-wiki
-|-- optimizer-learning/ Volcano vs Cascades query optimizer comparison tool
 |-- cc/                 C++ lab, algorithms, benchmarks, systems/database experiments
 |-- rust/               Rust lab, database experiments, async/concurrency projects
 |-- python/             Python lab, AI/data tooling, research prototypes
@@ -45,18 +43,26 @@ xlab/
 `-- docs/               Obsidian vault: notes, reports, and book-length studies
 ```
 
-### Standalone Projects
+### Migrated Projects
 
-These directories are self-contained projects with their own build systems,
-suitable for independent iteration or extraction:
+These six source roots have moved to their own repositories. Continue development,
+builds, and issue tracking in the current homes; the old paths are historical.
+
+| Former xlab path | Current home |
+| --- | --- |
+| `liminalis/` | [lyra](https://github.com/LiShuMing/lyra/tree/main) |
+| `panming/` | [carina](https://github.com/LiShuMing/carina/tree/main) |
+| `python/projects/tech-radar/` | [carina/modules/tech-radar](https://github.com/LiShuMing/carina/tree/main/modules/tech-radar) |
+| `cc/projects/kv-store/` | [vela/storage](https://github.com/LiShuMing/vela/tree/main/storage) |
+| `cc/projects/query-engine/` | [vela/execution](https://github.com/LiShuMing/vela/tree/main/execution) |
+| `optimizer-learning/` | [vela/optimizer](https://github.com/LiShuMing/vela/tree/main/optimizer) |
+
+### Standalone Projects in xlab
+
+These remaining directories are self-contained projects with their own build systems:
 
 | Project | Path | Stack | Notes |
 | --- | --- | --- | --- |
-| Liminalis | `liminalis/` | FastAPI, React 19, Go | Four domains: radar, invest, ego, wechat. Architecture guarded by tests. |
-| Panming / 盘铭 | [panming/](panming/README.md) | Python/FastAPI, PostgreSQL, React/TypeScript | Running local prototype: capture, daily reports, blog editing, and a personal library. Includes full product/technical design. |
-| Optimizer Learning | `optimizer-learning/` | Python | Volcano and Cascades planners over a shared relational model. |
-| TinyKV | `cc/projects/kv-store/` | C++20, CMake | LSM-tree key-value store. |
-| Query Engine | `cc/projects/query-engine/` | C++20, CMake | Vectorized execution: hash agg, hash join, sort. |
 | MiniSeastar | `cc/projects/mini-seastar/` | C++20, CMake | Coroutine scheduler, per-thread reactor. |
 | Umbra JIT | `rust/projects/umbra/` | Rust, Cargo | Data-centric JIT pipeline for OLAP. |
 | K8s Lab | `go/k8s-lab/` | Go (stdlib only) | Mini Kubernetes control plane: MVCC store, apiserver, informers, workqueue, ReplicaSet controller, kubelet sim. |
@@ -75,7 +81,7 @@ cd xlab
 git submodule update --init cc/thirdparty/googletest cc/thirdparty/abseil-cpp
 ```
 
-Common project commands:
+Common project commands (run each example from the xlab checkout root):
 
 ```bash
 # C++ core lab
@@ -90,24 +96,16 @@ cargo test
 cd python/pylab
 pytest
 
-# Liminalis platform (needs pip install -e '.[dev]' for backend deps)
-cd liminalis
-npm install                     # frontend deps
-npm run dev                     # Vite dev server
-npm run api                     # FastAPI backend on :8010
-python -m pytest                # backend tests (testpaths = tests/)
-npm run check                   # combined project check
-
-# Optimizer comparison tool (needs: pip install sqlglot)
-cd optimizer-learning
-python cli.py list
-python cli.py compare --all
-
 # k8s-lab: mini Kubernetes control plane (pure Go, zero deps)
 cd go/k8s-lab
 go run ./cmd/demo               # end-to-end: apply, self-heal, scale
 go test -race ./...             # -race is mandatory here
 ```
+
+For migrated application and database commands, follow the current
+[Lyra README](https://github.com/LiShuMing/lyra/blob/main/README.md),
+[Carina README](https://github.com/LiShuMing/carina/blob/main/README.md), and
+[Vela README](https://github.com/LiShuMing/vela/blob/main/README.md).
 
 `docs/` is an Obsidian vault of plain Markdown — there is no site generator at
 the repository root, so there is nothing to build or serve.

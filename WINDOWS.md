@@ -29,7 +29,7 @@ Run these from the repository root:
 ./tools/build-windows.ps1 -Project all -Configuration Release
 
 # Select one project.
-./tools/build-windows.ps1 -Project query-engine
+./tools/build-windows.ps1 -Project thread-pool
 ./tools/build-windows.ps1 -Project rlab -Configuration Release
 ./tools/build-windows.ps1 -Project rdb
 ./tools/build-windows.ps1 -Project toydb
@@ -60,26 +60,22 @@ are expensive in Debug, so Release is useful for a full workspace verification.
 
 | Selector | Native Windows scope |
 | --- | --- |
-| `cpp` | The four C++ projects below, built together with shared dependencies. |
+| `cpp` | The two C++ projects below, built together with shared dependencies. |
 | `cclab` | Consistent hash library; enum, floating-point, copy-on-write column, and defer tests. |
-| `kv-store` | TinyKV MemTable, SkipList, Arena, tests, and optional MemTable benchmark. |
-| `query-engine` | Core library and hash-table/aggregation integration tests. |
 | `thread-pool` | Global/work-stealing pool, deque tests, and optional latency/throughput benchmarks. |
 | `rlab` | All six Rust workspace packages, including tests and doctests. |
 | `rdb` | Database executable and storage tests using isolated OS temporary directories. |
 | `toydb` | Editable Python package installation and existing pytest suite. |
 | `all` | `cpp`, `rlab`, `rdb`, and `toydb`; failures are collected and reported. |
 
-The query-engine checkout lacks its previously referenced `test_*.cc` and
-`bench/bench_aggregation.cc` sources. CMake now discovers actual test files and
-includes an integration suite; it reports the absent benchmark when requested.
-This does not validate every prototype join/sort operation.
+TinyKV and the query engine moved to [Vela](https://github.com/LiShuMing/vela).
+Use Vela’s own build instructions and CI matrix; this page does not establish
+native Windows support for that repository.
 
 The full Linux `cclab` build is still available through its existing `build.sh`.
 Native Windows defaults to `CCLAB_PORTABLE_ONLY=ON`. The root CMake build also
 selects that subset on other operating systems. To select individual C++ modules
-in a manual root build, use `XLAB_BUILD_CCLAB`, `XLAB_BUILD_KV_STORE`,
-`XLAB_BUILD_QUERY_ENGINE`, and `XLAB_BUILD_THREAD_POOL`.
+in a manual root build, use `XLAB_BUILD_CCLAB` and `XLAB_BUILD_THREAD_POOL`.
 
 ## Dependencies and Offline Builds
 
@@ -133,7 +129,7 @@ for worker termination. Victim lists are allocated once per worker.
 The chained-submission benchmarks wait for completion outside the worker pool
 to avoid exhausting workers with parents blocked on their children.
 
-TinyKV initializes its Arena before constructing the SkipList. Its allocations
+Historical pre-extraction repair (now maintained in Vela): TinyKV initializes its Arena before constructing the SkipList. Its allocations
 preserve natural alignment, reuse aligned free space, validate alignment and
 size overflow, and transfer ownership during move assignment without explicitly
 destroying a live object. Regression tests cover these paths in Release too.
@@ -151,7 +147,7 @@ Portable C++ builds, Rust workspace tests, RDB tests, and ToyDB tests are covere
 by `.github/workflows/native-build.yml`. The workflow must run on GitHub to
 establish CI results; local validation does not imply a completed remote run.
 
-## Local Verification
+## Historical Local Verification (before extraction)
 
 Verified on 2026-10-07 using the current WSL-hosted checkout and Windows-native
 MSVC 19.50, CMake 4.2.3, Rust 1.96, and Python 3.12:
@@ -169,4 +165,5 @@ MSVC 19.50, CMake 4.2.3, Rust 1.96, and Python 3.12:
 
 Ninja's dependency database was also checked for TinyKV's Arena and MemTable
 headers. Focused Rust formatting/Clippy checks completed; existing warnings in
-the laboratory examples remain. The GitHub workflow has not been run remotely.
+the laboratory examples remain. Those historical counts include extracted projects; current cleanup CI is recorded
+in the [migration report](docs/migrations/2026-10-13-constellation.md).

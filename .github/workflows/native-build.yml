@@ -8,8 +8,6 @@ on:
       - cmake/**
       - tools/build-windows.ps1
       - cc/cclab/**
-      - cc/projects/kv-store/**
-      - cc/projects/query-engine/**
       - cc/projects/thread-pool/**
       - rust/rlab/**
       - rust/rdb/**
@@ -21,8 +19,6 @@ on:
       - cmake/**
       - tools/build-windows.ps1
       - cc/cclab/**
-      - cc/projects/kv-store/**
-      - cc/projects/query-engine/**
       - cc/projects/thread-pool/**
       - rust/rlab/**
       - rust/rdb/**

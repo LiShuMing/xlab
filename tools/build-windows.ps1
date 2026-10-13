@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [ValidateSet('all', 'cpp', 'cclab', 'kv-store', 'query-engine', 'thread-pool', 'rlab', 'rdb', 'toydb')]
+    [ValidateSet('all', 'cpp', 'cclab', 'thread-pool', 'rlab', 'rdb', 'toydb')]
     [string]$Project = 'cpp',
     [ValidateSet('Debug', 'Release', 'RelWithDebInfo')]
     [string]$Configuration = 'Debug',
