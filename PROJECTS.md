@@ -1,6 +1,6 @@
 # xlab 项目路由索引
 
-更新日期：2026-10-07。路径均相对于仓库根目录，点击目录或入口即可定位。
+更新日期：2026-10-13。路径均相对于仓库根目录，点击目录或入口即可定位。
 
 本表按当前目录、实际源码和构建清单整理，包含语言实验室、独立项目、
 工作区成员、跨语言应用及第三方子模块。目录存在不代表已验证构建成功；
@@ -14,6 +14,27 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
    README 中的历史设计不一定等于当前实现。
 4. “旧目录”保留用于定位，不应当作为可运行项目入口。
 5. 子模块未初始化时，先查本文末尾的声明路径；不要默认递归下载全部依赖。
+
+## Constellation 独立候选（迁移验收中）
+
+以下私有仓库已有独立代码候选和本地验证，整体迁移尚未验收。
+Lyra 脱敏候选已发布到 [draft PR #1](https://github.com/LiShuMing/lyra/pull/1)，三项 CI 通过；
+Carina 脱敏替代候选已发布到 [draft PR #2](https://github.com/LiShuMing/carina/pull/2)，对应 CI 通过。
+两者尚未合并，默认分支尚未替代。
+Vela 私有远程实现提交和最终文档提交及各自 CI 均已核验。
+三个最终候选历史均完成隐私复核，对应的远程文件树/CI 证据已核验。
+源映射为 543 项，清理计划为 536 项删除并保留忽略规则/迁移导航；尚未执行清理。
+完整映射、修复、测试范围、未完成等价迁移及删除门槛见
+[2026-10-13 迁移记录](docs/migrations/2026-10-13-constellation.md)。
+
+| 独立候选 | 本仓库源路径 | 目标边界 |
+| --- | --- | --- |
+| [Lyra](https://github.com/LiShuMing/lyra) | `liminalis/` | 应用代码；根 `docs/` 知识库及个人/运行数据未迁移 |
+| [Carina](https://github.com/LiShuMing/carina) | `panming/`、`python/projects/tech-radar/` | 核心与独立采集模块；FragmentTutor 保留，完整历史/资产等价迁移未完成 |
+| [Vela](https://github.com/LiShuMing/vela) | `optimizer-learning/`、`cc/projects/query-engine/`、`cc/projects/kv-store/` | `optimizer/`、`execution/`、`storage/`；远程 CI 通过，独立泄漏检查证据范围见迁移记录 |
+
+不把本地通过等同于发布完成；联合验收后仅清理源文件白名单，保留知识库、
+FragmentTutor、排除项和运行数据。真实数据迁移、生产部署不属本次代码验收范围。
 
 ## 按任务路由
 
