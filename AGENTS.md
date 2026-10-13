@@ -14,6 +14,11 @@ Use `PROJECTS.md` for project discovery and task routing. Before editing a
 module, read its local instructions and build manifest. When adding, moving,
 or removing a project, update its entry and routing in `PROJECTS.md`.
 
+For engineering reading reports, continuous source lessons, or daily exercises,
+use `docs/daily/AGENTS.md` and `docs/skills/engineering-daily/SKILL.md`.
+`docs/daily/` is the unified reading entry; existing `docs/github-daily/` and
+public technical digests supply historical material and participate in deduplication.
+
 ## Project Overview
 
 **xlab** is a multi-language laboratory codebase primarily written in Chinese context but with English code/documentation. It serves as a personal research and experimentation platform covering systems programming, data structures, algorithms, and database internals. The repository owner is a senior database kernel engineer with focus on OLAP systems, query optimizers, and distributed systems.

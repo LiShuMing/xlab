@@ -1,0 +1,20 @@
+{
+  "track": "highway",
+  "max_pending": 2,
+  "units": [
+    {"id": "highway-01", "title": "lane、宽度与标量契约", "novelty": "元素数、字节数与无溢出的oracle"},
+    {"id": "highway-02", "title": "load/store 与地址", "novelty": "对齐、指针步进与别名"},
+    {"id": "highway-03", "title": "算术与循环骨架", "novelty": "按实际lane数量组织全块循环"},
+    {"id": "highway-04", "title": "比较与mask", "novelty": "比较、选择与访存的语义区别"},
+    {"id": "highway-05", "title": "安全尾部", "novelty": "受限读取保证与边界输入矩阵"},
+    {"id": "highway-06", "title": "扩宽窄化与饱和", "novelty": "类型、符号与溢出契约"},
+    {"id": "highway-07", "title": "归约与复习", "novelty": "向量累加器与最终结果的溢出区别"},
+    {"id": "highway-08", "title": "点积与FMA", "novelty": "舍入与误差契约"},
+    {"id": "highway-09", "title": "shuffle", "novelty": "lane局部与跨块重排"},
+    {"id": "highway-10", "title": "gather/scatter", "novelty": "索引有效性与重复地址语义"},
+    {"id": "highway-11", "title": "compress/filter", "novelty": "输出顺序、容量与写入范围"},
+    {"id": "highway-12", "title": "动态分派", "novelty": "编译与运行目标的不同集合"},
+    {"id": "highway-13", "title": "汇编与基准", "novelty": "代码生成证据与受控实测"},
+    {"id": "highway-14", "title": "综合复盘", "novelty": "完整边界矩阵与性能适用条件"}
+  ]
+}

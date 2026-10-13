@@ -45,6 +45,7 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | 邮件、newsletter、Gmail 摘要 | [python/projects/py-email/](python/projects/py-email/) |
 | 产品 release notes、数据库产品情报 | [python/projects/py-pia/](python/projects/py-pia/) |
 | 技术信号、X/Reddit、OpenCLI、日报 | [python/projects/tech-radar/](python/projects/tech-radar/) |
+| 工程研读日报、Highway/SIMD连续学习、JDK/Linux源码、练习与复习 | [docs/daily/](docs/daily/README.md)、[engineering-daily skill](docs/skills/engineering-daily/SKILL.md)、[工具](tools/engineering_daily.py) |
 | LLM 深度研究报告 | [python/projects/py-report/](python/projects/py-report/) |
 | Git 变更分析、仓库收集 | [python/projects/py-cli/](python/projects/py-cli/)、[python/projects/py-tools/](python/projects/py-tools/) |
 | 投资、周期、股票 | [python/projects/py-cycle-lab/](python/projects/py-cycle-lab/)、[python/projects/py-stock/](python/projects/py-stock/)、[liminalis/backend/invest/](liminalis/backend/invest/) |
@@ -238,6 +239,7 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | [tools/](tools/) | 仓库级工具 | [build-windows.ps1](tools/build-windows.ps1)、[healthcheck.sh](tools/healthcheck.sh) |
 | [cmake/](cmake/) | 共享 CMake 依赖与编译选项 | [XlabDependencies.cmake](cmake/XlabDependencies.cmake) |
 | [docs/](docs/) | 知识库、技术报告、书籍笔记与技能 | [books](docs/books/)、[reports](docs/reports/)、[skills](docs/skills/) |
+| [docs/daily/](docs/daily/) | 工程研读文档项目；连续课程、可运行标量oracle、练习与复习 | [README](docs/daily/README.md)、[AGENTS](docs/daily/AGENTS.md)、[skill](docs/skills/engineering-daily/SKILL.md)、[工具](tools/engineering_daily.py) |
 
 ## 第三方子模块完整列表
 

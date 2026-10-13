@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "date": "YYYY-MM-DD",
+  "timezone": "Asia/Shanghai",
+  "cutoff_at": "YYYY-MM-DDTHH:MM:SS+08:00",
+  "report": "docs/daily/YYYY-MM-DD.md",
+  "lesson": {
+    "unit_id": "highway-NN",
+    "mode": "new",
+    "novelty": "本课新增的机制或边界；复习改mode并增加reason",
+    "path": "docs/daily/projects/highway/lessons/实际文件.md"
+  },
+  "exercise": {
+    "id": "稳定题目ID",
+    "skill_key": "领域.推理能力",
+    "mode": "new",
+    "path": "docs/daily/practice/questions/实际题目.md"
+  },
+  "recall": {
+    "unit_id": "以前生成过的单元ID；首期改为null",
+    "question": "一个不含答案的提取问题"
+  },
+  "news": [
+    {
+      "event_id": "github:owner/repo:pr:NUMBER",
+      "stage": {"pr": "实时核实的open/merged/closed", "release": "单独核实的状态"},
+      "delta_key": "稳定的技术增量标识，不使用每天变化的日期",
+      "delta": "相对于旧报道新增了什么；首次报道说明变化",
+      "event_date": "YYYY-MM-DD",
+      "sources": ["https://原始官方来源"],
+      "previous": "仅重访事件必填：该事件实际旧报道的仓库路径"
+    }
+  ],
+  "coverage": "实际核实的范围、失败来源与缺口。news允许为空数组。",
+  "source_refs": [
+    {"id": "仓库ID", "sha": "固定完整commit SHA", "path": "源码或资料路径", "evidence": "证据类型"}
+  ]
+}

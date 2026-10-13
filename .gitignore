@@ -19,6 +19,9 @@ tags.*
 .claude/
 .agents/
 
+# Engineering reading: local source mirrors, feedback, and generated evidence
+/.local/engineering-daily/
+
 # Logs and local secrets
 logs/
 log/

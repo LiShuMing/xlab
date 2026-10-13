@@ -23,6 +23,10 @@ Use the root documents by audience:
 Module-level files such as `cc/SKILL.md`, `python/SKILL.md`, or
 `rust/rlab/AGENTS.md` override or refine the root guidance for that subtree.
 
+For daily engineering reading, use [docs/daily/](docs/daily/README.md): one
+continuous source-learning track, selected changes, one exercise, and spaced
+review. The first track covers portable filtering and aggregation with Highway.
+
 ## Repository Map
 
 For every project path, nested workspace member, and third-party reference, see

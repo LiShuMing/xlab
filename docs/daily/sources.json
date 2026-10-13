@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "timezone": "Asia/Shanghai",
+  "repositories": [
+    {
+      "id": "highway",
+      "url": "https://github.com/google/highway.git",
+      "branch": "master",
+      "sparse_mode": "no-cone",
+      "filter": "tree:0",
+      "sparse": ["g3doc/quick_reference.md", "hwy/highway.h", "hwy/ops/shared-inl.h", "hwy/ops/scalar-inl.h", "hwy/targets.cc"]
+    },
+    {
+      "id": "simde",
+      "url": "https://github.com/simd-everywhere/simde.git",
+      "branch": "master",
+      "sparse_mode": "no-cone",
+      "filter": "tree:0",
+      "sparse": ["simde/x86/sse2.h", "simde/arm/neon/types.h", "simde/simde-common.h"]
+    },
+    {
+      "id": "jdk",
+      "url": "https://github.com/openjdk/jdk.git",
+      "branch": "master",
+      "sparse_mode": "no-cone",
+      "filter": "tree:0",
+      "sparse": ["src/java.base/share/classes/java/util/concurrent/locks/LockSupport.java", "src/hotspot/share/gc/shared/collectedHeap.hpp", "src/hotspot/share/runtime/safepoint.cpp"]
+    },
+    {
+      "id": "linux",
+      "url": "https://github.com/torvalds/linux.git",
+      "branch": "master",
+      "sparse_mode": "no-cone",
+      "filter": "tree:0",
+      "sparse": ["kernel/sched/core.c", "mm/memory.c", "include/linux/mm_types.h"]
+    }
+  ],
+  "official_sources": {
+    "highway": "https://github.com/google/highway/blob/master/g3doc/quick_reference.md",
+    "arm_acle": "https://arm-software.github.io/acle/main/acle.html",
+    "java_jep": "https://openjdk.org/jeps/0",
+    "java_builds": "https://jdk.java.net/",
+    "wg21": "https://open-std.org/JTC1/SC22/WG21/",
+    "gcc": "https://gcc.gnu.org/projects/cxx-status.html",
+    "clang": "https://clang.llvm.org/cxx_status.html",
+    "libcxx": "https://libcxx.llvm.org/Status/Cxx2c.html",
+    "linux_releases": "https://www.kernel.org/"
+  }
+}

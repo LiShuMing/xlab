@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-13",
+  "timezone": "Asia/Shanghai",
+  "cutoff_at": "2026-10-13T15:55:00+08:00",
+  "report": "docs/daily/2026-10-13.md",
+  "lesson": {
+    "unit_id": "highway-01",
+    "mode": "new",
+    "novelty": "lane数量与字节宽度的区别；证明无溢出的标量oracle",
+    "path": "docs/daily/projects/highway/lessons/01-lanes-and-contract.md"
+  },
+  "exercise": {
+    "id": "jvm-publication-01",
+    "skill_key": "jvm.safe-publication",
+    "mode": "new",
+    "path": "docs/daily/practice/questions/jvm-publication-01.md"
+  },
+  "recall": {
+    "unit_id": null,
+    "mode": "baseline",
+    "question": "元素指针步进与字节步进的区别；写死lane数后要检查的两类错误"
+  },
+  "news": [],
+  "coverage": "启动期；未完成完整新闻扫描；部分OpenJDK官方页面访问失败",
+  "source_refs": [
+    {
+      "id": "highway",
+      "sha": "2191a3487f1aeff1796817884bdddcd4b0bd1810",
+      "path": "g3doc/quick_reference.md",
+      "evidence": "official-documentation"
+    }
+  ]
+}
