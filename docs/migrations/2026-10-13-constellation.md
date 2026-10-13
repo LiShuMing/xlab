@@ -231,13 +231,15 @@ FragmentTutor、知识库、排除项和运行数据在白名单清理后仍保�
   逐 blob 对比确认除明确列出的源码/导航/构建变更外，原有跟踪内容保持一致。
 - 首次远程运行 [38437060710](https://github.com/LiShuMing/xlab/actions/runs/38437060710)
   的 Windows jobs 在 checkout 阶段因既有 Java 尾空格文件名失败，未执行测试；Linux 构建不受影响。
-  修复仅将 Windows checkout 缩小至各 job 的真实项目范围，保留原 Java 文件和全部剩余项目代码。
+  稀疏 checkout 重试仍在 Git 索引校验阶段失败。最终由 Linux job 从精确 PR checkout
+  打包原生 CI 所需源码，Windows jobs 下载同一 run 的短期 artifact 后执行原构建/测试命令。
+  不关闭 Git 安全校验，不修改 Java 文件，Linux C++ 仍使用完整 checkout。
 - 远程 Windows/Linux CI 按最终 PR HEAD 单独核验；结果记录在 PR 中，不能以本地通过替代。
 
 ## 回滚方案
 
 - 本提案使用独立源码移除提交和配套构建/路由/文档提交；如合并后需回滚，应将这组清理提交
-  一并 revert（先配套提交，再源码提交），恢复入口和实现的一致性，不重写历史。
+  一并 revert（含所有 CI 修复提交，按提交逆序，最后源码提交），恢复入口和实现的一致性，不重写历史。
 - 远程备份 `backup/pre-constellation-cleanup-2026-10-14` 固定在
   `fd15e65059ff7d0d01ed48b6347cd75881fb4b36`。恢复指定路径前先审查清理后的有效修改，避免覆盖。
 - 本次不操作真实数据；代码回滚不等于数据库/资产回滚。未来数据迁移须另行核验备份、schema、

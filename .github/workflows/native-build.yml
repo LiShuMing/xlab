@@ -29,7 +29,25 @@ permissions:
   contents: read
 
 jobs:
+  windows-source:
+    # Git for Windows rejects an unrelated legacy Java filename even with sparse
+    # checkout. Package only native CI scopes on Linux; do not weaken Git safety.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Package exact-checkout Windows sources
+        run: >-
+          tar -cf "${{ runner.temp }}/windows-source.tar"
+          CMakeLists.txt cmake tools cc/cclab cc/projects/thread-pool
+          rust/rlab rust/rdb python/projects/py-toydb
+      - uses: actions/upload-artifact@v4
+        with:
+          name: native-windows-source
+          path: ${{ runner.temp }}/windows-source.tar
+          retention-days: 1
+
   cpp:
+    needs: windows-source
     strategy:
       fail-fast: false
       matrix:
@@ -37,18 +55,17 @@ jobs:
         configuration: [Debug, Release]
     runs-on: ${{ matrix.os }}
     steps:
-      # Windows cannot materialize unrelated legacy filenames (for example,
-      # a Java filename ending in a space). Check out only this job's scope.
-      - uses: actions/checkout@v4
-        if: runner.os == 'Windows'
-        with:
-          sparse-checkout: |
-            cmake
-            tools
-            cc/cclab
-            cc/projects/thread-pool
       - uses: actions/checkout@v4
         if: runner.os != 'Windows'
+      - uses: actions/download-artifact@v4
+        if: runner.os == 'Windows'
+        with:
+          name: native-windows-source
+          path: ${{ runner.temp }}/native-source
+      - name: Extract exact-checkout Windows sources
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: tar -xf "${{ runner.temp }}/native-source/windows-source.tar" -C "$env:GITHUB_WORKSPACE"
       - name: Windows build and tests
         if: runner.os == 'Windows'
         shell: pwsh
@@ -64,13 +81,16 @@ jobs:
         run: ctest --test-dir build --output-on-failure --no-tests=error --timeout 60
 
   rust:
+    needs: windows-source
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
         with:
-          sparse-checkout: |
-            rust/rlab
-            rust/rdb
+          name: native-windows-source
+          path: ${{ runner.temp }}/native-source
+      - name: Extract exact-checkout Windows sources
+        shell: pwsh
+        run: tar -xf "${{ runner.temp }}/native-source/windows-source.tar" -C "$env:GITHUB_WORKSPACE"
       - uses: dtolnay/rust-toolchain@stable
       - name: Workspace tests including doctests
         run: cargo test --manifest-path rust/rlab/Cargo.toml --workspace --locked --release
@@ -78,13 +98,16 @@ jobs:
         run: cargo test --manifest-path rust/rdb/Cargo.toml --locked
 
   python:
+    needs: windows-source
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
         with:
-          sparse-checkout: |
-            tools
-            python/projects/py-toydb
+          name: native-windows-source
+          path: ${{ runner.temp }}/native-source
+      - name: Extract exact-checkout Windows sources
+        shell: pwsh
+        run: tar -xf "${{ runner.temp }}/native-source/windows-source.tar" -C "$env:GITHUB_WORKSPACE"
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
