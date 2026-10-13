@@ -1,1 +1,0 @@
-"""Panming local product prototype."""

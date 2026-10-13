@@ -26,8 +26,11 @@ go/
 
 Other Go code in the repository:
 
-- `liminalis/llm-wiki/` — the substantial Go module (CLI + web context service)
 - `cc/golab/` — a single cgo-interop LeetCode file
+
+The context CLI and web service formerly at `liminalis/llm-wiki/` now live in
+[Lyra’s llm-wiki module](https://github.com/LiShuMing/lyra/tree/main/llm-wiki/). Read that
+repository’s instructions and module README before building or changing it.
 
 ## Key Concepts
 - **Concurrency**: Goroutines, channels, select, context

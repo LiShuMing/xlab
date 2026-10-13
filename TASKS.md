@@ -7,11 +7,28 @@ quality work. Keep task lists, migration notes, and refactoring plans here.
 Stable project navigation belongs in `README.md`; coding-agent rules belong in
 `AGENTS.md`; knowledge capture workflows belong in `SKILL.md`.
 
+## Migrated Work: Destination Routing
+
+The six source roots below have been accepted into their destination repositories.
+Their old task lists are retained only as historical planning context, not active
+xlab backlog or verified statements of current destination gaps. Reconcile any
+remaining work with the destination’s current tests, documentation, and backlog;
+do not recreate the old xlab directories.
+
+| Former xlab path | Current home |
+| --- | --- |
+| `liminalis/` | [lyra](https://github.com/LiShuMing/lyra/tree/main) |
+| `panming/` | [carina](https://github.com/LiShuMing/carina/tree/main) |
+| `python/projects/tech-radar/` | [carina/modules/tech-radar](https://github.com/LiShuMing/carina/tree/main/modules/tech-radar) |
+| `cc/projects/kv-store/` | [vela/storage](https://github.com/LiShuMing/vela/tree/main/storage) |
+| `cc/projects/query-engine/` | [vela/execution](https://github.com/LiShuMing/vela/tree/main/execution) |
+| `optimizer-learning/` | [vela/optimizer](https://github.com/LiShuMing/vela/tree/main/optimizer) |
+
 ## Windows Portability
 
 - [x] Add a native PowerShell build/test entry point with Visual Studio tool discovery.
 - [x] Share CMake test dependencies and separate MSVC/Unix compiler options.
-- [x] Build a portable cclab subset, TinyKV, query-engine, and thread-pool together.
+- [x] Historically built a portable cclab subset, TinyKV, query-engine, and thread-pool together. TinyKV and query-engine now build in Vela.
 - [x] Repair queue ownership, shutdown, Arena alignment, and initialization defects found by Windows tests.
 - [x] Package and test ToyDB, and isolate RDB tests from hard-coded Unix directories.
 - [x] Add Windows/Ubuntu CI definitions and a module support matrix in `WINDOWS.md`.
@@ -24,9 +41,9 @@ Stable project navigation belongs in `README.md`; coding-agent rules belong in
 
 重构多语言实验室仓库xlab，将各语言项目拆分为独立项目，每个项目使用独立Context，并创建现代LLM项目必备文件，丰富测试覆盖率，标记无用文件。
 
-## Repository Structure Analysis
+## Historical Repository Structure Analysis
 
-> **Snapshot date**: 2026-09-19. Verified against the working tree on branch
+> **Historical snapshot, not the current checkout**: 2026-09-19. Verified against the working tree on branch
 > `chore/repo-hygiene` (from `origin/main`). Directories listed under "Projects
 > removed" no longer exist here; their tasks have been redirected.
 
@@ -116,7 +133,7 @@ xlab/
 
 | Old path | Disposition |
 | --- | --- |
-| `projects/llm-wiki` | Moved to `liminalis/llm-wiki`. |
+| `projects/llm-wiki` | Previously moved to `liminalis/llm-wiki`; now [Lyra llm-wiki](https://github.com/LiShuMing/lyra/tree/main/llm-wiki/). |
 | `go/hello` | Never materialized; the first `go/` project is `go/k8s-lab/`. |
 | `skills/`, `_templates/` | Do not exist at repo root; skills live in `docs/skills/` and `.claude/skills/`. |
 
@@ -410,24 +427,27 @@ executing any task here, confirm which branch you are on; tasks written against
 
 ---
 
-#### Project: cc/projects/kv-store
+#### Historical Project: cc/projects/kv-store → [vela/storage](https://github.com/LiShuMing/vela/tree/main/storage)
 
-**现状**: Key-value store implementation
+> Historical pre-migration notes only. Continue work in the linked destination;
+> check its current implementation before adopting any item below.
 
-**Tasks**:
+**迁移前现状**: Key-value store implementation
+
+**Historical task ideas (not active xlab tasks)**:
 
 1. **创建项目文件**
-   - [ ] 创建 `cc/projects/kv-store/AGENTS.md`
-   - [ ] 创建 `cc/projects/kv-store/RULES.md`
-   - [ ] 创建 `cc/projects/kv-store/README.md`
-   - [ ] 创建 `cc/projects/kv-store/CHANGELOG.md`
-   - [ ] 创建 `cc/projects/kv-store/docs/architecture/`
+   - 创建 `cc/projects/kv-store/AGENTS.md`
+   - 创建 `cc/projects/kv-store/RULES.md`
+   - 创建 `cc/projects/kv-store/README.md`
+   - 创建 `cc/projects/kv-store/CHANGELOG.md`
+   - 创建 `cc/projects/kv-store/docs/architecture/`
 
 2. **丰富单元测试**
-   - [ ] 为存储引擎添加测试
-   - [ ] 为网络层添加测试
-   - [ ] 为并发操作添加测试
-   - [ ] 为持久化添加测试
+   - 为存储引擎添加测试
+   - 为网络层添加测试
+   - 为并发操作添加测试
+   - 为持久化添加测试
 
 ---
 
@@ -468,24 +488,27 @@ executing any task here, confirm which branch you are on; tasks written against
 
 ---
 
-#### Project: cc/projects/query-engine
+#### Historical Project: cc/projects/query-engine → [vela/execution](https://github.com/LiShuMing/vela/tree/main/execution)
 
-**现状**: Query engine implementation
+> Historical pre-migration notes only. Continue work in the linked destination;
+> check its current implementation before adopting any item below.
 
-**Tasks**:
+**迁移前现状**: Query engine implementation
+
+**Historical task ideas (not active xlab tasks)**:
 
 1. **创建项目文件**
-   - [ ] 创建 `cc/projects/query-engine/AGENTS.md`
-   - [ ] 创建 `cc/projects/query-engine/RULES.md`
-   - [ ] 创建 `cc/projects/query-engine/README.md`
-   - [ ] 创建 `cc/projects/query-engine/CHANGELOG.md`
-   - [ ] 创建 `cc/projects/query-engine/docs/architecture/`
+   - 创建 `cc/projects/query-engine/AGENTS.md`
+   - 创建 `cc/projects/query-engine/RULES.md`
+   - 创建 `cc/projects/query-engine/README.md`
+   - 创建 `cc/projects/query-engine/CHANGELOG.md`
+   - 创建 `cc/projects/query-engine/docs/architecture/`
 
 2. **丰富单元测试**
-   - [ ] 为parser添加测试
-   - [ ] 为planner添加测试
-   - [ ] 为executor添加测试
-   - [ ] 为storage层添加测试
+   - 为parser添加测试
+   - 为planner添加测试
+   - 为executor添加测试
+   - 为storage层添加测试
 
 ---
 
@@ -643,36 +666,42 @@ executing any task here, confirm which branch you are on; tasks written against
 
 ---
 
-#### Project: liminalis/backend/radar
+#### Historical Project: liminalis/backend/radar → [lyra/backend/radar](https://github.com/LiShuMing/lyra/tree/main/backend/radar)
 
-**现状**: Liminalis 的情报雷达业务域（45 个跟踪文件 / 39 个 `.py`），已有测试
+> Historical pre-migration notes only. Continue work in the linked destination;
+> check its current implementation before adopting any item below.
+
+**迁移前现状**: Liminalis 的情报雷达业务域（45 个跟踪文件 / 39 个 `.py`），已有测试
 `liminalis/tests/test_radar.py`、`test_radar_extractor.py`、
 `liminalis/backend/tests/radar/`。
 
-**Tasks**:
+**Historical task ideas (not active xlab tasks)**:
 
 1. **补齐测试**
-   - [ ] 为 `backend/radar/ranker.py`、`summarizer.py`、`seen_tracker.py` 添加测试
-   - [ ] 为 `backend/radar/sync/` 添加测试
+   - 为 `backend/radar/ranker.py`、`summarizer.py`、`seen_tracker.py` 添加测试
+   - 为 `backend/radar/sync/` 添加测试
 2. **遵循架构约束**
-   - [ ] 确认改动通过 `tests/test_architecture.py`（`_shared` 边界与事务规则守护）
+   - 确认改动通过 `tests/test_architecture.py`（`_shared` 边界与事务规则守护）
 
 ---
 
-#### Project: liminalis/backend/invest
+#### Historical Project: liminalis/backend/invest → [lyra/backend/invest](https://github.com/LiShuMing/lyra/tree/main/backend/invest)
 
-**现状**: Liminalis 的投资分析业务域（含 `agents/`、`core/`、`modules/`、
+> Historical pre-migration notes only. Continue work in the linked destination;
+> check its current implementation before adopting any item below.
+
+**迁移前现状**: Liminalis 的投资分析业务域（含 `agents/`、`core/`、`modules/`、
 `scheduler/`、`notifier/`、`web/`、`diff/`），已有测试
 `liminalis/tests/test_invest.py`、`liminalis/backend/invest/tests/`。
 
-**Tasks**:
+**Historical task ideas (not active xlab tasks)**:
 
 1. **补齐测试**
-   - [ ] 为 `backend/invest/agents/` 添加测试
-   - [ ] 为 `backend/invest/core/` 添加测试
-   - [ ] 为 `backend/invest/modules/data_collector`、`report_generator` 添加测试
+   - 为 `backend/invest/agents/` 添加测试
+   - 为 `backend/invest/core/` 添加测试
+   - 为 `backend/invest/modules/data_collector`、`report_generator` 添加测试
 2. **遵循架构约束**
-   - [ ] 确认改动通过 `tests/test_architecture.py`
+   - 确认改动通过 `tests/test_architecture.py`
 
 ---
 
@@ -916,13 +945,13 @@ executing any task here, confirm which branch you are on; tasks written against
 
 ### 【Go 项目】
 
-#### Project: `go/k8s-lab` 与 `liminalis/llm-wiki`
+#### Project: `go/k8s-lab`
 
 **现状**: `go/k8s-lab` 已建成——纯标准库实现的迷你 Kubernetes 控制面
 （MVCC store / apiserver / informer / workqueue / ReplicaSet controller /
 kubelet 模拟器 / `cmd/demo`），全包测试覆盖率 82%~100%，`-race` 全绿。
-迭代路线见 `go/k8s-lab/TODOS.md`。另一个 Go 模块是 `liminalis/llm-wiki`
-（`go 1.25.0`，约 7,154 行，已有 8 个 `_test.go`）。
+迭代路线见 `go/k8s-lab/TODOS.md`。原 `liminalis/llm-wiki` 已迁往
+[Lyra llm-wiki](https://github.com/LiShuMing/lyra/tree/main/llm-wiki/)，其质量工作应在目标仓库跟进。
 另有 `cc/golab/src/leetcode/leetcode_433.go` 单文件。
 
 **Tasks**:
@@ -936,9 +965,9 @@ kubelet 模拟器 / `cmd/demo`），全包测试覆盖率 82%~100%，`-race` 全
    - [ ] rate-limited workqueue（指数退避）
    - [ ] GC：ownerReferences + 级联删除
    - [ ] scheduler 与多节点 kubelet（节点心跳 / 驱逐）
-3. **`liminalis/llm-wiki` 质量**
-   - [ ] 在 CI 中执行 `go vet ./...` 与 `go test ./...`
-   - [ ] 补齐 `internal/service`、`internal/repository` 的测试覆盖
+3. **历史迁移事项：Lyra llm-wiki 质量**（非 xlab 待办，先核对目标现状）
+   - 原计划：在 CI 中执行 `go vet ./...` 与 `go test ./...`
+   - 原计划：补齐 `internal/service`、`internal/repository` 的测试覆盖
 
 ---
 
@@ -997,7 +1026,7 @@ kubelet 模拟器 / `cmd/demo`），全包测试覆盖率 82%~100%，`-race` 全
 
 > **修订于 2026-09-19。** 此前被完全遗漏的 `liminalis`（及其 `radar`、`invest`
 > 业务域）、`optimizer-learning`、`python/llm_benchmark`、`rust/projects/umbra`
-> 等已补入并重新排序。
+> 等已补入并重新排序。已迁移条目仅保留历史排序，后续工作以目标仓库为准。
 
 ### P0 - 仓库卫生（先做，影响所有后续工作）
 
@@ -1018,20 +1047,20 @@ kubelet 模拟器 / `cmd/demo`），全包测试覆盖率 82%~100%，`-race` 全
 - [ ] 清理空壳目录：顶层 `projects/`（0 文件）、`python/projects/py-numpy-pandas`（无 `.py`）
 - [ ] 评估 `cc/srlab/data/v1.jstack`（1MB，代码中无引用）是否仍需入库
 - [ ] 评估 `python/projects/py-pia/data/{raw,normalized}`（2.5MB 抓取缓存）是否应入库
-- [ ] 为 `liminalis` 与 `optimizer-learning` 补写本文件中的 `#### Project:` 任务段（当前缺失）
+- 历史待办已转出：平台与优化器任务分别在 [Lyra](https://github.com/LiShuMing/lyra/tree/main) 和 [Vela optimizer](https://github.com/LiShuMing/vela/tree/main/optimizer) 中核对维护，不再补建 xlab 项目任务段。
 
 ### P0 - 核心项目（优先重构）
 
-1. **liminalis** - 统一平台（FastAPI + React + Go）。已有架构守护测试，优先在域内深化
-2. **optimizer-learning** - Volcano vs Cascades 对比工具。**缺 `tests/`（仅空 `__init__.py`）与 `pyproject.toml`，且依赖 `sqlglot` 未声明**
+1. **已迁出：[lyra](https://github.com/LiShuMing/lyra/tree/main)** - 原 `liminalis`；历史排序保留，当前任务见目标仓库。
+2. **已迁出：[vela/optimizer](https://github.com/LiShuMing/vela/tree/main/optimizer)** - 原 `optimizer-learning`；历史排序保留，当前任务见目标仓库。
 3. **cc/cclab** - C++ 核心实验室
-4. **cc/projects/kv-store** - KV 存储实现（最接近可独立开源）
-5. **cc/projects/query-engine** - 向量化查询引擎（**无 tests 目录**）
+4. **已迁出：[vela/storage](https://github.com/LiShuMing/vela/tree/main/storage)** - 原 `cc/projects/kv-store`；历史排序保留，当前任务见目标仓库。
+5. **已迁出：[vela/execution](https://github.com/LiShuMing/vela/tree/main/execution)** - 原 `cc/projects/query-engine`；历史排序保留，当前任务见目标仓库。
 6. **rust/rlab** - Rust 核心实验室
 7. **rust/rdb** - Rust 数据库实现
 8. **python/pylab** - Python 核心实验室
 9. **python/llm_benchmark** - LLM 评测框架（已有 pyproject + 7 个测试）
-10. **liminalis/backend/radar** - 情报雷达域
+10. **已迁出：[lyra/backend/radar](https://github.com/LiShuMing/lyra/tree/main/backend/radar)** - 原 `liminalis/backend/radar`；历史排序保留，当前任务见目标仓库。
 
 ### P1 - 重要项目（次要重构）
 
@@ -1039,8 +1068,8 @@ kubelet 模拟器 / `cmd/demo`），全包测试覆盖率 82%~100%，`-race` 全
 12. **cc/projects/mini-seastar** - 协程异步框架
 13. **cc/projects/thread-pool** - work-stealing 线程池
 14. **cc/projects/web-server** - io_uring/kqueue 双后端 Web 服务器
-15. **rust/projects/umbra** - JIT 编译流水线（可与 query-engine、optimizer-learning 串成 OLAP 主线）
-16. **liminalis/backend/invest** - 投资分析域
+15. **rust/projects/umbra** - JIT 编译流水线（可与 [Vela execution](https://github.com/LiShuMing/vela/tree/main/execution)、[Vela optimizer](https://github.com/LiShuMing/vela/tree/main/optimizer) 串成 OLAP 主线）
+16. **已迁出：[lyra/backend/invest](https://github.com/LiShuMing/lyra/tree/main/backend/invest)** - 原 `liminalis/backend/invest`；历史排序保留，当前任务见目标仓库。
 17. **python/projects/py-email** - Gmail 摘要工具
 18. **python/projects/py-cli** - 工程化最规范的 Python 子项目
 19. **python/projects/py-toydb** - 玩具数据库
@@ -1053,7 +1082,7 @@ kubelet 模拟器 / `cmd/demo`），全包测试覆盖率 82%~100%，`-race` 全
 23. 其余 C++ 项目（`cc/projects/{cpython, interpreter, io-uring, llvm-jit, learn-balel}`）
 24. **haskell/projects/{sql-parser, stm-engine, dsl-transform}**、`haskell/hslab`
 25. **rust/projects/{fragment-tutor, subway-game}**（subway-game 仅 26 行）
-26. **liminalis/llm-wiki** - Go 模块
+26. **已迁出：[lyra/llm-wiki](https://github.com/LiShuMing/lyra/tree/main/llm-wiki)** - 原 `liminalis/llm-wiki`；历史排序保留，当前任务见目标仓库。
 27. **shell/{bin, docker, mysql, fio}**、**llm/cuda**、**tools**
 28. **docs/books** - 12 本书约 9.5 万行 Markdown，独立知识线
 

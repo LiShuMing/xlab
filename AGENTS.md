@@ -28,18 +28,6 @@ or removing a project, update its entry and routing in `PROJECTS.md`.
 
 ```
 xlab/
-├── liminalis/            # Unified personal platform (largest project)
-│   ├── backend/          # FastAPI: radar, invest, ego, wechat, _shared
-│   ├── src/              # React 19 + Vite + Tailwind frontend
-│   ├── llm-wiki/         # Go CLI for personal context maintenance
-│   ├── tests/            # pytest suite incl. architecture guard tests
-│   └── docs/             # PRDs, RFCs, API contracts
-├── optimizer-learning/   # Volcano vs Cascades optimizer comparison tool
-│   ├── optimizer/        # Shared relational model, rules, cost model
-│   ├── volcano/          # Volcano planner (Calcite-style, bottom-up)
-│   ├── cascades/         # Cascades planner (Graefe 1995, top-down)
-│   ├── compare/          # Side-by-side analysis engine
-│   └── examples/         # SQL -> RelNode example queries
 ├── cc/                   # C++ laboratory (main focus)
 │   ├── cclab/            # Core C++ lab with CMake build
 │   ├── algo/             # Algorithm implementations (LeetCode, etc.)
@@ -49,7 +37,7 @@ xlab/
 │   ├── nasm/             # Assembly experiments
 │   ├── extentions/       # GDB / editor extensions
 │   ├── golab/            # Go-C++ interop experiments
-│   ├── projects/         # Personal C++ projects (11 standalone systems)
+│   ├── projects/         # Remaining personal C++ projects
 │   └── thirdparty/       # 40+ Git submodules (major deps)
 ├── rust/                 # Rust laboratory
 │   ├── rlab/             # Workspace-based Rust lab
@@ -77,6 +65,21 @@ xlab/
 ├── tools/                # Repository maintenance scripts (healthcheck.sh)
 └── docs/                 # Obsidian vault: notes, reports, book-length studies (Chinese)
 ```
+
+## Migrated Project Routing
+
+The following source roots have left xlab. Do not recreate them here or run
+commands against their former paths. Read the destination repository’s local
+instructions and build manifests before working there.
+
+| Former xlab path | Current home |
+| --- | --- |
+| `liminalis/` | [lyra](https://github.com/LiShuMing/lyra/tree/main) |
+| `panming/` | [carina](https://github.com/LiShuMing/carina/tree/main) |
+| `python/projects/tech-radar/` | [carina/modules/tech-radar](https://github.com/LiShuMing/carina/tree/main/modules/tech-radar) |
+| `cc/projects/kv-store/` | [vela/storage](https://github.com/LiShuMing/vela/tree/main/storage) |
+| `cc/projects/query-engine/` | [vela/execution](https://github.com/LiShuMing/vela/tree/main/execution) |
+| `optimizer-learning/` | [vela/optimizer](https://github.com/LiShuMing/vela/tree/main/optimizer) |
 
 ## Technology Stack by Module
 
@@ -116,14 +119,15 @@ xlab/
   original code. Treat it as third-party.
 
 ### Go (go/)
-- **Version**: 1.26.2 (per `go/k8s-lab/go.mod`); `liminalis/llm-wiki` uses 1.25.0
+- **Version**: 1.26.2 (per `go/k8s-lab/go.mod`)
 - **Module**: Go modules
 - **Projects**: `go/k8s-lab/` — a from-scratch mini Kubernetes control plane
   (pure stdlib, zero dependencies): MVCC store, apiserver facade, informers,
   workqueue, ReplicaSet controller, kubelet simulator, `cmd/demo`.
-- **Other Go code**: `liminalis/llm-wiki/` is the other substantial Go module
-  (`cmd/ctx`, `cmd/ctx-web`, `internal/{cli,config,domain,provider,repository,service,web}`).
-  `cc/golab/` holds a single cgo-interop LeetCode file.
+- **Other Go code**: `cc/golab/` holds a single cgo-interop LeetCode file.
+- **Migrated Go module**: [Lyra llm-wiki](https://github.com/LiShuMing/lyra/tree/main/llm-wiki/)
+  (formerly `liminalis/llm-wiki/`) owns the context CLI and web service.
+  Use its current `go.mod` and README for toolchain and test instructions.
 
 ### Java (java/)
 - **Build Tools**: Gradle (primary), Maven
@@ -190,10 +194,6 @@ cd test && make test          # All tests
 
 ### Go
 ```bash
-cd liminalis/llm-wiki
-make demo                       # or: go run ./cmd/ctx init
-go test ./...
-
 cd go/k8s-lab
 go run ./cmd/demo               # end-to-end mini control plane demo
 go test -race ./...             # -race is mandatory (heavy concurrency)

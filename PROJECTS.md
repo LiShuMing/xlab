@@ -1,6 +1,6 @@
 # xlab 项目路由索引
 
-更新日期：2026-10-07。路径均相对于仓库根目录，点击目录或入口即可定位。
+更新日期：2026-10-13。相对路径属于 xlab；外部链接指向已迁移项目的当前仓库。
 
 本表按当前目录、实际源码和构建清单整理，包含语言实验室、独立项目、
 工作区成员、跨语言应用及第三方子模块。目录存在不代表已验证构建成功；
@@ -15,20 +15,33 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 4. “旧目录”保留用于定位，不应当作为可运行项目入口。
 5. 子模块未初始化时，先查本文末尾的声明路径；不要默认递归下载全部依赖。
 
+## 已迁移项目
+
+以下旧路径仅供追溯；代码、构建与后续任务应在目标仓库进行。
+
+| Former xlab path | Current home |
+| --- | --- |
+| `liminalis/` | [lyra](https://github.com/LiShuMing/lyra/tree/main) |
+| `panming/` | [carina](https://github.com/LiShuMing/carina/tree/main) |
+| `python/projects/tech-radar/` | [carina/modules/tech-radar](https://github.com/LiShuMing/carina/tree/main/modules/tech-radar) |
+| `cc/projects/kv-store/` | [vela/storage](https://github.com/LiShuMing/vela/tree/main/storage) |
+| `cc/projects/query-engine/` | [vela/execution](https://github.com/LiShuMing/vela/tree/main/execution) |
+| `optimizer-learning/` | [vela/optimizer](https://github.com/LiShuMing/vela/tree/main/optimizer) |
+
 ## 按任务路由
 
 | 需求或关键词 | 优先定位 |
 | --- | --- |
 | C++ 数据结构、并发、协程、COW、一致性哈希 | [cc/cclab/](cc/cclab/) |
 | LeetCode、LCR、面试题、基础算法 | [cc/algo/](cc/algo/)、[rust/rlab/tools/leetcode/](rust/rlab/tools/leetcode/)、[python/pylab/](python/pylab/) |
-| KV、MemTable、SkipList、Arena | [cc/projects/kv-store/](cc/projects/kv-store/) |
-| 向量化执行、Hash Aggregate、Join、Sort、Top-N | [cc/projects/query-engine/](cc/projects/query-engine/) |
+| KV、MemTable、SkipList、Arena | [vela/storage/](https://github.com/LiShuMing/vela/tree/main/storage/) |
+| 向量化执行、Hash Aggregate、Join、Sort、Top-N | [vela/execution/](https://github.com/LiShuMing/vela/tree/main/execution/) |
 | 线程池、work stealing、任务调度 | [cc/projects/thread-pool/](cc/projects/thread-pool/)、[rust/rlab/tools/thread-pool/](rust/rlab/tools/thread-pool/) |
 | MPMC、MPSC、队列内存回收 | [rust/rlab/tools/lockfree-queue/](rust/rlab/tools/lockfree-queue/) |
 | Bloom、Split Block、XOR Filter | [rust/rlab/tools/bloom_filter/](rust/rlab/tools/bloom_filter/) |
 | Rust 数据库、SQL、存储引擎 | [rust/rdb/](rust/rdb/) |
 | AI 记忆数据库、向量索引、Arrow、gRPC | [rust/projects/umbra/](rust/projects/umbra/) |
-| Volcano、Cascades、优化器算法对照 | [optimizer-learning/](optimizer-learning/) |
+| Volcano、Cascades、优化器算法对照 | [vela/optimizer/](https://github.com/LiShuMing/vela/tree/main/optimizer/) |
 | 多数据库优化器源码分析 | [python/projects/py-optimizer1/](python/projects/py-optimizer1/)、[python/projects/py-optimizer2/](python/projects/py-optimizer2/) |
 | LLVM、JIT、表达式编译 | [cc/projects/llvm-jit/](cc/projects/llvm-jit/) |
 | SQL Parser、Haskell、规则优化 | [haskell/projects/sql-parser/](haskell/projects/sql-parser/) |
@@ -44,13 +57,14 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | AI 沙盒、Streamlit、LangChain | [python/projects/py-lab/](python/projects/py-lab/) |
 | 邮件、newsletter、Gmail 摘要 | [python/projects/py-email/](python/projects/py-email/) |
 | 产品 release notes、数据库产品情报 | [python/projects/py-pia/](python/projects/py-pia/) |
-| 技术信号、X/Reddit、OpenCLI、日报 | [python/projects/tech-radar/](python/projects/tech-radar/) |
+| 技术信号、X/Reddit、OpenCLI、日报 | [carina/modules/tech-radar/](https://github.com/LiShuMing/carina/tree/main/modules/tech-radar/) |
 | LLM 深度研究报告 | [python/projects/py-report/](python/projects/py-report/) |
 | Git 变更分析、仓库收集 | [python/projects/py-cli/](python/projects/py-cli/)、[python/projects/py-tools/](python/projects/py-tools/) |
-| 投资、周期、股票 | [python/projects/py-cycle-lab/](python/projects/py-cycle-lab/)、[python/projects/py-stock/](python/projects/py-stock/)、[liminalis/backend/invest/](liminalis/backend/invest/) |
-| 心理陪护、对话记忆、微信 | [python/projects/py-ego/](python/projects/py-ego/)、[liminalis/backend/ego/](liminalis/backend/ego/)、[liminalis/backend/wechat/](liminalis/backend/wechat/) |
-| 统一个人工作台、技术雷达、投资与对话 | [liminalis/](liminalis/) |
-| 个人上下文、llm-wiki、Go API | [liminalis/llm-wiki/](liminalis/llm-wiki/) |
+| 投资、周期、股票 | [python/projects/py-cycle-lab/](python/projects/py-cycle-lab/)、[python/projects/py-stock/](python/projects/py-stock/)、[lyra/backend/invest/](https://github.com/LiShuMing/lyra/tree/main/backend/invest/) |
+| 心理陪护、对话记忆、微信 | [python/projects/py-ego/](python/projects/py-ego/)、[lyra/backend/ego/](https://github.com/LiShuMing/lyra/tree/main/backend/ego/)、[lyra/backend/wechat/](https://github.com/LiShuMing/lyra/tree/main/backend/wechat/) |
+| 个人知识工作台、采集、日报、博客与文库 | [carina](https://github.com/LiShuMing/carina/tree/main) |
+| 统一个人工作台、技术雷达、投资与对话 | [lyra/](https://github.com/LiShuMing/lyra/tree/main/) |
+| 个人上下文、llm-wiki、Go API | [lyra/llm-wiki/](https://github.com/LiShuMing/lyra/tree/main/llm-wiki/) |
 | 桌面学习助手、Tauri | [rust/projects/fragment-tutor/](rust/projects/fragment-tutor/) |
 | 地铁线路问答、儿童学习游戏 | [rust/projects/subway-game/](rust/projects/subway-game/) |
 | PyTorch、micrograd、自动求导 | [python/projects/py-torch/](python/projects/py-torch/) |
@@ -78,11 +92,11 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | [cc/projects/cpython/skiplist-extention/](cc/projects/cpython/skiplist-extention/) | SkipList 的 Python 原生扩展 | [CMakeLists](cc/projects/cpython/skiplist-extention/CMakeLists.txt)、[setup.py](cc/projects/cpython/skiplist-extention/setup.py) |
 | [cc/projects/interpreter/](cc/projects/interpreter/) | Flex/Bison 词法、语法、AST 与解释执行 | [README](cc/projects/interpreter/README.md)、[CMakeLists](cc/projects/interpreter/CMakeLists.txt) |
 | [cc/projects/io-uring/](cc/projects/io-uring/) | Linux io_uring C++20 协程封装 | [README](cc/projects/io-uring/README.md)、[CMakeLists](cc/projects/io-uring/CMakeLists.txt) |
-| [cc/projects/kv-store/](cc/projects/kv-store/) | TinyKV；MemTable、SkipList、Arena | [README](cc/projects/kv-store/README.md)、[CMakeLists](cc/projects/kv-store/CMakeLists.txt) |
+| [vela/storage/](https://github.com/LiShuMing/vela/tree/main/storage/) | TinyKV；MemTable、SkipList、Arena | [README](https://github.com/LiShuMing/vela/blob/main/storage/README.md)、[CMakeLists](https://github.com/LiShuMing/vela/blob/main/storage/CMakeLists.txt) |
 | [cc/projects/learn-balel/](cc/projects/learn-balel/) | Bazel 构建学习；主程序、数学库与测试 | [TASK](cc/projects/learn-balel/TASK.md)、[BUILD](cc/projects/learn-balel/BUILD)、[MODULE.bazel](cc/projects/learn-balel/MODULE.bazel) |
 | [cc/projects/llvm-jit/](cc/projects/llvm-jit/) | LLVM JIT 表达式编译与性能比较 | [CMakeLists](cc/projects/llvm-jit/CMakeLists.txt)、[源码](cc/projects/llvm-jit/src/) |
 | [cc/projects/mini-seastar/](cc/projects/mini-seastar/) | 协程调度、Reactor、Seastar-lite 实验 | [README](cc/projects/mini-seastar/README.md)、[CMakeLists](cc/projects/mini-seastar/CMakeLists.txt) |
-| [cc/projects/query-engine/](cc/projects/query-engine/) | vagg 向量化查询执行引擎 | [README](cc/projects/query-engine/README.md)、[CMakeLists](cc/projects/query-engine/CMakeLists.txt) |
+| [vela/execution/](https://github.com/LiShuMing/vela/tree/main/execution/) | vagg 向量化查询执行引擎 | [README](https://github.com/LiShuMing/vela/blob/main/execution/README.md)、[CMakeLists](https://github.com/LiShuMing/vela/blob/main/execution/CMakeLists.txt) |
 | [cc/projects/thread-pool/](cc/projects/thread-pool/) | WSTP 全局队列与 work-stealing 线程池 | [README](cc/projects/thread-pool/README.md)、[CMakeLists](cc/projects/thread-pool/CMakeLists.txt) |
 | [cc/projects/web-server/](cc/projects/web-server/) | Linux/macOS 网络与 I/O 后端实验 | [README](cc/projects/web-server/README.md)、[CMakeLists](cc/projects/web-server/CMakeLists.txt) |
 | [cc/projects/write-a-C-interpreter/](cc/projects/write-a-C-interpreter/) | C 编写的自解释 C interpreter | [README](cc/projects/write-a-C-interpreter/README.md)、[xc.c](cc/projects/write-a-C-interpreter/xc.c) |
@@ -155,18 +169,18 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | [python/projects/py-torch/](python/projects/py-torch/) | PyTorch 学习、micrograd、自动求导 | [README](python/projects/py-torch/README.md)、[micrograd](python/projects/py-torch/micrograd/) |
 | [python/projects/py-toydb/](python/projects/py-toydb/) | ToyDB 文档数据库 | [README](python/projects/py-toydb/README.md)、[pyproject.toml](python/projects/py-toydb/pyproject.toml) |
 | [python/projects/strata-review/](python/projects/strata-review/) | 本地 Strata 只读 Git diff/代码审查 | [README](python/projects/strata-review/README.md)、[strata_review.py](python/projects/strata-review/strata_review.py) |
-| [python/projects/tech-radar/](python/projects/tech-radar/) | 技术信号采集、SQLite、日报；命令 `tech-radar` | [README](python/projects/tech-radar/README.md)、[pyproject.toml](python/projects/tech-radar/pyproject.toml) |
+| [carina/modules/tech-radar/](https://github.com/LiShuMing/carina/tree/main/modules/tech-radar/) | 技术信号采集、SQLite、日报；命令 `tech-radar` | [README](https://github.com/LiShuMing/carina/blob/main/modules/tech-radar/README.md)、[pyproject.toml](https://github.com/LiShuMing/carina/blob/main/modules/tech-radar/pyproject.toml) |
 | [python/tools/](python/tools/) | StarRocks 分区/锁日志分析及 Hacker News 示例脚本 | [目录](python/tools/) |
-| [optimizer-learning/](optimizer-learning/) | 根目录 Python 项目；Volcano/Cascades 对照与 join reorder | [README](optimizer-learning/README.md)、[核心代码](optimizer-learning/optimizer/) |
-| [liminalis/backend/](liminalis/backend/) | 根目录跨语言应用的 Python/FastAPI 后端 | [app.py](liminalis/backend/app.py)、[项目配置](liminalis/pyproject.toml) |
+| [vela/optimizer/](https://github.com/LiShuMing/vela/tree/main/optimizer/) | Vela Python 模块；Volcano/Cascades 对照与 join reorder | [README](https://github.com/LiShuMing/vela/blob/main/optimizer/README.md)、[核心代码](https://github.com/LiShuMing/vela/tree/main/optimizer/optimizer/) |
+| [lyra/backend/](https://github.com/LiShuMing/lyra/tree/main/backend/) | Lyra 跨语言应用的 Python/FastAPI 后端 | [app.py](https://github.com/LiShuMing/lyra/blob/main/backend/app.py)、[项目配置](https://github.com/LiShuMing/lyra/blob/main/pyproject.toml) |
 
 旧目录与遗留位置：
 
 | 当前目录 | 扫描结果与路由建议 |
 | --- | --- |
-| [python/projects/py-invest/](python/projects/py-invest/) | 未发现项目源码或构建清单；投资功能优先查 [liminalis/backend/invest/](liminalis/backend/invest/) 和 `py-cycle-lab` |
+| [python/projects/py-invest/](python/projects/py-invest/) | 未发现项目源码或构建清单；投资功能优先查 [lyra/backend/invest/](https://github.com/LiShuMing/lyra/tree/main/backend/invest/) 和 `py-cycle-lab` |
 | [python/projects/py-paper/](python/projects/py-paper/) | `paper-agent/` 下未发现项目源码或构建清单；论文工具优先查 `py-academic` |
-| [python/projects/py-radar/](python/projects/py-radar/) | 留有旧目录和输出数据，未发现项目源码；当前雷达功能见 [liminalis/backend/radar/](liminalis/backend/radar/) |
+| [python/projects/py-radar/](python/projects/py-radar/) | 留有旧目录和输出数据，未发现项目源码；当前雷达功能见 [lyra/backend/radar/](https://github.com/LiShuMing/lyra/tree/main/backend/radar/) |
 | [python/projects/py-scrapy/](python/projects/py-scrapy/) | `blog_crawler/` 下未发现项目源码或构建清单 |
 
 ## Java、Scala、Groovy
@@ -194,7 +208,7 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | 项目目录 | 用途 | 入口 |
 | --- | --- | --- |
 | [cc/golab/](cc/golab/) | Go 算法实验，位于 C++ 顶层目录下 | [Makefile](cc/golab/Makefile)、[源码](cc/golab/src/leetcode/) |
-| [liminalis/llm-wiki/](liminalis/llm-wiki/) | 个人上下文维护 POC、CLI 与服务 | [README](liminalis/llm-wiki/README.md)、[go.mod](liminalis/llm-wiki/go.mod)、[Makefile](liminalis/llm-wiki/Makefile) |
+| [lyra/llm-wiki/](https://github.com/LiShuMing/lyra/tree/main/llm-wiki/) | 个人上下文维护 POC、CLI 与服务 | [README](https://github.com/LiShuMing/lyra/blob/main/llm-wiki/README.md)、[go.mod](https://github.com/LiShuMing/lyra/blob/main/llm-wiki/go.mod)、[Makefile](https://github.com/LiShuMing/lyra/blob/main/llm-wiki/Makefile) |
 
 [go/](go/) 当前只有语言指南 [SKILL.md](go/SKILL.md)，未发现源码项目。
 旧说明里的 `go/hello/` 当前不存在，不作为有效项目链接。
@@ -210,17 +224,18 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 
 ## JavaScript、TypeScript 与跨语言应用
 
-这些项目在其他语言目录下，前后端应按所属应用一起定位。
+这些项目分布于 xlab 的其他语言目录和已迁移的独立仓库，前后端应按所属应用一起定位。
 
 | 项目目录 | 技术与用途 | 入口 |
 | --- | --- | --- |
-| [liminalis/](liminalis/) | React/Vite + Python/FastAPI + Go；统一个人工作台 | [package.json](liminalis/package.json)、[pyproject.toml](liminalis/pyproject.toml)、[部署说明](liminalis/docs/deployment.md) |
-| [liminalis/src/](liminalis/src/) | React 前端页面、组件与客户端逻辑 | [pages](liminalis/src/pages/)、[components](liminalis/src/components/) |
-| [liminalis/backend/ego/](liminalis/backend/ego/) | 对话、记忆与陪护业务模块 | [目录](liminalis/backend/ego/) |
-| [liminalis/backend/invest/](liminalis/backend/invest/) | 投资业务模块 | [cli.py](liminalis/backend/invest/cli.py) |
-| [liminalis/backend/radar/](liminalis/backend/radar/) | 技术雷达业务模块 | [cli.py](liminalis/backend/radar/cli.py) |
-| [liminalis/backend/wechat/](liminalis/backend/wechat/) | 微信集成业务模块 | [目录](liminalis/backend/wechat/) |
-| [liminalis/llm-wiki/](liminalis/llm-wiki/) | Go 个人上下文维护子项目 | [README](liminalis/llm-wiki/README.md) |
+| [carina](https://github.com/LiShuMing/carina/tree/main) | Python/FastAPI + PostgreSQL + React/TypeScript；原 Panming | [README](https://github.com/LiShuMing/carina/blob/main/README.md)、[pyproject.toml](https://github.com/LiShuMing/carina/blob/main/pyproject.toml)、[web](https://github.com/LiShuMing/carina/tree/main/web/) |
+| [lyra/](https://github.com/LiShuMing/lyra/tree/main/) | React/Vite + Python/FastAPI + Go；统一个人工作台 | [package.json](https://github.com/LiShuMing/lyra/blob/main/package.json)、[pyproject.toml](https://github.com/LiShuMing/lyra/blob/main/pyproject.toml)、[部署说明](https://github.com/LiShuMing/lyra/blob/main/docs/deployment.md) |
+| [lyra/src/](https://github.com/LiShuMing/lyra/tree/main/src/) | React 前端页面、组件与客户端逻辑 | [pages](https://github.com/LiShuMing/lyra/tree/main/src/pages/)、[components](https://github.com/LiShuMing/lyra/tree/main/src/components/) |
+| [lyra/backend/ego/](https://github.com/LiShuMing/lyra/tree/main/backend/ego/) | 对话、记忆与陪护业务模块 | [目录](https://github.com/LiShuMing/lyra/tree/main/backend/ego/) |
+| [lyra/backend/invest/](https://github.com/LiShuMing/lyra/tree/main/backend/invest/) | 投资业务模块 | [cli.py](https://github.com/LiShuMing/lyra/blob/main/backend/invest/cli.py) |
+| [lyra/backend/radar/](https://github.com/LiShuMing/lyra/tree/main/backend/radar/) | 技术雷达业务模块 | [cli.py](https://github.com/LiShuMing/lyra/blob/main/backend/radar/cli.py) |
+| [lyra/backend/wechat/](https://github.com/LiShuMing/lyra/tree/main/backend/wechat/) | 微信集成业务模块 | [目录](https://github.com/LiShuMing/lyra/tree/main/backend/wechat/) |
+| [lyra/llm-wiki/](https://github.com/LiShuMing/lyra/tree/main/llm-wiki/) | Go 个人上下文维护子项目 | [README](https://github.com/LiShuMing/lyra/blob/main/llm-wiki/README.md) |
 | [rust/projects/fragment-tutor/](rust/projects/fragment-tutor/) | FragmentTutor TypeScript/React 前端与 Rust/Tauri 后端 | [package.json](rust/projects/fragment-tutor/package.json) |
 | [rust/projects/subway-game/](rust/projects/subway-game/) | 地铁游戏 TypeScript/React 前端与 Rust/Tauri 后端 | [package.json](rust/projects/subway-game/package.json) |
 | [python/projects/py-ego/miniprogram/](python/projects/py-ego/miniprogram/) | 微信小程序前端 | [package.json](python/projects/py-ego/miniprogram/package.json) |
