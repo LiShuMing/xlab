@@ -8,6 +8,74 @@
     "url": "https://clickhouse.com/rss.xml"
   },
   {
+    "title": "ClickHouse Releases",
+    "url": "https://github.com/ClickHouse/ClickHouse/releases.atom"
+  },
+  {
+    "title": "DuckDB News",
+    "url": "https://duckdb.org/feed.xml"
+  },
+  {
+    "title": "DuckDB Releases",
+    "url": "https://github.com/duckdb/duckdb/releases.atom"
+  },
+  {
+    "title": "Trino Blog",
+    "url": "https://trino.io/feed.xml"
+  },
+  {
+    "title": "Trino Releases",
+    "url": "https://github.com/trinodb/trino/releases.atom"
+  },
+  {
+    "title": "Apache Iceberg Releases",
+    "url": "https://github.com/apache/iceberg/releases.atom"
+  },
+  {
+    "title": "Apache Iceberg Blog",
+    "url": "https://iceberg.apache.org/rss.xml"
+  },
+  {
+    "title": "StarRocks Blog",
+    "url": "https://www.starrocks.io/blog/rss.xml"
+  },
+  {
+    "title": "StarRocks Releases",
+    "url": "https://github.com/StarRocks/starrocks/releases.atom"
+  },
+  {
+    "title": "Apache Doris Blog",
+    "url": "https://doris.apache.org/blog/rss.xml"
+  },
+  {
+    "title": "Apache Doris Releases",
+    "url": "https://github.com/apache/doris/releases.atom"
+  },
+  {
+    "title": "Apache Spark Releases",
+    "url": "https://github.com/apache/spark/releases.atom"
+  },
+  {
+    "title": "Apache Spark Medium",
+    "url": "https://medium.com/feed/apache-spark"
+  },
+  {
+    "title": "Velox Blog",
+    "url": "https://velox-lib.io/blog/rss.xml"
+  },
+  {
+    "title": "Velox Releases",
+    "url": "https://github.com/facebookincubator/velox/releases.atom"
+  },
+  {
+    "title": "TiDB Blog",
+    "url": "https://en.pingcap.com/blog/rss"
+  },
+  {
+    "title": "TiDB Releases",
+    "url": "https://github.com/pingcap/tidb/releases.atom"
+  },
+  {
     "title": "CockroachDB Blog",
     "url": "https://www.cockroachlabs.com/blog/index.xml"
   },
@@ -26,30 +94,6 @@
   {
     "title": "Supabase Blog",
     "url": "https://supabase.com/rss.xml"
-  },
-  {
-    "title": "DuckDB News",
-    "url": "https://duckdb.org/feed.xml"
-  },
-  {
-    "title": "DuckDB Releases",
-    "url": "https://github.com/duckdb/duckdb/releases.atom"
-  },
-  {
-    "title": "ClickHouse Releases",
-    "url": "https://github.com/ClickHouse/ClickHouse/releases.atom"
-  },
-  {
-    "title": "Trino Blog",
-    "url": "https://trino.io/feed.xml"
-  },
-  {
-    "title": "Trino Releases",
-    "url": "https://github.com/trinodb/trino/releases.atom"
-  },
-  {
-    "title": "Apache Iceberg Releases",
-    "url": "https://github.com/apache/iceberg/releases.atom"
   },
   {
     "title": "ReadySet Releases",
