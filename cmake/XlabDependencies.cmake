@@ -45,7 +45,7 @@ function(xlab_require_benchmark)
     set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Disable benchmark's own tests" FORCE)
     set(BENCHMARK_ENABLE_INSTALL OFF CACHE BOOL "Disable dependency installation" FORCE)
     xlab_require_dependency(benchmark benchmark::benchmark
-        96afad55c79e02f5dfca1374e772c2be72ba631b)
+        c58e6d0710581e3a08d65c349664128a8d9a2461)
 endfunction()
 
 function(xlab_target_defaults target)

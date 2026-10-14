@@ -270,11 +270,11 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 
 ## 第三方子模块完整列表
 
-下面的路径来自 [.gitmodules](.gitmodules)，是声明位置，不是已初始化的源码链接。
-2026-10-14 基线有 **69 个声明、0 个 mode 160000 gitlink**。声明路径目前不是可初始化的子模块，
-`git submodule update` 不能凭声明恢复源码。保留声明用于后续逐项确认来源、版本和用途；
-本轮不删除声明、不批量恢复引用。根便携 C++ 可显式使用锁定版本的 FetchContent，
-其他模块的缺失依赖需分别处理，见 [README 构建范围](README.md#build-and-ci-scope)。
+下面的路径来自 [.gitmodules](.gitmodules)，不能仅凭声明判断源码已恢复。
+目前 **69 个声明、2 个 mode 160000 gitlink、67 个孤立声明**：仅 googletest 与
+benchmark 已按既有版本恢复，可定向初始化。其余保留逐项确认，不批量下载或删除。
+根便携 C++ 同时保留锁定版本的 FetchContent 回退；其他模块依赖仍分别处理。
+见 [依赖版本与验证](docs/meta/cpp-test-dependencies.md) 和 [README 构建范围](README.md#build-and-ci-scope)。
 
 ### C 参考项目
 
