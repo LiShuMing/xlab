@@ -9,7 +9,7 @@ Stable project navigation belongs in `README.md`; coding-agent rules belong in
 
 ## Migrated Work: Destination Routing
 
-The six source roots below have been accepted into their destination repositories.
+The seven source roots below have been accepted into their destination repositories.
 Their old task lists are retained only as historical planning context, not active
 xlab backlog or verified statements of current destination gaps. Reconcile any
 remaining work with the destination’s current tests, documentation, and backlog;
@@ -23,6 +23,9 @@ do not recreate the old xlab directories.
 | `cc/projects/kv-store/` | [vela/storage](https://github.com/LiShuMing/vela/tree/main/storage) |
 | `cc/projects/query-engine/` | [vela/execution](https://github.com/LiShuMing/vela/tree/main/execution) |
 | `optimizer-learning/` | [vela/optimizer](https://github.com/LiShuMing/vela/tree/main/optimizer) |
+| `swift/projects/daylog/` | [carina/apps/daylog](https://github.com/LiShuMing/carina/tree/main/apps/daylog) |
+
+DayLog source retirement and recovery: [verification record](docs/migrations/2026-10-14-daylog-source-retirement.md). Native UI acceptance was not run; the owner waived it as a source-retirement prerequisite.
 
 ## Windows Portability
 

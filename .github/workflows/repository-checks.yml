@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - '**/*.md'
+      - docs/migrations/**
+      - swift/**
       - .gitmodules
       - cc/thirdparty/googletest
       - cc/thirdparty/benchmark
@@ -13,6 +15,8 @@ on:
   push:
     paths:
       - '**/*.md'
+      - docs/migrations/**
+      - swift/**
       - .gitmodules
       - cc/thirdparty/googletest
       - cc/thirdparty/benchmark

@@ -1,0 +1,895 @@
+{
+  "schema": "xlab.daylog-source-retirement/v1",
+  "source_repository": "https://github.com/LiShuMing/xlab",
+  "source_commit": "f3510a9d05848e02e01eb07dbf3d5b295522cabb",
+  "original_migration_source_commit": "e0dbbee95730e7d1a006290169c3eac52baf7aae",
+  "destination_repository": "https://github.com/LiShuMing/carina",
+  "destination_commit": "09c7225ea904150c5205d5bc2d540b66d8715254",
+  "destination_subtree": "apps/daylog",
+  "backup_branch": "backup/pre-constellation-cleanup-2026-10-14",
+  "backup_commit": "fd15e65059ff7d0d01ed48b6347cd75881fb4b36",
+  "retired_directories": [
+    "swift/projects/daylog",
+    "swift/projects",
+    "swift"
+  ],
+  "file_count": 97,
+  "native_ui_acceptance": "not_run; owner waived source-retirement prerequisite on 2026-10-14",
+  "files": [
+    {
+      "source_path": "swift/projects/daylog/.gitignore",
+      "destination_path": "apps/daylog/.gitignore",
+      "mode": "100644",
+      "source_git_blob_sha1": "a8588de08beb5e20a3d5b36ab96c4b7761a0b6c3",
+      "source_sha256": "7a43e787f7c797ade93d1fd7f391d5e48697f633467c93ba37e538fd96c2750a",
+      "destination_sha256": "7a43e787f7c797ade93d1fd7f391d5e48697f633467c93ba37e538fd96c2750a",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog.xcodeproj/project.pbxproj",
+      "destination_path": "apps/daylog/DayLog.xcodeproj/project.pbxproj",
+      "mode": "100644",
+      "source_git_blob_sha1": "26d44d251d29464dba14b925cd9de4d44afe2c1d",
+      "source_sha256": "bc2f43172abb7ccd5e2109328d5e708680b005ab7f3117ed9edb95fb0e7f8a63",
+      "destination_sha256": "bc2f43172abb7ccd5e2109328d5e708680b005ab7f3117ed9edb95fb0e7f8a63",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog.xcodeproj/project.xcworkspace/contents.xcworkspacedata",
+      "destination_path": "apps/daylog/DayLog.xcodeproj/project.xcworkspace/contents.xcworkspacedata",
+      "mode": "100644",
+      "source_git_blob_sha1": "919434a6254f0e9651f402737811be6634a03e9c",
+      "source_sha256": "7f3b00b5c3fdb45242d7b87e1e5c4e25d1fa8129a16c94295ecc4e8ea2235c5f",
+      "destination_sha256": "7f3b00b5c3fdb45242d7b87e1e5c4e25d1fa8129a16c94295ecc4e8ea2235c5f",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog.xcodeproj/xcshareddata/xcschemes/DayLog.xcscheme",
+      "destination_path": "apps/daylog/DayLog.xcodeproj/xcshareddata/xcschemes/DayLog.xcscheme",
+      "mode": "100644",
+      "source_git_blob_sha1": "678f4ec63d0dfca888544f9b2f57eba3b15db6fb",
+      "source_sha256": "d483e28fa507be3ecc5766fd79ad0996817ec46861d95287282eb2138ee263a4",
+      "destination_sha256": "d483e28fa507be3ecc5766fd79ad0996817ec46861d95287282eb2138ee263a4",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/App/.gitkeep",
+      "destination_path": "apps/daylog/DayLog/App/.gitkeep",
+      "mode": "100644",
+      "source_git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "destination_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/App/AppStore.swift",
+      "destination_path": "apps/daylog/DayLog/App/AppStore.swift",
+      "mode": "100644",
+      "source_git_blob_sha1": "e4c9531d8991be0efee95815f544fdf89e25d643",
+      "source_sha256": "94cef15c7f8cde1d33bf7885779b030a6992582d12e83ce9640615f0c3b42b42",
+      "destination_sha256": "94cef15c7f8cde1d33bf7885779b030a6992582d12e83ce9640615f0c3b42b42",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/App/DayLogApp.swift",
+      "destination_path": "apps/daylog/DayLog/App/DayLogApp.swift",
+      "mode": "100644",
+      "source_git_blob_sha1": "f2056d7e3448584072356fa78190f10eeb590847",
+      "source_sha256": "52bfc09fc224df789caf57a4abb1d7f72bb375e01fd29f0bbd48630ca4a737c0",
+      "destination_sha256": "52bfc09fc224df789caf57a4abb1d7f72bb375e01fd29f0bbd48630ca4a737c0",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/App/Drafts.swift",
+      "destination_path": "apps/daylog/DayLog/App/Drafts.swift",
+      "mode": "100644",
+      "source_git_blob_sha1": "380412343e01539facc90ceac6fbe6fa55db2b13",
+      "source_sha256": "a6e2530a6d4d2ee41574808db9af1d5c96599bd2eebc95f9429c6983f0bf5442",
+      "destination_sha256": "a6e2530a6d4d2ee41574808db9af1d5c96599bd2eebc95f9429c6983f0bf5442",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/App/StorageChecks.swift",
+      "destination_path": "apps/daylog/DayLog/App/StorageChecks.swift",
+      "mode": "100644",
+      "source_git_blob_sha1": "47a271d7d115504fbc5396a88b4f1776a8ded552",
+      "source_sha256": "e591111f4e3aa4e03eecd72c588a8587159bedb2c61259911573dbb2e45333f4",
+      "destination_sha256": "e591111f4e3aa4e03eecd72c588a8587159bedb2c61259911573dbb2e45333f4",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Core/Domain.swift",
+      "destination_path": "apps/daylog/DayLog/Core/Domain.swift",
+      "mode": "100644",
+      "source_git_blob_sha1": "076b71f0778d097c6eafc1d7d6d5b12d93f1dc57",
+      "source_sha256": "383eb896e3a7ebf74fcea6a8c7e89d1136eadc97075e8670b4f19933ef75342b",
+      "destination_sha256": "383eb896e3a7ebf74fcea6a8c7e89d1136eadc97075e8670b4f19933ef75342b",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Core/LLM.swift",
+      "destination_path": "apps/daylog/DayLog/Core/LLM.swift",
+      "mode": "100644",
+      "source_git_blob_sha1": "39ee46aa3d5a9b4c966bcc0d794e84ae6a9158d1",
+      "source_sha256": "81d2b9bb94f3ade63b7dd525fe9b972d8889acc2da55f5b679816201647e10ea",
+      "destination_sha256": "81d2b9bb94f3ade63b7dd525fe9b972d8889acc2da55f5b679816201647e10ea",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Core/ReminderSchedule.swift",
+      "destination_path": "apps/daylog/DayLog/Core/ReminderSchedule.swift",
+      "mode": "100644",
+      "source_git_blob_sha1": "b0f1a3987ed07f0e615ba413c9be805acde8924a",
+      "source_sha256": "90c080d264c2fe8e0549e180e5b02839a6f1d4ad70b5823f7e7513d454bbd523",
+      "destination_sha256": "90c080d264c2fe8e0549e180e5b02839a6f1d4ad70b5823f7e7513d454bbd523",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Core/ReviewMarkdown.swift",
+      "destination_path": "apps/daylog/DayLog/Core/ReviewMarkdown.swift",
+      "mode": "100644",
+      "source_git_blob_sha1": "c6c437e48714645b42cfdfe21bca0d23d3325548",
+      "source_sha256": "dcffaffaed7349055e47d9dfc94c09e1ae0f0c34b553768fff92ab7f27ae710b",
+      "destination_sha256": "dcffaffaed7349055e47d9dfc94c09e1ae0f0c34b553768fff92ab7f27ae710b",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Features/.gitkeep",
+      "destination_path": "apps/daylog/DayLog/Features/.gitkeep",
+      "mode": "100644",
+      "source_git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "destination_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Features/Design.swift",
+      "destination_path": "apps/daylog/DayLog/Features/Design.swift",
+      "mode": "100644",
+      "source_git_blob_sha1": "861f3028c04cdf1f48383cc673375cee25084d2a",
+      "source_sha256": "456cacb422889d6e8525ebded1459300adaacdedf0ace3936fb471089c76549f",
+      "destination_sha256": "456cacb422889d6e8525ebded1459300adaacdedf0ace3936fb471089c76549f",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Features/DraftsView.swift",
+      "destination_path": "apps/daylog/DayLog/Features/DraftsView.swift",
+      "mode": "100644",
+      "source_git_blob_sha1": "f906955a1468bedb96b7d580e262817ceeb39f40",
+      "source_sha256": "8e6e6e4c72d12568400dd0851df37882f5ce0f799ef265191bc0c56629161de0",
+      "destination_sha256": "8e6e6e4c72d12568400dd0851df37882f5ce0f799ef265191bc0c56629161de0",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Features/HistoryJournalSettings.swift",
+      "destination_path": "apps/daylog/DayLog/Features/HistoryJournalSettings.swift",
+      "mode": "100644",
+      "source_git_blob_sha1": "af9105366c65bafaa4d179b4bd68a1acd558a006",
+      "source_sha256": "bd692f7526984d8c9fe7b29ea298dd876a2df5e29114745cf43b0ed0f66af6cf",
+      "destination_sha256": "bd692f7526984d8c9fe7b29ea298dd876a2df5e29114745cf43b0ed0f66af6cf",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Features/InspectorView.swift",
+      "destination_path": "apps/daylog/DayLog/Features/InspectorView.swift",
+      "mode": "100644",
+      "source_git_blob_sha1": "86878c78203a9e596dd7f74ffb50324fb6b5a4cb",
+      "source_sha256": "427a0db4478180c145325c1521368b15b9c3c1eb17354546fd59647c539cf60e",
+      "destination_sha256": "427a0db4478180c145325c1521368b15b9c3c1eb17354546fd59647c539cf60e",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Features/MarkdownText.swift",
+      "destination_path": "apps/daylog/DayLog/Features/MarkdownText.swift",
+      "mode": "100644",
+      "source_git_blob_sha1": "9e02030bb490ee0acf64a80687a9075a4242058a",
+      "source_sha256": "3ac0ca471c0ecd70eb593c1e5b0bded31c6ed0d42134feba431d3aeebad22b54",
+      "destination_sha256": "3ac0ca471c0ecd70eb593c1e5b0bded31c6ed0d42134feba431d3aeebad22b54",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Features/WorkspaceView.swift",
+      "destination_path": "apps/daylog/DayLog/Features/WorkspaceView.swift",
+      "mode": "100644",
+      "source_git_blob_sha1": "28c0f914c6e83763d7ed76d43d5e1a5b9df0efae",
+      "source_sha256": "25f1852e2d1c24496f5ead456baa8794814639168013ede70e47ca35fe275d64",
+      "destination_sha256": "25f1852e2d1c24496f5ead456baa8794814639168013ede70e47ca35fe275d64",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Models/.gitkeep",
+      "destination_path": "apps/daylog/DayLog/Models/.gitkeep",
+      "mode": "100644",
+      "source_git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "destination_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/README.md",
+      "destination_path": "apps/daylog/DayLog/README.md",
+      "mode": "100644",
+      "source_git_blob_sha1": "c9bf442dc3d2d517c013e57f55815305ee36c452",
+      "source_sha256": "544da8060c7c57c6d2dc3e50cec46393059759b1563e4076be1eb7b323f90b95",
+      "destination_sha256": "544da8060c7c57c6d2dc3e50cec46393059759b1563e4076be1eb7b323f90b95",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Resources/.gitkeep",
+      "destination_path": "apps/daylog/DayLog/Resources/.gitkeep",
+      "mode": "100644",
+      "source_git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "destination_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Resources/Assets.xcassets/AppIcon.appiconset/Contents.json",
+      "destination_path": "apps/daylog/DayLog/Resources/Assets.xcassets/AppIcon.appiconset/Contents.json",
+      "mode": "100644",
+      "source_git_blob_sha1": "2e12d457dfda40fa33f3ee3a5b8c18e2fc9aad14",
+      "source_sha256": "ef888a6a20fd185f16409e34c601baafede6da7b58412904512653a217099634",
+      "destination_sha256": "ef888a6a20fd185f16409e34c601baafede6da7b58412904512653a217099634",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Resources/Assets.xcassets/AppIcon.appiconset/icon_128x128.png",
+      "destination_path": "apps/daylog/DayLog/Resources/Assets.xcassets/AppIcon.appiconset/icon_128x128.png",
+      "mode": "100644",
+      "source_git_blob_sha1": "3de95acbc45abf91a71c86d588e68577bcdfd3c8",
+      "source_sha256": "854df9f1b7b9c97311d7e7600c81497420433e4675e69a5f59b434cf308c1dec",
+      "destination_sha256": "854df9f1b7b9c97311d7e7600c81497420433e4675e69a5f59b434cf308c1dec",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Resources/Assets.xcassets/AppIcon.appiconset/icon_128x128@2x.png",
+      "destination_path": "apps/daylog/DayLog/Resources/Assets.xcassets/AppIcon.appiconset/icon_128x128@2x.png",
+      "mode": "100644",
+      "source_git_blob_sha1": "9548d0c91cd86c35ffcf7c862f85fa7d8063f931",
+      "source_sha256": "dc8bdade203313a04cc8983991eb7aa7fff155142dadb5f6337edbac83272941",
+      "destination_sha256": "dc8bdade203313a04cc8983991eb7aa7fff155142dadb5f6337edbac83272941",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Resources/Assets.xcassets/AppIcon.appiconset/icon_16x16.png",
+      "destination_path": "apps/daylog/DayLog/Resources/Assets.xcassets/AppIcon.appiconset/icon_16x16.png",
+      "mode": "100644",
+      "source_git_blob_sha1": "45df88be206ea38f5ed7c4e986bd93443e163289",
+      "source_sha256": "7b211e5eeeb7e63c8b6ce86257a038bb34c13ce53ffcf9e839c05b3d9a97fefe",
+      "destination_sha256": "7b211e5eeeb7e63c8b6ce86257a038bb34c13ce53ffcf9e839c05b3d9a97fefe",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Resources/Assets.xcassets/AppIcon.appiconset/icon_16x16@2x.png",
+      "destination_path": "apps/daylog/DayLog/Resources/Assets.xcassets/AppIcon.appiconset/icon_16x16@2x.png",
+      "mode": "100644",
+      "source_git_blob_sha1": "8ceb613d024b1281be2e8ec8a00db4032bdb9d90",
+      "source_sha256": "20d73ffead3f5f14c81a5154383de7b4c91561bf09867d6a1f558e3d2a16f294",
+      "destination_sha256": "20d73ffead3f5f14c81a5154383de7b4c91561bf09867d6a1f558e3d2a16f294",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Resources/Assets.xcassets/AppIcon.appiconset/icon_256x256.png",
+      "destination_path": "apps/daylog/DayLog/Resources/Assets.xcassets/AppIcon.appiconset/icon_256x256.png",
+      "mode": "100644",
+      "source_git_blob_sha1": "9548d0c91cd86c35ffcf7c862f85fa7d8063f931",
+      "source_sha256": "dc8bdade203313a04cc8983991eb7aa7fff155142dadb5f6337edbac83272941",
+      "destination_sha256": "dc8bdade203313a04cc8983991eb7aa7fff155142dadb5f6337edbac83272941",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Resources/Assets.xcassets/AppIcon.appiconset/icon_256x256@2x.png",
+      "destination_path": "apps/daylog/DayLog/Resources/Assets.xcassets/AppIcon.appiconset/icon_256x256@2x.png",
+      "mode": "100644",
+      "source_git_blob_sha1": "bbfed0af3fd7ea94969f5e22efbf89a949a74e12",
+      "source_sha256": "f0d21fbf661bf649f27fbfc9928a00e4062b3dc24a11fcb109c865ef890a4c18",
+      "destination_sha256": "f0d21fbf661bf649f27fbfc9928a00e4062b3dc24a11fcb109c865ef890a4c18",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Resources/Assets.xcassets/AppIcon.appiconset/icon_32x32.png",
+      "destination_path": "apps/daylog/DayLog/Resources/Assets.xcassets/AppIcon.appiconset/icon_32x32.png",
+      "mode": "100644",
+      "source_git_blob_sha1": "8ceb613d024b1281be2e8ec8a00db4032bdb9d90",
+      "source_sha256": "20d73ffead3f5f14c81a5154383de7b4c91561bf09867d6a1f558e3d2a16f294",
+      "destination_sha256": "20d73ffead3f5f14c81a5154383de7b4c91561bf09867d6a1f558e3d2a16f294",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Resources/Assets.xcassets/AppIcon.appiconset/icon_32x32@2x.png",
+      "destination_path": "apps/daylog/DayLog/Resources/Assets.xcassets/AppIcon.appiconset/icon_32x32@2x.png",
+      "mode": "100644",
+      "source_git_blob_sha1": "b2b4e801a017a8b3aa11e30f5a61f82f02ffd014",
+      "source_sha256": "621ed01b7703d35a2518a1702fb6863ad85570e991f1487ebfe1c25c0c6f63e6",
+      "destination_sha256": "621ed01b7703d35a2518a1702fb6863ad85570e991f1487ebfe1c25c0c6f63e6",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Resources/Assets.xcassets/AppIcon.appiconset/icon_512x512.png",
+      "destination_path": "apps/daylog/DayLog/Resources/Assets.xcassets/AppIcon.appiconset/icon_512x512.png",
+      "mode": "100644",
+      "source_git_blob_sha1": "bbfed0af3fd7ea94969f5e22efbf89a949a74e12",
+      "source_sha256": "f0d21fbf661bf649f27fbfc9928a00e4062b3dc24a11fcb109c865ef890a4c18",
+      "destination_sha256": "f0d21fbf661bf649f27fbfc9928a00e4062b3dc24a11fcb109c865ef890a4c18",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Resources/Assets.xcassets/AppIcon.appiconset/icon_512x512@2x.png",
+      "destination_path": "apps/daylog/DayLog/Resources/Assets.xcassets/AppIcon.appiconset/icon_512x512@2x.png",
+      "mode": "100644",
+      "source_git_blob_sha1": "8e1dc9da3bf652f6a459ed110c31d7ef1c3446cb",
+      "source_sha256": "9f1ee62f2faa72b9fe2843bd79b1ba2efcc56e84d0082b6cb64741e705ccdfe7",
+      "destination_sha256": "9f1ee62f2faa72b9fe2843bd79b1ba2efcc56e84d0082b6cb64741e705ccdfe7",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Resources/Assets.xcassets/Contents.json",
+      "destination_path": "apps/daylog/DayLog/Resources/Assets.xcassets/Contents.json",
+      "mode": "100644",
+      "source_git_blob_sha1": "97a8662ebdb4372c5a5153036a38645cb92d1892",
+      "source_sha256": "7b225591af0371e8fea9f152cab6dd13013bf49ed2b277380503c4501698cbb7",
+      "destination_sha256": "7b225591af0371e8fea9f152cab6dd13013bf49ed2b277380503c4501698cbb7",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Resources/Info.plist",
+      "destination_path": "apps/daylog/DayLog/Resources/Info.plist",
+      "mode": "100644",
+      "source_git_blob_sha1": "80795be3e0e8f766fd963a8b3463ff5a51fbf0ab",
+      "source_sha256": "dc0d7b4221f96e656d686a695d8c7ab6145847f51a30feee19f411963f0987d4",
+      "destination_sha256": "dc0d7b4221f96e656d686a695d8c7ab6145847f51a30feee19f411963f0987d4",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Resources/Kebai.icns",
+      "destination_path": "apps/daylog/DayLog/Resources/Kebai.icns",
+      "mode": "100644",
+      "source_git_blob_sha1": "1e1fde180c771ca9bb24a73633cf2fd803017a90",
+      "source_sha256": "8a546ff7a3a7e7204eed681f691a65b796d9d0869e0aa85f0a7756b6fdcca5f0",
+      "destination_sha256": "8a546ff7a3a7e7204eed681f691a65b796d9d0869e0aa85f0a7756b6fdcca5f0",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Resources/Xcode-Info.plist",
+      "destination_path": "apps/daylog/DayLog/Resources/Xcode-Info.plist",
+      "mode": "100644",
+      "source_git_blob_sha1": "cbcaddb4515bd8268ecf39425b186c0716fb2fb1",
+      "source_sha256": "96e5a7515b34ba62b8772fb15327f6805532fbb36a80f01cd12ec31f6ebd73b6",
+      "destination_sha256": "96e5a7515b34ba62b8772fb15327f6805532fbb36a80f01cd12ec31f6ebd73b6",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Services/.gitkeep",
+      "destination_path": "apps/daylog/DayLog/Services/.gitkeep",
+      "mode": "100644",
+      "source_git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "destination_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Services/ConfigStore.swift",
+      "destination_path": "apps/daylog/DayLog/Services/ConfigStore.swift",
+      "mode": "100644",
+      "source_git_blob_sha1": "34f9f5d740333cf723dae23903336cd02efb32ae",
+      "source_sha256": "350f620406d3cb4f885331db9e3dfd22de515b3aa2a5cde2b68cf519013726ba",
+      "destination_sha256": "350f620406d3cb4f885331db9e3dfd22de515b3aa2a5cde2b68cf519013726ba",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Services/LocalStore.swift",
+      "destination_path": "apps/daylog/DayLog/Services/LocalStore.swift",
+      "mode": "100644",
+      "source_git_blob_sha1": "b7b6fdf11e8d6edc691c0ede9b792d49a50324f5",
+      "source_sha256": "3c3fff3c7579e5534b100b5969c3176a068599a502a9b87f67a676c3ded9a1e9",
+      "destination_sha256": "3c3fff3c7579e5534b100b5969c3176a068599a502a9b87f67a676c3ded9a1e9",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Services/ReminderService.swift",
+      "destination_path": "apps/daylog/DayLog/Services/ReminderService.swift",
+      "mode": "100644",
+      "source_git_blob_sha1": "32444b24f73edb95468e1163f0caab1d4904f54e",
+      "source_sha256": "a7193e400e20a5044985cc5bc87ecd272c114cb73eea646dcb0cda2bf9477942",
+      "destination_sha256": "a7193e400e20a5044985cc5bc87ecd272c114cb73eea646dcb0cda2bf9477942",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLog/Services/SaveQueue.swift",
+      "destination_path": "apps/daylog/DayLog/Services/SaveQueue.swift",
+      "mode": "100644",
+      "source_git_blob_sha1": "9ad62cf5941aa8c9858337595822413b049aca49",
+      "source_sha256": "2456b88f291a04fe5d4dd8beeae38fb5a1f41b22a900179cfc380edbbbb123cb",
+      "destination_sha256": "2456b88f291a04fe5d4dd8beeae38fb5a1f41b22a900179cfc380edbbbb123cb",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLogPreviews/WorkspacePreviews.swift",
+      "destination_path": "apps/daylog/DayLogPreviews/WorkspacePreviews.swift",
+      "mode": "100644",
+      "source_git_blob_sha1": "e8d48c2f8277cb3e791a2fefa3aad0453b6ade3c",
+      "source_sha256": "3037341e50a2dfc987660a21c955eeff01cb33eead86ccb78c5b687ce1052fa0",
+      "destination_sha256": "3037341e50a2dfc987660a21c955eeff01cb33eead86ccb78c5b687ce1052fa0",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLogTests/CoreChecks.swift",
+      "destination_path": "apps/daylog/DayLogTests/CoreChecks.swift",
+      "mode": "100644",
+      "source_git_blob_sha1": "ef02569f2e7cbaeef23457fb5da8c31ba7147aa5",
+      "source_sha256": "2cc03a069b323c971daf3e4b0b86e09ac0a10344b6fe301bf8af4a0adf9dafc7",
+      "destination_sha256": "2cc03a069b323c971daf3e4b0b86e09ac0a10344b6fe301bf8af4a0adf9dafc7",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/DayLogTests/README.md",
+      "destination_path": "apps/daylog/DayLogTests/README.md",
+      "mode": "100644",
+      "source_git_blob_sha1": "8ad80d4c1bfb47e3c75e4522cfb3a996061504e9",
+      "source_sha256": "a0e1b1485784db40d3400fa3fa61b46ee9ea1a75ad9780903059c6b84927ddde",
+      "destination_sha256": "a0e1b1485784db40d3400fa3fa61b46ee9ea1a75ad9780903059c6b84927ddde",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/Package.swift",
+      "destination_path": "apps/daylog/Package.swift",
+      "mode": "100644",
+      "source_git_blob_sha1": "6acccc747ce50c233ea687b66dce8b74c8d7074d",
+      "source_sha256": "39d51dba96439de06bacd3481863d0eaf95039c4d2f8a351df67a38e9b3aac66",
+      "destination_sha256": "39d51dba96439de06bacd3481863d0eaf95039c4d2f8a351df67a38e9b3aac66",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/README.md",
+      "destination_path": "apps/daylog/README.md",
+      "mode": "100644",
+      "source_git_blob_sha1": "f2fe33f73adca25af867e323ce72e1bc62079383",
+      "source_sha256": "6fdab293ffd9bfbc078223d85ad1d98d224b69c5fdcdcfd8e105971d6422e0c4",
+      "destination_sha256": "6fdab293ffd9bfbc078223d85ad1d98d224b69c5fdcdcfd8e105971d6422e0c4",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/TASKS.md",
+      "destination_path": "apps/daylog/TASKS.md",
+      "mode": "100644",
+      "source_git_blob_sha1": "72967abfb264ab09575e41cd1c775ca5f039590d",
+      "source_sha256": "0c9f3736e23800cdd1edfc030da24bf4852c5c0e0330d57ab3d371aa8bcb62b9",
+      "destination_sha256": "0c9f3736e23800cdd1edfc030da24bf4852c5c0e0330d57ab3d371aa8bcb62b9",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/XcodeTests/RegressionTests.swift",
+      "destination_path": "apps/daylog/XcodeTests/RegressionTests.swift",
+      "mode": "100644",
+      "source_git_blob_sha1": "57f45a65474c73ad860c11d95ebeeb7fa53470f1",
+      "source_sha256": "f91b63339e05f26980130e782d9c2e52d06b7b08ce45e054a2b06292087056cc",
+      "destination_sha256": "f91b63339e05f26980130e782d9c2e52d06b7b08ce45e054a2b06292087056cc",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/design/README.md",
+      "destination_path": "apps/daylog/design/README.md",
+      "mode": "100644",
+      "source_git_blob_sha1": "cf1c1b27ab13a94ac4a4c63f46d08d1954fdce7a",
+      "source_sha256": "0a376e25ae5c08c882992d5f61d21d9a2b2d57b17ff31315503a16adedeac003",
+      "destination_sha256": "bb39ae0bd99c174fad107f716db2fb9afa962e75745274e3e642d9378910082d",
+      "transformations": [
+        "Replace historical developer-home and xlab checkout paths with an explicitly configured renderer path and subtree-relative design paths before publication."
+      ]
+    },
+    {
+      "source_path": "swift/projects/daylog/design/brand/kebai-daylight-production.png",
+      "destination_path": "apps/daylog/design/brand/kebai-daylight-production.png",
+      "mode": "100644",
+      "source_git_blob_sha1": "8e1dc9da3bf652f6a459ed110c31d7ef1c3446cb",
+      "source_sha256": "9f1ee62f2faa72b9fe2843bd79b1ba2efcc56e84d0082b6cb64741e705ccdfe7",
+      "destination_sha256": "9f1ee62f2faa72b9fe2843bd79b1ba2efcc56e84d0082b6cb64741e705ccdfe7",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/design/brand/kebai-daylight-prompt.txt",
+      "destination_path": "apps/daylog/design/brand/kebai-daylight-prompt.txt",
+      "mode": "100644",
+      "source_git_blob_sha1": "d0ceebd35f19527825cdc9a9989dce4e35076a2a",
+      "source_sha256": "f0ce61831d41de2cd80ac8ff896505d35a2a822506e44b332c8b32f5852551a0",
+      "destination_sha256": "f0ce61831d41de2cd80ac8ff896505d35a2a822506e44b332c8b32f5852551a0",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/design/brand/kebai-logo-prompt-v1.txt",
+      "destination_path": "apps/daylog/design/brand/kebai-logo-prompt-v1.txt",
+      "mode": "100644",
+      "source_git_blob_sha1": "d00b9e4cf5f73f696bf59248e6b1f21ad280e44a",
+      "source_sha256": "14f3bd736c3f0d406e37174e2b2796e480fd7cd36ead008a74510e7278e637b9",
+      "destination_sha256": "14f3bd736c3f0d406e37174e2b2796e480fd7cd36ead008a74510e7278e637b9",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/design/brand/prompt-v1.txt",
+      "destination_path": "apps/daylog/design/brand/prompt-v1.txt",
+      "mode": "100644",
+      "source_git_blob_sha1": "15c99548d84f8ee37ae559b8998b0ff153908173",
+      "source_sha256": "fabd2c0b97ed441d47e8bf119c5db65b50a767a24d1b9af4cac935f839693bf0",
+      "destination_sha256": "fabd2c0b97ed441d47e8bf119c5db65b50a767a24d1b9af4cac935f839693bf0",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/design/brand/prompt-v2.txt",
+      "destination_path": "apps/daylog/design/brand/prompt-v2.txt",
+      "mode": "100644",
+      "source_git_blob_sha1": "97327bdfd75b2ff49e158ebc4d21ad275aa9a3d8",
+      "source_sha256": "cd826fdf5111866e5b2092ce017cb5823e2a71fc31ba387e1d181e9e3b40cc39",
+      "destination_sha256": "cd826fdf5111866e5b2092ce017cb5823e2a71fc31ba387e1d181e9e3b40cc39",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/design/daylog-expressive.html",
+      "destination_path": "apps/daylog/design/daylog-expressive.html",
+      "mode": "100644",
+      "source_git_blob_sha1": "a232ffed9301863baed6ca69e710d9449625048f",
+      "source_sha256": "b18a0ca0718798d2aef9f4de19702cc25ca0d9b81065e885ccf225922bb4a150",
+      "destination_sha256": "b18a0ca0718798d2aef9f4de19702cc25ca0d9b81065e885ccf225922bb4a150",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/design/daylog-glass.html",
+      "destination_path": "apps/daylog/design/daylog-glass.html",
+      "mode": "100644",
+      "source_git_blob_sha1": "132877a8e0aaa35e5a60ba40a7ec56b4e72fe25a",
+      "source_sha256": "f2dba65067e6867681974b61ce1051b840297a02edba1a0931ddaa77516f94cc",
+      "destination_sha256": "f2dba65067e6867681974b61ce1051b840297a02edba1a0931ddaa77516f94cc",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/design/daylog-research-v1.html",
+      "destination_path": "apps/daylog/design/daylog-research-v1.html",
+      "mode": "100644",
+      "source_git_blob_sha1": "9bdde7002fc86c1399c3b41bdd6e56edc461bdad",
+      "source_sha256": "81dfbde26671bf01937cf546dfcf112121090eff62e270070500999bb62469e2",
+      "destination_sha256": "81dfbde26671bf01937cf546dfcf112121090eff62e270070500999bb62469e2",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/design/daylog-studio-v3.html",
+      "destination_path": "apps/daylog/design/daylog-studio-v3.html",
+      "mode": "100644",
+      "source_git_blob_sha1": "130a5a62430e4491c8482c275792c6de4648aad9",
+      "source_sha256": "748089907335abeedee6376050a0004a232864dc0aaaa97e37b23df958fe5a82",
+      "destination_sha256": "748089907335abeedee6376050a0004a232864dc0aaaa97e37b23df958fe5a82",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/design/daylog-studio.html",
+      "destination_path": "apps/daylog/design/daylog-studio.html",
+      "mode": "100644",
+      "source_git_blob_sha1": "ed5c3476f5cbdb522a6ffa56943315deeccb2e16",
+      "source_sha256": "7d17b8b67987702dba22f9ee2184fb3562075ade3195676155bcb6590aabad78",
+      "destination_sha256": "7d17b8b67987702dba22f9ee2184fb3562075ade3195676155bcb6590aabad78",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/design/daylog-ui.html",
+      "destination_path": "apps/daylog/design/daylog-ui.html",
+      "mode": "100644",
+      "source_git_blob_sha1": "69b63a4b3895698b0c1116dc6f8c9de4e9ba0ffb",
+      "source_sha256": "a0b8991a4f5c9175ba800a7b1521d5fd9fa32e76986a75a300f1bae1eaba8cc5",
+      "destination_sha256": "a0b8991a4f5c9175ba800a7b1521d5fd9fa32e76986a75a300f1bae1eaba8cc5",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/docs/brand-directions.md",
+      "destination_path": "apps/daylog/docs/brand-directions.md",
+      "mode": "100644",
+      "source_git_blob_sha1": "38fc79fca0adfb6b4a2b220858b8060de9e7b19a",
+      "source_sha256": "aef5d4b2e2a89c0227c5cc9287f9f1d67924ef0453fb679b9e17b834050eebb8",
+      "destination_sha256": "aef5d4b2e2a89c0227c5cc9287f9f1d67924ef0453fb679b9e17b834050eebb8",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/docs/decisions.md",
+      "destination_path": "apps/daylog/docs/decisions.md",
+      "mode": "100644",
+      "source_git_blob_sha1": "e375109a7790e4d1c6f0f7136bcaee924f39f55d",
+      "source_sha256": "465619fbeef0bc7a3766b3e4af212f253590e5e8ec3bae4ac359e9cdca39d245",
+      "destination_sha256": "465619fbeef0bc7a3766b3e4af212f253590e5e8ec3bae4ac359e9cdca39d245",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/docs/design-directions.md",
+      "destination_path": "apps/daylog/docs/design-directions.md",
+      "mode": "100644",
+      "source_git_blob_sha1": "3169988b69368702d33ff7a44911507362e3919a",
+      "source_sha256": "cdce8c9bc64c67fe08c653c2c64baa5aa7fbdbc6b81f07a6562fafff88d16a62",
+      "destination_sha256": "cdce8c9bc64c67fe08c653c2c64baa5aa7fbdbc6b81f07a6562fafff88d16a62",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/docs/draft-fixes-2026-09-18.md",
+      "destination_path": "apps/daylog/docs/draft-fixes-2026-09-18.md",
+      "mode": "100644",
+      "source_git_blob_sha1": "fec991299566247025b25a92375827b603cc9adf",
+      "source_sha256": "c9ad3db74f6a8ab132a497a09eddc7b2060d0fbf4d2675e7187dbfe5d3bc7fe7",
+      "destination_sha256": "c9ad3db74f6a8ab132a497a09eddc7b2060d0fbf4d2675e7187dbfe5d3bc7fe7",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/docs/implementation.md",
+      "destination_path": "apps/daylog/docs/implementation.md",
+      "mode": "100644",
+      "source_git_blob_sha1": "5302247b9010853ea4d2fdf544d74a4d5635b1fa",
+      "source_sha256": "1f47f0c27c7078ff7f021837acc057211b60310b2aeb043be62bf215cba2c5e5",
+      "destination_sha256": "1f47f0c27c7078ff7f021837acc057211b60310b2aeb043be62bf215cba2c5e5",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/docs/kebai-daylight-theme.md",
+      "destination_path": "apps/daylog/docs/kebai-daylight-theme.md",
+      "mode": "100644",
+      "source_git_blob_sha1": "f8b37a0da7979bb38b81c8300ee545d915790991",
+      "source_sha256": "7d60f129b024beb36753d19cdbb194e6fd8dc35bf11ef989d377452f22ad1131",
+      "destination_sha256": "7d60f129b024beb36753d19cdbb194e6fd8dc35bf11ef989d377452f22ad1131",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/docs/kebai-logo-design.md",
+      "destination_path": "apps/daylog/docs/kebai-logo-design.md",
+      "mode": "100644",
+      "source_git_blob_sha1": "ae662137a0b1dcd6bcda411dfbc50bc9d01cf646",
+      "source_sha256": "944a633e0803bd26eb5e659cd5825ac9eeb503afddb7009514eda19a70739a34",
+      "destination_sha256": "944a633e0803bd26eb5e659cd5825ac9eeb503afddb7009514eda19a70739a34",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/docs/llm-configuration.md",
+      "destination_path": "apps/daylog/docs/llm-configuration.md",
+      "mode": "100644",
+      "source_git_blob_sha1": "9b77763281150357fa33852e798fd9fac412765f",
+      "source_sha256": "ab84ad661adcfc4335b90cc6274c61161f5402bf7b1b117783656b81e197cbc0",
+      "destination_sha256": "ab84ad661adcfc4335b90cc6274c61161f5402bf7b1b117783656b81e197cbc0",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/docs/persistence-fix-2026-09-18.md",
+      "destination_path": "apps/daylog/docs/persistence-fix-2026-09-18.md",
+      "mode": "100644",
+      "source_git_blob_sha1": "0156d47e4d296cdededb2e636fc142cbbfd55573",
+      "source_sha256": "164196d6ea2eb3382ba0035e81a3a444daac6f76871b49bcc30c2a5a6349d88e",
+      "destination_sha256": "164196d6ea2eb3382ba0035e81a3a444daac6f76871b49bcc30c2a5a6349d88e",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/docs/proposal.md",
+      "destination_path": "apps/daylog/docs/proposal.md",
+      "mode": "100644",
+      "source_git_blob_sha1": "7881cb8005f7f5e7f6fc9327e01f96ca457e655a",
+      "source_sha256": "22a16f4f78929c4199657e295001705f0efa25fd321aa845c2e807eaadeddffb",
+      "destination_sha256": "22a16f4f78929c4199657e295001705f0efa25fd321aa845c2e807eaadeddffb",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/docs/research-subscriptions-design.md",
+      "destination_path": "apps/daylog/docs/research-subscriptions-design.md",
+      "mode": "100644",
+      "source_git_blob_sha1": "ee0919ef1f0a2943b7da812e89ce27b7ff30a3cb",
+      "source_sha256": "a74dd29a270f7136b1c5a44b4ad3937e9b79d371ce87620a1d155942a0436b3d",
+      "destination_sha256": "a74dd29a270f7136b1c5a44b4ad3937e9b79d371ce87620a1d155942a0436b3d",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/docs/running.md",
+      "destination_path": "apps/daylog/docs/running.md",
+      "mode": "100644",
+      "source_git_blob_sha1": "08fa14e266cbea24e822904581d3f3df1986aac5",
+      "source_sha256": "e7ea1b678ca0c4e7cad7e65a57482937f2fcaaf95edaf9540c81c36f7e054ad9",
+      "destination_sha256": "e7ea1b678ca0c4e7cad7e65a57482937f2fcaaf95edaf9540c81c36f7e054ad9",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/docs/scenario-test-2026-09-18.md",
+      "destination_path": "apps/daylog/docs/scenario-test-2026-09-18.md",
+      "mode": "100644",
+      "source_git_blob_sha1": "a0adddd1540ea6bc74c01aa5e2b37cd0f95553ab",
+      "source_sha256": "74dec30b9d32e10c6a56eb208e8a5102a380fe69e853e7d835664ea5569a9e47",
+      "destination_sha256": "74dec30b9d32e10c6a56eb208e8a5102a380fe69e853e7d835664ea5569a9e47",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/docs/studio-v3.md",
+      "destination_path": "apps/daylog/docs/studio-v3.md",
+      "mode": "100644",
+      "source_git_blob_sha1": "207f66512f893a9b817235c5cb7bfc78a6119d56",
+      "source_sha256": "436cfc3a69151c3940e3c327951b969531fe66d73b0cecb27a70074657c3238c",
+      "destination_sha256": "436cfc3a69151c3940e3c327951b969531fe66d73b0cecb27a70074657c3238c",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/docs/technical-design.md",
+      "destination_path": "apps/daylog/docs/technical-design.md",
+      "mode": "100644",
+      "source_git_blob_sha1": "638b9b7f0f9a50879168aa5dae2f5306c4c17010",
+      "source_sha256": "edb2516c3e9b0c51b824a10041e76102a27b673a317288313c9129cff9fdd9ac",
+      "destination_sha256": "edb2516c3e9b0c51b824a10041e76102a27b673a317288313c9129cff9fdd9ac",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/docs/test-report-2026-09-18.md",
+      "destination_path": "apps/daylog/docs/test-report-2026-09-18.md",
+      "mode": "100644",
+      "source_git_blob_sha1": "604fb205769ea6e4b15884608b3b126644b8e95a",
+      "source_sha256": "003fb0ca2e473866786ac8645e4cb17724e80dd17f5c92be67f22d5f93683e97",
+      "destination_sha256": "003fb0ca2e473866786ac8645e4cb17724e80dd17f5c92be67f22d5f93683e97",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/docs/ui-spec.md",
+      "destination_path": "apps/daylog/docs/ui-spec.md",
+      "mode": "100644",
+      "source_git_blob_sha1": "ba34e8512477257cde3596ddf2709feda695f9c3",
+      "source_sha256": "3f08f7b22294079675891f0f299eff6ee1621a148a2c697ababd830e5dc4b39d",
+      "destination_sha256": "3f08f7b22294079675891f0f299eff6ee1621a148a2c697ababd830e5dc4b39d",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/docs/workflow-fix-2026-09-18.md",
+      "destination_path": "apps/daylog/docs/workflow-fix-2026-09-18.md",
+      "mode": "100644",
+      "source_git_blob_sha1": "fe45702db9ad48faf5ffee07983d7a7289b3e6be",
+      "source_sha256": "960f8bdcb54a812abaffda1c28a64646c4d3d6bd1d630e03de82fa7cec07d8d6",
+      "destination_sha256": "960f8bdcb54a812abaffda1c28a64646c4d3d6bd1d630e03de82fa7cec07d8d6",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/docs/xcode-development.md",
+      "destination_path": "apps/daylog/docs/xcode-development.md",
+      "mode": "100644",
+      "source_git_blob_sha1": "8088276e2c96913e1f0fd35cef69eee5b3b44aee",
+      "source_sha256": "bdf5c0cf6843f26ec52000723bd79b9551c788abc7a52290786358829278981a",
+      "destination_sha256": "bdf5c0cf6843f26ec52000723bd79b9551c788abc7a52290786358829278981a",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/project.yml",
+      "destination_path": "apps/daylog/project.yml",
+      "mode": "100644",
+      "source_git_blob_sha1": "d2898099474d58eb19b6631e350c0bd558ba1c2f",
+      "source_sha256": "b33577be858e4879a24fcbd6bca509fd4c39ceb9b578397e2f266f971f69ed29",
+      "destination_sha256": "b33577be858e4879a24fcbd6bca509fd4c39ceb9b578397e2f266f971f69ed29",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/qa/AppearanceChecks.swift",
+      "destination_path": "apps/daylog/qa/AppearanceChecks.swift",
+      "mode": "100644",
+      "source_git_blob_sha1": "f1bc9cdfe638ecfca6953fa56abebad75018b870",
+      "source_sha256": "438252cba55dc1d6bebb963544cd7cdfd4fcfbfc4c67e3aee024a94b8c057975",
+      "destination_sha256": "438252cba55dc1d6bebb963544cd7cdfd4fcfbfc4c67e3aee024a94b8c057975",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/qa/AuditMain.swift",
+      "destination_path": "apps/daylog/qa/AuditMain.swift",
+      "mode": "100644",
+      "source_git_blob_sha1": "a190e87af32225acfc907020f9235da367a29c0d",
+      "source_sha256": "1c59f1305fb4580736252b8108ea82d9ea1ca1ba178cbdfd03411f3f8aafc85f",
+      "destination_sha256": "1c59f1305fb4580736252b8108ea82d9ea1ca1ba178cbdfd03411f3f8aafc85f",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/qa/DraftChecks.swift",
+      "destination_path": "apps/daylog/qa/DraftChecks.swift",
+      "mode": "100644",
+      "source_git_blob_sha1": "2146836646e9137a360f365999f26a29ffc99a8b",
+      "source_sha256": "5c1c767027e22b88d1f022b4a673c515c90078fdddff575e5a41533d376898d0",
+      "destination_sha256": "5c1c767027e22b88d1f022b4a673c515c90078fdddff575e5a41533d376898d0",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/qa/PersistenceChecks.swift",
+      "destination_path": "apps/daylog/qa/PersistenceChecks.swift",
+      "mode": "100644",
+      "source_git_blob_sha1": "c5c5b549dc7451f13530c3bf5c3babe446763317",
+      "source_sha256": "646fe33a3ece0edd2507228061ed3b601fa49e2c751e95df3aa4cb1c9e55f38e",
+      "destination_sha256": "646fe33a3ece0edd2507228061ed3b601fa49e2c751e95df3aa4cb1c9e55f38e",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/qa/WorkflowChecks.swift",
+      "destination_path": "apps/daylog/qa/WorkflowChecks.swift",
+      "mode": "100644",
+      "source_git_blob_sha1": "f76bef51e2f5e457e1110916c6e28d79f6d3fa61",
+      "source_sha256": "5db5aa72d10e34a113349899c56499d32da7904331c1fc9191cdde43c84ccb87",
+      "destination_sha256": "5db5aa72d10e34a113349899c56499d32da7904331c1fc9191cdde43c84ccb87",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/qa/make_draft_gallery.py",
+      "destination_path": "apps/daylog/qa/make_draft_gallery.py",
+      "mode": "100644",
+      "source_git_blob_sha1": "51966f839d7617ac57e35c8b8395566c06e7406c",
+      "source_sha256": "e6264c8fe47b6df7b157395d337495eae15149fc1aa4b72c5eaae3bf559963bc",
+      "destination_sha256": "e6264c8fe47b6df7b157395d337495eae15149fc1aa4b72c5eaae3bf559963bc",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/scripts/audit.sh",
+      "destination_path": "apps/daylog/scripts/audit.sh",
+      "mode": "100755",
+      "source_git_blob_sha1": "36784d4205bc50bf395289ead7c0cf3d769881c4",
+      "source_sha256": "2e950422c95a6f0156a65383419a22f4b3367a46ac802ad69e50b38cbadd471c",
+      "destination_sha256": "2e950422c95a6f0156a65383419a22f4b3367a46ac802ad69e50b38cbadd471c",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/scripts/build-app.sh",
+      "destination_path": "apps/daylog/scripts/build-app.sh",
+      "mode": "100755",
+      "source_git_blob_sha1": "51916820928bd93d530ba731881c66c621c39515",
+      "source_sha256": "e6120b839db3e2e40c7ee5325e695babe89b3b5f933bbea6827d63a0d4b4ea50",
+      "destination_sha256": "e6120b839db3e2e40c7ee5325e695babe89b3b5f933bbea6827d63a0d4b4ea50",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/scripts/check-drafts.sh",
+      "destination_path": "apps/daylog/scripts/check-drafts.sh",
+      "mode": "100755",
+      "source_git_blob_sha1": "bc87a9854fe955b904815ef77c0d8fc79fbb1243",
+      "source_sha256": "fcdd24507eb7e0994aa1bdc542ffa1d3c49a9b327f574a699583dfd82ef0e343",
+      "destination_sha256": "fcdd24507eb7e0994aa1bdc542ffa1d3c49a9b327f574a699583dfd82ef0e343",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/scripts/check-persistence.sh",
+      "destination_path": "apps/daylog/scripts/check-persistence.sh",
+      "mode": "100755",
+      "source_git_blob_sha1": "32b3e0bca7e7cc6662a8fd4e89762920e5c86ffb",
+      "source_sha256": "4b05fccc9f1a5b0c96c5554debffc6b82137906fc324c3b4df4073b563c51a35",
+      "destination_sha256": "4b05fccc9f1a5b0c96c5554debffc6b82137906fc324c3b4df4073b563c51a35",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/scripts/check-workflows.sh",
+      "destination_path": "apps/daylog/scripts/check-workflows.sh",
+      "mode": "100755",
+      "source_git_blob_sha1": "d151ec160c64ffae8522abcd7e2589478a1bac4b",
+      "source_sha256": "efb914eb803a5a8d8e4e857f8d64d575d13ffbe0691afa2db73c1c653312ab59",
+      "destination_sha256": "efb914eb803a5a8d8e4e857f8d64d575d13ffbe0691afa2db73c1c653312ab59",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/scripts/check.sh",
+      "destination_path": "apps/daylog/scripts/check.sh",
+      "mode": "100755",
+      "source_git_blob_sha1": "e6b8ad9aca94dfdf46782a7795b105732b23ce74",
+      "source_sha256": "c5697d2f1d8c567af4a55c32a196f329ebcc73bc548b712ce8c34bb7eb582c27",
+      "destination_sha256": "c5697d2f1d8c567af4a55c32a196f329ebcc73bc548b712ce8c34bb7eb582c27",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/scripts/prepare-icons.py",
+      "destination_path": "apps/daylog/scripts/prepare-icons.py",
+      "mode": "100644",
+      "source_git_blob_sha1": "ce3f3ed355173fdf59ff8e363f52db572a86f931",
+      "source_sha256": "d18ba3b8200d1c45fcafd663948f5250ee93ec53d98b490b54097457e20e4329",
+      "destination_sha256": "d18ba3b8200d1c45fcafd663948f5250ee93ec53d98b490b54097457e20e4329",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/scripts/run.sh",
+      "destination_path": "apps/daylog/scripts/run.sh",
+      "mode": "100755",
+      "source_git_blob_sha1": "2c0931f1eede869ad978d4e89f24671fe6175ca6",
+      "source_sha256": "03eac936d709a3002272cb3c771e7e3c983b2e7cec43700f1e92c66997d83e20",
+      "destination_sha256": "03eac936d709a3002272cb3c771e7e3c983b2e7cec43700f1e92c66997d83e20",
+      "transformations": []
+    },
+    {
+      "source_path": "swift/projects/daylog/scripts/xcode.sh",
+      "destination_path": "apps/daylog/scripts/xcode.sh",
+      "mode": "100755",
+      "source_git_blob_sha1": "3a9f818389ef5e97eedf31539cb1c993412c4c08",
+      "source_sha256": "e4a539aefe3d92810bccbad4804e4dd9dc9e6707c8bd1bdf0e088fd549748026",
+      "destination_sha256": "e4a539aefe3d92810bccbad4804e4dd9dc9e6707c8bd1bdf0e088fd549748026",
+      "transformations": []
+    }
+  ]
+}

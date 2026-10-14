@@ -21,7 +21,7 @@ or removing a project, update its entry and routing in `PROJECTS.md`.
 ### Repository Information
 - **Origin**: https://github.com/LiShuMing/xlab
 - **Type**: Personal R&D laboratory / Code experiments collection
-- **Language Distribution**: C++ (primary), Python, Rust, Swift, Go, Java, Haskell, Shell
+- **Language Distribution**: C++ (primary), Python, Rust, Go, Java, Haskell, Shell
 - **Documentation**: Chinese (Markdown, Obsidian vault in `docs/`), Code comments: Mixed
 
 ## Project Structure
@@ -50,7 +50,6 @@ xlab/
 │   ├── ivm/              # Incremental view maintenance prototypes
 │   ├── projects/         # Personal Python projects
 │   └── thirdparty/       # Declared Python references
-├── swift/                # DayLog / 刻白 native macOS app (still in xlab)
 ├── go/                   # Go laboratory
 │   └── k8s-lab/          # Mini Kubernetes control plane from scratch (zero deps)
 ├── java/                 # Java laboratory
@@ -81,6 +80,7 @@ instructions and build manifests before working there.
 | `cc/projects/kv-store/` | [vela/storage](https://github.com/LiShuMing/vela/tree/main/storage) |
 | `cc/projects/query-engine/` | [vela/execution](https://github.com/LiShuMing/vela/tree/main/execution) |
 | `optimizer-learning/` | [vela/optimizer](https://github.com/LiShuMing/vela/tree/main/optimizer) |
+| `swift/projects/daylog/` | [carina/apps/daylog](https://github.com/LiShuMing/carina/tree/main/apps/daylog) |
 
 ## Technology Stack by Module
 
@@ -130,10 +130,6 @@ instructions and build manifests before working there.
 - **Migrated Go module**: [Lyra llm-wiki](https://github.com/LiShuMing/lyra/tree/main/llm-wiki/)
   (formerly `liminalis/llm-wiki/`) owns the context CLI and web service.
   Use its current `go.mod` and README for toolchain and test instructions.
-
-### Swift (swift/)
-- `swift/projects/daylog/`: DayLog / 刻白, SwiftUI native macOS app.
-- Read its README and Xcode guide; root native CI does not build or test it.
 
 ### Java (java/)
 - **Build Tools**: Gradle (primary), Maven
