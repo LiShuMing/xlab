@@ -43,14 +43,14 @@ class HealthcheckTests(unittest.TestCase):
         self.assertIn("declarations: 0\ngitlinks: 0", result.stdout)
 
     def test_large_file_space_and_unicode(self):
-        for name in ["large file.txt", "大文件.txt"]:
+        for name in ["large file.txt", "大文件.txt", "new\nline.txt"]:
             (self.repo / name).write_bytes(b"x" * 2048)
         result = self.run_check(BIG_FILE_THRESHOLD="1k")
         self.assertEqual(result.returncode, 0, result.stdout)
         self.assertIn("WARN: large files found", result.stdout)
         # Each complete shell-escaped path occupies one line, including non-ASCII.
         lines = result.stdout.split("WARN: large files found\n")[1].split("\n\n")[0].splitlines()
-        self.assertEqual(len(lines), 2)
+        self.assertEqual(len(lines), 3)
         for line in lines:
             self.assertIn("\t", line)
         self.assertIn("large\\ file.txt", result.stdout)

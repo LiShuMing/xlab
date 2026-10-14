@@ -26,7 +26,7 @@ ok() {
 }
 
 human_du() {
-    du -sh "$1" 2>/dev/null | awk '{print $1}'
+    du -sh "$1" 2>/dev/null | awk 'NR == 1 {print $1}'
 }
 
 require_git_repo() {
