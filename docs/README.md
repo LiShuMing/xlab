@@ -11,10 +11,11 @@
 不代表全部 xlab 文档，也不代表技术内容已经审核。迁移资料仍为 `needs-review`；
 来源与逐文件校验以 Cygnus 的迁移记录为准。阅读私有链接需要已有仓库权限。
 
-以下资料后续知识整理优先在 Cygnus 进行；xlab 源文档原样保留作追溯，
-本轮不删除、不重写书籍/研究正文，也不启用自动双向同步。
+以下资料统一在 Cygnus 维护。2026-10-14 完成逐文件校验后，xlab 中对应的
+184 份源正文已退役，仅保留目录入口；其他文件不在本批清理范围。历史原件可从
+备份分支恢复，详见 [退役记录](migrations/2026-10-14-cygnus-source-retirement.md)。
 
-| xlab 保留源目录 | Cygnus 维护入口 |
+| xlab 历史入口 | Cygnus 维护入口 |
 | --- | --- |
 | [ClickHouse](books/clickhouse-book/) | [books/clickhouse-book](https://github.com/LiShuMing/cygnus/tree/main/books/clickhouse-book) |
 | [JDK](books/deep-jdk-book/) | [books/deep-jdk-book](https://github.com/LiShuMing/cygnus/tree/main/books/deep-jdk-book) |
