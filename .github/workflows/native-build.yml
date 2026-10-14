@@ -5,6 +5,9 @@ on:
   push:
     paths:
       - CMakeLists.txt
+      - .gitmodules
+      - cc/thirdparty/googletest
+      - cc/thirdparty/benchmark
       - cmake/**
       - tools/build-windows.ps1
       - cc/cclab/**
@@ -16,6 +19,9 @@ on:
   pull_request:
     paths:
       - CMakeLists.txt
+      - .gitmodules
+      - cc/thirdparty/googletest
+      - cc/thirdparty/benchmark
       - cmake/**
       - tools/build-windows.ps1
       - cc/cclab/**
@@ -29,6 +35,32 @@ permissions:
   contents: read
 
 jobs:
+  cpp-pinned-submodules:
+    # Exercise actual gitlinks independently of the existing FetchContent matrix.
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: [Debug, Release]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Initialize only the two restored dependencies
+        run: |
+          git submodule update --init -- cc/thirdparty/googletest cc/thirdparty/benchmark
+          test "$(git -C cc/thirdparty/googletest rev-parse HEAD)" = b514bdc898e2951020cbdca1304b75f5950d1f59
+          test "$(git -C cc/thirdparty/benchmark rev-parse HEAD)" = c58e6d0710581e3a08d65c349664128a8d9a2461
+      - name: Configure without dependency downloads or installed package fallback
+        run: >-
+          cmake -S . -B build-pinned
+          -DCMAKE_BUILD_TYPE=${{ matrix.configuration }}
+          -DXLAB_FETCH_DEPENDENCIES=OFF -DXLAB_BUILD_BENCHMARKS=ON
+          -DCMAKE_DISABLE_FIND_PACKAGE_GTest=ON
+          -DCMAKE_DISABLE_FIND_PACKAGE_benchmark=ON
+      - name: Compile portable tests and benchmarks
+        run: cmake --build build-pinned --parallel 4
+      - name: Run portable tests
+        run: ctest --test-dir build-pinned --output-on-failure --no-tests=error --timeout 60
+
   windows-source:
     # Git for Windows rejects an unrelated legacy Java filename even with sparse
     # checkout. Package only native CI scopes on Linux; do not weaken Git safety.

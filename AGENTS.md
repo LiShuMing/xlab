@@ -293,12 +293,12 @@ cd python/projects/py-report && mkdocs serve
 
 ## Git Submodules
 
-At the 2026-10-14 baseline `.gitmodules` has 69 declarations but the index has
-zero mode 160000 gitlinks. They are orphan declarations, not uninitialized
-submodules. Do not run a blanket recursive download or remove the declarations
-to silence diagnostics. `bash tools/healthcheck.sh` reports this existing debt.
-Use root CMake’s explicit `XLAB_FETCH_DEPENDENCIES=ON` for its pinned test
-dependencies, or review module-specific restoration separately.
+`.gitmodules` retains 69 declarations; GoogleTest and Google Benchmark are the
+only two tracked mode 160000 gitlinks. Initialize just these two paths when
+using the portable C++ suite. The remaining 67 orphan declarations still make
+`bash tools/healthcheck.sh` fail; do not remove or restore them indiscriminately.
+Root CMake also retains its explicit `XLAB_FETCH_DEPENDENCIES=ON` fallback.
+See [pinned dependencies and validation](docs/meta/cpp-test-dependencies.md).
 
 ### Key Submodule Categories
 - **C++ thirdparty**: 40+ submodules including DuckDB, RocksDB, Folly, Arrow

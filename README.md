@@ -87,11 +87,13 @@ cd xlab
 bash tools/healthcheck.sh
 ```
 
-Dependency status at the 2026-10-14 baseline: `.gitmodules` retains 69 reference
-declarations, but the index contains zero gitlinks (mode 160000). These are orphan
-declarations, not uninitialized submodules. `git submodule update` cannot restore
-them. The healthcheck reports this existing debt as a failure; no references are
-silently removed or downloaded. See [build scope](#build-and-ci-scope).
+Dependency status: `.gitmodules` retains 69 declarations. Two are now real pinned
+gitlinks: GoogleTest 1.15.2 and Google Benchmark 1.9.1. Initialize only those with
+`git submodule update --init -- cc/thirdparty/googletest cc/thirdparty/benchmark`.
+The other 67 remain orphan declarations, not uninitialized submodules; the
+healthcheck still reports that existing debt as a failure. No other reference is
+removed or downloaded. See [dependency versions and verification](docs/meta/cpp-test-dependencies.md)
+and [build scope](#build-and-ci-scope).
 
 Common project commands (run each example separately from the xlab checkout root):
 
