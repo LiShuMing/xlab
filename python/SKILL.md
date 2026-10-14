@@ -21,10 +21,10 @@ python/
 │   ├── test/        # Pytest tests
 │   └── requirements.txt
 ├── projects/        # Personal Python projects
-├── ivm/             # Interactive VM / experiments
+├── ivm/             # Incremental view maintenance experiments
 ├── tools/           # Utility scripts
 ├── thirdparty/      # External packages
-└── pyenv-3.13.5/    # Python version manager
+└── llm_benchmark/   # LLM evaluation framework
 ```
 
 ## Key Concepts

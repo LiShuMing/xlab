@@ -140,13 +140,13 @@ xlab/
 Do not create tasks against the paths above. Work belongs in the successor
 location.
 
-### ⚠️ Branch divergence caveat
+### Historical branch divergence observation (2026-09-19; not current status)
 
-`main` contains only **3 commits** (`4176047`, `4a022f3`, `357df48`), while
+At that earlier audit, `main` was recorded as containing only **3 commits** (`4176047`, `4a022f3`, `357df48`), while
 `dev1` holds **169 commits that are not on `main`**. The two lines have
 different project inventories.
 
-This backlog describes the **working tree as checked out from `main`**. Before
+These counts are retained as historical context and must not be used for current routing. Before
 executing any task here, confirm which branch you are on; tasks written against
 `main`'s layout may not apply to `dev1`.
 
@@ -1068,7 +1068,7 @@ kubelet 模拟器 / `cmd/demo`），全包测试覆盖率 82%~100%，`-race` 全
 12. **cc/projects/mini-seastar** - 协程异步框架
 13. **cc/projects/thread-pool** - work-stealing 线程池
 14. **cc/projects/web-server** - io_uring/kqueue 双后端 Web 服务器
-15. **rust/projects/umbra** - JIT 编译流水线（可与 [Vela execution](https://github.com/LiShuMing/vela/tree/main/execution)、[Vela optimizer](https://github.com/LiShuMing/vela/tree/main/optimizer) 串成 OLAP 主线）
+15. **rust/projects/umbra** - AI 记忆数据库，Arrow/Lance/DataFusion、向量索引与 gRPC；当前不是 JIT 编译流水线
 16. **已迁出：[lyra/backend/invest](https://github.com/LiShuMing/lyra/tree/main/backend/invest)** - 原 `liminalis/backend/invest`；历史排序保留，当前任务见目标仓库。
 17. **python/projects/py-email** - Gmail 摘要工具
 18. **python/projects/py-cli** - 工程化最规范的 Python 子项目

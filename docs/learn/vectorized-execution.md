@@ -323,19 +323,19 @@ void bad_example(int* a, int* b, int n) {
 ## Connections
 
 ### Related Topics
-- [Columnar Storage](./columnar-storage.md)
-- [Query Execution](./query-execution.md)
-- [SIMD Programming](./simd-programming.md)
-- [Cache Optimization](./cache-optimization.md)
+- Columnar Storage（计划笔记，尚未创建：`./columnar-storage.md`）
+- Query Execution（计划笔记，尚未创建：`./query-execution.md`）
+- SIMD Programming（计划笔记，尚未创建：`./simd-programming.md`）
+- Cache Optimization（计划笔记，尚未创建：`./cache-optimization.md`）
 
 ### Projects
-- [query-engine](../build/query-engine.md) - C++ implementation
-- [py-toydb](../build/py-toydb.md) - Python comparison
+- [query-engine](https://github.com/LiShuMing/vela/tree/main/execution) - C++ implementation
+- [py-toydb](../../python/projects/py-toydb/) - Python comparison
 
 ### Readings
-- [MonetDB/X100 Paper](../read/papers/monetdb-x100.md)
-- [Everything You Always Wanted to Know...](../read/papers/compiled-vectorized.md)
-- [DuckDB Internals](../read/code/duckdb/internals.md)
+- MonetDB/X100 Paper（计划笔记，尚未创建：`../read/papers/monetdb-x100.md`）
+- Everything You Always Wanted to Know...（计划笔记，尚未创建：`../read/papers/compiled-vectorized.md`）
+- [DuckDB Internals](https://github.com/LiShuMing/cygnus/tree/main/books/duckdb-internals)
 
 ## Resources
 

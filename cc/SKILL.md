@@ -1,12 +1,13 @@
 # C++ Lab (cc/cclab)
 
 ## Overview
-Main C++ laboratory with focus on systems programming, data structures, and algorithms. C++23 standard with CMake build system.
+Main C++ laboratory with focus on systems programming, data structures, and algorithms. C++20 standard with CMake build system.
 
 ## Build System
 - **Build Tool**: CMake
 - **Build Types**: DEBUG, RELEASE, ASAN, LSAN
-- **Compiler**: C++23 (can use C++20/C++17 if needed)
+- **Compiler standard**: C++20 for cclab; read each target’s CMake before changing it.
+- Root portable CMake and legacy standalone cclab have different dependency scopes; see [root build scope](../README.md#build-and-ci-scope).
 - **Build Command**: `cd cc/cclab && ./build.sh`
 - **Test Command**: `cd cc/cclab/build_* && ctest`
 

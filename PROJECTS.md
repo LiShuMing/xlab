@@ -1,6 +1,6 @@
 # xlab 项目路由索引
 
-更新日期：2026-10-13。相对路径属于 xlab；外部链接指向已迁移项目的当前仓库。
+更新日期：2026-10-14。相对路径属于 xlab；外部链接指向已迁移项目的当前仓库。
 
 本表按当前目录、实际源码和构建清单整理，包含语言实验室、独立项目、
 工作区成员、跨语言应用及第三方子模块。目录存在不代表已验证构建成功；
@@ -13,7 +13,7 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 3. 修改代码前：读取目标目录的 `AGENTS.md`、`RULES.md` 和构建清单；
    README 中的历史设计不一定等于当前实现。
 4. “旧目录”保留用于定位，不应当作为可运行项目入口。
-5. 子模块未初始化时，先查本文末尾的声明路径；不要默认递归下载全部依赖。
+5. 第三方声明不等于 gitlink；先查本文末尾的状态说明，不要默认递归下载全部依赖。
 
 ## 已迁移项目
 
@@ -28,10 +28,15 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | `cc/projects/query-engine/` | [vela/execution](https://github.com/LiShuMing/vela/tree/main/execution) |
 | `optimizer-learning/` | [vela/optimizer](https://github.com/LiShuMing/vela/tree/main/optimizer) |
 
+知识资料的维护归属、Cygnus 184 份文档路由和保留边界见 [docs/README.md](docs/README.md)。
+
 ## 按任务路由
 
 | 需求或关键词 | 优先定位 |
 | --- | --- |
+| 工作日记、菜单栏、提醒、SwiftUI | [swift/projects/daylog/](swift/projects/daylog/)（刻白，仍在 xlab） |
+| Kubernetes、控制面、MVCC、Informer | [go/k8s-lab/](go/k8s-lab/) |
+| LLM 训练与推理实验 | [python/projects/llm-lab/](python/projects/llm-lab/)、[rust/projects/llm-runtime/](rust/projects/llm-runtime/)（后者仅设计骨架） |
 | C++ 数据结构、并发、协程、COW、一致性哈希 | [cc/cclab/](cc/cclab/) |
 | LeetCode、LCR、面试题、基础算法 | [cc/algo/](cc/algo/)、[rust/rlab/tools/leetcode/](rust/rlab/tools/leetcode/)、[python/pylab/](python/pylab/) |
 | KV、MemTable、SkipList、Arena | [vela/storage/](https://github.com/LiShuMing/vela/tree/main/storage/) |
@@ -84,6 +89,7 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | [cc/ccbench/](cc/ccbench/) | C++ benchmark 实验室 | [CMakeLists](cc/ccbench/CMakeLists.txt)、[build.sh](cc/ccbench/build.sh) |
 | [cc/srlab/](cc/srlab/) | SR Lab CMake scaffold 与实验；共享第三方依赖 | [README](cc/srlab/README.md)、[CMakeLists](cc/srlab/CMakeLists.txt) |
 | [cc/simd/](cc/simd/) | SIMD 指令与性能实验 | [Makefile](cc/simd/Makefile) |
+| [go/k8s-lab/](go/k8s-lab/) | 纯标准库 mini Kubernetes 控制面，Go 1.26.2；MVCC、apiserver、informer、controller、kubelet 模拟 | [README](go/k8s-lab/README.md)、[go.mod](go/k8s-lab/go.mod)、[AGENTS](go/k8s-lab/AGENTS.md) |
 | [cc/golab/](cc/golab/) | 实际为 Go 算法实验，放在 cc 目录下 | [Makefile](cc/golab/Makefile)、[源码](cc/golab/src/leetcode/) |
 | [cc/nasm/](cc/nasm/) | NASM 汇编 hello 与教程 | [Makefile](cc/nasm/Makefile)、[源码](cc/nasm/src/) |
 | [cc/projects/cpython/](cc/projects/cpython/) | Python/C/C++ 互操作项目集合 | [README](cc/projects/cpython/README.md) |
@@ -141,11 +147,13 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | [rust/projects/subway-game/](rust/projects/subway-game/) | 地铁线路问答游戏；TypeScript/React + Tauri | [README](rust/projects/subway-game/README.md)、[package.json](rust/projects/subway-game/package.json) |
 | [rust/projects/subway-game/src-tauri/](rust/projects/subway-game/src-tauri/) | 地铁游戏 Rust 桌面后端 | [Cargo.toml](rust/projects/subway-game/src-tauri/Cargo.toml) |
 | [rust/projects/subway-game/subway-data/](rust/projects/subway-game/subway-data/) | 地铁数据构建辅助目录 | [build.sh](rust/projects/subway-game/subway-data/build.sh) |
+| [rust/projects/llm-runtime/](rust/projects/llm-runtime/) | LLM 推理、KV cache 与调度设计骨架；尚无 Cargo.toml 或可执行源码 | [README](rust/projects/llm-runtime/README.md)、[TASKS](rust/projects/llm-runtime/TASKS.md) |
 
 ## Python
 
 | 项目目录 | 用途 | 入口 |
 | --- | --- | --- |
+| [python/projects/llm-lab/](python/projects/llm-lab/) | LLM 训练与参考实现 | [README](python/projects/llm-lab/README.md)、[pyproject.toml](python/projects/llm-lab/pyproject.toml) |
 | [python/pylab/](python/pylab/) | 核心 Python 实验室、算法、数据库及 benchmark 工具 | [README](python/pylab/README.md)、[AGENTS](python/pylab/AGENTS.md) |
 | [python/pylab/dbsp/](python/pylab/dbsp/) | DBSP 增量计算子实验 | [dbsp.py](python/pylab/dbsp/dbsp.py) |
 | [python/ivm/](python/ivm/) | 增量视图维护与 join 实验 | [ivm.py](python/ivm/ivm.py) |
@@ -178,10 +186,10 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 
 | 当前目录 | 扫描结果与路由建议 |
 | --- | --- |
-| [python/projects/py-invest/](python/projects/py-invest/) | 未发现项目源码或构建清单；投资功能优先查 [lyra/backend/invest/](https://github.com/LiShuMing/lyra/tree/main/backend/invest/) 和 `py-cycle-lab` |
-| [python/projects/py-paper/](python/projects/py-paper/) | `paper-agent/` 下未发现项目源码或构建清单；论文工具优先查 `py-academic` |
-| [python/projects/py-radar/](python/projects/py-radar/) | 留有旧目录和输出数据，未发现项目源码；当前雷达功能见 [lyra/backend/radar/](https://github.com/LiShuMing/lyra/tree/main/backend/radar/) |
-| [python/projects/py-scrapy/](python/projects/py-scrapy/) | `blog_crawler/` 下未发现项目源码或构建清单 |
+| `python/projects/py-invest/`（历史路径，当前不存在） | 未发现项目源码或构建清单；投资功能优先查 [lyra/backend/invest/](https://github.com/LiShuMing/lyra/tree/main/backend/invest/) 和 `py-cycle-lab` |
+| `python/projects/py-paper/`（历史路径，当前不存在） | `paper-agent/` 下未发现项目源码或构建清单；论文工具优先查 `py-academic` |
+| `python/projects/py-radar/`（历史路径，当前不存在） | 不恢复历史输出数据；当前雷达功能见 [lyra/backend/radar/](https://github.com/LiShuMing/lyra/tree/main/backend/radar/) |
+| `python/projects/py-scrapy/`（历史路径，当前不存在） | `blog_crawler/` 下未发现项目源码或构建清单 |
 
 ## Java、Scala、Groovy
 
@@ -207,11 +215,17 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 
 | 项目目录 | 用途 | 入口 |
 | --- | --- | --- |
+| [go/k8s-lab/](go/k8s-lab/) | 纯标准库 mini Kubernetes 控制面，Go 1.26.2；MVCC、apiserver、informer、controller、kubelet 模拟 | [README](go/k8s-lab/README.md)、[go.mod](go/k8s-lab/go.mod)、[AGENTS](go/k8s-lab/AGENTS.md) |
 | [cc/golab/](cc/golab/) | Go 算法实验，位于 C++ 顶层目录下 | [Makefile](cc/golab/Makefile)、[源码](cc/golab/src/leetcode/) |
 | [lyra/llm-wiki/](https://github.com/LiShuMing/lyra/tree/main/llm-wiki/) | 个人上下文维护 POC、CLI 与服务 | [README](https://github.com/LiShuMing/lyra/blob/main/llm-wiki/README.md)、[go.mod](https://github.com/LiShuMing/lyra/blob/main/llm-wiki/go.mod)、[Makefile](https://github.com/LiShuMing/lyra/blob/main/llm-wiki/Makefile) |
 
-[go/](go/) 当前只有语言指南 [SKILL.md](go/SKILL.md)，未发现源码项目。
-旧说明里的 `go/hello/` 当前不存在，不作为有效项目链接。
+[go/SKILL.md](go/SKILL.md) 是语言指南；`go/k8s-lab` 的并发测试应运行 `go test -race ./...`。旧 `go/hello/` 不存在。
+
+## Swift
+
+| 项目目录 | 用途 | 入口 |
+| --- | --- | --- |
+| [swift/projects/daylog/](swift/projects/daylog/) | 刻白 / DayLog，SwiftUI 原生 macOS 工作日记、提醒与回顾；未迁移 | [README](swift/projects/daylog/README.md)、[Package.swift](swift/projects/daylog/Package.swift)、[Xcode 开发](swift/projects/daylog/docs/xcode-development.md) |
 
 ## Haskell
 
@@ -252,19 +266,15 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | [llm/cuda/](llm/cuda/) | GPU 诊断、本地模型与 CUDA/ROCm 实验 | [PYTORCH_SETUP.md](llm/cuda/PYTORCH_SETUP.md)、[diagnose_gpu.sh](llm/cuda/diagnose_gpu.sh) |
 | [tools/](tools/) | 仓库级工具 | [build-windows.ps1](tools/build-windows.ps1)、[healthcheck.sh](tools/healthcheck.sh) |
 | [cmake/](cmake/) | 共享 CMake 依赖与编译选项 | [XlabDependencies.cmake](cmake/XlabDependencies.cmake) |
-| [docs/](docs/) | 知识库、技术报告、书籍笔记与技能 | [books](docs/books/)、[reports](docs/reports/)、[skills](docs/skills/) |
+| [docs/](docs/) | 知识库、技术报告、书籍笔记与技能 | [文档导航与归属](docs/README.md)、[books](docs/books/)、[reports](docs/reports/)、[skills](docs/skills/) |
 
 ## 第三方子模块完整列表
 
 下面的路径来自 [.gitmodules](.gitmodules)，是声明位置，不是已初始化的源码链接。
-本次扫描中这些目录均不存在。不要用它们判断本机已经安装了相应依赖，
-也不要把参考源码作为自有项目入口。这里不统计子模块内部的嵌套依赖。
-
-需要时在根目录仅初始化目标子模块：
-
-```bash
-git submodule update --init cc/thirdparty/googletest
-```
+2026-10-14 基线有 **69 个声明、0 个 mode 160000 gitlink**。声明路径目前不是可初始化的子模块，
+`git submodule update` 不能凭声明恢复源码。保留声明用于后续逐项确认来源、版本和用途；
+本轮不删除声明、不批量恢复引用。根便携 C++ 可显式使用锁定版本的 FetchContent，
+其他模块的缺失依赖需分别处理，见 [README 构建范围](README.md#build-and-ci-scope)。
 
 ### C 参考项目
 

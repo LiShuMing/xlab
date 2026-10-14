@@ -12,6 +12,20 @@ capture, organize, connect, review, and synthesize learning materials. It is not
 the primary coding-agent rulebook; use `AGENTS.md` for implementation guidance.
 It is not the project backlog; use `TASKS.md` for active work items.
 
+## Current Routing (2026-10-14)
+
+Use [docs/README.md](docs/README.md) for actual document locations,
+Cygnus ownership routes and privacy boundaries. Root [SKILL.md](SKILL.md)
+is the canonical workflow; this material's examples below are conceptual templates,
+not proof that their paths exist. In particular, `docs/_index/`, `docs/read/`,
+`docs/build/` and root `_templates/` have not been created. Do not create or restore
+private/runtime files merely to satisfy an example link.
+
+Current destinations: existing `docs/reading-open-source/` for retained source
+notes, `docs/learn/` for learning plans, project-local docs for implementation
+notes, and Cygnus for the 184 migrated documents. Start with the docs navigation;
+choose an existing appropriate topic before proposing a new directory.
+
 ## Overview
 
 A systematic approach to managing multi-language learning labs, AI research, and project-driven knowledge accumulation. Transform scattered notes into a searchable, interconnected knowledge graph that supports both quick capture and deep learning.
@@ -32,7 +46,7 @@ A systematic approach to managing multi-language learning labs, AI research, and
 - Work-related confidential materials (keep in company systems)
 - Purely personal non-technical content
 
-## Knowledge Base Structure
+## Proposed Knowledge Base Structure (not implemented)
 
 ```
 xlab/
@@ -50,7 +64,7 @@ xlab/
 └── _templates/           # Reusable templates
 ```
 
-## Quick Reference: Knowledge Capture Workflow
+## Example Capture Workflow (proposed paths)
 
 | Scenario | Action | Destination |
 |----------|--------|-------------|
@@ -160,7 +174,7 @@ connections:
 - 2026-04-27: Second review, still relevant
 ```
 
-## Implementation: Creating a New Learning Entry
+## Template: Creating a New Learning Entry (illustrative paths)
 
 ### Step 1: Quick Capture (Inbox)
 ```markdown

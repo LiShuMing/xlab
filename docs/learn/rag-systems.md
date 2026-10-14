@@ -194,18 +194,18 @@ Personal knowledge assistant using my knowledge base.
 ## Connections
 
 ### Related Topics
-- [LLM Fundamentals](./llm-fundamentals.md)
-- [Vector Search](./vector-search.md)
-- [Prompt Engineering](./prompt-engineering.md)
+- LLM Fundamentals（计划笔记，尚未创建：`./llm-fundamentals.md`）
+- Vector Search（计划笔记，尚未创建：`./vector-search.md`）
+- Prompt Engineering（计划笔记，尚未创建：`./prompt-engineering.md`）
 
 ### Projects
-- [py-ego](../build/py-ego.md) - Personal RAG assistant
-- [py-radar](../build/py-radar.md) - Data source for RAG
+- [py-ego](../../python/projects/py-ego/) - Personal RAG assistant
+- [py-radar](https://github.com/LiShuMing/lyra/tree/main/backend/radar) - Data source for RAG
 
 ### Readings
-- [RAG Survey Paper](../read/papers/rag-survey.md)
-- [LlamaIndex Docs](../read/code/llamaindex/)
-- [LangChain RAG Tutorial](../read/articles/langchain-rag.md)
+- RAG Survey Paper（计划笔记，尚未创建：`../read/papers/rag-survey.md`）
+- LlamaIndex Docs（计划笔记，尚未创建：`../read/code/llamaindex/`）
+- LangChain RAG Tutorial（计划笔记，尚未创建：`../read/articles/langchain-rag.md`）
 
 ## Resources
 

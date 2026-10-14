@@ -9,7 +9,7 @@ stage: active
 # Query Engine工程师的AI学习计划
 
 ## Source
-- Original: [how-to-learn-ai.md](../../how-to-do/how-to-learn/how-to-learn-ai.md)
+- Original: [how-to-learn-ai.md](../how-to-do/how-to-learn/how-to-learn-ai.md)
 - Author: Self
 - Date: 2026-03
 
@@ -58,15 +58,15 @@ Query Engine工程师的系统能力（执行调度、资源管理、缓存优�
 ## Connections
 
 ### Related Notes
-- [AI & LLM Index](../../_index/ai-llm.md)
+- [AI & LLM Index](../README.md)
 
 ### Projects to Build
-- [py-ego](../../build/py-ego/) - 个人知识助手
-- [py-radar](../../build/py-radar/) - 数据监控（可作为数据源）
+- [py-ego](../../python/projects/py-ego/) - 个人知识助手
+- [py-radar](https://github.com/LiShuMing/lyra/tree/main/backend/radar) - 数据监控（可作为数据源）
 
 ### External Resources
-- [RAG Survey](../papers/rag-survey.md) - 待读
-- [vLLM Code](../code/vllm/) - PagedAttention实现
+- RAG Survey（计划笔记，尚未创建：`../papers/rag-survey.md`） - 待读
+- vLLM Code（计划笔记，尚未创建：`../code/vllm/`） - PagedAttention实现
 
 ## Action Items
 
