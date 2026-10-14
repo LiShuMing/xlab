@@ -1,0 +1,2858 @@
+{
+  "schema_version": 1,
+  "source_commit": "fe977671e60ea46a7d6805402b4b51c3cc023dfd",
+  "backup_branch": "backup/pre-constellation-cleanup-2026-10-14",
+  "backup_commit": "fd15e65059ff7d0d01ed48b6347cd75881fb4b36",
+  "targets": {
+    "lyra": {
+      "commit": "d8cb18b2a306dfc28d11a6c2de0fea8a6ee3e3bb",
+      "ci": [
+        {
+          "id": 38552150382,
+          "head_sha": "d8cb18b2a306dfc28d11a6c2de0fea8a6ee3e3bb",
+          "name": "Lyra validation",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/LiShuMing/lyra/actions/runs/38552150382"
+        }
+      ]
+    },
+    "vela": {
+      "commit": "824cf61812e66a5eb91a14776bcb73e8eefc04a7",
+      "ci": [
+        {
+          "id": 38552201086,
+          "head_sha": "824cf61812e66a5eb91a14776bcb73e8eefc04a7",
+          "name": "Vela checks",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/LiShuMing/vela/actions/runs/38552201086"
+        }
+      ]
+    },
+    "carina": {
+      "commit": "76ac13d9049969f5fbff3e363654d0f5d676e0d1",
+      "ci": [
+        {
+          "id": 38553413380,
+          "head_sha": "76ac13d9049969f5fbff3e363654d0f5d676e0d1",
+          "name": "Independent reporting modules",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/LiShuMing/carina/actions/runs/38553413380"
+        },
+        {
+          "id": 38553413383,
+          "head_sha": "76ac13d9049969f5fbff3e363654d0f5d676e0d1",
+          "name": "Carina checks",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/LiShuMing/carina/actions/runs/38553413383"
+        },
+        {
+          "id": 38553413390,
+          "head_sha": "76ac13d9049969f5fbff3e363654d0f5d676e0d1",
+          "name": "DayLog macOS checks",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/LiShuMing/carina/actions/runs/38553413390"
+        }
+      ]
+    }
+  },
+  "retired_roots": [
+    "python/projects/py-cli",
+    "python/projects/py-tools",
+    "python/projects/py-optimizer1",
+    "python/projects/py-optimizer2",
+    "python/projects/py-pia",
+    "python/projects/py-report"
+  ],
+  "file_count": 282,
+  "dispositions": {
+    "copied": 52,
+    "adapted": 189,
+    "excluded": 41
+  },
+  "files": [
+    {
+      "source_path": "python/projects/py-cli/docs/architecture/.gitkeep",
+      "source_git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/docs/architecture/.gitkeep",
+      "destination_git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-cli/docs/guides/.gitkeep",
+      "source_git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/docs/guides/.gitkeep",
+      "destination_git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-cli/examples/radar-weekly.example.toml",
+      "source_git_blob": "437329b4697b56c3d2f6940fd240ee871f00eac9",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/examples/radar-weekly.example.toml",
+      "destination_git_blob": "7c688ca15e3cf1e4198ad1432e25fd4c80301426",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-cli/examples/radar-xwork.toml",
+      "source_git_blob": "89aa44ad23cd972c3b23cef97a9561dfe42ee3f2",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/examples/radar-xwork.toml",
+      "destination_git_blob": "7c688ca15e3cf1e4198ad1432e25fd4c80301426",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-cli/examples/systemd/xwork-radar.service",
+      "source_git_blob": "f5eac2dd196266b1801aef1c4fa5eba39d1c77e5",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/examples/systemd/xwork-radar.service",
+      "destination_git_blob": "ecf2d65b34298ff1090266f2e6db29cf9b78f369",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-cli/examples/systemd/xwork-radar.timer",
+      "source_git_blob": "08e500ce1967ba1af1a29a38f252607c2631c438",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/examples/systemd/xwork-radar.timer",
+      "destination_git_blob": "08e500ce1967ba1af1a29a38f252607c2631c438",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-cli/py_cli/__init__.py",
+      "source_git_blob": "a86316441a6e1e337b4d2f226e4a444f597938e8",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/py_cli/__init__.py",
+      "destination_git_blob": "a86316441a6e1e337b4d2f226e4a444f597938e8",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-cli/py_cli/__main__.py",
+      "source_git_blob": "2e4fb445c943a6e4162bf833c3897f8d6a3188f5",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/py_cli/__main__.py",
+      "destination_git_blob": "2e4fb445c943a6e4162bf833c3897f8d6a3188f5",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-cli/py_cli/cli.py",
+      "source_git_blob": "dc23a1c76c1dfeed936c7da2589cf98774b87e5d",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/py_cli/cli.py",
+      "destination_git_blob": "d3299f04dd070ccbfa08ee449125b97a1ad0d0b2",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-cli/py_cli/commands/__init__.py",
+      "source_git_blob": "a1942e1766eb8bd95b9f2fd5b3e122f4b69b0ae5",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/py_cli/commands/__init__.py",
+      "destination_git_blob": "a1942e1766eb8bd95b9f2fd5b3e122f4b69b0ae5",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-cli/py_cli/commands/analyze.py",
+      "source_git_blob": "397a3b997a0ac8d03c20bc9923b082371cf659d1",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/py_cli/commands/analyze.py",
+      "destination_git_blob": "225721c69ee4cfaee2ec417549f462efe318fc9c",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-cli/py_cli/commands/prompts.py",
+      "source_git_blob": "ad703d1130b73c9f8a51d9d3d160b388121f7ac6",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/py_cli/commands/prompts.py",
+      "destination_git_blob": "b7ff9fd5b8bc8558d02971d0494c76738ef294f0",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-cli/py_cli/commands/radar.py",
+      "source_git_blob": "edfdd982a759a956171bdcd5a8b6a95d4507c5e2",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/py_cli/commands/radar.py",
+      "destination_git_blob": "38ce528f34c011a59ef6fa07424b5673dff1ee4a",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-cli/py_cli/config.py",
+      "source_git_blob": "4a3e0a6462191786ed8f1c9b683125b5a3b0ba66",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/py_cli/config.py",
+      "destination_git_blob": "ae213afd0c866d11aa9eaefebc7a0e8259f86150",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-cli/py_cli/core/__init__.py",
+      "source_git_blob": "2095f684203308d433433ef3fe4485074f782538",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/py_cli/core/__init__.py",
+      "destination_git_blob": "93297c3514d2ee3e4e792f8e4208a2fffdd6990e",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-cli/py_cli/core/analyzer.py",
+      "source_git_blob": "371203201ae8a69b1439087aa8e4e7a371e43ebc",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/py_cli/core/analyzer.py",
+      "destination_git_blob": "7b22c0b44ea37c628a043e7b7d6b153bd784cb5f",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-cli/py_cli/core/git_client.py",
+      "source_git_blob": "fd8a4e7f43dc55f01b374f2da06dab4ce511a125",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/py_cli/core/git_client.py",
+      "destination_git_blob": "0fa3b4c47c80d9e59b0b880dfcd83e67d4eba2f4",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-cli/py_cli/exceptions.py",
+      "source_git_blob": "e9e2f648421038f292a4ac6e003acb36ecb37f65",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/py_cli/exceptions.py",
+      "destination_git_blob": "e9e2f648421038f292a4ac6e003acb36ecb37f65",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-cli/py_cli/llm/__init__.py",
+      "source_git_blob": "2459e4e88b0e5168628fd18c98b75d45206fa86d",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/py_cli/llm/__init__.py",
+      "destination_git_blob": "2459e4e88b0e5168628fd18c98b75d45206fa86d",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-cli/py_cli/llm/client.py",
+      "source_git_blob": "8e49db153566d1b137311803ab93648a6646058f",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/py_cli/llm/client.py",
+      "destination_git_blob": "c0f9ee779476c2e3a1f9348226119045fa1be31f",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-cli/py_cli/llm/models.py",
+      "source_git_blob": "15ca6f627c420447b16f4d1c7515d611fde07618",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/py_cli/llm/models.py",
+      "destination_git_blob": "15ca6f627c420447b16f4d1c7515d611fde07618",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-cli/py_cli/llm/prompts/__init__.py",
+      "source_git_blob": "ce97a4b232810305f77c167e84c89202d3229736",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/py_cli/llm/prompts/__init__.py",
+      "destination_git_blob": "ce97a4b232810305f77c167e84c89202d3229736",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-cli/py_cli/llm/prompts/clickhouse.py",
+      "source_git_blob": "fd1f06003aeaaf91b7a2d9724d80d356cbf0dbb1",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/py_cli/llm/prompts/clickhouse.py",
+      "destination_git_blob": "fd1f06003aeaaf91b7a2d9724d80d356cbf0dbb1",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-cli/py_cli/llm/prompts/default.py",
+      "source_git_blob": "42bce7bc9a3cdf6f09dd653c0179fe3da2b01600",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/py_cli/llm/prompts/default.py",
+      "destination_git_blob": "42bce7bc9a3cdf6f09dd653c0179fe3da2b01600",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-cli/py_cli/radar/__init__.py",
+      "source_git_blob": "d6e3a78ebc8778e6b5ff0ffbe1a4749a90866c75",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/py_cli/radar/__init__.py",
+      "destination_git_blob": "d6e3a78ebc8778e6b5ff0ffbe1a4749a90866c75",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-cli/py_cli/radar/config.py",
+      "source_git_blob": "de69f0514a5a090d96ebbb05b23cc29d38db9ea4",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/py_cli/radar/config.py",
+      "destination_git_blob": "de69f0514a5a090d96ebbb05b23cc29d38db9ea4",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-cli/py_cli/radar/git_collector.py",
+      "source_git_blob": "b166512e3998ed4c6bb774680f78ef19cd54853f",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/py_cli/radar/git_collector.py",
+      "destination_git_blob": "1f9a0de1dfd2341a7a504408c23ecd7248eb4914",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-cli/py_cli/radar/github_collector.py",
+      "source_git_blob": "9c79cf167c37bf3a4dd46ef3c5e7d86154bf2595",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/py_cli/radar/github_collector.py",
+      "destination_git_blob": "0ef33e9a7d1f082828bcaae26ac9706218d73b45",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-cli/py_cli/radar/llm_summary.py",
+      "source_git_blob": "db60bc4c017740b8398074d59fe917c7ddd071f2",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/py_cli/radar/llm_summary.py",
+      "destination_git_blob": "fa1c40e443ab86c212eef681b255be6dd1206c2f",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-cli/py_cli/radar/models.py",
+      "source_git_blob": "64894c05c914f8c7cf8bb0e08acd83d272bd94c2",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/py_cli/radar/models.py",
+      "destination_git_blob": "64894c05c914f8c7cf8bb0e08acd83d272bd94c2",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-cli/py_cli/radar/renderer.py",
+      "source_git_blob": "e5534e82542b5c20ce91dad07ce177521166beed",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/py_cli/radar/renderer.py",
+      "destination_git_blob": "37528762a28fd5b8b6475f8514a04dbb31d3b3fe",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-cli/py_cli/radar/repo_discovery.py",
+      "source_git_blob": "5d73c2d296f400d57e2f1b3afa7d56e50c692e01",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/py_cli/radar/repo_discovery.py",
+      "destination_git_blob": "4119229873b5be997101a355b8ea358df4b37666",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-cli/py_cli/radar/scorer.py",
+      "source_git_blob": "20fe9bb423a5ac8a95b6345960d1ca8edee0bbbc",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/py_cli/radar/scorer.py",
+      "destination_git_blob": "20fe9bb423a5ac8a95b6345960d1ca8edee0bbbc",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-cli/py_cli/radar/weekly.py",
+      "source_git_blob": "7848ddca8b63c7af3e13754025368c8eaaf0abd6",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/py_cli/radar/weekly.py",
+      "destination_git_blob": "7848ddca8b63c7af3e13754025368c8eaaf0abd6",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-cli/py_cli/utils.py",
+      "source_git_blob": "83106349f66480b35405a2a1e6cd2d99d060cbdf",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/py_cli/utils.py",
+      "destination_git_blob": "4aecba543497a7743351d4c904da3f1d43051953",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-cli/pyproject.toml",
+      "source_git_blob": "72534633cb48e7d298ed5452a250edc3d1ee53ed",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/pyproject.toml",
+      "destination_git_blob": "065b971c42b8c377f721a993ce8ef24706a76573",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-cli/requirements-dev.txt",
+      "source_git_blob": "a232918e077af177478dec848cdc7f648e3717e0",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/requirements-dev.txt",
+      "destination_git_blob": "0a4cc6b5b9844705da782b329332989cd413e660",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-cli/requirements.txt",
+      "source_git_blob": "a1d3947563fb9a5a0624d204553371713b2ec3eb",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/requirements.txt",
+      "destination_git_blob": "6808f9f00897ac79c9a6bc63b50eac1695f679a7",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-cli/scripts/run-xwork-radar.sh",
+      "source_git_blob": "ca14d2d82a409fde1ec749b7f72207f839e545cf",
+      "source_mode": "100755",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/scripts/run-xwork-radar.sh",
+      "destination_git_blob": "ca14d2d82a409fde1ec749b7f72207f839e545cf",
+      "destination_mode": "100755",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-cli/tests/__init__.py",
+      "source_git_blob": "4943d2298bf0bbc9176bd26586dd2831e84a128b",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/tests/__init__.py",
+      "destination_git_blob": "56fe5f01423d283185fb38c5a4d42666c3ffe4cb",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-cli/tests/conftest.py",
+      "source_git_blob": "5a42dd6cbd597b66c9ab20774bd2660450057a57",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/tests/conftest.py",
+      "destination_git_blob": "48773eb0127aac8e2e815dd45e60ef4c416edab7",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-cli/tests/test_cli.py",
+      "source_git_blob": "c9db6e586f8e68891c48c4c64b30534c8971d89b",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/tests/test_cli.py",
+      "destination_git_blob": "c9db6e586f8e68891c48c4c64b30534c8971d89b",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-cli/tests/test_git_client.py",
+      "source_git_blob": "94aa3509533980caa3b8e43abce7d145624182aa",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/tests/test_git_client.py",
+      "destination_git_blob": "338fb103f1e0ecf938a2a445706a220788252337",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-cli/tests/test_prompts.py",
+      "source_git_blob": "ed5f1b480569918966a1e166b2c8c0fe59de25ed",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/tests/test_prompts.py",
+      "destination_git_blob": "ed5f1b480569918966a1e166b2c8c0fe59de25ed",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-cli/tests/test_radar.py",
+      "source_git_blob": "6ceebd7c832feda9954592a1a9e427afc0284333",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/tests/test_radar.py",
+      "destination_git_blob": "8673aa3f05165e117d346a98950234ae49b1fd11",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-cli/tests/test_utils.py",
+      "source_git_blob": "58f24627cbd5fa8c76d6d2f074c3e3cb12ad8561",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/tests/test_utils.py",
+      "destination_git_blob": "8dd724c61a9973248c19fde38d44363e12246201",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-tools/README.md",
+      "source_git_blob": "cf0e6d6e5aa0488cf88bc9b6e20dd864b793b9ec",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/README.md",
+      "destination_git_blob": "55bf0f4d42ded2d874c4b0ab8a2c007ddbe69bd6",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-tools/collect_git_repos.py",
+      "source_git_blob": "3ae883539dc818764a2632ae3d2ec8e158f043fb",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": "modules/developer-tools/developer_tools/collect_git_repos.py",
+      "destination_git_blob": "2440461f4314a16e8494a700b21cd8fcd36648a0",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-tools/git-repos.md",
+      "source_git_blob": "2ec5134da0152204cae4bf5c38b03af8cf13eb68",
+      "source_mode": "100644",
+      "destination_repository": "lyra",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Generated personal inventory; content not reproduced."
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/CHANGES_LOG.md",
+      "source_git_blob": "496274d83be014895aa56b420d3994d7a61139a9",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/CHANGES_LOG.md",
+      "destination_git_blob": "410f8a08b14a6888e15039db1992643848440b09",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/DESIGN.md",
+      "source_git_blob": "ec5d8857c1f4812cb554d18680c941a97024287f",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/DESIGN.md",
+      "destination_git_blob": "6baef1f0ea155c3262f18279f5b32ea60149050f",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/analysis_output/OPTIMIZER_COMPARISON_REPORT.md",
+      "source_git_blob": "241c69113587495a2bb2ad02352b04a1c320e56d",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Generated research output or runtime placeholder; not imported."
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/analysis_output/comprehensive_reports/calcite_规则深度分析.md",
+      "source_git_blob": "37d2a3066484c0123bf45567fd97c4fa5a2278ab",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Generated research output or runtime placeholder; not imported."
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/analysis_output/comprehensive_reports/doris_规则深度分析.md",
+      "source_git_blob": "bee6822314742b2ffd1d4914f25f4d6c29a6d7ec",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Generated research output or runtime placeholder; not imported."
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/analysis_output/comprehensive_reports/starrocks_规则深度分析.md",
+      "source_git_blob": "7084e9242c90b8b6a7832682e6e15b454e551213",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Generated research output or runtime placeholder; not imported."
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/analysis_output/detailed_reports/calcite_优化规则详细分析.md",
+      "source_git_blob": "eb7aa340a719d0ef343b4db6c767203cc668ab51",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Generated research output or runtime placeholder; not imported."
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/analysis_output/detailed_reports/calcite_详细分析报告.md",
+      "source_git_blob": "47c796933f7e2dbd8f34b3fa4c72d34d8cc8fe24",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Generated research output or runtime placeholder; not imported."
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/analysis_output/detailed_reports/doris_优化规则详细分析.md",
+      "source_git_blob": "0b5ed6223393ec00125e8be77d51fdd0a786325d",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Generated research output or runtime placeholder; not imported."
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/analysis_output/detailed_reports/doris_详细分析报告.md",
+      "source_git_blob": "bf51565338e4531b49c1c2a7ca6f7bba145ffb80",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Generated research output or runtime placeholder; not imported."
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/analysis_output/detailed_reports/starrocks_优化规则详细分析.md",
+      "source_git_blob": "ef3e3a011ebefa9ef212781f4fb350f083d157ab",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Generated research output or runtime placeholder; not imported."
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/analysis_output/detailed_reports/starrocks_详细分析报告.md",
+      "source_git_blob": "2ef8c8e24120c9bc2d964a7b958209f912d8f291",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Generated research output or runtime placeholder; not imported."
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/docs/IMPLEMENTATION.md",
+      "source_git_blob": "6ea43668fa0a2ec098fce01ad4fe5f64cac2ca24",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/docs/IMPLEMENTATION.md",
+      "destination_git_blob": "46bc322837c0b080e8c6cfa38d58da37f6c413f7",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/docs/USAGE.md",
+      "source_git_blob": "0d9a23358b9aed0f72069ff5dc36c330738db6d8",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/docs/USAGE.md",
+      "destination_git_blob": "aff9996860b5874b3e054b4f1406f6b8e90e3d83",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/docs/superpowers/plans/2026-04-05-optimizer-analyzer-phase1.md",
+      "source_git_blob": "32020e9ea6f41d34d3e0b2bdf647ed7606e83896",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/docs/superpowers/plans/2026-04-05-optimizer-analyzer-phase1.md",
+      "destination_git_blob": "d8268617f7f37dc80908aad16f86be52faf834ef",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/docs/superpowers/plans/2026-04-05-optimizer-analyzer-phase2.md",
+      "source_git_blob": "85bc79a8430e49a0fbac50b3c9fd9e435c935d98",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/docs/superpowers/plans/2026-04-05-optimizer-analyzer-phase2.md",
+      "destination_git_blob": "24391049e70156410caefa7be0c56547a09f06ac",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/docs/superpowers/plans/2026-04-05-optimizer-analyzer-phase3.md",
+      "source_git_blob": "c1bb2a07a644c6fda4810e1d03b70e616ac8e9ef",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/docs/superpowers/plans/2026-04-05-optimizer-analyzer-phase3.md",
+      "destination_git_blob": "bbdc4b748b33e5fda2117f09e414598d17c8353e",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/generate_comprehensive_reports.py",
+      "source_git_blob": "7794e50274c6531b5fbb16be2c6b94f9c07a7867",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/generate_comprehensive_reports.py",
+      "destination_git_blob": "adfbbdbf33e2402e1b937905b72790032a3d9452",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/generate_detailed_reports.py",
+      "source_git_blob": "d0751afd66b8d84a181270a84730c04eecd6e83d",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/generate_detailed_reports.py",
+      "destination_git_blob": "adfbbdbf33e2402e1b937905b72790032a3d9452",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/generate_reports.py",
+      "source_git_blob": "db91efb958d08a9bc516b03e68972b2caa2674f6",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/generate_reports.py",
+      "destination_git_blob": "adfbbdbf33e2402e1b937905b72790032a3d9452",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/__init__.py",
+      "source_git_blob": "972437ba7d9b5a4042692158d4da317d3cd0aa9d",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/__init__.py",
+      "destination_git_blob": "a1c145bc0d070c1936b76b1a595ecefb0ca2e501",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/agents/__init__.py",
+      "source_git_blob": "aa2c312b0550a71f2c9efd0dc58bdf8a2e842e76",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/agents/__init__.py",
+      "destination_git_blob": "d2d9afb964fd1880b8531a56f371195712cbd1ff",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/agents/base.py",
+      "source_git_blob": "a7aa0ee3c3e27471265f8c8560547a0945cb81cb",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/agents/base.py",
+      "destination_git_blob": "6ac550c172656218426918b732ecd33c864736fa",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/agents/comparison_agent.py",
+      "source_git_blob": "1e76539bc0895284e20a653c0282d1e894448e8c",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/agents/comparison_agent.py",
+      "destination_git_blob": "87f2537d63b152e1db3b7f3a58b5514999f6e118",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/agents/lifecycle.py",
+      "source_git_blob": "bfc64b72ec5f1cb72f623e420887f149f16f3850",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/agents/lifecycle.py",
+      "destination_git_blob": "89a0ac2f5f031fc1293d12cdbf82bb923d07c3da",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/agents/observability_agent.py",
+      "source_git_blob": "15d982a201a7defb0ef90113cf7d22878d12a949",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/agents/observability_agent.py",
+      "destination_git_blob": "d8cd92d297408a7d92cfa829a66d4ae67039fc43",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/agents/property_agent.py",
+      "source_git_blob": "e4816845d278b591e19d423f6b9120e4b64b126f",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/agents/property_agent.py",
+      "destination_git_blob": "1921a3ecc609a579b4399d21b92c582d7e724e26",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/agents/repo_mapper.py",
+      "source_git_blob": "4ee20fd451b8c78423bf7a723744b2758a90e1c1",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/agents/repo_mapper.py",
+      "destination_git_blob": "ac329a720560db3d80f2e344ee72847017bc22e9",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/agents/rule_miner.py",
+      "source_git_blob": "bf62453fc79f991211556b45971746ff6ffd6c58",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/agents/rule_miner.py",
+      "destination_git_blob": "11c5adc0b04aa2a0ff55d8472d6eca2a3c0ab5b6",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/agents/stats_cost_agent.py",
+      "source_git_blob": "6792d457c0164c72bb438e8a9a016e0756968b9b",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/agents/stats_cost_agent.py",
+      "destination_git_blob": "c2cbd8890d2887b988c3dc30eb42e4a9594b1764",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/agents/verifier_agent.py",
+      "source_git_blob": "083c3990d12cf60969844b362e8165cab5e2a79d",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/agents/verifier_agent.py",
+      "destination_git_blob": "734a17f9e87364a73d3033af2fd9e50cffe6f295",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/artifacts/.gitkeep",
+      "source_git_blob": "1f02a145187dcb1a3ec6f5ef85d76e05d2a1ac80",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Generated research output or runtime placeholder; not imported."
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/comparison/__init__.py",
+      "source_git_blob": "e9667913474ed970630042a63c4aa33c40f17a4b",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/comparison/__init__.py",
+      "destination_git_blob": "5af90a9401c8885bcdfe00cd9cc9313f8050b58a",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/comparison/matrix.py",
+      "source_git_blob": "4d57e6e4b22280516c764e608b8c059e6e61b5b1",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/comparison/matrix.py",
+      "destination_git_blob": "58fdfb4d23090e52b2317dcfc5b1be56397c5e94",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/comparison/report.py",
+      "source_git_blob": "53429eac7225d63c9dc07f6513661371a6ebdfd1",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/comparison/report.py",
+      "destination_git_blob": "00c92613ed90d18abbf5bec0a9d4730ecaae8ed2",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/config.py",
+      "source_git_blob": "f89c7d42e4b7bfd2a18f8b0bac9e239d0f3a0fdf",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/config.py",
+      "destination_git_blob": "3ccce2a8699dec45a582f2e56e1b17507df3a41e",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/engines/__init__.py",
+      "source_git_blob": "f881b764aa308fbe4eb381ec9e61eb91aa5fc9ea",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/engines/__init__.py",
+      "destination_git_blob": "feec05ff2853fe3480e989545dabe604fcdd2841",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/engines/base.py",
+      "source_git_blob": "0a0ee991744a309d4a0becbbd54d310c278de32e",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/engines/base.py",
+      "destination_git_blob": "4d347515b0dd0f8d661bb9dad2a13d3e4b765747",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/engines/presets.py",
+      "source_git_blob": "8d9b74e99e06b48e3cf4e5e2ba3e3008e52f16ae",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/engines/presets.py",
+      "destination_git_blob": "33b36508cdf3adc03e294f1c8d1a15936bc82cbe",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/engines/registry.py",
+      "source_git_blob": "d00768b663739b69a7b3b29232c847f7f2aa09ff",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/engines/registry.py",
+      "destination_git_blob": "e4a68b8f0ece10b52b3514df59b1a7f233899b38",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/llm_client.py",
+      "source_git_blob": "4a8f4cf2c423b7aab8a0fda68b62d1929ce54a0e",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/llm_client.py",
+      "destination_git_blob": "d9d7059982744d6a35386d0e1aed46539e7cc1b5",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/prompts/__init__.py",
+      "source_git_blob": "7d2a4befada8b0fdca53ed24d99a8361c14e38ae",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/prompts/__init__.py",
+      "destination_git_blob": "3d64c5cc4d49a083ae4bc8e37ba96e288b04c105",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/prompts/property_prompts.py",
+      "source_git_blob": "56e44e9823b98f95fec46142baf93a21291d8838",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/prompts/property_prompts.py",
+      "destination_git_blob": "0edf8ce75d393f4113a192e1d1e2ad3afe627b93",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/prompts/rule_prompts.py",
+      "source_git_blob": "e1c0f9037f3f4dc65c5f0e553549edcdc7470c59",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/prompts/rule_prompts.py",
+      "destination_git_blob": "8744558bfeec6a55b608dc65d8876816ff3c3904",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/prompts/stats_prompts.py",
+      "source_git_blob": "119a1fe7c9daf5f4e097e34a5a7f95337a6c45f8",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/prompts/stats_prompts.py",
+      "destination_git_blob": "4b21c0e96742f2f89064f2b193f9e64b40cf9af0",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/scanners/__init__.py",
+      "source_git_blob": "e055d38d43a4ed7a4e15074a3755929c9f8d6923",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/scanners/__init__.py",
+      "destination_git_blob": "7dcc14b17620bcfe84ceb5d924bcc609b41e4946",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/scanners/base.py",
+      "source_git_blob": "50da10969edd90eca4bbb390e5e783f55c8ec51e",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/scanners/base.py",
+      "destination_git_blob": "768240e2db8d8a6fe6e7a43705400386eb2cf1d3",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/scanners/java_scanner.py",
+      "source_git_blob": "d0c72aecb36d4ab152acbceb9b9a751a7a25e2ce",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/scanners/java_scanner.py",
+      "destination_git_blob": "7a1faab830609a7d1bca03f91c579bc8b6d4df73",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/schemas/__init__.py",
+      "source_git_blob": "24f128d8024ff09e2e42a2baaaf300311b550141",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/schemas/__init__.py",
+      "destination_git_blob": "6c9d24c19ba9024aaf77ab5a2d9de49881f7f59b",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/schemas/base.py",
+      "source_git_blob": "84233e16d6c03159d47e60df2f23ab6078ec45d7",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/schemas/base.py",
+      "destination_git_blob": "db2020ea252ced92975bc42a261c610d6ec4e6fc",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/schemas/comparison.py",
+      "source_git_blob": "b545f1b5f41b885f9e759873b28d4dbc8458d8e8",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/schemas/comparison.py",
+      "destination_git_blob": "accd6fa4f6710744d438a39fb2598296d097e635",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/schemas/extensibility.py",
+      "source_git_blob": "246bad0f65de5aff66575bc77c21e02e7409d109",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/schemas/extensibility.py",
+      "destination_git_blob": "536712d52a0ba7826acae737e805475ad0d35618",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/schemas/framework.py",
+      "source_git_blob": "f25819a46a0ffce36a1c31ce66a0b8be11138f7e",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/schemas/framework.py",
+      "destination_git_blob": "59e953c81eb615e27f783b04119b5d17ff1cbe94",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/schemas/observability.py",
+      "source_git_blob": "f8eb09b693dcc68b43c259b86fe9581de7513f41",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/schemas/observability.py",
+      "destination_git_blob": "6f5512c9cbc58487b7f9a28138758fa35f5a51aa",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/schemas/rule.py",
+      "source_git_blob": "f6939b8c9787197fc689582dc894eeb3698947ae",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/schemas/rule.py",
+      "destination_git_blob": "6c008cf7722239688404b9952cd5555c04d12dca",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/schemas/stats_cost.py",
+      "source_git_blob": "d88ba64f678da6203157d8f4f29c4d3c01d76dd6",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/schemas/stats_cost.py",
+      "destination_git_blob": "3ff7fef9b7785c8fdb9c7a991009d4b677f1fe5a",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/optimizer_analysis/schemas/trait.py",
+      "source_git_blob": "44749203e48bf112518b41c43816fba4d9280e3a",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/vela_optimizer_evidence/schemas/trait.py",
+      "destination_git_blob": "9331c6e6315ec26f648bfdf659f601805bc5df33",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/requirements.txt",
+      "source_git_blob": "de0096bc1189d0d8a7953f05543f7a69fe0c17a0",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/requirements.txt",
+      "destination_git_blob": "5743b8940f18f68de86be65fdaac6d1fe3dda50f",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/run_analysis.py",
+      "source_git_blob": "da8583394b4e3729e6fb2f78aef7deacc6b9a222",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/run_analysis.py",
+      "destination_git_blob": "f1fc5d32ee56940b767e106169e57a0b47833d5a",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/__init__.py",
+      "source_git_blob": "f7d2d34e10454e57eab91cb4a13ed771e638b0c7",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/__init__.py",
+      "destination_git_blob": "64157e23c6247508e78215225c100b7b8d30f3e5",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_agents/__init__.py",
+      "source_git_blob": "349b4a6a0763293fd8440469063edb6d342987fd",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_agents/__init__.py",
+      "destination_git_blob": "16f038b9e141e60c47ea653e1c0d9e989a3c32fe",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_agents/test_base.py",
+      "source_git_blob": "0b025e35794c1dd715ddb519e52dc8f7b8109a1b",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_agents/test_base.py",
+      "destination_git_blob": "c53af071709a75816df49abde4710aa5455db2c5",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_agents/test_comparison_agent.py",
+      "source_git_blob": "6c7d45dfb462b3505c3afc01bb6a837ab27282ed",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_agents/test_comparison_agent.py",
+      "destination_git_blob": "0595fecbb83f23872fdd42bf9995e56d124074ee",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_agents/test_lifecycle.py",
+      "source_git_blob": "1ad5f06649f8a1357b393cea8edbb93d9aa0d29b",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_agents/test_lifecycle.py",
+      "destination_git_blob": "981153d47fb6512231bfe82491ac599b67c921c2",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_agents/test_observability_agent.py",
+      "source_git_blob": "aedc52f5e1ee59d3cfe4ae3d806398835942e7eb",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_agents/test_observability_agent.py",
+      "destination_git_blob": "2cecfee949eb2aa79c52177ac90e17bb37084a6c",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_agents/test_property_agent.py",
+      "source_git_blob": "a9a4bb984d49457850ad4024de19fa03ab329771",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_agents/test_property_agent.py",
+      "destination_git_blob": "57fa892a45cec0794e5643334aecce298d109f4a",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_agents/test_repo_mapper.py",
+      "source_git_blob": "668bc0fccbdaaceff5c24df6ec4252943ca3d87c",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_agents/test_repo_mapper.py",
+      "destination_git_blob": "5c23325e0f86e3146baa54e775a951a9ad450940",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_agents/test_rule_miner.py",
+      "source_git_blob": "79d0d6172b664c0f3423dd628e0e2768f9ae4c72",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_agents/test_rule_miner.py",
+      "destination_git_blob": "568481a8a6690ce94bebd6dd663fd6e18daf28ed",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_agents/test_stats_cost_agent.py",
+      "source_git_blob": "bf5aad6c72806eeff39d3d297febc79f379d6779",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_agents/test_stats_cost_agent.py",
+      "destination_git_blob": "dc25995abf3e866887060db4e54c3efb97fe0b5b",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_agents/test_verifier_agent.py",
+      "source_git_blob": "eec7663c3ad3f70d8cc7c55c7c2d46c7f7aafd81",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_agents/test_verifier_agent.py",
+      "destination_git_blob": "99ba17f39e1aec9d47e52188504599998033feb0",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_comparison/__init__.py",
+      "source_git_blob": "0779581be6518bbb56903afde0f3ddf7ecafe2e3",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_comparison/__init__.py",
+      "destination_git_blob": "7ba439d75737443ae391047c704dabe54455a05a",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_comparison/test_matrix.py",
+      "source_git_blob": "355380ab95852ae5a7ab979bf0af8237bbae2a02",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_comparison/test_matrix.py",
+      "destination_git_blob": "8b67077d27ee20a7fcebd4579d00c14fec6bfcb6",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_comparison/test_report.py",
+      "source_git_blob": "42b2d611d5951d56ed8a8c8c8c38ddba2ebe5652",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_comparison/test_report.py",
+      "destination_git_blob": "4c27813c2cebfc7e8a998527c40c3334b26291aa",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_engines/__init__.py",
+      "source_git_blob": "ce36a6200be3a329be0f0e1e29217d04361dd4d8",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_engines/__init__.py",
+      "destination_git_blob": "a8925c37e0ab83bcaca02de8301bac19b7d58c17",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_engines/test_registry.py",
+      "source_git_blob": "4b76d0a1bfa79516a6927971a271a85807ba7425",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_engines/test_registry.py",
+      "destination_git_blob": "a847c01ea3b9fd61d8acdb28769be144f8d78209",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_integration/__init__.py",
+      "source_git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_integration/__init__.py",
+      "destination_git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_integration/test_comparison.py",
+      "source_git_blob": "36c8372ada62acacc88a70be35155ded81bb021a",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_integration/test_comparison.py",
+      "destination_git_blob": "452513986d1e4e973aa8616aad8fdda46e16765d",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_integration/test_starrocks.py",
+      "source_git_blob": "f7adcc3bafaaede71cd1a04d232f6c97b3ca107f",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_integration/test_starrocks.py",
+      "destination_git_blob": "d59d5f8235f40b175780565455467954fede8fef",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_integration/test_starrocks_phase2.py",
+      "source_git_blob": "f6635fab41cfc04e2508ebc66b7bd04d864c5658",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_integration/test_starrocks_phase2.py",
+      "destination_git_blob": "71ba3d6bedaadfe6e64c733ff6efba8b48eaecf9",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_llm/__init__.py",
+      "source_git_blob": "62d0491f79ddc8bb23c5fd32977503b3a1d54d9f",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_llm/__init__.py",
+      "destination_git_blob": "62d0491f79ddc8bb23c5fd32977503b3a1d54d9f",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_llm/test_client.py",
+      "source_git_blob": "af8d08444c4a02cf25a63a49cc226a03d1095c49",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_llm/test_client.py",
+      "destination_git_blob": "389b0c4b385078edfde0d0bf29bab049b479f624",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_prompts/__init__.py",
+      "source_git_blob": "74e77cff3772317cd580c64ecf954af54a0d61ec",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_prompts/__init__.py",
+      "destination_git_blob": "95421823769dcf9112c540997d3cecb9d7cfa9bf",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_prompts/test_rule_prompts.py",
+      "source_git_blob": "e4f3ea8fc669417251240e76e250ea4c4fb319db",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_prompts/test_rule_prompts.py",
+      "destination_git_blob": "505264dfc6bad214f04b51634b3b5bccb3c77f5e",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_prompts/test_stats_prompts.py",
+      "source_git_blob": "30dfd83d6bd9c73220fad0508d63b8df3a586aa8",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_prompts/test_stats_prompts.py",
+      "destination_git_blob": "cf5ef800dca0d287472a43079ba4e202f0c480aa",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_scanners/__init__.py",
+      "source_git_blob": "deed2a579bd01c4038aef9371ccf0d652c289bde",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_scanners/__init__.py",
+      "destination_git_blob": "0a6eb85a52e717425d015199f366ef68778051a1",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_scanners/test_java_scanner.py",
+      "source_git_blob": "f7466f17eee2185b68426b7a1a4e10053246da6b",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_scanners/test_java_scanner.py",
+      "destination_git_blob": "96f029150cb6f84f69c7f63673890c90faa7b0a4",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_schemas/__init__.py",
+      "source_git_blob": "11888187228a3ce1255682e1d044e268c601aab9",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_schemas/__init__.py",
+      "destination_git_blob": "d3635a4ae75ec24c604873d40e4a3119b3a722b4",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_schemas/test_base.py",
+      "source_git_blob": "64cbc89db421f086faa488c2ede692520008358b",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_schemas/test_base.py",
+      "destination_git_blob": "864e0c230f92b4b3139959044011897211e766eb",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_schemas/test_comparison.py",
+      "source_git_blob": "9ce2a591d7979f9361bad2527c34dea607df7920",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_schemas/test_comparison.py",
+      "destination_git_blob": "17ccdbec4326d5fefe0b18c3463fb7b825bb8041",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_schemas/test_extensibility.py",
+      "source_git_blob": "97d33c917920665e3a039cf9bad1d5e02566910f",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_schemas/test_extensibility.py",
+      "destination_git_blob": "f3ed5db4c062d636628fcc470f630dea8b1bf0d2",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_schemas/test_framework.py",
+      "source_git_blob": "bf91b6bcdcf8a85c663fabc11e61405d84261299",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_schemas/test_framework.py",
+      "destination_git_blob": "39b2fafa2f85d756a7b3e0c6651cafe58b8c7a57",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_schemas/test_observability.py",
+      "source_git_blob": "502411bb60fe48e738c2d7f0ce6296133e768fd3",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_schemas/test_observability.py",
+      "destination_git_blob": "c3d1b92dbc17b3509abd549f5780591f9850d376",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_schemas/test_rule.py",
+      "source_git_blob": "91ba0735e184bbc8704b2d71d66d69c2c4a1221a",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_schemas/test_rule.py",
+      "destination_git_blob": "d43488cea9b05e9d57797c14bc537ba60ad17dfd",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_schemas/test_stats_cost.py",
+      "source_git_blob": "5b419dea5371218e075167f779551bca7a6f7693",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_schemas/test_stats_cost.py",
+      "destination_git_blob": "783d48d30e5e0149d3abf988c86056bc374ceec7",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer1/tests/test_schemas/test_trait.py",
+      "source_git_blob": "514633b0cbc1c124a0c7e674675b40f834bf4e17",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-evidence/tests/test_schemas/test_trait.py",
+      "destination_git_blob": "cf64ef135c9533b3d80ef2e986bfb8b7eaeee25e",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/DESIGN.md",
+      "source_git_blob": "e4739522d562a72e887bc0f715bd939e8d9cec9f",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-scanner/DESIGN.md",
+      "destination_git_blob": "9e874409e494eab646d8325e9da37a9ab826e923",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/README.md",
+      "source_git_blob": "7add8c45b199a4bb6915d6b3e2f08b9f11efdd84",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-scanner/README.md",
+      "destination_git_blob": "606cb55a7a03b26d81794774ff3413bc8b58ece6",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/data/calcite/rbo_rules.jsonl",
+      "source_git_blob": "4c561ef58e0c46cd7d0e2c755c071927c6009647",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Generated research output or runtime placeholder; not imported."
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/data/doris/rbo_rules.jsonl",
+      "source_git_blob": "3fa6e74964bd8f99d3e45c0bf3db8387adda8d12",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Generated research output or runtime placeholder; not imported."
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/data/starrocks/cbo_rules.jsonl",
+      "source_git_blob": "80bd96b91fe0c247beced67e200b0cbfec6c3c76",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Generated research output or runtime placeholder; not imported."
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/data/starrocks/post_opt_rules.jsonl",
+      "source_git_blob": "5ce953d5f5838b8d9365972582d8a6a190b5322c",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Generated research output or runtime placeholder; not imported."
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/data/starrocks/property_rules.jsonl",
+      "source_git_blob": "b33c62a89babbcdd21f030bdbc4f61c8940e62d5",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Generated research output or runtime placeholder; not imported."
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/data/starrocks/rbo_rules.jsonl",
+      "source_git_blob": "a349a4bda1127dd860377d1bcac20c22637fd66d",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Generated research output or runtime placeholder; not imported."
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/data/starrocks/scalar_rules.jsonl",
+      "source_git_blob": "b7b4bc9c4a2cacc684d26a76a5d35b0e0eaa6353",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Generated research output or runtime placeholder; not imported."
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/engines/calcite.yaml",
+      "source_git_blob": "dd6727a7f3cc21d1338547758a696b3b811683dc",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-scanner/vela_optimizer_scanner/engines/calcite.yaml",
+      "destination_git_blob": "98fe5a7ca23a6e6281dd51c1f17db9e4289ebb18",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/engines/clickhouse.yaml",
+      "source_git_blob": "6e0b15c25d980137b55b7457ec097760f9da2534",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-scanner/vela_optimizer_scanner/engines/clickhouse.yaml",
+      "destination_git_blob": "fcc4674e28afcd15d94789af3efb250ee80dc5b1",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/engines/cockroachdb.yaml",
+      "source_git_blob": "99808fd11e0a3599cfbb3071a659bccab73189ed",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-scanner/vela_optimizer_scanner/engines/cockroachdb.yaml",
+      "destination_git_blob": "5b827e92eb45048d325c927ea531d67cce91b6b7",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/engines/columbia.yaml",
+      "source_git_blob": "02321d347b4a81bd060e4e6dc91193787739ad69",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-scanner/vela_optimizer_scanner/engines/columbia.yaml",
+      "destination_git_blob": "56e7b40ef4f0bcdd0c5d8855fdd031eb50721b25",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/engines/doris.yaml",
+      "source_git_blob": "b9ef3ed1a0e4049a16b65ad736468555910a4188",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-scanner/vela_optimizer_scanner/engines/doris.yaml",
+      "destination_git_blob": "923a95f04c7c447f27b8dcb79858b24204479da4",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/engines/gpdb_orca.yaml",
+      "source_git_blob": "4df5d8ee013f5d4406505997b04f607dc5c6effa",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-scanner/vela_optimizer_scanner/engines/gpdb_orca.yaml",
+      "destination_git_blob": "7c1a7eef7866a17a87e2db734548beda10bef453",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/engines/postgres.yaml",
+      "source_git_blob": "a89606c81ba6aa80a517b806f99ab2be81955e96",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-scanner/vela_optimizer_scanner/engines/postgres.yaml",
+      "destination_git_blob": "c38fd5b8939cd965bcb5233b891da514af3de4e2",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/engines/starrocks.yaml",
+      "source_git_blob": "1cfdbbaf11ffbcb9371d745ad8879e31ded20028",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-scanner/vela_optimizer_scanner/engines/starrocks.yaml",
+      "destination_git_blob": "0fc805d919a7a65a1ec3a23027d9849ca45542a9",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/output/starrocks_analysis_report.md",
+      "source_git_blob": "f84c9f999d5414ef04054f18c44d4886152a8b53",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Generated research output or runtime placeholder; not imported."
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/requirements.txt",
+      "source_git_blob": "213a9c5935b4c784ad120dfb3102d6f2be0bd5d1",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-scanner/requirements.txt",
+      "destination_git_blob": "a039791c6d50b6823e01f1d0e7f3c667ca015e29",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/run.py",
+      "source_git_blob": "fd7caad610babf1d2155af69fa9cc991fc215a2c",
+      "source_mode": "100755",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-scanner/run.py",
+      "destination_git_blob": "6214fb83ad89c3ed29f1b9fc5dffee12fcd39f8a",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/src/__init__.py",
+      "source_git_blob": "7a06ada6b2be3df470b04e6d8d8cc357111cffa9",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-scanner/vela_optimizer_scanner/__init__.py",
+      "destination_git_blob": "1425f20c65bd9055f02889a7d8e134e4cd6910f5",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/src/comparison.py",
+      "source_git_blob": "177fcd9e93cd9b46659f22ca484c2d067e71a8ea",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-scanner/vela_optimizer_scanner/comparison.py",
+      "destination_git_blob": "4d0608746bb6a44d3a66a16fab4711b42c22ab5c",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/src/config.py",
+      "source_git_blob": "4e115ac607695920578a47266f3244a59c099b51",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-scanner/vela_optimizer_scanner/config.py",
+      "destination_git_blob": "033cc280b9713eedebf768c167290b727570bb8a",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/src/enumerator.py",
+      "source_git_blob": "3092c4272bcee6f0ac88730e5b68c05268d73be9",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-scanner/vela_optimizer_scanner/enumerator.py",
+      "destination_git_blob": "176ede08108f72aab9f1c2e99ae5cd31e2daf224",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/src/harness.py",
+      "source_git_blob": "d7b4f80190cebb1596e2bf30df8bf1500572941f",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-scanner/vela_optimizer_scanner/harness.py",
+      "destination_git_blob": "4067803b832df4229fb98a6768349557ef5ca3ad",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/src/models.py",
+      "source_git_blob": "97c2a9687ffd0e75475716b4acdac829a456c4a0",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-scanner/vela_optimizer_scanner/models.py",
+      "destination_git_blob": "a9ca04f24513c37167a094f590198d03c05b5717",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/src/prompts/cbo_prompt.txt",
+      "source_git_blob": "2295856cd96b778653b375671bc6ea173a787814",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-scanner/vela_optimizer_scanner/prompts/cbo_prompt.txt",
+      "destination_git_blob": "2295856cd96b778653b375671bc6ea173a787814",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/src/prompts/property_prompt.txt",
+      "source_git_blob": "af1c15726d18c0381b3a6a3b3edaea8c00d16e04",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-scanner/vela_optimizer_scanner/prompts/property_prompt.txt",
+      "destination_git_blob": "af1c15726d18c0381b3a6a3b3edaea8c00d16e04",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/src/prompts/rbo_prompt.txt",
+      "source_git_blob": "1c634c164d9c5dbcee463d195a1ceda1bbdb6da4",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-scanner/vela_optimizer_scanner/prompts/rbo_prompt.txt",
+      "destination_git_blob": "1c634c164d9c5dbcee463d195a1ceda1bbdb6da4",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/src/prompts/scalar_prompt.txt",
+      "source_git_blob": "3f381dbb703250e541487e710c5a49fd58781992",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-scanner/vela_optimizer_scanner/prompts/scalar_prompt.txt",
+      "destination_git_blob": "3f381dbb703250e541487e710c5a49fd58781992",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/src/scanners/__init__.py",
+      "source_git_blob": "2ec047cc0b1bd19646860de1a6c75bdd12487566",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-scanner/vela_optimizer_scanner/scanners/__init__.py",
+      "destination_git_blob": "42a0454482c17aa9c7f4f0594b9fdf2a8d8421dd",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/src/scanners/base.py",
+      "source_git_blob": "09f84bd0df2b8170021b3529fe47c510d8bfc638",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-scanner/vela_optimizer_scanner/scanners/base.py",
+      "destination_git_blob": "e5274ba8f4f9b73808d338edcefa7bf476c772ef",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/src/scanners/c_scanner.py",
+      "source_git_blob": "64c772f983ff2e5c5fac526e3b86e8cd63f5967a",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-scanner/vela_optimizer_scanner/scanners/c_scanner.py",
+      "destination_git_blob": "6cfcd0970a7437f5d29c660b091df45b37a94451",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/src/scanners/cpp_scanner.py",
+      "source_git_blob": "5f72913672045cc747c797b59b3834f9d26c08b6",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-scanner/vela_optimizer_scanner/scanners/cpp_scanner.py",
+      "destination_git_blob": "c9b858b9ae6fffd50ab04ca19519e13172811cba",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/src/scanners/java_scanner.py",
+      "source_git_blob": "25f98eb66db89e13439f10cecec59397ad96a5ec",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-scanner/vela_optimizer_scanner/scanners/java_scanner.py",
+      "destination_git_blob": "8bc1f89f2308cc2f8a3a940bd06e736063139d1f",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-optimizer2/src/scanners/optgen_scanner.py",
+      "source_git_blob": "c6cc2dd27df14e3adb0a220836818684ed4844d8",
+      "source_mode": "100644",
+      "destination_repository": "vela",
+      "destination_path": "research/optimizer-scanner/vela_optimizer_scanner/scanners/optgen_scanner.py",
+      "destination_git_blob": "12ab59806ced9a0539e20e5540032c465d4026e2",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-pia/CLAUDE.md",
+      "source_git_blob": "1f0284f6240b2aa5c2655faafd6fe18df2edebeb",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Historical instructions, plans or unverified research; current behavior and maintenance guidance live in the destination module."
+    },
+    {
+      "source_path": "python/projects/py-pia/CLAUDE_v1.md",
+      "source_git_blob": "3236862b8874546b8157ff1095255f50e9a34a27",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Historical instructions, plans or unverified research; current behavior and maintenance guidance live in the destination module."
+    },
+    {
+      "source_path": "python/projects/py-pia/ISSUES.md",
+      "source_git_blob": "bb6f78b70a2f4b7ea7aa6ee7cb29cae3ff091f47",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Historical instructions, plans or unverified research; current behavior and maintenance guidance live in the destination module."
+    },
+    {
+      "source_path": "python/projects/py-pia/PLAN.md",
+      "source_git_blob": "5a56167be0cb278c762694957be86d2fc56dee61",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Historical instructions, plans or unverified research; current behavior and maintenance guidance live in the destination module."
+    },
+    {
+      "source_path": "python/projects/py-pia/README.md",
+      "source_git_blob": "756523b3503cc8997a463b564c869f42851243a2",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/README.md",
+      "destination_git_blob": "17088486961a4a90d4c0181949cad7927787eb8b",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-pia/SURVEY.md",
+      "source_git_blob": "27e92629a8e5507f8920ae4a5ac326e8d09909ef",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Historical instructions, plans or unverified research; current behavior and maintenance guidance live in the destination module."
+    },
+    {
+      "source_path": "python/projects/py-pia/TASK.md",
+      "source_git_blob": "d206d84a958a6b8fa4869dfa9377f9c34e5280a1",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Historical instructions, plans or unverified research; current behavior and maintenance guidance live in the destination module."
+    },
+    {
+      "source_path": "python/projects/py-pia/data/normalized/duckdb/1.5.0.md",
+      "source_git_blob": "3ce8a2c77826233adb3d23e126706cb602eacf6f",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Generated fetched page or normalized snapshot; not imported."
+    },
+    {
+      "source_path": "python/projects/py-pia/data/normalized/starrocks/4.0.6.md",
+      "source_git_blob": "70c1b7768b3fb53766fbe5a2fffdaa1e13d0df19",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Generated fetched page or normalized snapshot; not imported."
+    },
+    {
+      "source_path": "python/projects/py-pia/data/raw/22c96ce4.html",
+      "source_git_blob": "2f6d10c22b52ca1a11f9607248330e4e0c0f6e4c",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Generated fetched page or normalized snapshot; not imported."
+    },
+    {
+      "source_path": "python/projects/py-pia/data/raw/dbf5c107.html",
+      "source_git_blob": "7dd774c916b57ab2f23e4d6516568e9bf1fd3631",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Generated fetched page or normalized snapshot; not imported."
+    },
+    {
+      "source_path": "python/projects/py-pia/data/raw/duckdb/1.5.0.html",
+      "source_git_blob": "2f6d10c22b52ca1a11f9607248330e4e0c0f6e4c",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Generated fetched page or normalized snapshot; not imported."
+    },
+    {
+      "source_path": "python/projects/py-pia/data/raw/starrocks/4.0.6.html",
+      "source_git_blob": "7dd774c916b57ab2f23e4d6516568e9bf1fd3631",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Generated fetched page or normalized snapshot; not imported."
+    },
+    {
+      "source_path": "python/projects/py-pia/products/clickhouse.yaml",
+      "source_git_blob": "d009ba70edd3b6def8bf97117de4e38f3cc9e9ce",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/products/clickhouse.yaml",
+      "destination_git_blob": "d009ba70edd3b6def8bf97117de4e38f3cc9e9ce",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-pia/products/doris.yaml",
+      "source_git_blob": "c76479746deb8c3c69cdd2456bd01f808cd2277d",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/products/doris.yaml",
+      "destination_git_blob": "c76479746deb8c3c69cdd2456bd01f808cd2277d",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-pia/products/duckdb.yaml",
+      "source_git_blob": "ac7cb4f64d61dcd3fd764886c1bd54d417cc074c",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/products/duckdb.yaml",
+      "destination_git_blob": "ac7cb4f64d61dcd3fd764886c1bd54d417cc074c",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-pia/products/starrocks.yaml",
+      "source_git_blob": "3bde48c6bd927def31aec652c5870a55d9bf42fa",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/products/starrocks.yaml",
+      "destination_git_blob": "3bde48c6bd927def31aec652c5870a55d9bf42fa",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-pia/products/trino.yaml",
+      "source_git_blob": "bb0f2f59716a3a38ada3f8b8fbf91966ab809902",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/products/trino.yaml",
+      "destination_git_blob": "bb0f2f59716a3a38ada3f8b8fbf91966ab809902",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-pia/pyproject.toml",
+      "source_git_blob": "60fe850d744d97216a0ad2f241dba04c23bdcfae",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/pyproject.toml",
+      "destination_git_blob": "a97931ed8fac4ca6801dac9cde9def0dca53c91e",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/__init__.py",
+      "source_git_blob": "042b0e9b6c01250220e134c80efe0124e4f5acd7",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/__init__.py",
+      "destination_git_blob": "042b0e9b6c01250220e134c80efe0124e4f5acd7",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/__main__.py",
+      "source_git_blob": "5adce97a2197ad160dc821074d939ec3dd0d8625",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/__main__.py",
+      "destination_git_blob": "5adce97a2197ad160dc821074d939ec3dd0d8625",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/adapters/__init__.py",
+      "source_git_blob": "e29aa7a7c6a9689ff39f8fb1f58e9d40ae35b9ce",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/adapters/__init__.py",
+      "destination_git_blob": "e29aa7a7c6a9689ff39f8fb1f58e9d40ae35b9ce",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/adapters/base.py",
+      "source_git_blob": "d80b73eaae69e9eb129844a63704e8a252fc060c",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/adapters/base.py",
+      "destination_git_blob": "24a330978d171c28df3887cad90807dbfe06dc7b",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/adapters/docs_html.py",
+      "source_git_blob": "1681c6ef6f823f01b968458ec5c6570107124502",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/adapters/docs_html.py",
+      "destination_git_blob": "f14661f2da50d02a77a7b2f245ccd2bf68aaf9cc",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/adapters/github_releases.py",
+      "source_git_blob": "9297e5727fb3d417ac1ae070ebf2ba4e7f9f0707",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/adapters/github_releases.py",
+      "destination_git_blob": "0199456757c511da24de5bfe5bbcf797d1fe55cd",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/cli/__init__.py",
+      "source_git_blob": "c9a71d582a31ba9146f6cffc9482109f7e42e43b",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/cli/__init__.py",
+      "destination_git_blob": "c9a71d582a31ba9146f6cffc9482109f7e42e43b",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/cli/analyze.py",
+      "source_git_blob": "338c21d9e58382b5eb56842b959855a1e3686b43",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/cli/analyze.py",
+      "destination_git_blob": "d91cd10f94f112717b616c0af97dff4152f91ac9",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/cli/digest.py",
+      "source_git_blob": "f491d7e5b9a006481b50c0588487321f6cb0d1ac",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/cli/digest.py",
+      "destination_git_blob": "8e339c5f0e8b028ce1fb737893100cd6f5a1db40",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/cli/product.py",
+      "source_git_blob": "3d0e21b83501c533a0d35973418d247b282fe360",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/cli/product.py",
+      "destination_git_blob": "20db107a6d73dd93406c2bd7421ed378aed552f0",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/cli/sync.py",
+      "source_git_blob": "931a7b167b74892d73a1a8258f418f8092b9cb2c",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/cli/sync.py",
+      "destination_git_blob": "eb95fc7245067c8517f9828da745bb984b6ac910",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/cli/versions.py",
+      "source_git_blob": "cd53ad35d8d275ab7e94e6d9153fda3a4433e55c",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/cli/versions.py",
+      "destination_git_blob": "bd3d4b292c0c90df2ff14f36f097823581450a96",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/config/__init__.py",
+      "source_git_blob": "c0a3d67825f0d4179775a29b6f3ddb0ae33d0cbe",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/config/__init__.py",
+      "destination_git_blob": "c0a3d67825f0d4179775a29b6f3ddb0ae33d0cbe",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/config/loader.py",
+      "source_git_blob": "50efa00fe552a9dcab05fda976b85255ddbc57f2",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/config/loader.py",
+      "destination_git_blob": "50efa00fe552a9dcab05fda976b85255ddbc57f2",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/config/settings.py",
+      "source_git_blob": "fd83c83cc759bcbbdc8968df2b33a5d17612636d",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/config/settings.py",
+      "destination_git_blob": "cbfbaaecc121a1fb87036efad8d342a89195c361",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/exceptions.py",
+      "source_git_blob": "2a5a81ceb13b2572b5bf1d80e1ebfb55ae9526b7",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/exceptions.py",
+      "destination_git_blob": "2a5a81ceb13b2572b5bf1d80e1ebfb55ae9526b7",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/llm/__init__.py",
+      "source_git_blob": "d5d03704fddfbe557f7f8eaf9c0917d8b969132e",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/llm/__init__.py",
+      "destination_git_blob": "d5d03704fddfbe557f7f8eaf9c0917d8b969132e",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/llm/prompts.py",
+      "source_git_blob": "a0d2cb9f2fd2c23cd02084e460527403e0091772",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/llm/prompts.py",
+      "destination_git_blob": "419403fd4bf553845408188feaba5706499f3a42",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/llm/provider.py",
+      "source_git_blob": "257fda8a71c35de8d36ebbc48b6adcc00218e7b6",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/llm/provider.py",
+      "destination_git_blob": "66fd4212c786ef28a8283f5b6f3102ab8221d54c",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/llm/schemas.py",
+      "source_git_blob": "ce55cc5023eb10c2354fe2e38e1b9b19dcde7fe4",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/llm/schemas.py",
+      "destination_git_blob": "ce55cc5023eb10c2354fe2e38e1b9b19dcde7fe4",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/main.py",
+      "source_git_blob": "03970b120920c550f0623fca3c6a965e2ed480ac",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/main.py",
+      "destination_git_blob": "498276f3feeeab834b23fd73bafe03576a03d1e6",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/models/__init__.py",
+      "source_git_blob": "732d7e5cc0d8299180a52958c0dadd11119b8131",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/models/__init__.py",
+      "destination_git_blob": "732d7e5cc0d8299180a52958c0dadd11119b8131",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/models/product.py",
+      "source_git_blob": "8f43ee08221b4775f5770f86a7c416278c9376a3",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/models/product.py",
+      "destination_git_blob": "4faebff40cdbe2b2fc3700edbdd0fa57c8e4caa1",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/models/release.py",
+      "source_git_blob": "8cbf544a9049a22881785215cd421c8a7b364c02",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/models/release.py",
+      "destination_git_blob": "42eab530816ef5d6bd7e5681f9a04e1abf9f43ed",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/models/report.py",
+      "source_git_blob": "276e3dbef2fdfd957037c6880f4c1ca87475cbe3",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/models/report.py",
+      "destination_git_blob": "508689590604f9a36db63205623586c9169dcc1e",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/models/source_doc.py",
+      "source_git_blob": "96cb315e4c1d9e1fc6c5d9f2789ee35d5bc9265f",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/models/source_doc.py",
+      "destination_git_blob": "96cb315e4c1d9e1fc6c5d9f2789ee35d5bc9265f",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/services/__init__.py",
+      "source_git_blob": "ccf6730f9d33b1900cb7076310e9613f6ba03a81",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/services/__init__.py",
+      "destination_git_blob": "ccf6730f9d33b1900cb7076310e9613f6ba03a81",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/services/analysis_service.py",
+      "source_git_blob": "7afd87c85d6dd2f1e80dcf949ee281a4e0095327",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/services/analysis_service.py",
+      "destination_git_blob": "7ae7c2d8f80da72fd50d5771497ee4f444c180e7",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/services/cache_service.py",
+      "source_git_blob": "ada55bb5e00286778f19e167f164fac5a554215b",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/services/cache_service.py",
+      "destination_git_blob": "592f329275313d77016261cbb9c1843b7b3a0e8f",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/services/digest_service.py",
+      "source_git_blob": "b0c2a320b4ee981a2fab4101287eab4b79fe63fa",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/services/digest_service.py",
+      "destination_git_blob": "e0834a604e04e8a5cf3251ff7f11829de4aae131",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/services/fetch_service.py",
+      "source_git_blob": "a31a79dffb34f314df983a82036b7f87a20989fa",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/services/fetch_service.py",
+      "destination_git_blob": "08c11f304be5917c734db720960b74cfd0705413",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/services/normalize_service.py",
+      "source_git_blob": "73d58658a13a2742e49922bede1d8762f56bfc40",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/services/normalize_service.py",
+      "destination_git_blob": "73d58658a13a2742e49922bede1d8762f56bfc40",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/services/product_service.py",
+      "source_git_blob": "9fbf87e02b0b64194d9e34451d601d02b09431b7",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/services/product_service.py",
+      "destination_git_blob": "d14a397ed787d0c74917fdc08b06ccada9d1c2c4",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/services/release_service.py",
+      "source_git_blob": "88ab1479c3fb48e4056e05d3796d9e13d78bd81d",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/services/release_service.py",
+      "destination_git_blob": "f8082d4bf2838c4e9b3ffa88094eb135635ab16a",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/store/__init__.py",
+      "source_git_blob": "dd971ae7a2b55cd8a40eaa6650a09681d9d1046a",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/store/__init__.py",
+      "destination_git_blob": "dd971ae7a2b55cd8a40eaa6650a09681d9d1046a",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/store/db.py",
+      "source_git_blob": "4873fb44ae99d65a44572cfd38422ff9a6f06532",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/store/db.py",
+      "destination_git_blob": "a6b8756b09e6f826d1e8c85c460c066ab8dfd5e8",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/store/repositories.py",
+      "source_git_blob": "8c5541a3f012390a042b52fec9825c73ef9f0793",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/store/repositories.py",
+      "destination_git_blob": "2520aafdb325f07175589114b21d9d0159499a09",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/telemetry/__init__.py",
+      "source_git_blob": "b4f20cd419891f079ba8fbacac155ad07dd18bec",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/telemetry/__init__.py",
+      "destination_git_blob": "b4f20cd419891f079ba8fbacac155ad07dd18bec",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/telemetry/context.py",
+      "source_git_blob": "a6116fb14f7fa05eaa90e4f028e6f4955fc62483",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/telemetry/context.py",
+      "destination_git_blob": "d0faf0a765c102b19efcb7645565352d9bf4becf",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/telemetry/metrics.py",
+      "source_git_blob": "86d9308b2f0e2bf94f1f2d8dcd1b002b5753cbd4",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/telemetry/metrics.py",
+      "destination_git_blob": "74bc676df3ecb747674744dad77511aa344d1c52",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/utils/__init__.py",
+      "source_git_blob": "5284136611958ddd8d06518bc16815ff22995f25",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/utils/__init__.py",
+      "destination_git_blob": "5284136611958ddd8d06518bc16815ff22995f25",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/utils/dates.py",
+      "source_git_blob": "a6e616b4fae5fb705a387edfd23941ef734acab9",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/utils/dates.py",
+      "destination_git_blob": "a6e616b4fae5fb705a387edfd23941ef734acab9",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/utils/hashing.py",
+      "source_git_blob": "59a01cc0685b9936028e313e25e9eff3ebb27445",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/utils/hashing.py",
+      "destination_git_blob": "2e9584c80f47efee4402bfb130ec430fbf066719",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-pia/src/pia/utils/versioning.py",
+      "source_git_blob": "1caa0bfd8934141c2ba429bda56d6b858c21793d",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/src/pia/utils/versioning.py",
+      "destination_git_blob": "1caa0bfd8934141c2ba429bda56d6b858c21793d",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-pia/tests/__init__.py",
+      "source_git_blob": "4e7d16dea7948e295c3e7e120c745b3e1e9c50a1",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/tests/__init__.py",
+      "destination_git_blob": "4e7d16dea7948e295c3e7e120c745b3e1e9c50a1",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-pia/tests/test_cache_key.py",
+      "source_git_blob": "ddff100271e7bf68cd5a3ee9183cb24137d371a0",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/tests/test_cache_key.py",
+      "destination_git_blob": "ffede337d3ce3cfa87d6b1aa09c0a926e6422976",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-pia/tests/test_hashing.py",
+      "source_git_blob": "ae0e28dc95c080e170922c5f35845a66f6927764",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/tests/test_hashing.py",
+      "destination_git_blob": "9433c8d8f187ee89bff8c8534075251ced446cb9",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-pia/tests/test_versioning.py",
+      "source_git_blob": "98867e241ab6e10f420665411e0d8fdf9d2e6752",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/product-intelligence/tests/test_versioning.py",
+      "destination_git_blob": "6470b50dd1e450290d2607331eb94de4f5da7171",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-report/CLAUDE.md",
+      "source_git_blob": "c28ac4c804343d9709296fc40120f3ed6fd768be",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/research-report/AGENTS.md",
+      "destination_git_blob": "a0f55d5b6952acb9cde9cf6aa132ad6bbf1d4a78",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-report/Makefile",
+      "source_git_blob": "f28310fff3026b508146ac87150a2b952f12dab8",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Environment-specific build or manual live-service probe; replaced by maintained package commands and offline tests."
+    },
+    {
+      "source_path": "python/projects/py-report/README.md",
+      "source_git_blob": "2d031c1a0c1020e0c0743a318f89494d4988201b",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/research-report/README.md",
+      "destination_git_blob": "5d80ded053506d7b19cf1b522a20f9e15de5b13d",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-report/TASK.md",
+      "source_git_blob": "1c0192c7c729d1cb673a95260655867e4a9abff4",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Historical instructions, plans or unverified research; current behavior and maintenance guidance live in the destination module."
+    },
+    {
+      "source_path": "python/projects/py-report/TODOS.md",
+      "source_git_blob": "1a66461cb2f3793192e8d1c3100493f5de396422",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Historical instructions, plans or unverified research; current behavior and maintenance guidance live in the destination module."
+    },
+    {
+      "source_path": "python/projects/py-report/docs/index.md",
+      "source_git_blob": "4855f5d23e2c24b37ac4aad97a55ee753c09ae5a",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Legacy documentation-site boilerplate; maintained module documentation replaces it."
+    },
+    {
+      "source_path": "python/projects/py-report/docs/reading-open-source/databricks-changelog-2025.md",
+      "source_git_blob": "813bc6b6b8fb44ef7070af9a6f353090cb6edf07",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/research-report/examples/reference-docs/databricks-changelog-2025.md",
+      "destination_git_blob": "0fba18985b2638c357f235c72e18812739974dae",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-report/docs/reading-open-source/firebot-deepdive-2025.md",
+      "source_git_blob": "1e906cb8a685f524f10cc12e7afcf3c92a97e02f",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/research-report/examples/reference-docs/firebot-deepdive-2025.md",
+      "destination_git_blob": "aa8fbcae5ea28ddf1312ddb60b932e963d486fe9",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-report/docs/stylesheets/extra.css",
+      "source_git_blob": "d435482be532a06bbdea50620af7a818566a23e5",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Legacy documentation-site boilerplate; maintained module documentation replaces it."
+    },
+    {
+      "source_path": "python/projects/py-report/mkdocs.yml",
+      "source_git_blob": "2c69a7323115dc69ce3e1ff6b1ae8b032585f96d",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Legacy documentation-site boilerplate; maintained module documentation replaces it."
+    },
+    {
+      "source_path": "python/projects/py-report/prompts/.gitkeep",
+      "source_git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Empty runtime placeholder; no retained implementation."
+    },
+    {
+      "source_path": "python/projects/py-report/pyproject.toml",
+      "source_git_blob": "913e6c28c5225f21152d24ee0b017c2975282212",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/research-report/pyproject.toml",
+      "destination_git_blob": "63c0aa5544e863c2e06b668e3062e73bde8c832a",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-report/src/__init__.py",
+      "source_git_blob": "f1d3ee557b960e78b9b45239dd872315dba587c8",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/research-report/src/carina_report/__init__.py",
+      "destination_git_blob": "f1d3ee557b960e78b9b45239dd872315dba587c8",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-report/src/__main__.py",
+      "source_git_blob": "ad5522cf144f6b1b799ed632b769132adba6c038",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/research-report/src/carina_report/__main__.py",
+      "destination_git_blob": "d5131de2b41c8be871d8e16da468b5dc9a0db1d9",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-report/src/agent/__init__.py",
+      "source_git_blob": "6af54b1a1aa1a856cd3d5c9c22822d575f32cba7",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/research-report/src/carina_report/agent/__init__.py",
+      "destination_git_blob": "b3febf9321f70fe1a7387ffe3ac64158976bac79",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-report/src/agent/orchestrator.py",
+      "source_git_blob": "c8c5bd1eefaaec0e02e760df6b5c88975d5ea6fa",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/research-report/src/carina_report/agent/orchestrator.py",
+      "destination_git_blob": "dfeeb3c4c914d07972c0636744b0e6cfdcd486b9",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-report/src/agent/tools/__init__.py",
+      "source_git_blob": "8e8d9419f7ef691c2e56c438d13a5f3b35774737",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/research-report/src/carina_report/agent/tools/__init__.py",
+      "destination_git_blob": "bce269c79153666ad1d3b2414e77b0370bd2b5bb",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-report/src/agent/tools/base_report.py",
+      "source_git_blob": "f573ed0b9371475efbd041b8631fc41040a11cce",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/research-report/src/carina_report/agent/tools/base_report.py",
+      "destination_git_blob": "71f7388a7bbaf71d73275aca6d7b7324f034b50c",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-report/src/agent/tools/competition.py",
+      "source_git_blob": "6be73e8281d8d300efd0acaf1a883bae6dcfba6f",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/research-report/src/carina_report/agent/tools/competition.py",
+      "destination_git_blob": "3be70f0f4553cc293362b4aebf8cdae544e6d659",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-report/src/agent/tools/docs_analyzer.py",
+      "source_git_blob": "abe8b15eb46ef4bc7766e010997d8709a802910e",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/research-report/src/carina_report/agent/tools/docs_analyzer.py",
+      "destination_git_blob": "d84b0d40fe428c57dbc644a7169823725e5ebed5",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-report/src/agent/tools/fact_verify.py",
+      "source_git_blob": "f8eb6cdeed405d0ef97f6ba56cd4869f26d90310",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/research-report/src/carina_report/agent/tools/fact_verify.py",
+      "destination_git_blob": "6f40c3686da0462ece6b358087ac8731b4fa6525",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-report/src/agent/tools/history.py",
+      "source_git_blob": "7abf314d17201a18eac8409df8eae36edf9a4c59",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/research-report/src/carina_report/agent/tools/history.py",
+      "destination_git_blob": "7b82f6998d1f21967b524b78fb59e4d71f1d8469",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-report/src/agent/types.py",
+      "source_git_blob": "6688475612795ecb5f6bf8251bb163ceca566f40",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/research-report/src/carina_report/agent/types.py",
+      "destination_git_blob": "a8cd51a616ff06a2e34c99e2d100afdd39b3d096",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-report/src/agent/web_search.py",
+      "source_git_blob": "36f1a21aaff28ced2f07395ccf6cdee74a19f61c",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/research-report/src/carina_report/agent/web_search.py",
+      "destination_git_blob": "2512f916e1b401c8f25050855b2db2a97131d305",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-report/src/exceptions.py",
+      "source_git_blob": "f133258f86f259de05a6dbb7bc5e175b5206c538",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/research-report/src/carina_report/exceptions.py",
+      "destination_git_blob": "add0fd2b26b98b6d232bfa482410e6ec11eee0b5",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-report/src/prompt_learner.py",
+      "source_git_blob": "3da9dffed28935e4ca234ce4dba906088d26cf09",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/research-report/src/carina_report/prompt_learner.py",
+      "destination_git_blob": "3033e847a86468bc59f9b06eb25c8a4ce3eef858",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-report/src/report_manager.py",
+      "source_git_blob": "9f6e91fbbdbf64f207f672d3e429c2eaab866fb3",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/research-report/src/carina_report/report_manager.py",
+      "destination_git_blob": "1e93cc12a30c43c3b9a3e2af655189f3dffb4ed3",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-report/src/researcher.py",
+      "source_git_blob": "a70305d4f6ee6e0ab83985de3ce8f1726fef1d4a",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/research-report/src/carina_report/researcher.py",
+      "destination_git_blob": "9f03031022b4a3c479bd11d0a79b2a5362236f4f",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-report/src/server.py",
+      "source_git_blob": "3051c08e322070c187e931b28dd561b27381b786",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/research-report/src/carina_report/server.py",
+      "destination_git_blob": "d858d1de556ea14f321fc07663970421c8faebfd",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-report/test_anthropic.py",
+      "source_git_blob": "a66c0bd3ce6983b510f63a7c77959502a82174a0",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Environment-specific build or manual live-service probe; replaced by maintained package commands and offline tests."
+    },
+    {
+      "source_path": "python/projects/py-report/test_mock_api.py",
+      "source_git_blob": "333cbe54557c0c5785cfda4885bcb9f97c16f565",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": null,
+      "disposition": "excluded",
+      "reason": "Environment-specific build or manual live-service probe; replaced by maintained package commands and offline tests."
+    },
+    {
+      "source_path": "python/projects/py-report/tests/__init__.py",
+      "source_git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/research-report/tests/__init__.py",
+      "destination_git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "destination_mode": "100644",
+      "disposition": "copied"
+    },
+    {
+      "source_path": "python/projects/py-report/tests/test_prompt_learner.py",
+      "source_git_blob": "733c874f802b1e8426c61f7508d34604ab664f53",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/research-report/tests/test_prompt_learner.py",
+      "destination_git_blob": "d3e4a98b21c266771d3008c9f0f7d7df988c8c9a",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-report/tests/test_researcher.py",
+      "source_git_blob": "9ff7f2232067acec81dc1fe94f96c014c6b5ca61",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/research-report/tests/test_researcher.py",
+      "destination_git_blob": "304f129104855acea4de0ee7a92feebabbdd130f",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    },
+    {
+      "source_path": "python/projects/py-report/tests/test_server.py",
+      "source_git_blob": "d651f394bed43343c3fa98617fd9870d6f82a7ed",
+      "source_mode": "100644",
+      "destination_repository": "carina",
+      "destination_path": "modules/research-report/tests/test_server.py",
+      "destination_git_blob": "dac178750fd9ece18323ba92f2a6f567cc447e12",
+      "destination_mode": "100644",
+      "disposition": "adapted"
+    }
+  ]
+}

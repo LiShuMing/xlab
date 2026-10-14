@@ -81,6 +81,12 @@ instructions and build manifests before working there.
 | `cc/projects/query-engine/` | [vela/execution](https://github.com/LiShuMing/vela/tree/main/execution) |
 | `optimizer-learning/` | [vela/optimizer](https://github.com/LiShuMing/vela/tree/main/optimizer) |
 | `swift/projects/daylog/` | [carina/apps/daylog](https://github.com/LiShuMing/carina/tree/main/apps/daylog) |
+| `python/projects/py-cli/` | [lyra/modules/developer-tools](https://github.com/LiShuMing/lyra/tree/main/modules/developer-tools) |
+| `python/projects/py-tools/` | [lyra/modules/developer-tools](https://github.com/LiShuMing/lyra/tree/main/modules/developer-tools) |
+| `python/projects/py-optimizer1/` | [vela/research/optimizer-evidence](https://github.com/LiShuMing/vela/tree/main/research/optimizer-evidence) |
+| `python/projects/py-optimizer2/` | [vela/research/optimizer-scanner](https://github.com/LiShuMing/vela/tree/main/research/optimizer-scanner) |
+| `python/projects/py-pia/` | [carina/modules/product-intelligence](https://github.com/LiShuMing/carina/tree/main/modules/product-intelligence) |
+| `python/projects/py-report/` | [carina/modules/research-report](https://github.com/LiShuMing/carina/tree/main/modules/research-report) |
 
 ## Technology Stack by Module
 
@@ -112,9 +118,8 @@ instructions and build manifests before working there.
 - **Environment**: Virtual environments (.venv)
 - **Testing**: pytest
 - **Key Packages**: numpy, pandas, duckdb, matplotlib, faiss-cpu
-- **Projects**: py-academic, py-cli, py-cycle-lab, py-ego, py-email, py-lab,
-  py-learn, py-optimizer1, py-optimizer2, py-pia, py-report, py-stock,
-  py-tools, py-torch, py-toydb
+- **Projects**: py-academic, py-cycle-lab, py-ego, py-email, py-lab,
+  py-learn, py-stock, py-torch, py-toydb
 - **Standalone**: `python/llm_benchmark` (LLM eval framework), `python/ivm`
   (incremental view maintenance prototypes)
 - ⚠️ `py-academic` is a vendored fork of `binary-husky/gpt_academic`, not
@@ -221,10 +226,8 @@ mvn test
 config at the repository root**, so there is nothing to build or serve. Read and
 edit the Markdown directly.
 
-```bash
-# python/projects/py-report has its own local MkDocs site:
-cd python/projects/py-report && mkdocs serve
-```
+Research-report documentation and commands now live in
+[Carina modules/research-report](https://github.com/LiShuMing/carina/tree/main/modules/research-report).
 
 ## Code Style Guidelines
 

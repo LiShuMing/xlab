@@ -28,6 +28,12 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | `cc/projects/query-engine/` | [vela/execution](https://github.com/LiShuMing/vela/tree/main/execution) |
 | `optimizer-learning/` | [vela/optimizer](https://github.com/LiShuMing/vela/tree/main/optimizer) |
 | `swift/projects/daylog/` | [carina/apps/daylog](https://github.com/LiShuMing/carina/tree/main/apps/daylog) |
+| `python/projects/py-cli/` | [lyra/modules/developer-tools](https://github.com/LiShuMing/lyra/tree/main/modules/developer-tools) |
+| `python/projects/py-tools/` | [lyra/modules/developer-tools](https://github.com/LiShuMing/lyra/tree/main/modules/developer-tools) |
+| `python/projects/py-optimizer1/` | [vela/research/optimizer-evidence](https://github.com/LiShuMing/vela/tree/main/research/optimizer-evidence) |
+| `python/projects/py-optimizer2/` | [vela/research/optimizer-scanner](https://github.com/LiShuMing/vela/tree/main/research/optimizer-scanner) |
+| `python/projects/py-pia/` | [carina/modules/product-intelligence](https://github.com/LiShuMing/carina/tree/main/modules/product-intelligence) |
+| `python/projects/py-report/` | [carina/modules/research-report](https://github.com/LiShuMing/carina/tree/main/modules/research-report) |
 
 知识资料的维护归属、Cygnus 184 份文档路由、源正文退役及保留边界见 [docs/README.md](docs/README.md)。
 
@@ -48,7 +54,7 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | Rust 数据库、SQL、存储引擎 | [rust/rdb/](rust/rdb/) |
 | AI 记忆数据库、向量索引、Arrow、gRPC | [rust/projects/umbra/](rust/projects/umbra/) |
 | Volcano、Cascades、优化器算法对照 | [vela/optimizer/](https://github.com/LiShuMing/vela/tree/main/optimizer/) |
-| 多数据库优化器源码分析 | [python/projects/py-optimizer1/](python/projects/py-optimizer1/)、[python/projects/py-optimizer2/](python/projects/py-optimizer2/) |
+| 多数据库优化器源码分析 | [vela/research/optimizer-evidence](https://github.com/LiShuMing/vela/tree/main/research/optimizer-evidence)、[vela/research/optimizer-scanner](https://github.com/LiShuMing/vela/tree/main/research/optimizer-scanner) |
 | LLVM、JIT、表达式编译 | [cc/projects/llvm-jit/](cc/projects/llvm-jit/) |
 | SQL Parser、Haskell、规则优化 | [haskell/projects/sql-parser/](haskell/projects/sql-parser/) |
 | DSL、Monad Transformers | [haskell/projects/dsl-transform/](haskell/projects/dsl-transform/) |
@@ -62,10 +68,10 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | 论文处理、学术工具 | [python/projects/py-academic/](python/projects/py-academic/) |
 | AI 沙盒、Streamlit、LangChain | [python/projects/py-lab/](python/projects/py-lab/) |
 | 邮件、newsletter、Gmail 摘要 | [python/projects/py-email/](python/projects/py-email/) |
-| 产品 release notes、数据库产品情报 | [python/projects/py-pia/](python/projects/py-pia/) |
+| 产品 release notes、数据库产品情报 | [carina/modules/product-intelligence](https://github.com/LiShuMing/carina/tree/main/modules/product-intelligence) |
 | 技术信号、X/Reddit、OpenCLI、日报 | [carina/modules/tech-radar/](https://github.com/LiShuMing/carina/tree/main/modules/tech-radar/) |
-| LLM 深度研究报告 | [python/projects/py-report/](python/projects/py-report/) |
-| Git 变更分析、仓库收集 | [python/projects/py-cli/](python/projects/py-cli/)、[python/projects/py-tools/](python/projects/py-tools/) |
+| LLM 深度研究报告 | [carina/modules/research-report](https://github.com/LiShuMing/carina/tree/main/modules/research-report) |
+| Git 变更分析、仓库收集 | [lyra/modules/developer-tools](https://github.com/LiShuMing/lyra/tree/main/modules/developer-tools)、[lyra/modules/developer-tools](https://github.com/LiShuMing/lyra/tree/main/modules/developer-tools) |
 | 投资、周期、股票 | [python/projects/py-cycle-lab/](python/projects/py-cycle-lab/)、[python/projects/py-stock/](python/projects/py-stock/)、[lyra/backend/invest/](https://github.com/LiShuMing/lyra/tree/main/backend/invest/) |
 | 心理陪护、对话记忆、微信 | [python/projects/py-ego/](python/projects/py-ego/)、[lyra/backend/ego/](https://github.com/LiShuMing/lyra/tree/main/backend/ego/)、[lyra/backend/wechat/](https://github.com/LiShuMing/lyra/tree/main/backend/wechat/) |
 | 个人知识工作台、采集、日报、博客与文库 | [carina](https://github.com/LiShuMing/carina/tree/main) |
@@ -160,7 +166,6 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | [python/ivm/](python/ivm/) | 增量视图维护与 join 实验 | [ivm.py](python/ivm/ivm.py) |
 | [python/llm_benchmark/](python/llm_benchmark/) | LLM 数学/代码量化评测，含本地 Strata 入口 | [README](python/llm_benchmark/README.md)、[pyproject.toml](python/llm_benchmark/pyproject.toml) |
 | [python/projects/py-academic/](python/projects/py-academic/) | 学术论文与 LLM 工具 | [README](python/projects/py-academic/README.md)、[main.py](python/projects/py-academic/main.py) |
-| [python/projects/py-cli/](python/projects/py-cli/) | LLM 驱动的 Git 仓库变更分析 CLI | [pyproject.toml](python/projects/py-cli/pyproject.toml)、[源码](python/projects/py-cli/py_cli/) |
 | [python/projects/py-cycle-lab/](python/projects/py-cycle-lab/) | LongCycle 长周期投资研究工作台 | [README](python/projects/py-cycle-lab/README.md)、[pyproject.toml](python/projects/py-cycle-lab/pyproject.toml) |
 | [python/projects/py-ego/](python/projects/py-ego/) | 对话陪护与记忆；README 同时保留 StarRocks 监控背景 | [README](python/projects/py-ego/README.md)、[main.py](python/projects/py-ego/main.py) |
 | [python/projects/py-ego/miniprogram/](python/projects/py-ego/miniprogram/) | 微信小程序前端 | [README](python/projects/py-ego/miniprogram/README.md)、[package.json](python/projects/py-ego/miniprogram/package.json) |
@@ -169,12 +174,7 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | [python/projects/py-lab/](python/projects/py-lab/) | Streamlit/LangChain AI 实验平台 | [README](python/projects/py-lab/README.md)、[app.py](python/projects/py-lab/app.py) |
 | [python/projects/py-learn/](python/projects/py-learn/) | Telegram/SQLite 每日学习 Agent | [README](python/projects/py-learn/README.md)、[源码](python/projects/py-learn/src/) |
 | [python/projects/py-numpy-pandas/](python/projects/py-numpy-pandas/) | NumPy/pandas Jupyter 学习空间 | [README](python/projects/py-numpy-pandas/README.md)、[notebooks](python/projects/py-numpy-pandas/notebooks/) |
-| [python/projects/py-optimizer1/](python/projects/py-optimizer1/) | 多引擎优化器分析、规则与成本模型报告 | [DESIGN](python/projects/py-optimizer1/DESIGN.md)、[run_analysis.py](python/projects/py-optimizer1/run_analysis.py) |
-| [python/projects/py-optimizer2/](python/projects/py-optimizer2/) | 多数据库 query optimizer 专家分析系统 | [README](python/projects/py-optimizer2/README.md)、[run.py](python/projects/py-optimizer2/run.py) |
-| [python/projects/py-pia/](python/projects/py-pia/) | Product Intelligence Agent；安装后命令 `pia` | [README](python/projects/py-pia/README.md)、[pyproject.toml](python/projects/py-pia/pyproject.toml) |
-| [python/projects/py-report/](python/projects/py-report/) | LLM API 产品深度研究报告；命令 `llm-research` | [README](python/projects/py-report/README.md)、[pyproject.toml](python/projects/py-report/pyproject.toml) |
 | [python/projects/py-stock/](python/projects/py-stock/) | 股票历史价格采集、SQLite 存储与 Web/CLI 查询 | [README](python/projects/py-stock/README.md)、[cli.py](python/projects/py-stock/cli.py) |
-| [python/projects/py-tools/](python/projects/py-tools/) | Git 仓库收集等标准库工具 | [README](python/projects/py-tools/README.md)、[collect_git_repos.py](python/projects/py-tools/collect_git_repos.py) |
 | [python/projects/py-torch/](python/projects/py-torch/) | PyTorch 学习、micrograd、自动求导 | [README](python/projects/py-torch/README.md)、[micrograd](python/projects/py-torch/micrograd/) |
 | [python/projects/py-toydb/](python/projects/py-toydb/) | ToyDB 文档数据库 | [README](python/projects/py-toydb/README.md)、[pyproject.toml](python/projects/py-toydb/pyproject.toml) |
 | [python/projects/strata-review/](python/projects/strata-review/) | 本地 Strata 只读 Git diff/代码审查 | [README](python/projects/strata-review/README.md)、[strata_review.py](python/projects/strata-review/strata_review.py) |
