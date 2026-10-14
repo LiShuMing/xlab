@@ -135,6 +135,8 @@ check_gitmodules() {
     section "Git Submodules"
 
     local declarations=() gitlinks=() record key path url entry found other
+    local declaration_count=0 gitlink_count=0
+    # Bash 3.2 (macOS) treats an empty array as unset under nounset.
     if [[ -f .gitmodules ]]; then
         if ! git config --file .gitmodules --list >/dev/null; then
             fail ".gitmodules cannot be parsed"
@@ -148,10 +150,11 @@ check_gitmodules() {
                 fail "empty submodule path declaration"
                 continue
             fi
-            for other in "${declarations[@]}"; do
+            for other in ${declarations[@]+"${declarations[@]}"}; do
                 [[ "$path" != "$other" ]] || fail "duplicate submodule path: $path"
             done
-            declarations+=("$path")
+            declarations[declaration_count]="$path"
+            declaration_count=$((declaration_count + 1))
             url="$(git config --file .gitmodules --get "${key%.path}.url" || true)"
             if [[ -z "$url" || "$url" == *git@github.com:git@github.com* ]]; then
                 fail "missing or suspicious submodule URL for: $path"
@@ -161,25 +164,26 @@ check_gitmodules() {
 
     while IFS= read -r -d '' entry; do
         [[ "$entry" == 160000\ * ]] || continue
-        gitlinks+=("${entry#*$'\t'}")
+        gitlinks[gitlink_count]="${entry#*$'\t'}"
+        gitlink_count=$((gitlink_count + 1))
     done < <(git ls-files --stage -z)
-    printf 'declarations: %d\ngitlinks: %d\n' "${#declarations[@]}" "${#gitlinks[@]}"
-    for path in "${declarations[@]}"; do
+    printf 'declarations: %d\ngitlinks: %d\n' "$declaration_count" "$gitlink_count"
+    for path in ${declarations[@]+"${declarations[@]}"}; do
         found=0
-        for other in "${gitlinks[@]}"; do
+        for other in ${gitlinks[@]+"${gitlinks[@]}"}; do
             [[ "$path" != "$other" ]] || found=1
         done
         [[ "$found" == 1 ]] || fail "declaration without gitlink: $path"
     done
-    for path in "${gitlinks[@]}"; do
+    for path in ${gitlinks[@]+"${gitlinks[@]}"}; do
         found=0
-        for other in "${declarations[@]}"; do
+        for other in ${declarations[@]+"${declarations[@]}"}; do
             [[ "$path" != "$other" ]] || found=1
         done
         [[ "$found" == 1 ]] || fail "gitlink without declaration: $path"
     done
-    if [[ ${#gitlinks[@]} == 0 ]]; then
-        if [[ ${#declarations[@]} == 0 ]]; then
+    if [[ $gitlink_count == 0 ]]; then
+        if [[ $declaration_count == 0 ]]; then
             ok "no submodules declared or tracked"
         fi
         return
