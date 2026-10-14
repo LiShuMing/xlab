@@ -147,7 +147,6 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | [rust/projects/subway-game/](rust/projects/subway-game/) | 地铁线路问答游戏；TypeScript/React + Tauri | [README](rust/projects/subway-game/README.md)、[package.json](rust/projects/subway-game/package.json) |
 | [rust/projects/subway-game/src-tauri/](rust/projects/subway-game/src-tauri/) | 地铁游戏 Rust 桌面后端 | [Cargo.toml](rust/projects/subway-game/src-tauri/Cargo.toml) |
 | [rust/projects/subway-game/subway-data/](rust/projects/subway-game/subway-data/) | 地铁数据构建辅助目录 | [build.sh](rust/projects/subway-game/subway-data/build.sh) |
-
 | [rust/projects/llm-runtime/](rust/projects/llm-runtime/) | LLM 推理、KV cache 与调度设计骨架；尚无 Cargo.toml 或可执行源码 | [README](rust/projects/llm-runtime/README.md)、[TASKS](rust/projects/llm-runtime/TASKS.md) |
 
 ## Python

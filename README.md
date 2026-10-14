@@ -61,7 +61,8 @@ builds, and issue tracking in the current homes; the old paths are historical.
 
 ### Standalone Projects in xlab
 
-These remaining directories are self-contained projects with their own build systems:
+Selected projects and design scaffolds are listed below. Runnable projects own
+their build systems; a scaffold is explicitly marked and has no build command.
 
 | Project | Path | Stack | Notes |
 | --- | --- | --- | --- |
