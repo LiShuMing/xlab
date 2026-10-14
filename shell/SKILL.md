@@ -7,7 +7,7 @@ Shell scripting laboratory for automation, DevOps tasks, system administration, 
 - **Shell**: Primary shell scripts (`.sh`)
 - **Executables**: Binaries and scripts in `bin/`
 - **Docker**: Container-related scripts in `docker/`
-- **Environment**: Environment setup in `env/`
+- **Environment**: Review each script before running; some operate on personal systems.
 
 ## Project Structure
 
@@ -15,11 +15,8 @@ Shell scripting laboratory for automation, DevOps tasks, system administration, 
 shell/
 ├── bin/             # Executable scripts
 ├── docker/          # Docker-related scripts
-├── env/             # Environment configurations
 ├── mysql/           # MySQL utilities
-├── fio/             # FIO benchmarks
-├── FlameGraph/      # Profiling visualizations
-└── .zsh_hist_backup.db  # Zsh history backup
+└── fio/             # FIO benchmarks
 ```
 
 ## Key Concepts

@@ -4,7 +4,7 @@
 database internals, algorithms, and AI-assisted development workflows.
 
 The repository is intentionally multi-language. C++ is the main systems lab, while
-Rust, Python, Java, Go, Haskell, Shell, and documentation projects capture focused
+Rust, Python, Swift, Java, Go, Haskell, Shell, and documentation projects capture focused
 experiments, prototypes, reading notes, and tools.
 
 ## Documentation Entry Points
@@ -18,6 +18,7 @@ Use the root documents by audience:
 | `AGENTS.md` | Coding agents | Repository rules, build/test commands, style conventions, and safety notes. |
 | `CLAUDE.md` | Claude Code compatibility | Thin pointer to `AGENTS.md` to avoid duplicated agent instructions. |
 | `SKILL.md` | Knowledge workflows | Personal knowledge-base and technical writing/capture workflow. |
+| [docs/README.md](docs/README.md) | Readers/writers | Knowledge ownership, retained sources, and Cygnus routes. |
 | `TASKS.md` | Maintainers/agents | Current backlog and repository refactoring plan. |
 
 Module-level files such as `cc/SKILL.md`, `python/SKILL.md`, or
@@ -35,6 +36,7 @@ xlab/
 |-- rust/               Rust lab, database experiments, async/concurrency projects
 |-- python/             Python lab, AI/data tooling, research prototypes
 |-- java/               Java projects, Iceberg and interview/test labs
+|-- swift/              DayLog (刻白), native macOS journal app
 |-- go/                 Go lab: k8s-lab (mini Kubernetes control plane from scratch)
 |-- haskell/            Functional programming experiments
 |-- llm/                GPU/ROCm environment setup notes and scripts
@@ -64,8 +66,11 @@ These remaining directories are self-contained projects with their own build sys
 | Project | Path | Stack | Notes |
 | --- | --- | --- | --- |
 | MiniSeastar | `cc/projects/mini-seastar/` | C++20, CMake | Coroutine scheduler, per-thread reactor. |
-| Umbra JIT | `rust/projects/umbra/` | Rust, Cargo | Data-centric JIT pipeline for OLAP. |
+| Umbra | `rust/projects/umbra/` | Rust, Cargo | AI memory database: Arrow/Lance/DataFusion and gRPC. |
 | K8s Lab | `go/k8s-lab/` | Go (stdlib only) | Mini Kubernetes control plane: MVCC store, apiserver, informers, workqueue, ReplicaSet controller, kubelet sim. |
+| DayLog / 刻白 | [swift/projects/daylog/](swift/projects/daylog/) | SwiftUI, Xcode/SPM | Native macOS journal; still in xlab. |
+| LLM Runtime | [rust/projects/llm-runtime/](rust/projects/llm-runtime/) | Rust design scaffold | No Cargo.toml or runnable implementation yet. |
+| LLM Lab | [python/projects/llm-lab/](python/projects/llm-lab/) | Python | Model training/reference experiments. |
 | LLM Benchmark | `python/llm_benchmark/` | Python | Quantified LLM evaluation framework. |
 
 ## Quick Start
@@ -77,16 +82,23 @@ third-party trees are large research references.
 git clone https://github.com/LiShuMing/xlab.git
 cd xlab
 
-# Initialize only what you need, for example:
-git submodule update --init cc/thirdparty/googletest cc/thirdparty/abseil-cpp
+# Diagnose the checkout before selecting a module:
+bash tools/healthcheck.sh
 ```
 
-Common project commands (run each example from the xlab checkout root):
+Dependency status at the 2026-10-14 baseline: `.gitmodules` retains 69 reference
+declarations, but the index contains zero gitlinks (mode 160000). These are orphan
+declarations, not uninitialized submodules. `git submodule update` cannot restore
+them. The healthcheck reports this existing debt as a failure; no references are
+silently removed or downloaded. See [build scope](#build-and-ci-scope).
+
+Common project commands (run each example separately from the xlab checkout root):
 
 ```bash
-# C++ core lab
-cd cc/cclab
-./build.sh
+# Portable C++ subset; opt in to pinned GoogleTest download
+cmake -S . -B build -DXLAB_FETCH_DEPENDENCIES=ON
+cmake --build build --parallel
+ctest --test-dir build --output-on-failure
 
 # Rust lab
 cd rust/rlab
@@ -110,6 +122,24 @@ For migrated application and database commands, follow the current
 `docs/` is an Obsidian vault of plain Markdown — there is no site generator at
 the repository root, so there is nothing to build or serve.
 
+## Build and CI Scope
+
+There is no whole-repository build. Root CMake builds only portable `cc/cclab`
+and `cc/projects/thread-pool`; its default dependency download setting is OFF.
+Without an installed/cached GoogleTest, default configure fails. Opt-in
+`XLAB_FETCH_DEPENDENCIES=ON` fetches pinned test dependencies (and Benchmark
+when requested), not the 69 declared research references. The legacy standalone
+`cc/cclab/build.sh` has broader third-party requirements and is not equivalent.
+
+[Native CI](.github/workflows/native-build.yml) tests this C++ subset on
+Linux/Windows, plus `rust/rlab`, `rust/rdb`, and Python ToyDB on Windows.
+Its path filters do not cover every lab or documentation-only change.
+[Repository checks](.github/workflows/repository-checks.yml) run offline
+healthcheck fixtures and navigation checks. A passing fixture suite does not
+mean the full checkout healthcheck passes or every project builds.
+Swift/Xcode, Go, Haskell, JVM and other independent projects require their own
+local guides and toolchains; DayLog is not exercised by root CI.
+
 ## Windows Builds
 
 Native Windows build instructions and the module support matrix are in
@@ -129,7 +159,7 @@ experiments continue to use WSL.
 
 - Keep generated files, virtual environments, build outputs, and dependency
   installs out of git.
-- Keep large third-party dependencies optional and submodule-based.
+- Keep third-party dependency restoration explicit; declarations alone are not usable gitlinks.
 - Prefer focused module documentation over one giant root document.
 - When reorganizing code, preserve migration intent in `TASKS.md` or module
   changelogs so future readers can understand what moved and why.

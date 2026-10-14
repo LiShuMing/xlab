@@ -15,8 +15,8 @@ Java laboratory for enterprise applications, Android development, and object-ori
 
 ```
 java/
-├── hello/           # Hello world / learning
-└── (projects)       # Various Java projects
+├── xlab-iceberg/    # Iceberg experiments
+└── xlab-itest/      # Gradle/Maven/SBT modules; see PROJECTS.md
 ```
 
 ## Key Concepts

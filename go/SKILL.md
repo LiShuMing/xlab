@@ -26,11 +26,14 @@ go/
 
 Other Go code in the repository:
 
-- `cc/golab/` — a single cgo-interop LeetCode file
+- `cc/golab/` — a standalone Go LeetCode file (no cgo import)
 
 The context CLI and web service formerly at `liminalis/llm-wiki/` now live in
 [Lyra’s llm-wiki module](https://github.com/LiShuMing/lyra/tree/main/llm-wiki/). Read that
 repository’s instructions and module README before building or changing it.
+
+Read `k8s-lab/go.mod` for its toolchain (currently Go 1.26.2). Its concurrency
+checks require `go test -race ./...`; root native CI does not cover this module.
 
 ## Key Concepts
 - **Concurrency**: Goroutines, channels, select, context

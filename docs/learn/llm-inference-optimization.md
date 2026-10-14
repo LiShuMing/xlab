@@ -176,18 +176,18 @@ output = llm.generate("Hello, world!")
 ## Connections
 
 ### Related Topics
-- [Transformer Architecture](./transformer.md)
-- [GPU Programming](./gpu-programming.md)
-- [Performance Benchmarking](./benchmarking.md)
+- Transformer Architecture（计划笔记，尚未创建：`./transformer.md`）
+- GPU Programming（计划笔记，尚未创建：`./gpu-programming.md`）
+- Performance Benchmarking（计划笔记，尚未创建：`./benchmarking.md`）
 
 ### Projects
 - Could optimize py-radar's LLM calls
 - Future: Build simple inference server
 
 ### Readings
-- [vLLM Paper](../read/papers/vllm-pagedattention.md)
-- [FlashAttention](../read/papers/flashattention.md)
-- [Continuous Batching](../read/papers/continuous-batching.md)
+- vLLM Paper（计划笔记，尚未创建：`../read/papers/vllm-pagedattention.md`）
+- FlashAttention（计划笔记，尚未创建：`../read/papers/flashattention.md`）
+- Continuous Batching（计划笔记，尚未创建：`../read/papers/continuous-batching.md`）
 
 ## Resources
 

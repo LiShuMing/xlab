@@ -21,7 +21,7 @@ or removing a project, update its entry and routing in `PROJECTS.md`.
 ### Repository Information
 - **Origin**: https://github.com/LiShuMing/xlab
 - **Type**: Personal R&D laboratory / Code experiments collection
-- **Language Distribution**: C++ (primary), Python, Rust, Go, Java, Haskell, Shell
+- **Language Distribution**: C++ (primary), Python, Rust, Swift, Go, Java, Haskell, Shell
 - **Documentation**: Chinese (Markdown, Obsidian vault in `docs/`), Code comments: Mixed
 
 ## Project Structure
@@ -36,20 +36,21 @@ xlab/
 │   ├── simd/             # SIMD optimizations
 │   ├── nasm/             # Assembly experiments
 │   ├── extentions/       # GDB / editor extensions
-│   ├── golab/            # Go-C++ interop experiments
+│   ├── golab/            # Standalone Go algorithm example
 │   ├── projects/         # Remaining personal C++ projects
-│   └── thirdparty/       # 40+ Git submodules (major deps)
+│   └── thirdparty/       # Declared references; see dependency status below
 ├── rust/                 # Rust laboratory
 │   ├── rlab/             # Workspace-based Rust lab
 │   ├── rdb/              # Database implementation experiments
-│   ├── projects/         # umbra (JIT), fragment-tutor, subway-game
-│   └── thirdparty/       # Rust submodules (RisingWave, DataFusion, etc.)
+│   ├── projects/         # Umbra memory DB, fragment-tutor, subway-game, llm-runtime scaffold
+│   └── thirdparty/       # Declared Rust research references
 ├── python/               # Python laboratory
 │   ├── pylab/            # Core Python lab with pytest
 │   ├── llm_benchmark/    # LLM evaluation framework
 │   ├── ivm/              # Incremental view maintenance prototypes
 │   ├── projects/         # Personal Python projects
-│   └── thirdparty/       # Python submodules
+│   └── thirdparty/       # Declared Python references
+├── swift/                # DayLog / 刻白 native macOS app (still in xlab)
 ├── go/                   # Go laboratory
 │   └── k8s-lab/          # Mini Kubernetes control plane from scratch (zero deps)
 ├── java/                 # Java laboratory
@@ -102,8 +103,9 @@ instructions and build manifests before working there.
 - **Key Projects**:
   - `rlab`: Core experiments (lockfree, thread-pool, bloom filter)
   - `rdb`: Database implementation with tokio
+- `projects/llm-runtime`: design scaffold only; no Cargo manifest yet.
 - **Key Dependencies**: tokio, parking_lot, serde, zstd, roaring
-- **Third-party Submodules**: RisingWave, Materialize, DataFusion, Timely/Differential Dataflow
+- **Third-party declarations (currently no gitlinks)**: RisingWave, Materialize, DataFusion, Timely/Differential Dataflow
 
 ### Python (python/)
 - **Version**: 3.13.5 (managed via pyenv)
@@ -124,10 +126,14 @@ instructions and build manifests before working there.
 - **Projects**: `go/k8s-lab/` — a from-scratch mini Kubernetes control plane
   (pure stdlib, zero dependencies): MVCC store, apiserver facade, informers,
   workqueue, ReplicaSet controller, kubelet simulator, `cmd/demo`.
-- **Other Go code**: `cc/golab/` holds a single cgo-interop LeetCode file.
+- **Other Go code**: `cc/golab/` holds a standalone Go LeetCode file (no cgo import).
 - **Migrated Go module**: [Lyra llm-wiki](https://github.com/LiShuMing/lyra/tree/main/llm-wiki/)
   (formerly `liminalis/llm-wiki/`) owns the context CLI and web service.
   Use its current `go.mod` and README for toolchain and test instructions.
+
+### Swift (swift/)
+- `swift/projects/daylog/`: DayLog / 刻白, SwiftUI native macOS app.
+- Read its README and Xcode guide; root native CI does not build or test it.
 
 ### Java (java/)
 - **Build Tools**: Gradle (primary), Maven
@@ -142,6 +148,12 @@ instructions and build manifests before working there.
 - **Tools**: bin/ utilities, Docker scripts, MySQL utilities
 
 ## Build Commands
+
+Root CMake covers only portable cclab and thread-pool, not all C++ labs.
+Native CI additionally tests rlab/rdb/ToyDB; other projects have independent
+requirements. See [README build/CI scope](README.md#build-and-ci-scope).
+The legacy standalone cclab command below requires broader missing dependencies.
+
 
 ### Native Windows
 
@@ -205,7 +217,7 @@ go test -race ./...             # -race is mandatory (heavy concurrency)
 ./gradlew build
 
 # Maven projects
-mvn build
+mvn test
 ```
 
 ### Documentation
@@ -281,24 +293,27 @@ cd python/projects/py-report && mkdocs serve
 
 ## Git Submodules
 
-This repository uses extensive Git submodules for third-party code:
-
-### Initialize Submodules
-```bash
-git submodule update --init --recursive
-```
+At the 2026-10-14 baseline `.gitmodules` has 69 declarations but the index has
+zero mode 160000 gitlinks. They are orphan declarations, not uninitialized
+submodules. Do not run a blanket recursive download or remove the declarations
+to silence diagnostics. `bash tools/healthcheck.sh` reports this existing debt.
+Use root CMake’s explicit `XLAB_FETCH_DEPENDENCIES=ON` for its pinned test
+dependencies, or review module-specific restoration separately.
 
 ### Key Submodule Categories
 - **C++ thirdparty**: 40+ submodules including DuckDB, RocksDB, Folly, Arrow
 - **Rust thirdparty**: RisingWave, Materialize, DataFusion, Timely Dataflow
 - **Python thirdparty**: TinyDB, PyDBSP
 
-⚠️ **Important**: Submodules are NOT automatically initialized. Most require manual initialization when needed.
+⚠️ A successful empty `git submodule status` is not evidence of healthy dependencies.
+Compare declarations and tracked gitlinks before discussing initialization.
 
 ## Development Conventions
 
 ### Documentation Standards
-The `docs/` directory follows a specific technical writing style defined in `docs/SKILL.md`:
+Use [docs/README.md](docs/README.md) for documentation ownership and Cygnus routes,
+[SKILL.md](SKILL.md) for knowledge workflow, and
+[writing-companion](docs/skills/writing-companion/SKILL.md) for writing guidance:
 
 - **Persona**: Senior database kernel engineer
 - **Report Types**:

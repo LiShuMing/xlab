@@ -12,7 +12,8 @@ Haskell laboratory for functional programming exploration, category theory conce
 ## Project Structure
 ```
 haskell/
-└── hslab/           # Main Haskell lab
+├── hslab/           # Small language example
+└── projects/        # dsl-transform, sql-parser, stm-engine
 ```
 
 ## Key Concepts

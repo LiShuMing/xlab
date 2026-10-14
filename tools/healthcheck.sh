@@ -39,20 +39,26 @@ require_git_repo() {
 print_repo_size() {
     section "Repository Size"
 
-    local root_size git_size worktree_size
+    local root_kib metadata_kib git_dir root_size git_size worktree_size
+    # Separate du calls: GNU du deduplicates .git when . and .git share one call.
     root_size="$(human_du .)"
-    git_size="$(human_du .git || true)"
-    worktree_size="n/a"
-    if [ -n "$root_size" ] && [ -n "$git_size" ]; then
-        worktree_size="$(du -sk . .git 2>/dev/null | awk 'NR==1 {root=$1} NR==2 {git=$1} END {if (root >= git) printf "%.1fM", (root-git)/1024; else print "n/a"}')"
+    root_kib="$(du -sk . | awk '{print $1}')"
+    metadata_kib=0
+    if [[ -e .git ]]; then
+        metadata_kib="$(du -sk .git | awk '{print $1}')"
     fi
+    git_dir="$(git rev-parse --absolute-git-dir)"
+    git_size="$(human_du "$git_dir")"
+    # In linked worktrees .git is a file; external Git objects are not in root.
+    worktree_size="$(awk -v root="$root_kib" -v meta="$metadata_kib" \
+        'BEGIN {if (root >= meta) printf "%.1fM", (root-meta)/1024; else print "n/a"}')"
 
-    printf 'total:    %s\n' "${root_size:-unknown}"
-    printf '.git:     %s\n' "${git_size:-unknown}"
+    printf 'total:    %s\n' "$root_size"
+    printf 'git metadata: %s\n' "$git_size"
     printf 'worktree: %s\n' "$worktree_size"
 
-    if git count-objects -vH >/dev/null 2>&1; then
-        git count-objects -vH | awk '/^(count|size|in-pack|packs|size-pack|garbage|size-garbage):/ {print}'
+    if git --git-dir="$(git rev-parse --git-common-dir)" count-objects -vH >/dev/null 2>&1; then
+        git --git-dir="$(git rev-parse --git-common-dir)" count-objects -vH | awk '/^(count|size|in-pack|packs|size-pack|garbage|size-garbage):/ {print}'
     fi
 }
 
@@ -66,11 +72,12 @@ check_big_files() {
             -path ./.git -prune -o \
             -path './*/thirdparty/*' -prune -o \
             -type f -size +"$BIG_FILE_THRESHOLD" -print0 |
-        xargs -0 ls -lh 2>/dev/null |
-        awk '{print $5 "\t" $9}'
+        while IFS= read -r -d '' path; do
+            printf '%s\t%q\n' "$(human_du "$path")" "$path"
+        done
     )"
 
-    if [ -z "$output" ]; then
+    if [[ -z "$output" ]]; then
         ok "no files larger than ${BIG_FILE_THRESHOLD}"
     else
         warn "large files found"
@@ -127,47 +134,67 @@ check_bad_symlinks() {
 check_gitmodules() {
     section "Git Submodules"
 
-    if [ ! -f .gitmodules ]; then
-        ok "no .gitmodules file"
+    local declarations=() gitlinks=() record key path url entry found other
+    if [[ -f .gitmodules ]]; then
+        if ! git config --file .gitmodules --list >/dev/null; then
+            fail ".gitmodules cannot be parsed"
+            return
+        fi
+        # -z separates records with NUL and key/value with newline, preserving spaces.
+        while IFS= read -r -d '' record; do
+            key="${record%%$'\n'*}"
+            path="${record#*$'\n'}"
+            if [[ -z "$path" ]]; then
+                fail "empty submodule path declaration"
+                continue
+            fi
+            for other in "${declarations[@]}"; do
+                [[ "$path" != "$other" ]] || fail "duplicate submodule path: $path"
+            done
+            declarations+=("$path")
+            url="$(git config --file .gitmodules --get "${key%.path}.url" || true)"
+            if [[ -z "$url" || "$url" == *git@github.com:git@github.com* ]]; then
+                fail "missing or suspicious submodule URL for: $path"
+            fi
+        done < <(git config -z --file .gitmodules --get-regexp '^submodule\..*\.path$' || true)
+    fi
+
+    while IFS= read -r -d '' entry; do
+        [[ "$entry" == 160000\ * ]] || continue
+        gitlinks+=("${entry#*$'\t'}")
+    done < <(git ls-files --stage -z)
+    printf 'declarations: %d\ngitlinks: %d\n' "${#declarations[@]}" "${#gitlinks[@]}"
+    for path in "${declarations[@]}"; do
+        found=0
+        for other in "${gitlinks[@]}"; do
+            [[ "$path" != "$other" ]] || found=1
+        done
+        [[ "$found" == 1 ]] || fail "declaration without gitlink: $path"
+    done
+    for path in "${gitlinks[@]}"; do
+        found=0
+        for other in "${declarations[@]}"; do
+            [[ "$path" != "$other" ]] || found=1
+        done
+        [[ "$found" == 1 ]] || fail "gitlink without declaration: $path"
+    done
+    if [[ ${#gitlinks[@]} == 0 ]]; then
+        if [[ ${#declarations[@]} == 0 ]]; then
+            ok "no submodules declared or tracked"
+        fi
         return
     fi
-
-    if ! git config --file .gitmodules --get-regexp '^submodule\..*\.(path|url)$' >/dev/null; then
-        fail ".gitmodules cannot be parsed"
-        return
-    fi
-
-    local duplicate_paths
-    duplicate_paths="$(
-        git config --file .gitmodules --get-regexp '^submodule\..*\.path$' |
-        awk '{print $2}' |
-        sort |
-        uniq -d
-    )"
-    if [ -n "$duplicate_paths" ]; then
-        fail "duplicate submodule paths found"
-        printf '%s\n' "$duplicate_paths"
-    else
-        ok "no duplicate submodule paths"
-    fi
-
-    local bad_urls
-    bad_urls="$(
-        git config --file .gitmodules --get-regexp '^submodule\..*\.url$' |
-        awk '$2 ~ /git@github.com:git@github.com/ || ($2 ~ /github.com/ && $2 !~ /\.git$/) {print}'
-    )"
-    if [ -n "$bad_urls" ]; then
-        fail "suspicious submodule URLs found"
-        printf '%s\n' "$bad_urls"
-    else
-        ok "no suspicious submodule URLs"
-    fi
-
-    if git submodule status --recursive >/dev/null 2>&1; then
-        ok "git submodule status works"
+    local status
+    if status="$(git submodule status --recursive 2>/dev/null)"; then
+        if [[ "$status" == +* || "$status" == U* || "$status" == *$'\n+'* || "$status" == *$'\nU'* ]]; then
+            fail "submodule checkout differs from its recorded commit or is conflicted"
+        elif [[ "$status" == -* || "$status" == *$'\n-'* ]]; then
+            warn "tracked submodules are not initialized"
+        else
+            ok "tracked submodule checkouts match recorded commits"
+        fi
     else
         fail "git submodule status failed"
-        git submodule status --recursive || true
     fi
 }
 
