@@ -28,7 +28,7 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | `cc/projects/query-engine/` | [vela/execution](https://github.com/LiShuMing/vela/tree/main/execution) |
 | `optimizer-learning/` | [vela/optimizer](https://github.com/LiShuMing/vela/tree/main/optimizer) |
 
-知识资料的维护归属、Cygnus 184 份文档路由和保留边界见 [docs/README.md](docs/README.md)。
+知识资料的维护归属、Cygnus 184 份文档路由、源正文退役及保留边界见 [docs/README.md](docs/README.md)。
 
 ## 按任务路由
 
