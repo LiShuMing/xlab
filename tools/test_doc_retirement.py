@@ -18,15 +18,15 @@ class DocumentRetirementTests(unittest.TestCase):
             with self.subTest(path=item["source"]):
                 self.assertEqual(len(item["source_sha256"]), 64)
                 self.assertEqual(len(item["destination_sha256"]), 64)
-                if path.exists():
-                    self.assertEqual(path.name, "README.md")
-                    self.assertIn("已迁移至 Cygnus", path.read_text())
-                else:
-                    self.assertFalse(path.exists())
-        roots = {"/".join(item["source"].split("/")[:3]) for item in files}
-        self.assertEqual(len(roots), 9)
+                self.assertFalse(path.exists())
+        roots = record["retired_directories"]
+        self.assertEqual(len(roots), 15)
         for directory in roots:
-            self.assertIn("https://github.com/LiShuMing/cygnus/", (ROOT / directory / "README.md").read_text())
+            self.assertFalse((ROOT / directory).exists(), directory)
+        for move in record["preserved_relocations"]:
+            self.assertFalse((ROOT / move["source"]).exists())
+            self.assertTrue((ROOT / move["destination"]).is_file())
+
 
 
 if __name__ == "__main__":

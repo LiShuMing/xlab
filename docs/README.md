@@ -12,20 +12,20 @@
 来源与逐文件校验以 Cygnus 的迁移记录为准。阅读私有链接需要已有仓库权限。
 
 以下资料统一在 Cygnus 维护。2026-10-14 完成逐文件校验后，xlab 中对应的
-184 份源正文已退役，仅保留目录入口；其他文件不在本批清理范围。历史原件可从
+184 份源正文及对应旧目录已退役，不保留跳转文件；其他资料仍保留。历史原件可从
 备份分支恢复，详见 [退役记录](migrations/2026-10-14-cygnus-source-retirement.md)。
 
-| xlab 历史入口 | Cygnus 维护入口 |
+| 原 xlab 路径（已移除） | Cygnus 维护入口 |
 | --- | --- |
-| [ClickHouse](books/clickhouse-book/) | [books/clickhouse-book](https://github.com/LiShuMing/cygnus/tree/main/books/clickhouse-book) |
-| [JDK](books/deep-jdk-book/) | [books/deep-jdk-book](https://github.com/LiShuMing/cygnus/tree/main/books/deep-jdk-book) |
-| [LLVM](books/Deep_Understanding_LLVM/) | [books/Deep_Understanding_LLVM](https://github.com/LiShuMing/cygnus/tree/main/books/Deep_Understanding_LLVM) |
-| [DuckDB](books/duckdb-internals/) | [books/duckdb-internals](https://github.com/LiShuMing/cygnus/tree/main/books/duckdb-internals) |
-| [Flink](books/flink-code-book/) | [books/flink-code-book](https://github.com/LiShuMing/cygnus/tree/main/books/flink-code-book) |
-| [Spark](books/spark-internals/) | [books/spark-internals](https://github.com/LiShuMing/cygnus/tree/main/books/spark-internals) |
-| [DataFusion](reports/datafusion/) | [research/datafusion](https://github.com/LiShuMing/cygnus/tree/main/research/datafusion) |
-| [Umbra](reports/umbra/) | [research/umbra](https://github.com/LiShuMing/cygnus/tree/main/research/umbra) |
-| [Velox](reports/velox/) | [research/velox](https://github.com/LiShuMing/cygnus/tree/main/research/velox) |
+| [ClickHouse](https://github.com/LiShuMing/cygnus/tree/main/books/clickhouse-book) | [books/clickhouse-book](https://github.com/LiShuMing/cygnus/tree/main/books/clickhouse-book) |
+| [JDK](https://github.com/LiShuMing/cygnus/tree/main/books/deep-jdk-book) | [books/deep-jdk-book](https://github.com/LiShuMing/cygnus/tree/main/books/deep-jdk-book) |
+| [LLVM](https://github.com/LiShuMing/cygnus/tree/main/books/Deep_Understanding_LLVM) | [books/Deep_Understanding_LLVM](https://github.com/LiShuMing/cygnus/tree/main/books/Deep_Understanding_LLVM) |
+| [DuckDB](https://github.com/LiShuMing/cygnus/tree/main/books/duckdb-internals) | [books/duckdb-internals](https://github.com/LiShuMing/cygnus/tree/main/books/duckdb-internals) |
+| [Flink](https://github.com/LiShuMing/cygnus/tree/main/books/flink-code-book) | [books/flink-code-book](https://github.com/LiShuMing/cygnus/tree/main/books/flink-code-book) |
+| [Spark](https://github.com/LiShuMing/cygnus/tree/main/books/spark-internals) | [books/spark-internals](https://github.com/LiShuMing/cygnus/tree/main/books/spark-internals) |
+| [DataFusion](https://github.com/LiShuMing/cygnus/tree/main/research/datafusion) | [research/datafusion](https://github.com/LiShuMing/cygnus/tree/main/research/datafusion) |
+| [Umbra](https://github.com/LiShuMing/cygnus/tree/main/research/umbra) | [research/umbra](https://github.com/LiShuMing/cygnus/tree/main/research/umbra) |
+| [Velox](https://github.com/LiShuMing/cygnus/tree/main/research/velox) | [research/velox](https://github.com/LiShuMing/cygnus/tree/main/research/velox) |
 
 ## 仍在 xlab 的资料
 

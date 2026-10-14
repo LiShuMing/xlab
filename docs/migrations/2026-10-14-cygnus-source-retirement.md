@@ -1,6 +1,6 @@
 # Cygnus 已迁移文档源正文退役
 
-2026-10-14：将已完成迁移的 184 份历史文档统一归属 Cygnus，清理 xlab 中对应正文，保留九个目录入口。此批不迁移其他项目、不删除未列入清单的资料，也不改变仓库可见性。
+2026-10-14：将已完成迁移的 184 份历史文档统一归属 Cygnus，清理 xlab 中对应正文，按用户要求完整移除九个文档旧目录，不保留跳转文件。同时移除此前已经退役的六个项目旧目录及剩余 15 个文件。保留未退役资料，不改变仓库可见性。
 
 ## 验收证据
 
@@ -12,10 +12,10 @@
 
 ## 范围与链接
 
-六套书籍：ClickHouse、JDK、LLVM、DuckDB、Flink、Spark。三类研究：DataFusion、Umbra、Velox。每个原目录保留 README 路由，清单中的两个 README 替换为路由，其余七个目录补充路由。未在清单中的文件保留，例如 Velox 的其他阅读笔记。
+六套书籍：ClickHouse、JDK、LLVM、DuckDB、Flink、Spark。三类研究：DataFusion、Umbra、Velox。九个原目录整体移除，维护入口统一放在根 PROJECTS.md 与 docs/README.md。Velox 尚未迁移的 reading-velox.md 原样移动到 docs/reading-open-source/velox/，不随退役目录删除。此前已退役的 liminalis、panming、optimizer-learning、cc/projects/kv-store、cc/projects/query-engine、python/projects/tech-radar 六个目录也完整移除，不再保留 README、配置或生成资料。其旧内容仍可从 Git 历史恢复。
 
 Cygnus 为私有仓库，只有已有权限的读者能打开维护入口。公开 xlab 读者仍可从备份分支和 Git 历史访问原公开版本；这不是历史清除或隐私擦除。此批没有把 Cygnus 新增的私有正文复制回公开仓库。
 
 ## 回退与后续
 
-可通过普通 Git revert 本批提交恢复；不要 reset 或强制推送。DayLog、其他书籍、小项目及历史排除资料均不在本批删除范围。后续源码迁移仍需独立构建、测试、数据兼容性和文件级验收，再提交对应清理 PR。
+可通过普通 Git revert 本批提交恢复；不要 reset 或强制推送。DayLog、其他书籍和未退役的小项目不在本批删除范围。后续源码迁移仍需独立构建、测试、数据兼容性和文件级验收，再提交对应清理 PR。

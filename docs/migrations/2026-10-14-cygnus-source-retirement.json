@@ -1939,5 +1939,46 @@
       "transformation": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
     }
   ],
-  "rewritten_links": []
+  "rewritten_links": [],
+  "retired_directories": [
+    "docs/books/Deep_Understanding_LLVM",
+    "docs/books/clickhouse-book",
+    "docs/books/deep-jdk-book",
+    "docs/books/duckdb-internals",
+    "docs/books/flink-code-book",
+    "docs/books/spark-internals",
+    "docs/reports/datafusion",
+    "docs/reports/umbra",
+    "docs/reports/velox",
+    "liminalis",
+    "panming",
+    "optimizer-learning",
+    "cc/projects/kv-store",
+    "cc/projects/query-engine",
+    "python/projects/tech-radar"
+  ],
+  "additional_retired_project_files": [
+    "liminalis/README.md",
+    "liminalis/backend/ego/chat_logs/chat_2026-05-17.md",
+    "liminalis/backend/ego/chat_logs/chat_2026-05-21.md",
+    "liminalis/docs/radar-quality-2026-10-13.md",
+    "liminalis/llm-wiki/evals/reports/2026-05-17-eval.md",
+    "liminalis/llm-wiki/lism.jpg",
+    "liminalis/nginx-https.conf",
+    "liminalis/src/data/pyRadarFeed.js",
+    "panming/.gitignore",
+    "panming/README.md",
+    "optimizer-learning/README.md",
+    "cc/projects/kv-store/README.md",
+    "cc/projects/query-engine/README.md",
+    "python/projects/tech-radar/.gitignore",
+    "python/projects/tech-radar/README.md"
+  ],
+  "preserved_relocations": [
+    {
+      "source": "docs/reports/velox/reading-velox.md",
+      "destination": "docs/reading-open-source/velox/reading-velox.md",
+      "body_change": false
+    }
+  ]
 }
