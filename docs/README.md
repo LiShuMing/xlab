@@ -48,3 +48,6 @@ DayLog 已迁入 Carina，FragmentTutor 仍在 xlab。目录存在或有 README 
 不要为了修复旧链接恢复凭据、私人日志或数据快照；只更新安全的导航说明。
 [旧知识库规划](meta/migration-guide.md) 中的 `_index`、`read`、`build`、
 `_templates` 是未落地的方案，不是当前存在的目录或已完成迁移。
+
+Python 工具与研究模块的去向、验证和恢复方式见
+[Python 源码退役记录](migrations/2026-10-14-python-source-retirement.md)。

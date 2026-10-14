@@ -13,6 +13,7 @@ GUIDES = [
     "docs/skills/personal-knowledge-base.md",
     "docs/migrations/2026-10-14-cygnus-source-retirement.md",
     "docs/migrations/2026-10-14-daylog-source-retirement.md",
+    "docs/migrations/2026-10-14-python-source-retirement.md",
     *[f"{language}/SKILL.md" for language in
       ("cc", "go", "haskell", "java", "python", "rust", "shell")],
     *[str(path.relative_to(ROOT)) for path in (ROOT / "docs/learn").glob("*.md")],

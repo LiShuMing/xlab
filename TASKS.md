@@ -9,7 +9,7 @@ Stable project navigation belongs in `README.md`; coding-agent rules belong in
 
 ## Migrated Work: Destination Routing
 
-The seven source roots below have been accepted into their destination repositories.
+The thirteen source roots below have been accepted into their destination repositories.
 Their old task lists are retained only as historical planning context, not active
 xlab backlog or verified statements of current destination gaps. Reconcile any
 remaining work with the destination’s current tests, documentation, and backlog;
@@ -24,6 +24,14 @@ do not recreate the old xlab directories.
 | `cc/projects/query-engine/` | [vela/execution](https://github.com/LiShuMing/vela/tree/main/execution) |
 | `optimizer-learning/` | [vela/optimizer](https://github.com/LiShuMing/vela/tree/main/optimizer) |
 | `swift/projects/daylog/` | [carina/apps/daylog](https://github.com/LiShuMing/carina/tree/main/apps/daylog) |
+| `python/projects/py-cli/` | [lyra/modules/developer-tools](https://github.com/LiShuMing/lyra/tree/main/modules/developer-tools) |
+| `python/projects/py-tools/` | [lyra/modules/developer-tools](https://github.com/LiShuMing/lyra/tree/main/modules/developer-tools) |
+| `python/projects/py-optimizer1/` | [vela/research/optimizer-evidence](https://github.com/LiShuMing/vela/tree/main/research/optimizer-evidence) |
+| `python/projects/py-optimizer2/` | [vela/research/optimizer-scanner](https://github.com/LiShuMing/vela/tree/main/research/optimizer-scanner) |
+| `python/projects/py-pia/` | [carina/modules/product-intelligence](https://github.com/LiShuMing/carina/tree/main/modules/product-intelligence) |
+| `python/projects/py-report/` | [carina/modules/research-report](https://github.com/LiShuMing/carina/tree/main/modules/research-report) |
+
+Python source retirement: [verified migration record](docs/migrations/2026-10-14-python-source-retirement.md).
 
 DayLog source retirement and recovery: [verification record](docs/migrations/2026-10-14-daylog-source-retirement.md). Native UI acceptance was not run; the owner waived it as a source-retirement prerequisite.
 
@@ -93,18 +101,12 @@ xlab/
 │   ├── tools/            # Python tooling
 │   └── projects/         # Projects
 │       ├── py-academic/  # VENDORED fork of binary-husky/gpt_academic
-│       ├── py-cli/       # CLI toolkit
 │       ├── py-cycle-lab/ # Long-cycle investment compass
 │       ├── py-ego/       # StarRocks MV monitor + LLM companion
 │       ├── py-email/     # Gmail newsletter digest
 │       ├── py-lab/       # Streamlit/LangChain AI platform
 │       ├── py-learn/     # Telegram daily-learning agent
-│       ├── py-optimizer1/# Optimizer analysis system
-│       ├── py-optimizer2/# Multi-engine optimizer analyzer
-│       ├── py-pia/       # Product intelligence agent
-│       ├── py-report/    # LLM API deep-research pipeline
 │       ├── py-stock/     # Stock price database
-│       ├── py-tools/     # Misc tools
 │       ├── py-torch/     # micrograd + PyTorch learning
 │       └── py-toydb/     # Toy database
 ├── java/                 # Java Projects
@@ -776,40 +778,6 @@ executing any task here, confirm which branch you are on; tasks written against
 
 ---
 
-#### Project: python/projects/py-pia
-
-**现状**: Product information analysis
-
-**Tasks**:
-
-1. **创建项目文件**
-   - [ ] 创建 `python/projects/py-pia/AGENTS.md`
-   - [ ] 创建 `python/projects/py-pia/RULES.md`
-   - [ ] 创建 `python/projects/py-pia/README.md`
-   - [ ] 创建 `python/projects/py-pia/CHANGELOG.md`
-
-2. **丰富单元测试**
-   - [ ] 为src/pia添加测试
-
----
-
-#### Project: python/projects/py-report
-
-**现状**: Report generation tool
-
-**Tasks**:
-
-1. **创建项目文件**
-   - [ ] 创建 `python/projects/py-report/AGENTS.md`
-   - [ ] 创建 `python/projects/py-report/RULES.md`
-   - [ ] 创建 `python/projects/py-report/README.md`
-   - [ ] 创建 `python/projects/py-report/CHANGELOG.md`
-
-2. **丰富单元测试**
-   - [ ] 为src/agent添加测试
-
----
-
 #### Project: python/projects/py-lab
 
 **现状**: Python lab tools
@@ -1049,7 +1017,7 @@ kubelet 模拟器 / `cmd/demo`），全包测试覆盖率 82%~100%，`-race` 全
 - [ ] 决定 `python/projects/py-academic`（283 文件 / 63k 行 vendored fork）是否改为 submodule
 - [ ] 清理空壳目录：顶层 `projects/`（0 文件）、`python/projects/py-numpy-pandas`（无 `.py`）
 - [ ] 评估 `cc/srlab/data/v1.jstack`（1MB，代码中无引用）是否仍需入库
-- [ ] 评估 `python/projects/py-pia/data/{raw,normalized}`（2.5MB 抓取缓存）是否应入库
+- [x] 已迁移 Python 项目的旧抓取缓存与生成产物随源码目录退出当前树；不改写历史或用户运行目录。
 - 历史待办已转出：平台与优化器任务分别在 [Lyra](https://github.com/LiShuMing/lyra/tree/main) 和 [Vela optimizer](https://github.com/LiShuMing/vela/tree/main/optimizer) 中核对维护，不再补建 xlab 项目任务段。
 
 ### P0 - 核心项目（优先重构）
@@ -1074,13 +1042,13 @@ kubelet 模拟器 / `cmd/demo`），全包测试覆盖率 82%~100%，`-race` 全
 15. **rust/projects/umbra** - AI 记忆数据库，Arrow/Lance/DataFusion、向量索引与 gRPC；当前不是 JIT 编译流水线
 16. **已迁出：[lyra/backend/invest](https://github.com/LiShuMing/lyra/tree/main/backend/invest)** - 原 `liminalis/backend/invest`；历史排序保留，当前任务见目标仓库。
 17. **python/projects/py-email** - Gmail 摘要工具
-18. **python/projects/py-cli** - 工程化最规范的 Python 子项目
+18. **已迁出：[Lyra developer-tools](https://github.com/LiShuMing/lyra/tree/main/modules/developer-tools)** - 当前任务在目标仓库维护。
 19. **python/projects/py-toydb** - 玩具数据库
 20. **java/xlab-itest** - Java 集成测试（4 个 Gradle 模块，10k 行）
 
 ### P2 - 其他项目（按需重构）
 
-21. **python/projects/{py-pia, py-lab, py-optimizer1, py-optimizer2, py-torch, py-report, py-cycle-lab, py-learn, py-stock, py-ego, py-tools}**
+21. **python/projects/{py-lab, py-torch, py-cycle-lab, py-learn, py-stock, py-ego}**
 22. **python/ivm** - 仅 2 个文件，但与增量视图维护研究方向直接相关，值得升级为正式项目
 23. 其余 C++ 项目（`cc/projects/{cpython, interpreter, io-uring, llvm-jit, learn-balel}`）
 24. **haskell/projects/{sql-parser, stm-engine, dsl-transform}**、`haskell/hslab`

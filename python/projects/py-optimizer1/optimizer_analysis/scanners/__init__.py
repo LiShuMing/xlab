@@ -1,1 +1,0 @@
-"""Scanners package for code analysis."""

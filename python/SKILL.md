@@ -55,3 +55,17 @@ python/
 - Underscore conventions: `_private`, `__dunder`, `_single_leading`
 - Exception handling: specific over generic
 - Consider `pydantic` for data validation
+
+## Migrated Python projects
+
+| Former xlab path | Current home |
+| --- | --- |
+| `python/projects/py-cli/` | [lyra/modules/developer-tools](https://github.com/LiShuMing/lyra/tree/main/modules/developer-tools) |
+| `python/projects/py-tools/` | [lyra/modules/developer-tools](https://github.com/LiShuMing/lyra/tree/main/modules/developer-tools) |
+| `python/projects/py-optimizer1/` | [vela/research/optimizer-evidence](https://github.com/LiShuMing/vela/tree/main/research/optimizer-evidence) |
+| `python/projects/py-optimizer2/` | [vela/research/optimizer-scanner](https://github.com/LiShuMing/vela/tree/main/research/optimizer-scanner) |
+| `python/projects/py-pia/` | [carina/modules/product-intelligence](https://github.com/LiShuMing/carina/tree/main/modules/product-intelligence) |
+| `python/projects/py-report/` | [carina/modules/research-report](https://github.com/LiShuMing/carina/tree/main/modules/research-report) |
+
+Do not recreate these retired roots. Read the destination module guide before running commands.
+The shared `projects/cron.sh` remains a legacy, machine-specific entry point pending py-email migration; its old PIA path must not be treated as a supported current setup.

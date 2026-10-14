@@ -6,6 +6,12 @@ on:
       - '**/*.md'
       - docs/migrations/**
       - swift/**
+      - python/projects/py-cli/**
+      - python/projects/py-tools/**
+      - python/projects/py-optimizer1/**
+      - python/projects/py-optimizer2/**
+      - python/projects/py-pia/**
+      - python/projects/py-report/**
       - .gitmodules
       - cc/thirdparty/googletest
       - cc/thirdparty/benchmark
@@ -17,6 +23,12 @@ on:
       - '**/*.md'
       - docs/migrations/**
       - swift/**
+      - python/projects/py-cli/**
+      - python/projects/py-tools/**
+      - python/projects/py-optimizer1/**
+      - python/projects/py-optimizer2/**
+      - python/projects/py-pia/**
+      - python/projects/py-report/**
       - .gitmodules
       - cc/thirdparty/googletest
       - cc/thirdparty/benchmark
