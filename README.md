@@ -4,7 +4,7 @@
 database internals, algorithms, and AI-assisted development workflows.
 
 The repository is intentionally multi-language. C++ is the main systems lab, while
-Rust, Python, Swift, Java, Go, Haskell, Shell, and documentation projects capture focused
+Rust, Python, Java, Go, Haskell, Shell, and documentation projects capture focused
 experiments, prototypes, reading notes, and tools.
 
 ## Documentation Entry Points
@@ -36,7 +36,6 @@ xlab/
 |-- rust/               Rust lab, database experiments, async/concurrency projects
 |-- python/             Python lab, AI/data tooling, research prototypes
 |-- java/               Java projects, Iceberg and interview/test labs
-|-- swift/              DayLog (刻白), native macOS journal app
 |-- go/                 Go lab: k8s-lab (mini Kubernetes control plane from scratch)
 |-- haskell/            Functional programming experiments
 |-- llm/                GPU/ROCm environment setup notes and scripts
@@ -47,7 +46,7 @@ xlab/
 
 ### Migrated Projects
 
-These six source roots have moved to their own repositories. Continue development,
+These seven source roots have moved to their own repositories. Continue development,
 builds, and issue tracking in the current homes; the old paths are historical.
 
 | Former xlab path | Current home |
@@ -58,6 +57,9 @@ builds, and issue tracking in the current homes; the old paths are historical.
 | `cc/projects/kv-store/` | [vela/storage](https://github.com/LiShuMing/vela/tree/main/storage) |
 | `cc/projects/query-engine/` | [vela/execution](https://github.com/LiShuMing/vela/tree/main/execution) |
 | `optimizer-learning/` | [vela/optimizer](https://github.com/LiShuMing/vela/tree/main/optimizer) |
+| `swift/projects/daylog/` | [carina/apps/daylog](https://github.com/LiShuMing/carina/tree/main/apps/daylog) |
+
+DayLog source retirement and recovery: [verification record](docs/migrations/2026-10-14-daylog-source-retirement.md). Native UI acceptance was not run; the owner waived it as a source-retirement prerequisite.
 
 ### Standalone Projects in xlab
 
@@ -69,7 +71,6 @@ their build systems; a scaffold is explicitly marked and has no build command.
 | MiniSeastar | `cc/projects/mini-seastar/` | C++20, CMake | Coroutine scheduler, per-thread reactor. |
 | Umbra | `rust/projects/umbra/` | Rust, Cargo | AI memory database: Arrow/Lance/DataFusion and gRPC. |
 | K8s Lab | `go/k8s-lab/` | Go (stdlib only) | Mini Kubernetes control plane: MVCC store, apiserver, informers, workqueue, ReplicaSet controller, kubelet sim. |
-| DayLog / 刻白 | [swift/projects/daylog/](swift/projects/daylog/) | SwiftUI, Xcode/SPM | Native macOS journal; still in xlab. |
 | LLM Runtime | [rust/projects/llm-runtime/](rust/projects/llm-runtime/) | Rust design scaffold | No Cargo.toml or runnable implementation yet. |
 | LLM Lab | [python/projects/llm-lab/](python/projects/llm-lab/) | Python | Model training/reference experiments. |
 | LLM Benchmark | `python/llm_benchmark/` | Python | Quantified LLM evaluation framework. |
@@ -140,8 +141,8 @@ Its path filters do not cover every lab or documentation-only change.
 [Repository checks](.github/workflows/repository-checks.yml) run offline
 healthcheck fixtures and navigation checks. A passing fixture suite does not
 mean the full checkout healthcheck passes or every project builds.
-Swift/Xcode, Go, Haskell, JVM and other independent projects require their own
-local guides and toolchains; DayLog is not exercised by root CI.
+Go, Haskell, JVM and other independent projects require their own local guides
+and toolchains. DayLog build/test ownership is now in Carina.
 
 ## Windows Builds
 

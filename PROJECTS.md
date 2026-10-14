@@ -27,6 +27,7 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | `cc/projects/kv-store/` | [vela/storage](https://github.com/LiShuMing/vela/tree/main/storage) |
 | `cc/projects/query-engine/` | [vela/execution](https://github.com/LiShuMing/vela/tree/main/execution) |
 | `optimizer-learning/` | [vela/optimizer](https://github.com/LiShuMing/vela/tree/main/optimizer) |
+| `swift/projects/daylog/` | [carina/apps/daylog](https://github.com/LiShuMing/carina/tree/main/apps/daylog) |
 
 知识资料的维护归属、Cygnus 184 份文档路由、源正文退役及保留边界见 [docs/README.md](docs/README.md)。
 
@@ -34,7 +35,7 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 
 | 需求或关键词 | 优先定位 |
 | --- | --- |
-| 工作日记、菜单栏、提醒、SwiftUI | [swift/projects/daylog/](swift/projects/daylog/)（刻白，仍在 xlab） |
+| 工作日记、菜单栏、提醒、SwiftUI | [carina/apps/daylog](https://github.com/LiShuMing/carina/tree/main/apps/daylog)（刻白，已迁移） |
 | Kubernetes、控制面、MVCC、Informer | [go/k8s-lab/](go/k8s-lab/) |
 | LLM 训练与推理实验 | [python/projects/llm-lab/](python/projects/llm-lab/)、[rust/projects/llm-runtime/](rust/projects/llm-runtime/)（后者仅设计骨架） |
 | C++ 数据结构、并发、协程、COW、一致性哈希 | [cc/cclab/](cc/cclab/) |
@@ -220,12 +221,6 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | [lyra/llm-wiki/](https://github.com/LiShuMing/lyra/tree/main/llm-wiki/) | 个人上下文维护 POC、CLI 与服务 | [README](https://github.com/LiShuMing/lyra/blob/main/llm-wiki/README.md)、[go.mod](https://github.com/LiShuMing/lyra/blob/main/llm-wiki/go.mod)、[Makefile](https://github.com/LiShuMing/lyra/blob/main/llm-wiki/Makefile) |
 
 [go/SKILL.md](go/SKILL.md) 是语言指南；`go/k8s-lab` 的并发测试应运行 `go test -race ./...`。旧 `go/hello/` 不存在。
-
-## Swift
-
-| 项目目录 | 用途 | 入口 |
-| --- | --- | --- |
-| [swift/projects/daylog/](swift/projects/daylog/) | 刻白 / DayLog，SwiftUI 原生 macOS 工作日记、提醒与回顾；未迁移 | [README](swift/projects/daylog/README.md)、[Package.swift](swift/projects/daylog/Package.swift)、[Xcode 开发](swift/projects/daylog/docs/xcode-development.md) |
 
 ## Haskell
 

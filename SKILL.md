@@ -24,7 +24,9 @@ private/runtime files merely to satisfy an example link.
 Current destinations: existing `docs/reading-open-source/` for retained source
 notes, `docs/learn/` for learning plans, project-local docs for implementation
 notes, and Cygnus for the 184 migrated documents. Start with the docs navigation;
-choose an existing appropriate topic before proposing a new directory.
+choose an existing appropriate topic before proposing a new directory. DayLog
+implementation notes now belong with [Carina apps/daylog](https://github.com/LiShuMing/carina/tree/main/apps/daylog);
+do not recreate the retired Swift namespace here.
 
 ## Overview
 

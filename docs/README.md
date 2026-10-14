@@ -37,8 +37,9 @@
 - [skills/](skills/)：可复用写作与工具指南
 
 实际项目的 README、设计与测试说明跟随所属源码目录。迁出应用见
-[Constellation 迁移记录](migrations/2026-10-13-constellation.md)；DayLog 与
-FragmentTutor 仍在 xlab。目录存在或有 README 不表示构建与测试已通过。
+[Constellation 迁移记录](migrations/2026-10-13-constellation.md)及
+[DayLog 源码退役记录](migrations/2026-10-14-daylog-source-retirement.md)；
+DayLog 已迁入 Carina，FragmentTutor 仍在 xlab。目录存在或有 README 不表示构建与测试已通过。
 
 ## 保留与隐私边界
 
