@@ -1,0 +1,29 @@
+# Editing defaults only; existing module formatter configuration takes precedence.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.md]
+# Preserve intentional Markdown two-space hard breaks.
+trim_trailing_whitespace = false
+
+[*.{go,mod}]
+indent_style = tab
+
+[{Makefile,**/Makefile,*.mk}]
+indent_style = tab
+
+[*.{bat,cmd}]
+end_of_line = crlf
+
+# Preserve imported, generated and notebook formats. No automatic rewrite policy.
+[{**/thirdparty/**,**/vendor/**,python/projects/py-academic/**,**/node_modules/**,**/.venv/**,**/__pycache__/**,**/dist/**,**/target/**,**/build/**,**/*.ipynb,**/*.lock,**/package-lock.json,**/pnpm-lock.yaml,**/robin_hood_map.h}]
+charset = unset
+end_of_line = unset
+insert_final_newline = unset
+trim_trailing_whitespace = unset
+indent_style = unset

@@ -37,7 +37,7 @@ python/
 
 ## Coding Conventions
 
-- PEP 8 style guide (use `black`, `isort`)
+- Follow module `pyproject.toml` formatter/linter settings first (including Ruff). PEP 8 and Black/isort are fallback guidance, not overrides of configured module tools.
 - Type hints for function signatures
 - Use `__main__` guard for CLI scripts
 - Context managers (`with`) for resource management

@@ -185,3 +185,5 @@ Codex/Linux 研究稿、邮件摘要及每日学习模块的当前归属、排�
 Current retained-project decisions and cleanup boundaries: [classification](docs/meta/retained-projects.md), [consolidated cleanup](docs/meta/repository-cleanup.md).
 
 其余四组书稿共 76 个源文件的验收、维护归属与恢复见 [书稿退役记录](docs/migrations/2026-10-15-remaining-books-retirement.md)。
+
+Path, placeholder and formatting conventions: [FORMATTING.md](FORMATTING.md).

@@ -51,7 +51,12 @@ class ConsolidatedCleanupTests(unittest.TestCase):
         ci = (ROOT / '.github/workflows/repository-checks.yml').read_text()
         self.assertIn('"$failures" -ne 38', ci)
         self.assertIn('"$orphans" -ne 38', ci)
-        self.assertIn('python/projects/cron.sh', ci)
+        # All paths, including retired entry points, must trigger these checks.
+        triggers = ci.split('permissions:', 1)[0]
+        self.assertIn('  pull_request:', triggers)
+        self.assertIn('  push:', triggers)
+        self.assertNotIn('paths:', triggers)
+        self.assertNotIn('paths-ignore:', triggers)
 
     def test_cleanup_document_links_resolve(self):
         from urllib.parse import urlsplit, unquote
