@@ -1,0 +1,2708 @@
+{
+  "source_commit": "f20485e3b278e34df0b927c89dba1591d65ba6ba",
+  "policy": "Owner explicitly requested complete tracked-source removal for these five projects, regardless of destination completeness; future maintenance is outside xlab. This is not a destination acceptance claim.",
+  "roots": {
+    "rust/projects/fragment-tutor": 63,
+    "rust/projects/umbra": 37,
+    "rust/projects/subway-game": 57,
+    "rust/projects/llm-runtime": 8,
+    "python/projects/py-academic": 374
+  },
+  "entries": [
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/README.md",
+      "mode": "100644",
+      "blob_sha": "5a51592ab8751bed5583532c8d552ba492c54c86"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/bridge_all.py",
+      "mode": "100644",
+      "blob_sha": "45aec86659457130083e68b821854a7d5ebe04c1"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/bridge_chatglm.py",
+      "mode": "100644",
+      "blob_sha": "990556ac7fb91efa98d7e5e665e0cc5dfb63b39d"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/bridge_chatglm3.py",
+      "mode": "100644",
+      "blob_sha": "678118586028e508552237fbcc5ad12fe0398426"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/bridge_chatglm4.py",
+      "mode": "100644",
+      "blob_sha": "1e0ba854adfa5c9bc8b2c7c97a41275dff73b7c4"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/bridge_chatglmft.py",
+      "mode": "100644",
+      "blob_sha": "7aac355f7b1ac7e835a7df174e0b3cd38aa0d78a"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/bridge_chatglmonnx.py",
+      "mode": "100644",
+      "blob_sha": "4cf70956baeb803d37351fe7aaa482e602e0ab73"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/bridge_chatgpt.py",
+      "mode": "100644",
+      "blob_sha": "7026a8085633d17cdf2797340a1564071dfc6607"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/bridge_chatgpt_vision.py",
+      "mode": "100644",
+      "blob_sha": "ee5e6196ad60c293446914d5377bb7b4f4651c9f"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/bridge_claude.py",
+      "mode": "100644",
+      "blob_sha": "5a0c4d7f4a6b83e999182cd5bc4149cef0f909a1"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/bridge_cohere.py",
+      "mode": "100644",
+      "blob_sha": "665e4ba19750cb91485e5eaa99a50b0a925a508b"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/bridge_deepseekcoder.py",
+      "mode": "100644",
+      "blob_sha": "706de6eba8c6d0743689ceed51da582c0ee80908"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/bridge_google_gemini.py",
+      "mode": "100644",
+      "blob_sha": "defe0f2bda2426a32030c762b2b5c265a59be2a7"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/bridge_internlm.py",
+      "mode": "100644",
+      "blob_sha": "4cd12235154b9f9904621be79605544dd9cafa9d"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/bridge_jittorllms_llama.py",
+      "mode": "100644",
+      "blob_sha": "37173cd72060cda65ba2acbb0af816acba0b6c52"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/bridge_jittorllms_pangualpha.py",
+      "mode": "100644",
+      "blob_sha": "17847fa9d12fc3ffed89bc261d6c2f5b8c0fd2cf"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/bridge_jittorllms_rwkv.py",
+      "mode": "100644",
+      "blob_sha": "b430c46cf818e75c2a90cd645046a6a2310920ae"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/bridge_llama2.py",
+      "mode": "100644",
+      "blob_sha": "922d08260550096ed69abdcb030e0da8395bafd8"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/bridge_moonshot.py",
+      "mode": "100644",
+      "blob_sha": "722cf9f90cbcfdda357f5c4b714fb5222e34b45f"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/bridge_moss.py",
+      "mode": "100644",
+      "blob_sha": "dd84acd7d4463ea810b1618b8e097cfec87f987c"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/bridge_newbingfree.py",
+      "mode": "100644",
+      "blob_sha": "d516a51fdef0a8b35ba3440c9606ba8f0756eae3"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/bridge_ollama.py",
+      "mode": "100644",
+      "blob_sha": "c3770e6a49ce655deb311af814d702c8a533947c"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/bridge_openrouter.py",
+      "mode": "100644",
+      "blob_sha": "07ec4249a01965b9186b25d63200dbbedd99dfbc"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/bridge_qianfan.py",
+      "mode": "100644",
+      "blob_sha": "e409b450d9f95cc994d8d4e8831a4ca0cd5de220"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/bridge_qwen.py",
+      "mode": "100644",
+      "blob_sha": "ad27182d9c0117d9547d132d4497a2c53ef29746"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/bridge_qwen_local.py",
+      "mode": "100644",
+      "blob_sha": "f68493c648ddcf3b394cad5fb4f1fdedc5305f9b"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/bridge_skylark2.py",
+      "mode": "100644",
+      "blob_sha": "89d0df93df2f00515d421edb993b980a6bf4b2e7"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/bridge_spark.py",
+      "mode": "100644",
+      "blob_sha": "ff7e64d5b6293b00e68598a4619cc837c05d1037"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/bridge_stackclaude.py",
+      "mode": "100644",
+      "blob_sha": "0b62b231beaa2a1d335b651f0c6a3711821a387d"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/bridge_taichu.py",
+      "mode": "100644",
+      "blob_sha": "e003e3ca68724bb3c6d35e83fef4983861670bc9"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/bridge_tgui.py",
+      "mode": "100644",
+      "blob_sha": "df946533fc2aff573424792d9193c7cc65e2139c"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/bridge_zhipu.py",
+      "mode": "100644",
+      "blob_sha": "5c31c0082432c6427fd67521f1daf5bbbd4f0229"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/chatglmoonx.py",
+      "mode": "100644",
+      "blob_sha": "dbb83c9502c9f613ea59867d1a6cf0083b505054"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/com_google.py",
+      "mode": "100644",
+      "blob_sha": "afb810977a4db9dc254927a66780e900df6a25dd"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/com_qwenapi.py",
+      "mode": "100644",
+      "blob_sha": "d5712a8e990a822eb5ce26672f81ab631238b081"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/com_skylark2api.py",
+      "mode": "100644",
+      "blob_sha": "715c01a1deae3a58f6c865062d1990d3fe84b428"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/com_sparkapi.py",
+      "mode": "100644",
+      "blob_sha": "100419d547ef36efda3d1fd732b4b4ece6173f90"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/com_taichu.py",
+      "mode": "100644",
+      "blob_sha": "22f8f5eb9dfa762673b3b4a48b827b65e72b5f5e"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/com_zhipuglm.py",
+      "mode": "100644",
+      "blob_sha": "0935d2c2cb4f51492db85e342e6010f220db7e69"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/edge_gpt_free.py",
+      "mode": "100644",
+      "blob_sha": "d0122a52852fcb0f369d2269410569d8cad7c73b"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/embed_models/bge_llm.py",
+      "mode": "100644",
+      "blob_sha": "8e254e70f9e4a4f8103ed228e48bb40943a670fb"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/embed_models/bridge_all_embed.py",
+      "mode": "100644",
+      "blob_sha": "95dc243a4b35f632881e69d76969cc145bc62829"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/embed_models/openai_embed.py",
+      "mode": "100644",
+      "blob_sha": "9d565173d7709b7c4bf9c012a16085f64d6064cc"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/key_manager.py",
+      "mode": "100644",
+      "blob_sha": "d2c33f63c0e1dca4c84f05b5d1494d6cf2a84749"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/local_llm_class.py",
+      "mode": "100644",
+      "blob_sha": "91d38c76a85ed1ac7b8d874d9021f695e2349ff9"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/oai_std_model_template.py",
+      "mode": "100644",
+      "blob_sha": "0807f2011d23bb254975f55508b2a4f47224ecb0"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/queued_pipe.py",
+      "mode": "100644",
+      "blob_sha": "1fc2e5bd53801898dbf0c98268de9e10c37bace9"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/requirements_chatglm.txt",
+      "mode": "100644",
+      "blob_sha": "dabdd8ea519c3f9e59031bb6b73d55502c89f99a"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/requirements_chatglm4.txt",
+      "mode": "100644",
+      "blob_sha": "69cbec29f41c084bcc8fd2f748dac91aa464e35e"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/requirements_chatglm_onnx.txt",
+      "mode": "100644",
+      "blob_sha": "2cd11f69d06adea5a276d6832e6571b7e66c2a5c"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/requirements_jittorllms.txt",
+      "mode": "100644",
+      "blob_sha": "2bd2da8bb2b8cc3624758c52e1bd429d95df607c"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/requirements_moss.txt",
+      "mode": "100644",
+      "blob_sha": "a1f84f0415d98a848a412d6bce77d90792de633f"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/requirements_newbing.txt",
+      "mode": "100644",
+      "blob_sha": "73455f48cbf6474e221b9bbb87298722c0ac80f8"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/requirements_qwen.txt",
+      "mode": "100644",
+      "blob_sha": "e9617907be68516ff85ab10097a5e52423664c8e"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/requirements_qwen_local.txt",
+      "mode": "100644",
+      "blob_sha": "c4715f3f5e48ff41e828a86b69c2fa90c039fe14"
+    },
+    {
+      "path": "python/projects/py-academic/.claude/backup/request_llms_legacy_backup_20260309_204137/requirements_slackclaude.txt",
+      "mode": "100644",
+      "blob_sha": "7c8563efb570325a9145f1e9af972ee34b394904"
+    },
+    {
+      "path": "python/projects/py-academic/.dockerignore",
+      "mode": "100644",
+      "blob_sha": "0ee8f55f04c517b4298912879752dff079caaf6f"
+    },
+    {
+      "path": "python/projects/py-academic/.gitattributes",
+      "mode": "100644",
+      "blob_sha": "8449c702e0a9043c83827f23d34c3a0674a15773"
+    },
+    {
+      "path": "python/projects/py-academic/.gpt_academic.pid",
+      "mode": "100644",
+      "blob_sha": "c61883fa0d7686450fff1e80ce4ce5e69e94e431"
+    },
+    {
+      "path": "python/projects/py-academic/AGENTS.md",
+      "mode": "100644",
+      "blob_sha": "a70dc5d232002f9511cf50af8ab9cf5f02dfb47b"
+    },
+    {
+      "path": "python/projects/py-academic/ARCHITECTURE.md",
+      "mode": "100644",
+      "blob_sha": "da39c53f668684d9f155fd8a03a1ef247e478ac8"
+    },
+    {
+      "path": "python/projects/py-academic/CHANGES.md",
+      "mode": "100644",
+      "blob_sha": "a28ffc730cfe2c8106b960dbe296e676ed36a827"
+    },
+    {
+      "path": "python/projects/py-academic/CLAUDE.md",
+      "mode": "100644",
+      "blob_sha": "cbf2f279978a4157d4db06399855dec016c2ddb3"
+    },
+    {
+      "path": "python/projects/py-academic/Dockerfile",
+      "mode": "100644",
+      "blob_sha": "45f2b0b1956a2ae96f6d65844fad0e3ab6bb235c"
+    },
+    {
+      "path": "python/projects/py-academic/ISSUES.md",
+      "mode": "100644",
+      "blob_sha": "4f291f49cf1aaf3cdc3ce403a5845600054582f7"
+    },
+    {
+      "path": "python/projects/py-academic/LICENSE",
+      "mode": "100644",
+      "blob_sha": "3877ae0a7ff6f94ac222fd704e112723db776114"
+    },
+    {
+      "path": "python/projects/py-academic/MIGRATION_GUIDE.md",
+      "mode": "100644",
+      "blob_sha": "37027d640f72309eb2f02be1fff9f032ca713123"
+    },
+    {
+      "path": "python/projects/py-academic/README.md",
+      "mode": "100644",
+      "blob_sha": "4d7a326915357e10d24ebc5a974089292ef7257c"
+    },
+    {
+      "path": "python/projects/py-academic/README_NEW.md",
+      "mode": "100644",
+      "blob_sha": "bc6ca9ec2e47f559fb0664f3b87ec2e35eab3586"
+    },
+    {
+      "path": "python/projects/py-academic/REFACTORING_SUMMARY.md",
+      "mode": "100644",
+      "blob_sha": "e288c66e8f537c5b65db2efc5362d18979098164"
+    },
+    {
+      "path": "python/projects/py-academic/check_proxy.py",
+      "mode": "100644",
+      "blob_sha": "aad0ac3b8100f7302ea80315d630e8ec83a23c74"
+    },
+    {
+      "path": "python/projects/py-academic/config.py",
+      "mode": "100644",
+      "blob_sha": "604222156765cab3f147f88a992cac47df23c08d"
+    },
+    {
+      "path": "python/projects/py-academic/config_new.py",
+      "mode": "100644",
+      "blob_sha": "500fb711d587918a594a8009d418bd50025ad51a"
+    },
+    {
+      "path": "python/projects/py-academic/core_functional.py",
+      "mode": "100644",
+      "blob_sha": "ac768f8f37a98a25007176a480877f8db8e90a5b"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functional.py",
+      "mode": "100644",
+      "blob_sha": "4e276aaf13c448887ee6eef6070ee645508b06f8"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Academic_Conversation.py",
+      "mode": "100644",
+      "blob_sha": "99be6a6a07e3b6eff4b87a8de4878e87c3e2121f"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Arxiv_Downloader.py",
+      "mode": "100644",
+      "blob_sha": "25e4d01d31d074d52f9f1c9d96370e6769d56060"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Audio_Assistant.py",
+      "mode": "100644",
+      "blob_sha": "e74d149a73157372b537617f719ed76b26c43ee4"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Audio_Summary.py",
+      "mode": "100644",
+      "blob_sha": "556fa573fb1017945aa37933904c9f761e0e2c39"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Commandline_Assistant.py",
+      "mode": "100644",
+      "blob_sha": "edce3163c8fbebda587f7bfe2c3db4c968bb89d9"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Conversation_To_File.py",
+      "mode": "100644",
+      "blob_sha": "2e1bf47f0d1ead4aecc6b99d95cd52530b1d774b"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Document_Conversation.py",
+      "mode": "100644",
+      "blob_sha": "abc800e9d9ca1737ce7a3f1d0c95b8ec4cecec7b"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Document_Conversation_Wrap.py",
+      "mode": "100644",
+      "blob_sha": "6555bc195d3091b661c87a473925805191d38fc5"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Document_Optimize.py",
+      "mode": "100644",
+      "blob_sha": "c7728afe59bfbac2f2e30e4d819d79e82893e9e6"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Dynamic_Function_Generate.py",
+      "mode": "100644",
+      "blob_sha": "b4fca48d9233c73573dd41803b72a678c7fa9e24"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Google_Scholar_Assistant_Legacy.py",
+      "mode": "100644",
+      "blob_sha": "4640926b35cca920196f8b4933e0d3531a58df1f"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Helpers.py",
+      "mode": "100644",
+      "blob_sha": "10f71ed6f1b82af08ba47e975195db7142b90942"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Image_Generate.py",
+      "mode": "100644",
+      "blob_sha": "d4d0a612ac0cf36bc911db9a6cbc1f41ab7c3df0"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Image_Generate_Wrap.py",
+      "mode": "100644",
+      "blob_sha": "8cd71efc54258fcdb3a901b2f4257b1bf94aedc4"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Interactive_Func_Template.py",
+      "mode": "100644",
+      "blob_sha": "600214b1763ace92cd38c97df334aef6abed8ccd"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Interactive_Mini_Game.py",
+      "mode": "100644",
+      "blob_sha": "d68ad761fdee71188dae6054f9216df75707a6a7"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Internet_GPT.py",
+      "mode": "100644",
+      "blob_sha": "7b5067060567974f4ab9fc938d8b4d06fe82eb68"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Internet_GPT_Bing_Legacy.py",
+      "mode": "100644",
+      "blob_sha": "d748ceaba90ec5156a178caf11691d585e459462"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Internet_GPT_Legacy.py",
+      "mode": "100644",
+      "blob_sha": "20402eeda5a0923a347e62e6ccfbb2047be9cebe"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Internet_GPT_Wrap.py",
+      "mode": "100644",
+      "blob_sha": "3cf92a9c2c8f545570f2b589ec85e72e24e4f898"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Latex_Function.py",
+      "mode": "100644",
+      "blob_sha": "5ef0ccfb893a7851fd263ae61c628a63de587a8b"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Latex_Function_Wrap.py",
+      "mode": "100644",
+      "blob_sha": "cef569650e44280eb0a77e4970807a463f9f74fa"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Latex_Project_Polish.py",
+      "mode": "100644",
+      "blob_sha": "875e5ad417d6f5945bcd2ae0a3f2956ea2d35c32"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Latex_Project_Translate_Legacy.py",
+      "mode": "100644",
+      "blob_sha": "47824860d13520fda516edad9a06a71b69f46769"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Markdown_Translate.py",
+      "mode": "100644",
+      "blob_sha": "45d4c712d5b68f93bc41ee693e49b98f84fc9ea6"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Math_Animation_Gen.py",
+      "mode": "100644",
+      "blob_sha": "d7257752eaa128194c4e8b33e917102f6ee5bfa8"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Mermaid_Figure_Gen.py",
+      "mode": "100644",
+      "blob_sha": "47e999c766616f4017370374941323eb5d58199c"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Multi_Agent_Legacy.py",
+      "mode": "100644",
+      "blob_sha": "4f9d880e0bd3c16aa1d19139ddc7086b2aabe693"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Multi_LLM_Query.py",
+      "mode": "100644",
+      "blob_sha": "82619cd922436202cef6bdaf0441f232979ea857"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/PDF_QA.py",
+      "mode": "100644",
+      "blob_sha": "c066d5d18bf36f4952f7b6b387ca8ead9d9a802f"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/PDF_Summary.py",
+      "mode": "100644",
+      "blob_sha": "26e7333bea13e513b72ca4888baaab08f238eaf4"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/PDF_Translate.py",
+      "mode": "100644",
+      "blob_sha": "d47d4c71802ff69d55abfe9078308edf9f7cb383"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/PDF_Translate_Nougat.py",
+      "mode": "100644",
+      "blob_sha": "194903c3dc608b46640b9d2c2926552e488d8456"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/PDF_Translate_Wrap.py",
+      "mode": "100644",
+      "blob_sha": "682a1078dfebe82942c72ca2010c3347fab7b8b6"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Paper_Abstract_Writer.py",
+      "mode": "100644",
+      "blob_sha": "12d9bc41d7cdfd97fb6b814e0aaee2655440c739"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Paper_Reading.py",
+      "mode": "100644",
+      "blob_sha": "93c6dd1beffc0e98c9a969d8cb17c934157b08c1"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Program_Comment_Gen.py",
+      "mode": "100644",
+      "blob_sha": "6ae0b4ac670b9e5674bf62d5829763fb0519fd90"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Rag_Interface.py",
+      "mode": "100644",
+      "blob_sha": "73bb7a6a9b24e895341e5db87657b4cb8f519453"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Social_Helper.py",
+      "mode": "100644",
+      "blob_sha": "ab539016305bb51a3dc0cbf3ec23fa90f03c13d0"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/SourceCode_Analyse.py",
+      "mode": "100644",
+      "blob_sha": "9f2c342f60cf960d2c1f0d27213d8086c16baafa"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/SourceCode_Analyse_JupyterNotebook.py",
+      "mode": "100644",
+      "blob_sha": "e7186aa9be74d69012745330c0b12dcc06f629f4"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/SourceCode_Comment.py",
+      "mode": "100644",
+      "blob_sha": "a49d931d0a2910eef4a81e98108f0dfcb4d1ae89"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/SourceCode_Comment_Wrap.py",
+      "mode": "100644",
+      "blob_sha": "b7425526673441c556cec1eed9487f79c795c7ad"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Vectorstore_QA.py",
+      "mode": "100644",
+      "blob_sha": "b3e9da5295d848e0ba14e5b4b6d443e3d73029ca"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/VideoResource_GPT.py",
+      "mode": "100644",
+      "blob_sha": "cf6f441d25bf4cad724e1cead188a35f9038e804"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Void_Terminal.py",
+      "mode": "100644",
+      "blob_sha": "f4db8104aa63608e65b637b231752ad89390d5d7"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/Word_Summary.py",
+      "mode": "100644",
+      "blob_sha": "9ead8abdd3485e285e242bac33fd58e88dd368fe"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/__init__.py",
+      "mode": "100644",
+      "blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/agent_fns/auto_agent.py",
+      "mode": "100644",
+      "blob_sha": "891bc26d42cf47bb97aac5456a9e42e4faf49fc7"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/agent_fns/echo_agent.py",
+      "mode": "100644",
+      "blob_sha": "ce42f72dabb22a416217308521a4b207c6f4b6e6"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/agent_fns/general.py",
+      "mode": "100644",
+      "blob_sha": "e9f4f0b8f512c81a0048291e1d3b998603b15bd3"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/agent_fns/persistent.py",
+      "mode": "100644",
+      "blob_sha": "82c869cb18ceba5c56e05d3d8b18bb968cf3b35e"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/agent_fns/pipe.py",
+      "mode": "100644",
+      "blob_sha": "db8e83d5f06115b3ecabc5dc56a559712516e0b0"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/agent_fns/python_comment_agent.py",
+      "mode": "100644",
+      "blob_sha": "2afa49e9d0d1d9f00f5fcc02b9d63a0e4788fed5"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/agent_fns/watchdog.py",
+      "mode": "100644",
+      "blob_sha": "bb9a99d1ca87e27b11da9555401d316fbfee8324"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/ast_fns/comment_remove.py",
+      "mode": "100644",
+      "blob_sha": "b37c90e0c1c20c3af83b557cff2071a6b0c996a1"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/crazy_utils.py",
+      "mode": "100644",
+      "blob_sha": "5828fcf7f43bf9111afc9f1a87748a618b5d88c8"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/diagram_fns/file_tree.py",
+      "mode": "100644",
+      "blob_sha": "0d1c8310a73bb69b987f8b1ed02185803eb20a94"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/doc_fns/AI_review_doc.py",
+      "mode": "100644",
+      "blob_sha": "483ffc63e258fd5a45ab996e78783fe2f93cd15f"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/doc_fns/__init__.py",
+      "mode": "100644",
+      "blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/doc_fns/batch_file_query_doc.py",
+      "mode": "100644",
+      "blob_sha": "a2a11e37059c6a4455eeb2a3925a87072f7a6328"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/doc_fns/content_folder.py",
+      "mode": "100644",
+      "blob_sha": "26f991c77cc7cfcd9a1d875cb8f535562227df27"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/doc_fns/conversation_doc/excel_doc.py",
+      "mode": "100644",
+      "blob_sha": "ee19e162058b8196ad310f1a933df857879912c0"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/doc_fns/conversation_doc/html_doc.py",
+      "mode": "100644",
+      "blob_sha": "49e8becb67f3cd9fc586e32655d3b8b624b2f5ef"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/doc_fns/conversation_doc/markdown_doc.py",
+      "mode": "100644",
+      "blob_sha": "15441073c236e66a2a33e037f32b86a2b6f8cc3f"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/doc_fns/conversation_doc/pdf_doc.py",
+      "mode": "100644",
+      "blob_sha": "2b7d15c6800bcd61dcfe1670a1528be64e9c312c"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/doc_fns/conversation_doc/txt_doc.py",
+      "mode": "100644",
+      "blob_sha": "3ec902c87ba20082c4eed87c2f548793122c9e14"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/doc_fns/conversation_doc/word2pdf.py",
+      "mode": "100644",
+      "blob_sha": "253ecd2553ba64ed0042dc6e5846f6dc9bce1a8a"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/doc_fns/conversation_doc/word_doc.py",
+      "mode": "100644",
+      "blob_sha": "73556888c4a480dc6807699a169aafb7c32db3d0"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/doc_fns/read_fns/__init__.py",
+      "mode": "100644",
+      "blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/doc_fns/read_fns/docx_reader.py",
+      "mode": "100644",
+      "blob_sha": "531b9360010cfe4357e3a572113f959ceb1922f4"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/doc_fns/read_fns/excel_reader.py",
+      "mode": "100644",
+      "blob_sha": "d70e9d5335224d5c5247e058df1023e617388281"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/doc_fns/read_fns/markitdown/markdown_reader.py",
+      "mode": "100644",
+      "blob_sha": "b88212e217f1b118cee0001064ef9639db69afe6"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/doc_fns/read_fns/unstructured_all/__init__.py",
+      "mode": "100644",
+      "blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/doc_fns/read_fns/unstructured_all/paper_metadata_extractor.py",
+      "mode": "100644",
+      "blob_sha": "bfa0180f3c84e0f4a041f4a066226a32d518308c"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/doc_fns/read_fns/unstructured_all/paper_structure_extractor.py",
+      "mode": "100644",
+      "blob_sha": "e5ee7cb2a246ca566617706e723400f193f64f62"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/doc_fns/read_fns/unstructured_all/unstructured_md.py",
+      "mode": "100644",
+      "blob_sha": "78c48eecf1cb09e08d2eb0b30999d4823e912d8d"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/doc_fns/read_fns/web_reader.py",
+      "mode": "100644",
+      "blob_sha": "33c782860fe78426ffc9cf79dda3963a10eaf3ba"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/doc_fns/text_content_loader.py",
+      "mode": "100644",
+      "blob_sha": "021e100c2d59c07001d0b9792790b11f0f8584b4"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/game_fns/game_ascii_art.py",
+      "mode": "100644",
+      "blob_sha": "4ca63d949030e10b2041a0a27bb54a4eb5364057"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/game_fns/game_interactive_story.py",
+      "mode": "100644",
+      "blob_sha": "3a131855bcea7a58d2961f73ce45e013cd7f70ba"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/game_fns/game_utils.py",
+      "mode": "100644",
+      "blob_sha": "c8f20ebd092a18bb1c9fc64cf7d6b33b1e7d52cc"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/gen_fns/gen_fns_shared.py",
+      "mode": "100644",
+      "blob_sha": "756ed59f374d58f08e85be24acd7c5a770b957b6"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/ipc_fns/mp.py",
+      "mode": "100644",
+      "blob_sha": "7c5e99535ff8f2a694cc2685f609d153271ea181"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/json_fns/pydantic_io.py",
+      "mode": "100644",
+      "blob_sha": "89126a17ff002439cff61acee69d0c5729791852"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/json_fns/select_tool.py",
+      "mode": "100644",
+      "blob_sha": "5ed6130176f833f32d69cbf1280399dcd0d8ad54"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/latex_fns/latex_actions.py",
+      "mode": "100644",
+      "blob_sha": "45261dd08eb59a5f8340698b953fa211381b1008"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/latex_fns/latex_pickle_io.py",
+      "mode": "100644",
+      "blob_sha": "d951bf58dfb60ebffb83a6530f4b6af978e68150"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/latex_fns/latex_toolbox.py",
+      "mode": "100644",
+      "blob_sha": "9758bae727f7bd0b86d5d9b6117dcb565718fc31"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/live_audio/aliyunASR.py",
+      "mode": "100644",
+      "blob_sha": "c1d646dc18e630ebd56f5f95a7428282426668d2"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/live_audio/audio_io.py",
+      "mode": "100644",
+      "blob_sha": "9fd886c2bc73eb65eabb8dbcff020b0208ab7e39"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/media_fns/get_media.py",
+      "mode": "100644",
+      "blob_sha": "beaa6cf9df62ddfb060f8926e5edc456e6b244de"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/multi_stage/multi_stage_utils.py",
+      "mode": "100644",
+      "blob_sha": "0a8982c9956c67bf90059d47645db87e6c8670ea"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/paper_fns/__init__.py",
+      "mode": "100644",
+      "blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/paper_fns/auto_git/handlers/base_handler.py",
+      "mode": "100644",
+      "blob_sha": "9852a910326ccebe56b4cfb19c4f1d18ca1bb1f6"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/paper_fns/auto_git/handlers/code_handler.py",
+      "mode": "100644",
+      "blob_sha": "3f672a22bc3fe0a5d4c27ffd9fa01a2bd2b0fd79"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/paper_fns/auto_git/handlers/repo_handler.py",
+      "mode": "100644",
+      "blob_sha": "2038c2eb2d71ce5db0b7f8da4d2d0fe3f11e8639"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/paper_fns/auto_git/handlers/topic_handler.py",
+      "mode": "100644",
+      "blob_sha": "6d6b4637bfd06eb146052ea9feb1a4a3c43ce8b8"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/paper_fns/auto_git/handlers/user_handler.py",
+      "mode": "100644",
+      "blob_sha": "923d0e90007909dfd6ae0d5269fe3d2382885e86"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/paper_fns/auto_git/query_analyzer.py",
+      "mode": "100644",
+      "blob_sha": "605de7159a636b9de71b1fb5a66430d9cc48ad9a"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/paper_fns/auto_git/sources/github_source.py",
+      "mode": "100644",
+      "blob_sha": "28cd80a675b0dd308c7057859ef258e506b9e439"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/paper_fns/document_structure_extractor.py",
+      "mode": "100644",
+      "blob_sha": "183341069361bf366a503cf0d24fb989831632af"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/paper_fns/file2file_doc/__init__.py",
+      "mode": "100644",
+      "blob_sha": "7992185e8fc5670456296921fa99b6a18967eb9d"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/paper_fns/file2file_doc/html_doc.py",
+      "mode": "100644",
+      "blob_sha": "9ff14799f9b8b375d6f5f360d6dbd3870dc6eaaa"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/paper_fns/file2file_doc/markdown_doc.py",
+      "mode": "100644",
+      "blob_sha": "f0034856c4e4162420349a93c3397db4cb65ae4c"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/paper_fns/file2file_doc/txt_doc.py",
+      "mode": "100644",
+      "blob_sha": "c642c737986187ca1d2b1730a79981dd949890e3"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/paper_fns/file2file_doc/word2pdf.py",
+      "mode": "100644",
+      "blob_sha": "7cca27f99eef93b0757bb4b2cd77265c646db06d"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/paper_fns/file2file_doc/word_doc.py",
+      "mode": "100644",
+      "blob_sha": "e0f905dd26cb28749aebb94b40acebf0e9b1b4be"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/paper_fns/github_search.py",
+      "mode": "100644",
+      "blob_sha": "8bbd8b39e29cacd6c2228174723bbb2282b3f69e"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/paper_fns/journal_paper_recom.py",
+      "mode": "100644",
+      "blob_sha": "09051c090c11561770a8cc207fb08627fe36f8b6"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/paper_fns/paper_download.py",
+      "mode": "100644",
+      "blob_sha": "72ce3b8f6a9a8e4ac617ccc73fe05a9b074bd770"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/paper_fns/reduce_aigc.py",
+      "mode": "100644",
+      "blob_sha": "2f9585dd5426f8f213980076832e5aa757708166"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/paper_fns/wiki/wikipedia_api.py",
+      "mode": "100644",
+      "blob_sha": "22c4ca6d6378cb1f0a2246d6678d12b531dc5b54"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/pdf_fns/breakdown_pdf_txt.py",
+      "mode": "100644",
+      "blob_sha": "8334f626522d74482d035c499eef5c615f482f7c"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/pdf_fns/breakdown_txt.py",
+      "mode": "100644",
+      "blob_sha": "d89ce9fcb1f5fc0a94acfe75d117aa24c9404425"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/pdf_fns/parse_pdf.py",
+      "mode": "100644",
+      "blob_sha": "0f27a7670632464454a0c8ca43057e920b488aaa"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/pdf_fns/parse_pdf_grobid.py",
+      "mode": "100644",
+      "blob_sha": "722dfeeb454102a1ada0a38d1cd4f596aba80c28"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/pdf_fns/parse_pdf_legacy.py",
+      "mode": "100644",
+      "blob_sha": "56cdb844771d5f954f34a1d2fb227eaf66624663"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/pdf_fns/parse_pdf_via_doc2x.py",
+      "mode": "100644",
+      "blob_sha": "93d45b1a68e38392eb72cd5e18b79bf5df30a463"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/pdf_fns/parse_word.py",
+      "mode": "100644",
+      "blob_sha": "59ecb38894dc7d20fb5fa47227344db2cc93de48"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/pdf_fns/report_gen_html.py",
+      "mode": "100644",
+      "blob_sha": "21829212ff13a2dfd1492f05ac9abc73907dce7b"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/plugin_template/plugin_class_template.py",
+      "mode": "100644",
+      "blob_sha": "cf4393a3c648f157d09b110c28c449dae16c5502"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/prompts/internet.py",
+      "mode": "100644",
+      "blob_sha": "487f24922305b7a60b77ded0ecb5c8e0e736c527"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/rag_fns/llama_index_worker.py",
+      "mode": "100644",
+      "blob_sha": "59a5827cff6fd739a6610e71d25ab7b41da30c33"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/rag_fns/milvus_worker.py",
+      "mode": "100644",
+      "blob_sha": "6eccb6a79f92ba5afa795aa8b6acbfd64e472e1c"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/rag_fns/rag_file_support.py",
+      "mode": "100644",
+      "blob_sha": "e448f09cbf09bde1244cbe5d34a148050b5fad1c"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/rag_fns/vector_store_index.py",
+      "mode": "100644",
+      "blob_sha": "74e8b09df8274e3c804ac8ec6e981c4d16968f87"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/__init__.py",
+      "mode": "100644",
+      "blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/conversation_doc/endnote_doc.py",
+      "mode": "100644",
+      "blob_sha": "a3bb1331e15ed045144e5c620066f8ab6dee2cea"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/conversation_doc/excel_doc.py",
+      "mode": "100644",
+      "blob_sha": "755d18f3cb959fe130987bf32dbe4e791f81490b"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/conversation_doc/html_doc.py",
+      "mode": "100644",
+      "blob_sha": "52b3916283f9b606b60ce59f468b8011148c23ff"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/conversation_doc/markdown_doc.py",
+      "mode": "100644",
+      "blob_sha": "778c19e30dad4458e46d842fa55270ca8eb79594"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/conversation_doc/reference_formatter.py",
+      "mode": "100644",
+      "blob_sha": "96344768e26876e6ce66bcd4917a8b7949b9114a"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/conversation_doc/word2pdf.py",
+      "mode": "100644",
+      "blob_sha": "3c499b5edb1d1348e9d9bd49621094790b459c41"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/conversation_doc/word_doc.py",
+      "mode": "100644",
+      "blob_sha": "6bae7d9ae977b872df7dadc71faeacd21b6b1a21"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/data_sources/__init__.py",
+      "mode": "100644",
+      "blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/data_sources/adsabs_source.py",
+      "mode": "100644",
+      "blob_sha": "17fa6ba201cd54ecd49e671b36b55fd1b1f34866"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/data_sources/arxiv_source.py",
+      "mode": "100644",
+      "blob_sha": "8467e56db0ee16b8b39ddf61bc313fe2a1bedc79"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/data_sources/base_source.py",
+      "mode": "100644",
+      "blob_sha": "fea46e36b13e58e05856e8d89d0a8578eff15071"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/data_sources/crossref_source.py",
+      "mode": "100644",
+      "blob_sha": "dc53946af6cc1d0f3cd422b493fa7357a956de5a"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/data_sources/elsevier_source.py",
+      "mode": "100644",
+      "blob_sha": "6a157c32c98965b18842e8b9115faccb4798bd68"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/data_sources/github_source.py",
+      "mode": "100644",
+      "blob_sha": "65965fb27be8a81e0ebddcb6df88eba105027afd"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/data_sources/journal_metrics.py",
+      "mode": "100644",
+      "blob_sha": "2b4ff4136b7729f346f90cd23dc480868a4b955b"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/data_sources/openalex_source.py",
+      "mode": "100644",
+      "blob_sha": "e363088604a429621abd78b71c729ad2305eca00"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/data_sources/pubmed_source.py",
+      "mode": "100644",
+      "blob_sha": "1b492417ffebd7996225b6ad3b652644f60d57ae"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/data_sources/scihub_source.py",
+      "mode": "100644",
+      "blob_sha": "f56030c7239c2d13ab4a8b4962eaff04749deec3"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/data_sources/scopus_source.py",
+      "mode": "100644",
+      "blob_sha": "e1943964ad6d2bee72699cf58edcdcaa9ae03e45"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/data_sources/semantic_source.py",
+      "mode": "100644",
+      "blob_sha": "254e2435e1cfda50e664e5b634c0bc13adf26af5"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/data_sources/unpaywall_source.py",
+      "mode": "100644",
+      "blob_sha": "0c841ddad5e458cbd504489b7c31712f8d97ae1d"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/handlers/base_handler.py",
+      "mode": "100644",
+      "blob_sha": "70a350d8b37c8ef8db68173e6b2e499110e79d88"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/handlers/latest_handler.py",
+      "mode": "100644",
+      "blob_sha": "5617c688ac75cdfeb739b743db3f8e1b943c185d"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/handlers/paper_handler.py",
+      "mode": "100644",
+      "blob_sha": "7f55b585a3e57b074be86b7494a430238b8af956"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/handlers/qa_handler.py",
+      "mode": "100644",
+      "blob_sha": "08e0c3fc36eec383e8f8abedf36d8a7c3207eef5"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/handlers/recommend_handler.py",
+      "mode": "100644",
+      "blob_sha": "c6286b88c239457a0d8511284d7f97e931267718"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/handlers/review_handler.py",
+      "mode": "100644",
+      "blob_sha": "a04a41f6b3ee2abceed1f33536c20ce4ca5ad935"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/paper_processor/paper_llm_ranker.py",
+      "mode": "100644",
+      "blob_sha": "a70f2df85caf8deef4c81a4d39b80400d0753ec6"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/prompts/adsabs_prompts.py",
+      "mode": "100644",
+      "blob_sha": "bc60d430729915230bdbe501c90a6016bb56defa"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/prompts/arxiv_prompts.py",
+      "mode": "100644",
+      "blob_sha": "e0590b542f9789d0a7c5bdb7882f2d08ea1d5f9a"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/prompts/crossref_prompts.py",
+      "mode": "100644",
+      "blob_sha": "47525a9122c9716952f03fcc1c92009f00719b1a"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/prompts/paper_prompts.py",
+      "mode": "100644",
+      "blob_sha": "7ddf68582f54acdc7b1e7448cb013988482a20c9"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/prompts/pubmed_prompts.py",
+      "mode": "100644",
+      "blob_sha": "6c9a3e8eb76a8589ca1a216eb8b1c4ce49b5cc20"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/prompts/semantic_prompts.py",
+      "mode": "100644",
+      "blob_sha": "9138df3d8902e8cb59ae3aeb400dd596bb19b926"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/query_analyzer.py",
+      "mode": "100644",
+      "blob_sha": "507b4b87cd0843b607cf52536a07a19b31737b06"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/review_fns/query_processor.py",
+      "mode": "100644",
+      "blob_sha": "f6b7e1240d7f26e3ae1954bddd63d0fe2a60f0ff"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/vector_fns/__init__.py",
+      "mode": "100644",
+      "blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/vector_fns/general_file_loader.py",
+      "mode": "100644",
+      "blob_sha": "a512c483c8d1048fbb9e517fac7bcc0f83bfdb88"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/vector_fns/vector_database.py",
+      "mode": "100644",
+      "blob_sha": "ca496c2ea6c8ab34c15f14d544a2b5c09387ab93"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/vt_fns/vt_call_plugin.py",
+      "mode": "100644",
+      "blob_sha": "0ec1c07b5e15afd1e7357312091fe50facdae737"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/vt_fns/vt_modify_config.py",
+      "mode": "100644",
+      "blob_sha": "86657f33622db350a035fc32b32e1be3530397d8"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/vt_fns/vt_state.py",
+      "mode": "100644",
+      "blob_sha": "de24a8ea566fc5784d9f577acc26365c5f080820"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/word_dfa/dfa_algo.py",
+      "mode": "100644",
+      "blob_sha": "29bea3b862832dcbe5fd7fdb3730dad81d3d7cad"
+    },
+    {
+      "path": "python/projects/py-academic/crazy_functions/高级功能函数模板.py",
+      "mode": "100644",
+      "blob_sha": "1dedd54440872f30983a824df478634fd634d64b"
+    },
+    {
+      "path": "python/projects/py-academic/docker-compose.yml",
+      "mode": "100644",
+      "blob_sha": "9a64c030a65527e35d8cb1e1318dc19d2ef60f19"
+    },
+    {
+      "path": "python/projects/py-academic/docs/GithubAction+AllCapacity",
+      "mode": "100644",
+      "blob_sha": "3488a1b8860dc06d853f481d7f14937f7ab06668"
+    },
+    {
+      "path": "python/projects/py-academic/docs/GithubAction+ChatGLM+Moss",
+      "mode": "100644",
+      "blob_sha": "8c504d36ee1cd9d81cd7c0fad4d29637ff273b5f"
+    },
+    {
+      "path": "python/projects/py-academic/docs/GithubAction+JittorLLMs",
+      "mode": "100644",
+      "blob_sha": "7b27a04f692f8988a59bad50b3ce414aa98aaf90"
+    },
+    {
+      "path": "python/projects/py-academic/docs/GithubAction+NoLocal",
+      "mode": "100644",
+      "blob_sha": "0c3c86d764a73ac20eb156d02f685063427cb059"
+    },
+    {
+      "path": "python/projects/py-academic/docs/GithubAction+NoLocal+AudioAssistant",
+      "mode": "100644",
+      "blob_sha": "9e4d212c82c5d0e595cf6c8a08df20845a7925c2"
+    },
+    {
+      "path": "python/projects/py-academic/docs/GithubAction+NoLocal+Latex",
+      "mode": "100644",
+      "blob_sha": "77383ee1bd4ab4a3707b5d1f2bba8813ee351d0f"
+    },
+    {
+      "path": "python/projects/py-academic/docs/GithubAction+NoLocal+Vectordb",
+      "mode": "100644",
+      "blob_sha": "63378d34bdf85f364dcf4885e649c7b11dceea86"
+    },
+    {
+      "path": "python/projects/py-academic/docs/README.Arabic.md",
+      "mode": "100644",
+      "blob_sha": "5d8bf3cc31d118fab8d8523bebffce77593abb5c"
+    },
+    {
+      "path": "python/projects/py-academic/docs/README.English.md",
+      "mode": "100644",
+      "blob_sha": "48afdf4549f8f1a83927da857cd535a18e3e6f97"
+    },
+    {
+      "path": "python/projects/py-academic/docs/README.French.md",
+      "mode": "100644",
+      "blob_sha": "bf136e59dc42f88b7303efc2cd98c12f55e4bced"
+    },
+    {
+      "path": "python/projects/py-academic/docs/README.German.md",
+      "mode": "100644",
+      "blob_sha": "87f7db5903d3bccabae8dbee97bfe274a1864946"
+    },
+    {
+      "path": "python/projects/py-academic/docs/README.Italian.md",
+      "mode": "100644",
+      "blob_sha": "f231e49ff792cd9510a3115f2a9415b9400efd5d"
+    },
+    {
+      "path": "python/projects/py-academic/docs/README.Japanese.md",
+      "mode": "100644",
+      "blob_sha": "13cbdede24b3c716a0961b72331259ed081aab2b"
+    },
+    {
+      "path": "python/projects/py-academic/docs/README.Korean.md",
+      "mode": "100644",
+      "blob_sha": "2bd1f577cfa10888016873a9befc64d63a23b287"
+    },
+    {
+      "path": "python/projects/py-academic/docs/README.Portuguese.md",
+      "mode": "100644",
+      "blob_sha": "4cc02c19ebbb900c4424d60d680d654d4bc3fe8d"
+    },
+    {
+      "path": "python/projects/py-academic/docs/README.Russian.md",
+      "mode": "100644",
+      "blob_sha": "471f17449884c06a63bcd20905fd263c574bf869"
+    },
+    {
+      "path": "python/projects/py-academic/docs/WindowsRun.bat",
+      "mode": "100644",
+      "blob_sha": "6da541acfe92cbc01705a878ec8a0515361aa8dc"
+    },
+    {
+      "path": "python/projects/py-academic/docs/WithFastapi.md",
+      "mode": "100644",
+      "blob_sha": "32d992910c139db62190588042730e627f1c0d32"
+    },
+    {
+      "path": "python/projects/py-academic/docs/demo.jpg",
+      "mode": "100644",
+      "blob_sha": "fcffc19a0379d23291fd1da92c543df961206472"
+    },
+    {
+      "path": "python/projects/py-academic/docs/demo2.jpg",
+      "mode": "100644",
+      "blob_sha": "38fae48edc19253fea48ee235db8c7a0ccd697b6"
+    },
+    {
+      "path": "python/projects/py-academic/docs/logo.png",
+      "mode": "100644",
+      "blob_sha": "567dee1a957833b9a925cf709c6ebedce482bd43"
+    },
+    {
+      "path": "python/projects/py-academic/docs/plugin_with_secondary_menu.md",
+      "mode": "100644",
+      "blob_sha": "466166591bdde19a64e6e99d35095b43b660191a"
+    },
+    {
+      "path": "python/projects/py-academic/docs/self_analysis.md",
+      "mode": "100644",
+      "blob_sha": "bb09fe23c3ec0ec01aa4614cb2866142ef59c1c0"
+    },
+    {
+      "path": "python/projects/py-academic/docs/use_audio.md",
+      "mode": "100644",
+      "blob_sha": "9f8ba7f0cc11c70cf06c1eea23f02362c923a5bb"
+    },
+    {
+      "path": "python/projects/py-academic/docs/use_azure.md",
+      "mode": "100644",
+      "blob_sha": "0e192ba6a215b834b5645bb8d48bba7883153240"
+    },
+    {
+      "path": "python/projects/py-academic/docs/use_tts.md",
+      "mode": "100644",
+      "blob_sha": "5500847d31523e2d7dc0c452379af5aab9c29676"
+    },
+    {
+      "path": "python/projects/py-academic/docs/use_vllm.md",
+      "mode": "100644",
+      "blob_sha": "88abeb4c8d668f2cc20e83dfddf9c98a78976278"
+    },
+    {
+      "path": "python/projects/py-academic/main.py",
+      "mode": "100644",
+      "blob_sha": "fca98742534ea8786243d4f1d0b68ff5d70b9ce4"
+    },
+    {
+      "path": "python/projects/py-academic/multi_language.py",
+      "mode": "100644",
+      "blob_sha": "93c3178a25ca47ee51d316ee29842362af6c19a5"
+    },
+    {
+      "path": "python/projects/py-academic/request_llms/__init__.py",
+      "mode": "100644",
+      "blob_sha": "170a15e7fc0d2d86d305018294201fcb4dc8717c"
+    },
+    {
+      "path": "python/projects/py-academic/request_llms/bridge_all.py",
+      "mode": "100644",
+      "blob_sha": "d751dc49b67c561bb9935696f125ed9b87f6ba09"
+    },
+    {
+      "path": "python/projects/py-academic/request_llms/compat.py",
+      "mode": "100644",
+      "blob_sha": "7e561c2c6bd881432b06c4c8c28d82e2374ab019"
+    },
+    {
+      "path": "python/projects/py-academic/request_llms/core.py",
+      "mode": "100644",
+      "blob_sha": "f154c54e748fe8da48dc99cdb6f1cc4db2298f31"
+    },
+    {
+      "path": "python/projects/py-academic/request_llms/models.py",
+      "mode": "100644",
+      "blob_sha": "6ac66a34d5410e42408868655959c52c6f889d13"
+    },
+    {
+      "path": "python/projects/py-academic/request_llms/providers.py",
+      "mode": "100644",
+      "blob_sha": "798c8596fab782219c073023e2022ac4aef8b251"
+    },
+    {
+      "path": "python/projects/py-academic/requirements.txt",
+      "mode": "100644",
+      "blob_sha": "81f9919660ace70e8fd946eabff86f483f048fe5"
+    },
+    {
+      "path": "python/projects/py-academic/shared_utils/advanced_markdown_format.py",
+      "mode": "100644",
+      "blob_sha": "18aca68ca6713b13101d6faa06892d3b0fcf8d4f"
+    },
+    {
+      "path": "python/projects/py-academic/shared_utils/char_visual_effect.py",
+      "mode": "100644",
+      "blob_sha": "fb260d3f7327c19cac8129d9644c36c63dbad93f"
+    },
+    {
+      "path": "python/projects/py-academic/shared_utils/colorful.py",
+      "mode": "100644",
+      "blob_sha": "b014c67114e43d49fed1b438381af392041ff20a"
+    },
+    {
+      "path": "python/projects/py-academic/shared_utils/config_loader.py",
+      "mode": "100644",
+      "blob_sha": "c61231482e1f8b2e6329ae351a9ad65ebf491a7c"
+    },
+    {
+      "path": "python/projects/py-academic/shared_utils/connect_void_terminal.py",
+      "mode": "100644",
+      "blob_sha": "656da800acbd8a76a5ab01a37d491f0df0cff050"
+    },
+    {
+      "path": "python/projects/py-academic/shared_utils/context_clip_policy.py",
+      "mode": "100644",
+      "blob_sha": "02b852a92b75506afe8d913ee710a5b107b324bf"
+    },
+    {
+      "path": "python/projects/py-academic/shared_utils/cookie_manager.py",
+      "mode": "100644",
+      "blob_sha": "d503ce771aefba2db73d97044c7be6afea7088ef"
+    },
+    {
+      "path": "python/projects/py-academic/shared_utils/doc_loader_dynamic.py",
+      "mode": "100644",
+      "blob_sha": "b1ca387915a671e2e80c5f76de523a117f0e5f65"
+    },
+    {
+      "path": "python/projects/py-academic/shared_utils/docker_as_service_api.py",
+      "mode": "100644",
+      "blob_sha": "0ba8db239d155f24f31e82cd8fcbca6274fd23cb"
+    },
+    {
+      "path": "python/projects/py-academic/shared_utils/fastapi_server.py",
+      "mode": "100644",
+      "blob_sha": "2993c98758697959f9080a62e31618e83ff93828"
+    },
+    {
+      "path": "python/projects/py-academic/shared_utils/fastapi_stream_server.py",
+      "mode": "100644",
+      "blob_sha": "1b4873b750c0ff5b7cb773bf01f8a27f8b6396a5"
+    },
+    {
+      "path": "python/projects/py-academic/shared_utils/handle_upload.py",
+      "mode": "100644",
+      "blob_sha": "ae3a77627cd6d7e61351ab480db28400aab25230"
+    },
+    {
+      "path": "python/projects/py-academic/shared_utils/key_pattern_manager.py",
+      "mode": "100644",
+      "blob_sha": "8ea2001657821054725c239bf491722beca70933"
+    },
+    {
+      "path": "python/projects/py-academic/shared_utils/logging.py",
+      "mode": "100644",
+      "blob_sha": "0a5b185223a6248b0b485614e64ed69fb07c3320"
+    },
+    {
+      "path": "python/projects/py-academic/shared_utils/map_names.py",
+      "mode": "100644",
+      "blob_sha": "23ce66b35100f10969e2ec7330b4e51fcf84bc63"
+    },
+    {
+      "path": "python/projects/py-academic/shared_utils/nltk_downloader.py",
+      "mode": "100644",
+      "blob_sha": "05e16d77ddb60761a4037142bb85dcab249c78c3"
+    },
+    {
+      "path": "python/projects/py-academic/shared_utils/text_mask.py",
+      "mode": "100644",
+      "blob_sha": "2645ac80350039c5a624b7ff526ad405e29c343b"
+    },
+    {
+      "path": "python/projects/py-academic/start.sh",
+      "mode": "100755",
+      "blob_sha": "102b59c6f85a7f84ab19f2f27e15cedbb52036fd"
+    },
+    {
+      "path": "python/projects/py-academic/stop.sh",
+      "mode": "100755",
+      "blob_sha": "0a39a8ca7ef9fcbc9a405aa45707efd18337c908"
+    },
+    {
+      "path": "python/projects/py-academic/tests/__init__.py",
+      "mode": "100644",
+      "blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "python/projects/py-academic/tests/init_test.py",
+      "mode": "100644",
+      "blob_sha": "cf97fc343ba429497327f19dd591197d9c2987b3"
+    },
+    {
+      "path": "python/projects/py-academic/tests/test_academic_conversation.py",
+      "mode": "100644",
+      "blob_sha": "7fc278c9ae09f2d67f6f3beaeedb81655a5223a4"
+    },
+    {
+      "path": "python/projects/py-academic/tests/test_anim_gen.py",
+      "mode": "100644",
+      "blob_sha": "e256d095e4835cdebf68d096849ae18b8a87cb87"
+    },
+    {
+      "path": "python/projects/py-academic/tests/test_bilibili_down.py",
+      "mode": "100644",
+      "blob_sha": "129a26cc0faaec50e56631c9ec82ed0d9d35ee35"
+    },
+    {
+      "path": "python/projects/py-academic/tests/test_doc2x.py",
+      "mode": "100644",
+      "blob_sha": "9d02c4b7b350f7438cc936ac613c6084cdaec2ab"
+    },
+    {
+      "path": "python/projects/py-academic/tests/test_embed.py",
+      "mode": "100644",
+      "blob_sha": "956822fe2fc46f6d9e6debc5d8f70e9f93680740"
+    },
+    {
+      "path": "python/projects/py-academic/tests/test_key_pattern_manager.py",
+      "mode": "100644",
+      "blob_sha": "b555d8b306fcde69bdecb782014ec7884642558d"
+    },
+    {
+      "path": "python/projects/py-academic/tests/test_latex_auto_correct.py",
+      "mode": "100644",
+      "blob_sha": "ea4213706c927223b5db7f46eabd3b623333a270"
+    },
+    {
+      "path": "python/projects/py-academic/tests/test_llms.py",
+      "mode": "100644",
+      "blob_sha": "20d257875ebee54b573a2aea2f50f2a2da845190"
+    },
+    {
+      "path": "python/projects/py-academic/tests/test_markdown.py",
+      "mode": "100644",
+      "blob_sha": "85f1534e7dae3507062ba3d01d3248292a12c2bc"
+    },
+    {
+      "path": "python/projects/py-academic/tests/test_markdown_format.py",
+      "mode": "100644",
+      "blob_sha": "8255478474a379fafd43a40278e6a8e802aae4f0"
+    },
+    {
+      "path": "python/projects/py-academic/tests/test_media.py",
+      "mode": "100644",
+      "blob_sha": "ccd7eb2d9d53b291e99fcd5656369301a856f57d"
+    },
+    {
+      "path": "python/projects/py-academic/tests/test_modern.py",
+      "mode": "100644",
+      "blob_sha": "73d1e154be91a6670bd9fa578fb9070ca2480fce"
+    },
+    {
+      "path": "python/projects/py-academic/tests/test_plugins.py",
+      "mode": "100644",
+      "blob_sha": "6a078901e19ff8d3a3a582e6058f382b588485af"
+    },
+    {
+      "path": "python/projects/py-academic/tests/test_python_auto_docstring.py",
+      "mode": "100644",
+      "blob_sha": "5cfe6cde4f803c97bf34123a3724cb419f801b39"
+    },
+    {
+      "path": "python/projects/py-academic/tests/test_rag.py",
+      "mode": "100644",
+      "blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "python/projects/py-academic/tests/test_safe_pickle.py",
+      "mode": "100644",
+      "blob_sha": "01f69562ec0833e452efcb6c2a27e8453178e475"
+    },
+    {
+      "path": "python/projects/py-academic/tests/test_save_chat_to_html.py",
+      "mode": "100644",
+      "blob_sha": "8f69a266d57f67d260e4cc496d7a0cb23925d6c0"
+    },
+    {
+      "path": "python/projects/py-academic/tests/test_searxng.py",
+      "mode": "100644",
+      "blob_sha": "e7e2d3d5cf6eb3d055f7b54c32fa004c65f97d15"
+    },
+    {
+      "path": "python/projects/py-academic/tests/test_social_helper.py",
+      "mode": "100644",
+      "blob_sha": "a633cd4eb7222947f2061e8b32986b7b138427eb"
+    },
+    {
+      "path": "python/projects/py-academic/tests/test_tts.py",
+      "mode": "100644",
+      "blob_sha": "7d86d1fcece22aa3555523968042c47e6da936f5"
+    },
+    {
+      "path": "python/projects/py-academic/tests/test_utils.py",
+      "mode": "100644",
+      "blob_sha": "2ae867af5994d0cc795c6f97020586aa55c2444f"
+    },
+    {
+      "path": "python/projects/py-academic/tests/test_vector_plugins.py",
+      "mode": "100644",
+      "blob_sha": "63609ed77f1f517ef93521ca1f8e3a1d293087a0"
+    },
+    {
+      "path": "python/projects/py-academic/themes/base64.mjs",
+      "mode": "100644",
+      "blob_sha": "b842822bd75fdc06508b732335864a2ffd66a418"
+    },
+    {
+      "path": "python/projects/py-academic/themes/common.css",
+      "mode": "100644",
+      "blob_sha": "610d46c2f8615fa009a06513f2f3e5e5a42c1038"
+    },
+    {
+      "path": "python/projects/py-academic/themes/common.js",
+      "mode": "100644",
+      "blob_sha": "87420797c9056a0481a4d0f1ffe73d608e3e8352"
+    },
+    {
+      "path": "python/projects/py-academic/themes/common.py",
+      "mode": "100644",
+      "blob_sha": "f3ee23d72747a7412dd8c3c894fc1baf034a4714"
+    },
+    {
+      "path": "python/projects/py-academic/themes/contrast.css",
+      "mode": "100644",
+      "blob_sha": "980a7e4fb6228723b8b83faf1892da9bad25298b"
+    },
+    {
+      "path": "python/projects/py-academic/themes/contrast.py",
+      "mode": "100644",
+      "blob_sha": "faa87f8446742d46b497f14b274c0ac3f8a2ae29"
+    },
+    {
+      "path": "python/projects/py-academic/themes/cookies.py",
+      "mode": "100644",
+      "blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "python/projects/py-academic/themes/default.css",
+      "mode": "100644",
+      "blob_sha": "4b1434042e08b37703d49ae6dc4171145ed620bc"
+    },
+    {
+      "path": "python/projects/py-academic/themes/default.py",
+      "mode": "100644",
+      "blob_sha": "137545d2c33962cc325162354a390b0273433214"
+    },
+    {
+      "path": "python/projects/py-academic/themes/gradios.py",
+      "mode": "100644",
+      "blob_sha": "f4dc43b44e884f09c6ca0ef0d4de9bbd3b22cf97"
+    },
+    {
+      "path": "python/projects/py-academic/themes/green.css",
+      "mode": "100644",
+      "blob_sha": "2e181c519f52d7db795ccd2c9eb8b6c27e044d74"
+    },
+    {
+      "path": "python/projects/py-academic/themes/green.js",
+      "mode": "100644",
+      "blob_sha": "7801b970d253b2372456ab0b25804189a3434bf5"
+    },
+    {
+      "path": "python/projects/py-academic/themes/green.py",
+      "mode": "100644",
+      "blob_sha": "61485e7ab30a905bd2ede73fca9da009debd3657"
+    },
+    {
+      "path": "python/projects/py-academic/themes/gui_advanced_plugin_class.py",
+      "mode": "100644",
+      "blob_sha": "4895187439f4b2e3c7e3870f643c17675528d12e"
+    },
+    {
+      "path": "python/projects/py-academic/themes/gui_floating_menu.py",
+      "mode": "100644",
+      "blob_sha": "11e14909680a237b1ee428d0de93fbb680cacfd1"
+    },
+    {
+      "path": "python/projects/py-academic/themes/gui_toolbar.py",
+      "mode": "100644",
+      "blob_sha": "072fbfe33cd1d2673c40dea025edb9c4bf4ae501"
+    },
+    {
+      "path": "python/projects/py-academic/themes/init.js",
+      "mode": "100644",
+      "blob_sha": "06cb5616fc755b09362f036990d967080446a6ea"
+    },
+    {
+      "path": "python/projects/py-academic/themes/svg/arxiv.svg",
+      "mode": "100644",
+      "blob_sha": "d4adb4cf7a0805cef033f0b2ea091e3571d5ff7b"
+    },
+    {
+      "path": "python/projects/py-academic/themes/svg/box.svg",
+      "mode": "100644",
+      "blob_sha": "a0790867afff3ba5379587935ac62acfd0ab774e"
+    },
+    {
+      "path": "python/projects/py-academic/themes/svg/brain.svg",
+      "mode": "100644",
+      "blob_sha": "82e38d2e214468defd5dfc3035d510b249b2f2d3"
+    },
+    {
+      "path": "python/projects/py-academic/themes/svg/check.svg",
+      "mode": "100644",
+      "blob_sha": "2f3f2985803c85d7f1c4eef1dbb9fc81338d416e"
+    },
+    {
+      "path": "python/projects/py-academic/themes/svg/conf.svg",
+      "mode": "100644",
+      "blob_sha": "257fabd214f65f74531b7beec35ff766bf840ec6"
+    },
+    {
+      "path": "python/projects/py-academic/themes/svg/default.svg",
+      "mode": "100644",
+      "blob_sha": "990eda38f55b11ec58829044b5f2742ffb3f4aa2"
+    },
+    {
+      "path": "python/projects/py-academic/themes/svg/doc.svg",
+      "mode": "100644",
+      "blob_sha": "d28ab5c15537e93aa7d95a53a8b463131ae463e4"
+    },
+    {
+      "path": "python/projects/py-academic/themes/svg/img.svg",
+      "mode": "100644",
+      "blob_sha": "9864a3e95fab4cc71112218075376f74fbc8200c"
+    },
+    {
+      "path": "python/projects/py-academic/themes/svg/location.svg",
+      "mode": "100644",
+      "blob_sha": "6dcab84529672a744c1f547d1a9bb882fe71b736"
+    },
+    {
+      "path": "python/projects/py-academic/themes/svg/mm.svg",
+      "mode": "100644",
+      "blob_sha": "66a9332ca3bc2f1bdb61f222db98453c0973baa2"
+    },
+    {
+      "path": "python/projects/py-academic/themes/svg/polish.svg",
+      "mode": "100644",
+      "blob_sha": "41bfe03fcd7ba3d102155917f27e835cf3cdf370"
+    },
+    {
+      "path": "python/projects/py-academic/themes/svg/tts.svg",
+      "mode": "100644",
+      "blob_sha": "dcc0bd3ad4f377155c8ddc229834a32549e46dc7"
+    },
+    {
+      "path": "python/projects/py-academic/themes/svg/vt.svg",
+      "mode": "100644",
+      "blob_sha": "22358ad147cb068635f9313ab4d9dc0f78110c38"
+    },
+    {
+      "path": "python/projects/py-academic/themes/theme.js",
+      "mode": "100644",
+      "blob_sha": "a0cd5278f8364ae336bfdda8ab1070326b6de0d6"
+    },
+    {
+      "path": "python/projects/py-academic/themes/theme.py",
+      "mode": "100644",
+      "blob_sha": "fb217d47222d97f59c313c7fca621a0de7b73a47"
+    },
+    {
+      "path": "python/projects/py-academic/themes/tts.js",
+      "mode": "100644",
+      "blob_sha": "d9ae219a37d2a899e8cf9a7fa7e9904b72014999"
+    },
+    {
+      "path": "python/projects/py-academic/themes/waifu_plugin/autoload.js",
+      "mode": "100644",
+      "blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "python/projects/py-academic/themes/waifu_plugin/flat-ui-icons-regular.eot",
+      "mode": "100644",
+      "blob_sha": "536680e9f1070d3feb03038448f4ef4764a6784a"
+    },
+    {
+      "path": "python/projects/py-academic/themes/waifu_plugin/flat-ui-icons-regular.svg",
+      "mode": "100644",
+      "blob_sha": "e05f3a0d31e417b72be11d5935cbb201729085dc"
+    },
+    {
+      "path": "python/projects/py-academic/themes/waifu_plugin/flat-ui-icons-regular.ttf",
+      "mode": "100644",
+      "blob_sha": "f4933ff3590f3c3644d32fe50f5d7148c2ede9b6"
+    },
+    {
+      "path": "python/projects/py-academic/themes/waifu_plugin/flat-ui-icons-regular.woff",
+      "mode": "100644",
+      "blob_sha": "f9e9805e768525c296ed284e1bc803ca9e757679"
+    },
+    {
+      "path": "python/projects/py-academic/themes/waifu_plugin/jquery-ui.min.js",
+      "mode": "100644",
+      "blob_sha": "862a649869db80cb6c8cd6d48f63ee0b56169a2c"
+    },
+    {
+      "path": "python/projects/py-academic/themes/waifu_plugin/jquery.min.js",
+      "mode": "100644",
+      "blob_sha": "ab28a24729b320bffd3d2f60302af949db39ab85"
+    },
+    {
+      "path": "python/projects/py-academic/themes/waifu_plugin/live2d.js",
+      "mode": "100644",
+      "blob_sha": "dc563d015cf27b7bd15fa618f048908ac42838ce"
+    },
+    {
+      "path": "python/projects/py-academic/themes/waifu_plugin/source",
+      "mode": "100644",
+      "blob_sha": "82d2ed01245d9ab6a6d70576398b96286b24790d"
+    },
+    {
+      "path": "python/projects/py-academic/themes/waifu_plugin/waifu-tips.js",
+      "mode": "100644",
+      "blob_sha": "56431722b0413a9b8dc51216768062d99a1636f1"
+    },
+    {
+      "path": "python/projects/py-academic/themes/waifu_plugin/waifu.css",
+      "mode": "100644",
+      "blob_sha": "0a50344d79a66972067476f308a1544968e00a40"
+    },
+    {
+      "path": "python/projects/py-academic/themes/welcome.js",
+      "mode": "100644",
+      "blob_sha": "6271971e0ba6e2b8368ae1dd5391125a95060e85"
+    },
+    {
+      "path": "python/projects/py-academic/toolbox.py",
+      "mode": "100644",
+      "blob_sha": "9dddc57aa2195f71515f5b30731addafcb4dc1c7"
+    },
+    {
+      "path": "python/projects/py-academic/version",
+      "mode": "100644",
+      "blob_sha": "0725e251ea3d6c089f03dabebe7af997aef28e60"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/.eslintrc.cjs",
+      "mode": "100644",
+      "blob_sha": "d6c953795300e4256c76542d6bb0fe06f08b5ad6"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/.prettierrc",
+      "mode": "100644",
+      "blob_sha": "ad492364badf493f16cdbbb073c327c816723a76"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/AGENTS.md",
+      "mode": "100644",
+      "blob_sha": "404d7905918a287708e2be1aef2f212da17ad53a"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/README.md",
+      "mode": "100644",
+      "blob_sha": "7d25db5190ce7f04fec0e892aa380367adbc1eb2"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/TECHNICAL_DOCS.md",
+      "mode": "100644",
+      "blob_sha": "ac7f4a8f0fd4d2762b5c0947808e37d601a56c25"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/index.html",
+      "mode": "100644",
+      "blob_sha": "f158cd8754eb0a267218953a0d509548f367fc65"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/package-lock.json",
+      "mode": "100644",
+      "blob_sha": "bca73e6f7261ec15bf1ea10a19d06840e23be7c1"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/package.json",
+      "mode": "100644",
+      "blob_sha": "cc03f617d1c59d1666449bcaf02a50316dd5d3a6"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/postcss.config.js",
+      "mode": "100644",
+      "blob_sha": "2e7af2b7f1a6f391da1631d93968a9d487ba977d"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/public/vite.svg",
+      "mode": "100644",
+      "blob_sha": "6a4109910f7762f0470eacc43118d1d613951d13"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src-tauri/.sqlx",
+      "mode": "100644",
+      "blob_sha": "ff3c534f2a4602046d2ac7b3f0a46012db332e1f"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src-tauri/Cargo.toml",
+      "mode": "100644",
+      "blob_sha": "26391fd794c3c010d0b956eff73949ee860a0028"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src-tauri/build.rs",
+      "mode": "100644",
+      "blob_sha": "d860e1e6a7cac333c3cc0bc9cb67faf286b07d69"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src-tauri/icons/128x128.png",
+      "mode": "100644",
+      "blob_sha": "0a744ef87be039576ab12747be258aa0f3be47d4"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src-tauri/icons/256x256.png",
+      "mode": "100644",
+      "blob_sha": "965072e92002590bfe186dfcd20d90e54770b9b6"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src-tauri/icons/32x32.png",
+      "mode": "100644",
+      "blob_sha": "55be5e8c338850a27d30249f38bcc6dab6bfe9ec"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src-tauri/icons/512x512.png",
+      "mode": "100644",
+      "blob_sha": "10d878f9bbeb34a4c0d0aa2d354b43a7841387e5"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src-tauri/icons/icon.icns",
+      "mode": "100644",
+      "blob_sha": "1b782df33caeac43ed38227f0a607f772f62e4fd"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src-tauri/icons/icon.ico",
+      "mode": "100644",
+      "blob_sha": "965072e92002590bfe186dfcd20d90e54770b9b6"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src-tauri/icons/icon.svg",
+      "mode": "100644",
+      "blob_sha": "7fd3c9728c8638af0d5fe89921d5f5c83a6e3f01"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src-tauri/src/commands/mod.rs",
+      "mode": "100644",
+      "blob_sha": "8c963492d65e60d982d376d1b2e22024bf16dc59"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src-tauri/src/lib.rs",
+      "mode": "100644",
+      "blob_sha": "1f6bcaa31c5f37663edb4ddf8302da57b38ceb62"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src-tauri/src/main.rs",
+      "mode": "100644",
+      "blob_sha": "3b669cda16b889dfe58ffb1ac2ae5b0490d40e9f"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src-tauri/src/models/mod.rs",
+      "mode": "100644",
+      "blob_sha": "5502f9c65b01affd6f5aba4abadec11afdbff5a5"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src-tauri/src/services/anthropic.rs",
+      "mode": "100644",
+      "blob_sha": "70f95fd116890994405e6e26120e61bc2b0dadbd"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src-tauri/src/services/config.rs",
+      "mode": "100644",
+      "blob_sha": "3eb26d67cc2e62bc7cd04bd9726abe82ae246fc1"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src-tauri/src/services/database.rs",
+      "mode": "100644",
+      "blob_sha": "41cd90218e6b2a8bb502b294acbae971b32586ad"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src-tauri/src/services/mod.rs",
+      "mode": "100644",
+      "blob_sha": "b613e8176831582978c2a8072e1a9a0936d5b9da"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src-tauri/src/services/scraper.rs",
+      "mode": "100644",
+      "blob_sha": "f870b88ca29c853f3f8fef640c4fbb074f0ad7ed"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src-tauri/tauri.conf.json",
+      "mode": "100644",
+      "blob_sha": "5a318fb6fc3bedea66804ffdc5cd5311750dd6b4"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src/App.tsx",
+      "mode": "100644",
+      "blob_sha": "419d60c5f5e7a6a61dc7fa449cbeef160f564f58"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src/components/CaptureModal.tsx",
+      "mode": "100644",
+      "blob_sha": "026994880149a9496f78a7357149bbea5666474c"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src/components/DocumentCard.tsx",
+      "mode": "100644",
+      "blob_sha": "d147d0dce5f4e80fe4cd426d864ca927b622c6d4"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src/components/FlashCard.tsx",
+      "mode": "100644",
+      "blob_sha": "c20480747a2c1d5ea7b06b9caea5251d324fb83c"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src/components/Header.tsx",
+      "mode": "100644",
+      "blob_sha": "64d7c4b2e0451f2d8b5672190374aa6c3b256dbc"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src/components/Layout.tsx",
+      "mode": "100644",
+      "blob_sha": "70d2f751d67707fe4925acc2c5209e8fd3e7b1da"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src/components/ReaderView.tsx",
+      "mode": "100644",
+      "blob_sha": "4f41452ae3cc2930efd7cb93aa8a50a676e19d45"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src/components/ReflectionCard.tsx",
+      "mode": "100644",
+      "blob_sha": "6f0e33d92cc49d0aebd0c0de01a37c102f28e72d"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src/components/Sidebar.tsx",
+      "mode": "100644",
+      "blob_sha": "6bf7168a1f0a83d6e8ac28d532cf6a7babe66c83"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src/hooks/useDocuments.ts",
+      "mode": "100644",
+      "blob_sha": "cde7b9272daa083f506aebb2b73337fe53e57500"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src/hooks/useReflection.ts",
+      "mode": "100644",
+      "blob_sha": "a37792bd4992724ccdd1fe2603b7c6a6599e7e87"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src/hooks/useReviews.ts",
+      "mode": "100644",
+      "blob_sha": "d27afcba7457919b20251a12f3dcd736c23e200b"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src/hooks/useShortcuts.ts",
+      "mode": "100644",
+      "blob_sha": "1280d9a181384ae931954c1ca061df5008e05a19"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src/index.css",
+      "mode": "100644",
+      "blob_sha": "9e9172b15e6dac24650ca8b2715a5848ff888bec"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src/main.tsx",
+      "mode": "100644",
+      "blob_sha": "2339d59cf67910c2bd93c28509f754e71476374e"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src/pages/LibraryPage.tsx",
+      "mode": "100644",
+      "blob_sha": "91a1e474c6ed693032780bfecd1aefe2f1cc2c94"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src/pages/ReflectionPage.tsx",
+      "mode": "100644",
+      "blob_sha": "ec29d32ec404ace4b6e342073fd53e725cebeeb3"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src/pages/ReviewPage.tsx",
+      "mode": "100644",
+      "blob_sha": "f8ffc7e954f91dae013f0758c128851745a72c56"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src/pages/SettingsPage.tsx",
+      "mode": "100644",
+      "blob_sha": "2b5d51a714bfa53837c9de4bbd9f14bf7e85c1de"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src/pages/TodayPage.tsx",
+      "mode": "100644",
+      "blob_sha": "5140b5e5d4b3227838722d54ada054165e01fea9"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src/services/anthropic.rs",
+      "mode": "100644",
+      "blob_sha": "895268137946552af247c6c4a492549362386f4d"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src/services/anthropic.ts",
+      "mode": "100644",
+      "blob_sha": "b6f0abbb23efb0da6a05041e7abaffe11612e442"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src/services/capture.ts",
+      "mode": "100644",
+      "blob_sha": "06c2f0e8cc3ec45486eb2f8669c8b90796af2e73"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src/services/database.ts",
+      "mode": "100644",
+      "blob_sha": "65faf879d6749449da224d1f3f215aa4d31c02cc"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src/services/index.ts",
+      "mode": "100644",
+      "blob_sha": "d5c942b493ef1f8fb8a2ba50558cb597c49bd1a6"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src/services/settings.ts",
+      "mode": "100644",
+      "blob_sha": "240bd7b05832232f45002c240ad0399975f3da6a"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src/store/index.ts",
+      "mode": "100644",
+      "blob_sha": "ef3bde6cb0f0f58f0dee19cfbde2ca5463d69397"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src/types/index.ts",
+      "mode": "100644",
+      "blob_sha": "981c1349292531e1b2c1767722bd9baf9b05be1b"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src/utils/date.ts",
+      "mode": "100644",
+      "blob_sha": "d8401d8452623594cad389ecb27cce3b51e1d6cc"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/src/vite-env.d.ts",
+      "mode": "100644",
+      "blob_sha": "11f02fe2a0061d6e6e1f271b21da95423b448b32"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/tailwind.config.js",
+      "mode": "100644",
+      "blob_sha": "2a3c882057e5cb1d125bcf758aa721e14e0f4a99"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/tsconfig.json",
+      "mode": "100644",
+      "blob_sha": "c2fad183c0b01b8ebd5f4cfad324b36ac5bfc6e9"
+    },
+    {
+      "path": "rust/projects/fragment-tutor/vite.config.ts",
+      "mode": "100644",
+      "blob_sha": "07174514e977823a3960fbc4e72b4983bc07b115"
+    },
+    {
+      "path": "rust/projects/llm-runtime/.gitignore",
+      "mode": "100644",
+      "blob_sha": "6672fdd5229b4439f96236d7dec0dd7c059140ee"
+    },
+    {
+      "path": "rust/projects/llm-runtime/AGENTS.md",
+      "mode": "100644",
+      "blob_sha": "23e942e4eaf5b37cfcf1d20528794d07a7aa85d5"
+    },
+    {
+      "path": "rust/projects/llm-runtime/ARCHITECTURE.md",
+      "mode": "100644",
+      "blob_sha": "47ce6f95019be051b55be9634b8e19e22eded7a7"
+    },
+    {
+      "path": "rust/projects/llm-runtime/CHANGELOG.md",
+      "mode": "100644",
+      "blob_sha": "a00db08dd792f2a8d53586dbd6e4a7ac5a8f8536"
+    },
+    {
+      "path": "rust/projects/llm-runtime/README.md",
+      "mode": "100644",
+      "blob_sha": "4497da6b400ea73e8cf0dde9fca870273fd01dfa"
+    },
+    {
+      "path": "rust/projects/llm-runtime/TASKS.md",
+      "mode": "100644",
+      "blob_sha": "a6c87b2cac801dcb660dc0d9d414b6669e632c98"
+    },
+    {
+      "path": "rust/projects/llm-runtime/docs/README.md",
+      "mode": "100644",
+      "blob_sha": "851e61d5efc0189ad2ad27f1323c668a749482af"
+    },
+    {
+      "path": "rust/projects/llm-runtime/experiments/README.md",
+      "mode": "100644",
+      "blob_sha": "70c14c26cf61bb3934a5176fc10a0729b85311af"
+    },
+    {
+      "path": "rust/projects/subway-game/AGENTS.md",
+      "mode": "100644",
+      "blob_sha": "fc9de2c12d269fb89c5be28d71862aee56b6e7dd"
+    },
+    {
+      "path": "rust/projects/subway-game/README.md",
+      "mode": "100644",
+      "blob_sha": "59d0dd860aad80149b4eb867952dc609509cb269"
+    },
+    {
+      "path": "rust/projects/subway-game/build.sh",
+      "mode": "100755",
+      "blob_sha": "9d95b5c9bc103d4e1a636593e1ec1356021f2ca1"
+    },
+    {
+      "path": "rust/projects/subway-game/docs/API.md",
+      "mode": "100644",
+      "blob_sha": "c50582371dfd513661697e2b44a588a2bf4513a7"
+    },
+    {
+      "path": "rust/projects/subway-game/docs/ARCHITECTURE.md",
+      "mode": "100644",
+      "blob_sha": "75ff686170ae04a16602c35f1a493f421c2c36e1"
+    },
+    {
+      "path": "rust/projects/subway-game/index.html",
+      "mode": "100644",
+      "blob_sha": "59b39f39ec106000d9c9fe493b5a88e731239e3d"
+    },
+    {
+      "path": "rust/projects/subway-game/package-lock.json",
+      "mode": "100644",
+      "blob_sha": "d5bd743dd673b5943e97ef3ededfc8a6b3237759"
+    },
+    {
+      "path": "rust/projects/subway-game/package.json",
+      "mode": "100644",
+      "blob_sha": "a7677cb851e33f66cab4b6ea63839977e8f8a70b"
+    },
+    {
+      "path": "rust/projects/subway-game/postcss.config.js",
+      "mode": "100644",
+      "blob_sha": "2e7af2b7f1a6f391da1631d93968a9d487ba977d"
+    },
+    {
+      "path": "rust/projects/subway-game/src-tauri/Cargo.toml",
+      "mode": "100644",
+      "blob_sha": "1133b8540dae4467fd28ad8c2388fb32bd410191"
+    },
+    {
+      "path": "rust/projects/subway-game/src-tauri/build.rs",
+      "mode": "100644",
+      "blob_sha": "261851f6b60e0ae6f244b5469289870facc8c997"
+    },
+    {
+      "path": "rust/projects/subway-game/src-tauri/icons/128x128.png",
+      "mode": "100644",
+      "blob_sha": "a2c29d3e4b4d24c401b3b58251b47d801287ba33"
+    },
+    {
+      "path": "rust/projects/subway-game/src-tauri/icons/128x128@2x.png",
+      "mode": "100644",
+      "blob_sha": "5233da236bbfc4d49355ae8ef1a1ddcd2e18e00a"
+    },
+    {
+      "path": "rust/projects/subway-game/src-tauri/icons/32x32.png",
+      "mode": "100644",
+      "blob_sha": "09bebef515f0716c08f852244e7b05c28c499520"
+    },
+    {
+      "path": "rust/projects/subway-game/src-tauri/icons/icon.icns",
+      "mode": "100644",
+      "blob_sha": "4ebb3261a325fc4fb68c81b34657087a7353287d"
+    },
+    {
+      "path": "rust/projects/subway-game/src-tauri/icons/icon.ico",
+      "mode": "100644",
+      "blob_sha": "56e5f8635c0c0c556b7772e210814078682a2092"
+    },
+    {
+      "path": "rust/projects/subway-game/src-tauri/icons/icon.png",
+      "mode": "100644",
+      "blob_sha": "8e8ebc03e54095c23a1dd065aad37b5bedf35832"
+    },
+    {
+      "path": "rust/projects/subway-game/src-tauri/icons/tray.png",
+      "mode": "100644",
+      "blob_sha": "0f5589af8fba20ba8ad38c9dcc907aff4a43c7f0"
+    },
+    {
+      "path": "rust/projects/subway-game/src-tauri/src/main.rs",
+      "mode": "100644",
+      "blob_sha": "1c784bb680f0efd0fdd5316c7b4840a4a25a66ba"
+    },
+    {
+      "path": "rust/projects/subway-game/src-tauri/tauri.conf.json",
+      "mode": "100644",
+      "blob_sha": "5fd0a84fe39550bc0e3073ff81c5810568992a31"
+    },
+    {
+      "path": "rust/projects/subway-game/src/App.tsx",
+      "mode": "100644",
+      "blob_sha": "f194ca3d78a272be095e9c357840a86e3ce7e8b4"
+    },
+    {
+      "path": "rust/projects/subway-game/src/__tests__/cityData.test.ts",
+      "mode": "100644",
+      "blob_sha": "6c65a6cd780cdc1bd89567578133da43d26825fb"
+    },
+    {
+      "path": "rust/projects/subway-game/src/__tests__/routeCalculator.test.ts",
+      "mode": "100644",
+      "blob_sha": "aa49c0911da5e96f92f6b7a96addc76049ee5e3d"
+    },
+    {
+      "path": "rust/projects/subway-game/src/__tests__/setup.ts",
+      "mode": "100644",
+      "blob_sha": "7a8d68efb5a1ff8fa4d77895b9792369c708886f"
+    },
+    {
+      "path": "rust/projects/subway-game/src/__tests__/types.test.ts",
+      "mode": "100644",
+      "blob_sha": "4401705072ff9c9f3c9ff3aab2fb7e92583cd741"
+    },
+    {
+      "path": "rust/projects/subway-game/src/assets/maps/beijing-rail-transit-2026.gif",
+      "mode": "100644",
+      "blob_sha": "7cb46e0768321d3542ff9deb9be04935edd7b5b1"
+    },
+    {
+      "path": "rust/projects/subway-game/src/assets/maps/hangzhou-metro.png",
+      "mode": "100644",
+      "blob_sha": "3e266dfcd9e4d21194635e8dc03fcb312f39030a"
+    },
+    {
+      "path": "rust/projects/subway-game/src/assets/maps/shanghai-metro.gif",
+      "mode": "100644",
+      "blob_sha": "0dd3c71db6e38cf6933746b42eec194da8a2638c"
+    },
+    {
+      "path": "rust/projects/subway-game/src/assets/maps/wuhan-metro.gif",
+      "mode": "100644",
+      "blob_sha": "23117380169e6e967ade6545b24084fd96aefa7e"
+    },
+    {
+      "path": "rust/projects/subway-game/src/components/CitySelector.tsx",
+      "mode": "100644",
+      "blob_sha": "ef1f01d2404873bea194a9480143166ad2a05c32"
+    },
+    {
+      "path": "rust/projects/subway-game/src/components/CompleteScreen.tsx",
+      "mode": "100644",
+      "blob_sha": "788e1fc97cb48f67fdbf5053ea2965255bd37416"
+    },
+    {
+      "path": "rust/projects/subway-game/src/components/FeedbackPanel.tsx",
+      "mode": "100644",
+      "blob_sha": "c9135c538c41d31eeed7c5ed9add2d459a018f52"
+    },
+    {
+      "path": "rust/projects/subway-game/src/components/GameScreen.tsx",
+      "mode": "100644",
+      "blob_sha": "904140d86b48a9071d930c0aef18edb76d417c5a"
+    },
+    {
+      "path": "rust/projects/subway-game/src/components/HintMapModal.tsx",
+      "mode": "100644",
+      "blob_sha": "a524b3685bf7241f4a2658f74f90b1f0820acc03"
+    },
+    {
+      "path": "rust/projects/subway-game/src/components/OfficialMetroMap.tsx",
+      "mode": "100644",
+      "blob_sha": "f0c966268fff3020c2c1b5f52141ac539d37714f"
+    },
+    {
+      "path": "rust/projects/subway-game/src/components/QuestionPanel.tsx",
+      "mode": "100644",
+      "blob_sha": "37eea15dddf25a61bf7f6e9bef54205ff0d2e150"
+    },
+    {
+      "path": "rust/projects/subway-game/src/components/RouteGuide.tsx",
+      "mode": "100644",
+      "blob_sha": "40defe1eb4f3e590dc012d8f5f8aa8f278b7e720"
+    },
+    {
+      "path": "rust/projects/subway-game/src/components/RouteOptions.tsx",
+      "mode": "100644",
+      "blob_sha": "971e7f73d24b8e78ecd7b6cf70f291f59af2557b"
+    },
+    {
+      "path": "rust/projects/subway-game/src/components/SubwayMap.tsx",
+      "mode": "100644",
+      "blob_sha": "83f9e3e2fd4125dc2632a6198c8e5d2ab2423192"
+    },
+    {
+      "path": "rust/projects/subway-game/src/data/beijing.json",
+      "mode": "100644",
+      "blob_sha": "1e2bcae93b6bb86b625d649f82d9701da279dd5f"
+    },
+    {
+      "path": "rust/projects/subway-game/src/data/cities.json",
+      "mode": "100644",
+      "blob_sha": "437dbded5ac39da2c150d210d030ef553fcdad47"
+    },
+    {
+      "path": "rust/projects/subway-game/src/data/hangzhou.json",
+      "mode": "100644",
+      "blob_sha": "1b33f7196217ff42f49254a3803e32afb680837c"
+    },
+    {
+      "path": "rust/projects/subway-game/src/data/officialMaps.ts",
+      "mode": "100644",
+      "blob_sha": "819456b02036ab778dbb9a9bf9d7b894f7f049d5"
+    },
+    {
+      "path": "rust/projects/subway-game/src/data/shanghai.json",
+      "mode": "100644",
+      "blob_sha": "f9e24c459dbc4b20bdf9914ac530ac6505e58b71"
+    },
+    {
+      "path": "rust/projects/subway-game/src/data/wuhan.json",
+      "mode": "100644",
+      "blob_sha": "78007be049b9d4106a9b17b1acdd624f33de5298"
+    },
+    {
+      "path": "rust/projects/subway-game/src/index.css",
+      "mode": "100644",
+      "blob_sha": "9c00927a3222d2d741bd88f3d41a527b364bb663"
+    },
+    {
+      "path": "rust/projects/subway-game/src/main.tsx",
+      "mode": "100644",
+      "blob_sha": "2339d59cf67910c2bd93c28509f754e71476374e"
+    },
+    {
+      "path": "rust/projects/subway-game/src/stores/gameStore.ts",
+      "mode": "100644",
+      "blob_sha": "71405906b33399fa114797073159de8bafed3725"
+    },
+    {
+      "path": "rust/projects/subway-game/src/types/index.ts",
+      "mode": "100644",
+      "blob_sha": "6deae80ee8c92a95af3eeda31ede4ba41c1d8e6f"
+    },
+    {
+      "path": "rust/projects/subway-game/src/utils/routeCalculator.ts",
+      "mode": "100644",
+      "blob_sha": "935f4e4ee09a0313f5e97b96daa24ce059cc7e39"
+    },
+    {
+      "path": "rust/projects/subway-game/src/vite-env.d.ts",
+      "mode": "100644",
+      "blob_sha": "11f02fe2a0061d6e6e1f271b21da95423b448b32"
+    },
+    {
+      "path": "rust/projects/subway-game/subway-data/build.sh",
+      "mode": "100755",
+      "blob_sha": "953b583f551da0279977ea34bc0af3fb3c179b0a"
+    },
+    {
+      "path": "rust/projects/subway-game/subway-data/gen_subway_layout.py",
+      "mode": "100644",
+      "blob_sha": "9d72f31fa175251cc23e496858a37023d67b413b"
+    },
+    {
+      "path": "rust/projects/subway-game/tailwind.config.js",
+      "mode": "100644",
+      "blob_sha": "a33e106832cd5d9014eae00cb6f2d3f570e032fd"
+    },
+    {
+      "path": "rust/projects/subway-game/tsconfig.json",
+      "mode": "100644",
+      "blob_sha": "9972070518e80b4e00054da668d9e6ad6556f9ec"
+    },
+    {
+      "path": "rust/projects/subway-game/vite.config.ts",
+      "mode": "100644",
+      "blob_sha": "50f2eda951053997621bae54efbbb097395a7919"
+    },
+    {
+      "path": "rust/projects/subway-game/vitest.config.ts",
+      "mode": "100644",
+      "blob_sha": "8c132993895683ea0c931c0446fac231b6b7f362"
+    },
+    {
+      "path": "rust/projects/umbra/Cargo.lock",
+      "mode": "100644",
+      "blob_sha": "a470c2a9fd4510f99994d271349d598417a0d967"
+    },
+    {
+      "path": "rust/projects/umbra/Cargo.toml",
+      "mode": "100644",
+      "blob_sha": "084655bc86c86c892ac69845f5f757b5647c417e"
+    },
+    {
+      "path": "rust/projects/umbra/README.md",
+      "mode": "100644",
+      "blob_sha": "3d378079e207ab8d557927aa05172d64293f5bcd"
+    },
+    {
+      "path": "rust/projects/umbra/config.toml",
+      "mode": "100644",
+      "blob_sha": "c5752f7fa6106b5218660181264aa72993fefe7a"
+    },
+    {
+      "path": "rust/projects/umbra/docs/superpowers/plans/2026-05-18-umbra-ai-database-plan.md",
+      "mode": "100644",
+      "blob_sha": "578ed294f13300bd5d93c219638f24bbd42a6cec"
+    },
+    {
+      "path": "rust/projects/umbra/docs/superpowers/specs/2026-05-18-umbra-ai-database-design.md",
+      "mode": "100644",
+      "blob_sha": "6ce4c365fc002719a23e715c7b1f038e6cbd8472"
+    },
+    {
+      "path": "rust/projects/umbra/umbra-core/Cargo.toml",
+      "mode": "100644",
+      "blob_sha": "62e90292706ad0379d9c7528f59b21e272619721"
+    },
+    {
+      "path": "rust/projects/umbra/umbra-core/src/embedding/mod.rs",
+      "mode": "100644",
+      "blob_sha": "dd5d97b00b44fd505085716b06e8afa7ca6bbe36"
+    },
+    {
+      "path": "rust/projects/umbra/umbra-core/src/embedding/openai.rs",
+      "mode": "100644",
+      "blob_sha": "9a5ef193481df280e73cfedc0b12fe5aa73dc42b"
+    },
+    {
+      "path": "rust/projects/umbra/umbra-core/src/entity/mod.rs",
+      "mode": "100644",
+      "blob_sha": "e69d760e57ddc9310714410c8b9171e06a45bc2b"
+    },
+    {
+      "path": "rust/projects/umbra/umbra-core/src/error.rs",
+      "mode": "100644",
+      "blob_sha": "99161023096088d833ccf26f6342cc5a6d16b687"
+    },
+    {
+      "path": "rust/projects/umbra/umbra-core/src/index/entity.rs",
+      "mode": "100644",
+      "blob_sha": "17b841904f2e091385aa7c6c7e5d9737e1de1124"
+    },
+    {
+      "path": "rust/projects/umbra/umbra-core/src/index/fulltext.rs",
+      "mode": "100644",
+      "blob_sha": "41fd60f207c5a5dfc99418eced17cee5e94f851f"
+    },
+    {
+      "path": "rust/projects/umbra/umbra-core/src/index/mod.rs",
+      "mode": "100644",
+      "blob_sha": "35ef6033927e80fc5e9933f7a875111909f489f6"
+    },
+    {
+      "path": "rust/projects/umbra/umbra-core/src/index/vector.rs",
+      "mode": "100644",
+      "blob_sha": "30f0711428b6adf400d53bac5ef8033f337b27db"
+    },
+    {
+      "path": "rust/projects/umbra/umbra-core/src/lib.rs",
+      "mode": "100644",
+      "blob_sha": "51c9d3a50bcf52119821ffdba06c4693eff44ae7"
+    },
+    {
+      "path": "rust/projects/umbra/umbra-core/src/ops/add.rs",
+      "mode": "100644",
+      "blob_sha": "c83df3d3500b0cc4d1b85328c2f8182bc88696d5"
+    },
+    {
+      "path": "rust/projects/umbra/umbra-core/src/ops/crud.rs",
+      "mode": "100644",
+      "blob_sha": "bd32a1d92d312de7482f6d6f1888eefe4e6e0616"
+    },
+    {
+      "path": "rust/projects/umbra/umbra-core/src/ops/history.rs",
+      "mode": "100644",
+      "blob_sha": "acecf351564b3c96e92d4a495a1503b1abe239ca"
+    },
+    {
+      "path": "rust/projects/umbra/umbra-core/src/ops/mod.rs",
+      "mode": "100644",
+      "blob_sha": "ad2cf998cbde4bccdb373f0e30fc4bd789a9d06c"
+    },
+    {
+      "path": "rust/projects/umbra/umbra-core/src/ops/search.rs",
+      "mode": "100644",
+      "blob_sha": "5ede2f9a70148595ce56133d3ca0de3c58cfc915"
+    },
+    {
+      "path": "rust/projects/umbra/umbra-core/src/query/mod.rs",
+      "mode": "100644",
+      "blob_sha": "290f7027037602245d6c5d1a3466a646246604a7"
+    },
+    {
+      "path": "rust/projects/umbra/umbra-core/src/query/tablefunc.rs",
+      "mode": "100644",
+      "blob_sha": "973f31959f8adaec3f27ede37d5fb37856951073"
+    },
+    {
+      "path": "rust/projects/umbra/umbra-core/src/query/udf.rs",
+      "mode": "100644",
+      "blob_sha": "cf8f9aae4f98d82c0e4e4b5ebd1d15781232c760"
+    },
+    {
+      "path": "rust/projects/umbra/umbra-core/src/storage/catalog.rs",
+      "mode": "100644",
+      "blob_sha": "782565915abb86bcf5eccdfa61f8810cf1c223ff"
+    },
+    {
+      "path": "rust/projects/umbra/umbra-core/src/storage/mod.rs",
+      "mode": "100644",
+      "blob_sha": "61a76ec45146680f733988b4d077d7e89bf8b459"
+    },
+    {
+      "path": "rust/projects/umbra/umbra-core/src/storage/scan.rs",
+      "mode": "100644",
+      "blob_sha": "6d7892a939b9875af713ac69423ff1ee6eb27c17"
+    },
+    {
+      "path": "rust/projects/umbra/umbra-core/src/storage/write.rs",
+      "mode": "100644",
+      "blob_sha": "ffbb7b20b6dce3eef0f569fa4d05f7a2f16a661b"
+    },
+    {
+      "path": "rust/projects/umbra/umbra-core/src/types.rs",
+      "mode": "100644",
+      "blob_sha": "89a026851265d068d74a9baaf0f23df7c99cf562"
+    },
+    {
+      "path": "rust/projects/umbra/umbra-server/Cargo.toml",
+      "mode": "100644",
+      "blob_sha": "9384370616ea39cff21739bbcbf2a1bdd418f51f"
+    },
+    {
+      "path": "rust/projects/umbra/umbra-server/build.rs",
+      "mode": "100644",
+      "blob_sha": "0e84d76e1636a870d209286c1b22bdb2b73e0904"
+    },
+    {
+      "path": "rust/projects/umbra/umbra-server/proto/umbra.proto",
+      "mode": "100644",
+      "blob_sha": "86c4c9b51bbbf7ca5e7ec11538bc68f9676c79da"
+    },
+    {
+      "path": "rust/projects/umbra/umbra-server/src/config.rs",
+      "mode": "100644",
+      "blob_sha": "c7c80801e6e5d214ce33ea3826a8bcfafa3587fb"
+    },
+    {
+      "path": "rust/projects/umbra/umbra-server/src/flight.rs",
+      "mode": "100644",
+      "blob_sha": "1911563e5b7c8de8b0f744a0f4e6cdc7098109d3"
+    },
+    {
+      "path": "rust/projects/umbra/umbra-server/src/lib.rs",
+      "mode": "100644",
+      "blob_sha": "4f9e4e9e24f39308aeb7e599edf6382b486df6d1"
+    },
+    {
+      "path": "rust/projects/umbra/umbra-server/src/main.rs",
+      "mode": "100644",
+      "blob_sha": "0db09727348256c4f62286b9f0e972b7ba3f4220"
+    },
+    {
+      "path": "rust/projects/umbra/umbra-server/src/service.rs",
+      "mode": "100644",
+      "blob_sha": "41d962203a1f09fe84a5f080f050aa0ba6f111ab"
+    }
+  ]
+}

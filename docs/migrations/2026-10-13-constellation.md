@@ -1,5 +1,10 @@
 # Constellation 拆分迁移记录（2026-10-13）
 
+Snapshot note: the five-project owner decision on 2026-10-15 supersedes earlier
+retention statements for FragmentTutor, Umbra, subway-game, llm-runtime and
+py-academic. Historical evidence below remains tied to its stated commit; see
+[the retirement record](2026-10-15-five-project-retirement.md).
+
 ## 结论与状态
 
 **三个独立项目已发布到各自 main；xlab 源码清理 PR #21 已于 2026-10-13 17:29:46 UTC 合并。**

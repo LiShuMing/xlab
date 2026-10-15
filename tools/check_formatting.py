@@ -8,7 +8,6 @@ import sys
 
 EMPTY_TREE = '4b825dc642cb6eb9a060e54bf8d69288fbee4904'
 EXCLUDED_PARTS = {'thirdparty', 'node_modules', '.venv', 'vendor', 'dist', 'target', 'build', '__pycache__'}
-EXCLUDED_ROOTS = ('python/projects/py-academic/',)
 
 
 def git(*args):
@@ -23,7 +22,7 @@ def resolve(ref):
 
 def excluded(path):
     p = PurePosixPath(path)
-    return (bool(set(p.parts) & EXCLUDED_PARTS) or path.startswith(EXCLUDED_ROOTS)
+    return (bool(set(p.parts) & EXCLUDED_PARTS)
             or p.suffix in {'.ipynb', '.lock'}
             or p.name in {'package-lock.json', 'yarn.lock', 'pnpm-lock.yaml', 'robin_hood_map.h'})
 

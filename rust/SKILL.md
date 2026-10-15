@@ -19,13 +19,12 @@ Rust laboratory focusing on systems programming with memory safety, zero-cost ab
 rust/
 ├── rlab/            # Main Rust lab
 ├── rdb/             # Database implementation
-├── projects/        # Umbra memory DB, Tauri apps, llm-runtime design scaffold
 └── thirdparty/      # Declared references; no gitlinks at the current baseline
 ```
 
 There is no `rust/Cargo.toml`. Run Cargo from the selected project or pass its
-`--manifest-path`; `rlab` and `projects/umbra` each own a workspace.
-`projects/llm-runtime` has no Cargo manifest or runnable implementation yet.
+`--manifest-path`; `rlab` owns its workspace. The former named standalone
+projects were retired from xlab by owner decision.
 
 ## Key Concepts
 

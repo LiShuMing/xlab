@@ -42,7 +42,6 @@ xlab/
 ├── rust/                 # Rust laboratory
 │   ├── rlab/             # Workspace-based Rust lab
 │   ├── rdb/              # Database implementation experiments
-│   ├── projects/         # Umbra memory DB, fragment-tutor, subway-game, llm-runtime scaffold
 │   └── thirdparty/       # Declared Rust research references
 ├── python/               # Python laboratory
 │   ├── pylab/            # Core Python lab with pytest
@@ -111,7 +110,6 @@ instructions and build manifests before working there.
 - **Key Projects**:
   - `rlab`: Core experiments (lockfree, thread-pool, bloom filter)
   - `rdb`: Database implementation with tokio
-- `projects/llm-runtime`: design scaffold only; no Cargo manifest yet.
 - **Key Dependencies**: tokio, parking_lot, serde, zstd, roaring
 - **Third-party declarations (currently no gitlinks)**: RisingWave, Materialize, DataFusion, Timely/Differential Dataflow
 
@@ -120,12 +118,10 @@ instructions and build manifests before working there.
 - **Environment**: Virtual environments (.venv)
 - **Testing**: pytest
 - **Key Packages**: numpy, pandas, duckdb, matplotlib, faiss-cpu
-- **Projects**: py-academic, py-cycle-lab, py-ego, py-lab,
+- **Projects**: py-cycle-lab, py-ego, py-lab,
   py-stock, py-torch, py-toydb
 - **Standalone**: `python/llm_benchmark` (LLM eval framework), `python/ivm`
   (incremental view maintenance prototypes)
-- ⚠️ `py-academic` is a vendored fork of `binary-husky/gpt_academic`, not
-  original code. Treat it as third-party.
 
 ### Go (go/)
 - **Version**: 1.26.2 (per `go/k8s-lab/go.mod`)

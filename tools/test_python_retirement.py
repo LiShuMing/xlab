@@ -63,7 +63,7 @@ class PythonRetirementTests(unittest.TestCase):
                              (ROOT / 'TASKS.md').read_text())
 
     def test_retained_neighbors_and_recovery(self):
-        for name in ('py-academic', 'py-lab', 'py-toydb'):
+        for name in ('py-lab', 'py-toydb'):
             self.assertTrue((ROOT / 'python/projects' / name).is_dir())
         # Consolidated cleanup later removes the legacy scheduler without a stub.
         self.assertFalse((ROOT / 'python/projects/cron.sh').exists())

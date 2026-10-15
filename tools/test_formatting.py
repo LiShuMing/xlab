@@ -77,7 +77,7 @@ class FormattingTests(unittest.TestCase):
 
     def test_deleted_and_imported_content_is_not_reformatted(self):
         self.git('rm', '-q', 'base.txt')
-        for p in ('python/projects/py-academic/a.py', 'cc/thirdparty/a.txt',
+        for p in ('vendor/example/a.py', 'cc/thirdparty/a.txt',
                   'notebook.ipynb', 'uv.lock', 'src/robin_hood_map.h'):
             self.write(p, b'old legacy \r\nno newline')
         self.git('add', '.')

@@ -1,6 +1,6 @@
 {
-  "source_commit": "bf3e2ed45c12cc551fd44ef3cb89366970cd92ba",
-  "scope": "classified retained project roots; current counts exclude retired redundant placeholders; no claim of build or runtime acceptance",
+  "source_commit": "f20485e3b278e34df0b927c89dba1591d65ba6ba",
+  "scope": "Current retained project inventory after owner-authorized five-project retirement; no build/runtime acceptance claim",
   "projects": [
     {
       "path": "cc/algo",
@@ -159,12 +159,6 @@
       "disposition": "retain"
     },
     {
-      "path": "python/projects/py-academic",
-      "tracked_entries": 374,
-      "classification": "vendored third-party fork; preserve attribution; packaging decision open",
-      "disposition": "retain"
-    },
-    {
       "path": "python/projects/py-cycle-lab",
       "tracked_entries": 27,
       "classification": "retained experiment; no accepted migration mapping",
@@ -215,30 +209,6 @@
     {
       "path": "python/pylab",
       "tracked_entries": 57,
-      "classification": "retained experiment; no accepted migration mapping",
-      "disposition": "retain"
-    },
-    {
-      "path": "rust/projects/fragment-tutor",
-      "tracked_entries": 63,
-      "classification": "retained experiment; no accepted migration mapping",
-      "disposition": "retain"
-    },
-    {
-      "path": "rust/projects/llm-runtime",
-      "tracked_entries": 8,
-      "classification": "design/scaffold; implementation maturity unverified",
-      "disposition": "retain"
-    },
-    {
-      "path": "rust/projects/subway-game",
-      "tracked_entries": 57,
-      "classification": "retained experiment; no accepted migration mapping",
-      "disposition": "retain"
-    },
-    {
-      "path": "rust/projects/umbra",
-      "tracked_entries": 37,
       "classification": "retained experiment; no accepted migration mapping",
       "disposition": "retain"
     },

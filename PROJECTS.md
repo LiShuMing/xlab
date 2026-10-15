@@ -43,7 +43,7 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | --- | --- |
 | 工作日记、菜单栏、提醒、SwiftUI | [carina/apps/daylog](https://github.com/LiShuMing/carina/tree/main/apps/daylog)（刻白，已迁移） |
 | Kubernetes、控制面、MVCC、Informer | [go/k8s-lab/](go/k8s-lab/) |
-| LLM 训练与推理实验 | [python/projects/llm-lab/](python/projects/llm-lab/)、[rust/projects/llm-runtime/](rust/projects/llm-runtime/)（后者仅设计骨架） |
+| LLM 训练与推理实验 | [python/projects/llm-lab/](python/projects/llm-lab/) |
 | C++ 数据结构、并发、协程、COW、一致性哈希 | [cc/cclab/](cc/cclab/) |
 | LeetCode、LCR、面试题、基础算法 | [cc/algo/](cc/algo/)、[rust/rlab/tools/leetcode/](rust/rlab/tools/leetcode/)、[python/pylab/](python/pylab/) |
 | KV、MemTable、SkipList、Arena | [vela/storage/](https://github.com/LiShuMing/vela/tree/main/storage/) |
@@ -52,7 +52,6 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | MPMC、MPSC、队列内存回收 | [rust/rlab/tools/lockfree-queue/](rust/rlab/tools/lockfree-queue/) |
 | Bloom、Split Block、XOR Filter | [rust/rlab/tools/bloom_filter/](rust/rlab/tools/bloom_filter/) |
 | Rust 数据库、SQL、存储引擎 | [rust/rdb/](rust/rdb/) |
-| AI 记忆数据库、向量索引、Arrow、gRPC | [rust/projects/umbra/](rust/projects/umbra/) |
 | Volcano、Cascades、优化器算法对照 | [vela/optimizer/](https://github.com/LiShuMing/vela/tree/main/optimizer/) |
 | 多数据库优化器源码分析 | [vela/research/optimizer-evidence](https://github.com/LiShuMing/vela/tree/main/research/optimizer-evidence)、[vela/research/optimizer-scanner](https://github.com/LiShuMing/vela/tree/main/research/optimizer-scanner) |
 | LLVM、JIT、表达式编译 | [cc/projects/llvm-jit/](cc/projects/llvm-jit/) |
@@ -65,7 +64,6 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | Iceberg、Java/JVM、Spark、Scala、Groovy | [java/xlab-iceberg/](java/xlab-iceberg/)、[java/xlab-itest/](java/xlab-itest/) |
 | LLM 数学/代码评测、Strata benchmark | [python/llm_benchmark/](python/llm_benchmark/) |
 | Strata 只读代码审查 | [python/projects/strata-review/](python/projects/strata-review/) |
-| 论文处理、学术工具 | [python/projects/py-academic/](python/projects/py-academic/) |
 | AI 沙盒、Streamlit、LangChain | [python/projects/py-lab/](python/projects/py-lab/) |
 | 邮件、newsletter、Gmail 摘要 | [Lyra email-digest](https://github.com/LiShuMing/lyra/tree/main/modules/email-digest) |
 | 产品 release notes、数据库产品情报 | [carina/modules/product-intelligence](https://github.com/LiShuMing/carina/tree/main/modules/product-intelligence) |
@@ -77,8 +75,6 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | 个人知识工作台、采集、日报、博客与文库 | [carina](https://github.com/LiShuMing/carina/tree/main) |
 | 统一个人工作台、技术雷达、投资与对话 | [lyra/](https://github.com/LiShuMing/lyra/tree/main/) |
 | 个人上下文、llm-wiki、Go API | [lyra/llm-wiki/](https://github.com/LiShuMing/lyra/tree/main/llm-wiki/) |
-| 桌面学习助手、Tauri | [rust/projects/fragment-tutor/](rust/projects/fragment-tutor/) |
-| 地铁线路问答、儿童学习游戏 | [rust/projects/subway-game/](rust/projects/subway-game/) |
 | PyTorch、micrograd、自动求导 | [python/projects/py-torch/](python/projects/py-torch/) |
 | NumPy、pandas、Jupyter | [python/projects/py-numpy-pandas/](python/projects/py-numpy-pandas/) |
 | GPU、CUDA/ROCm、本地模型 | [llm/cuda/](llm/cuda/) |
@@ -146,15 +142,6 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | [rust/rlab/tools/bloom_filter/](rust/rlab/tools/bloom_filter/) | Bloom、Split Block、XOR Filter | [Cargo.toml](rust/rlab/tools/bloom_filter/Cargo.toml) |
 | [rust/rlab/tools/leetcode/](rust/rlab/tools/leetcode/) | Rust 算法题与题目工具 | [Cargo.toml](rust/rlab/tools/leetcode/Cargo.toml) |
 | [rust/rdb/](rust/rdb/) | Rust 数据库；SQL 到执行与存储 | [README](rust/rdb/README.md)、[Cargo.toml](rust/rdb/Cargo.toml) |
-| [rust/projects/umbra/](rust/projects/umbra/) | 当前源码是 AI 记忆数据库工作区；README 保留 JIT PoC 规格 | [Cargo.toml](rust/projects/umbra/Cargo.toml)、[源码](rust/projects/umbra/umbra-core/src/lib.rs) |
-| [rust/projects/umbra/umbra-core/](rust/projects/umbra/umbra-core/) | AI memory 核心引擎、实体、查询、索引与存储 | [Cargo.toml](rust/projects/umbra/umbra-core/Cargo.toml) |
-| [rust/projects/umbra/umbra-server/](rust/projects/umbra/umbra-server/) | Umbra 服务端 | [Cargo.toml](rust/projects/umbra/umbra-server/Cargo.toml) |
-| [rust/projects/fragment-tutor/](rust/projects/fragment-tutor/) | FragmentTutor 学习助手；TypeScript/React + Tauri | [README](rust/projects/fragment-tutor/README.md)、[package.json](rust/projects/fragment-tutor/package.json) |
-| [rust/projects/fragment-tutor/src-tauri/](rust/projects/fragment-tutor/src-tauri/) | FragmentTutor Rust 桌面后端 | [Cargo.toml](rust/projects/fragment-tutor/src-tauri/Cargo.toml) |
-| [rust/projects/subway-game/](rust/projects/subway-game/) | 地铁线路问答游戏；TypeScript/React + Tauri | [README](rust/projects/subway-game/README.md)、[package.json](rust/projects/subway-game/package.json) |
-| [rust/projects/subway-game/src-tauri/](rust/projects/subway-game/src-tauri/) | 地铁游戏 Rust 桌面后端 | [Cargo.toml](rust/projects/subway-game/src-tauri/Cargo.toml) |
-| [rust/projects/subway-game/subway-data/](rust/projects/subway-game/subway-data/) | 地铁数据构建辅助目录 | [build.sh](rust/projects/subway-game/subway-data/build.sh) |
-| [rust/projects/llm-runtime/](rust/projects/llm-runtime/) | LLM 推理、KV cache 与调度设计骨架；尚无 Cargo.toml 或可执行源码 | [README](rust/projects/llm-runtime/README.md)、[TASKS](rust/projects/llm-runtime/TASKS.md) |
 
 ## Python
 
@@ -165,7 +152,6 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | [python/pylab/dbsp/](python/pylab/dbsp/) | DBSP 增量计算子实验 | [dbsp.py](python/pylab/dbsp/dbsp.py) |
 | [python/ivm/](python/ivm/) | 增量视图维护与 join 实验 | [ivm.py](python/ivm/ivm.py) |
 | [python/llm_benchmark/](python/llm_benchmark/) | LLM 数学/代码量化评测，含本地 Strata 入口 | [README](python/llm_benchmark/README.md)、[pyproject.toml](python/llm_benchmark/pyproject.toml) |
-| [python/projects/py-academic/](python/projects/py-academic/) | 学术论文与 LLM 工具 | [README](python/projects/py-academic/README.md)、[main.py](python/projects/py-academic/main.py) |
 | [python/projects/py-cycle-lab/](python/projects/py-cycle-lab/) | LongCycle 长周期投资研究工作台 | [README](python/projects/py-cycle-lab/README.md)、[pyproject.toml](python/projects/py-cycle-lab/pyproject.toml) |
 | [python/projects/py-ego/](python/projects/py-ego/) | 对话陪护与记忆；README 同时保留 StarRocks 监控背景 | [README](python/projects/py-ego/README.md)、[main.py](python/projects/py-ego/main.py) |
 | [python/projects/py-ego/miniprogram/](python/projects/py-ego/miniprogram/) | 微信小程序前端 | [README](python/projects/py-ego/miniprogram/README.md)、[package.json](python/projects/py-ego/miniprogram/package.json) |
@@ -188,7 +174,7 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | 当前目录 | 扫描结果与路由建议 |
 | --- | --- |
 | `python/projects/py-invest/`（历史路径，当前不存在） | 未发现项目源码或构建清单；投资功能优先查 [lyra/backend/invest/](https://github.com/LiShuMing/lyra/tree/main/backend/invest/) 和 `py-cycle-lab` |
-| `python/projects/py-paper/`（历史路径，当前不存在） | `paper-agent/` 下未发现项目源码或构建清单；论文工具优先查 `py-academic` |
+| `python/projects/py-paper/`（历史路径，当前不存在） | `paper-agent/` 下未发现项目源码或构建清单；该历史路径不作为当前维护入口 |
 | `python/projects/py-radar/`（历史路径，当前不存在） | 不恢复历史输出数据；当前雷达功能见 [lyra/backend/radar/](https://github.com/LiShuMing/lyra/tree/main/backend/radar/) |
 | `python/projects/py-scrapy/`（历史路径，当前不存在） | `blog_crawler/` 下未发现项目源码或构建清单 |
 
@@ -245,8 +231,6 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | [lyra/backend/radar/](https://github.com/LiShuMing/lyra/tree/main/backend/radar/) | 技术雷达业务模块 | [cli.py](https://github.com/LiShuMing/lyra/blob/main/backend/radar/cli.py) |
 | [lyra/backend/wechat/](https://github.com/LiShuMing/lyra/tree/main/backend/wechat/) | 微信集成业务模块 | [目录](https://github.com/LiShuMing/lyra/tree/main/backend/wechat/) |
 | [lyra/llm-wiki/](https://github.com/LiShuMing/lyra/tree/main/llm-wiki/) | Go 个人上下文维护子项目 | [README](https://github.com/LiShuMing/lyra/blob/main/llm-wiki/README.md) |
-| [rust/projects/fragment-tutor/](rust/projects/fragment-tutor/) | FragmentTutor TypeScript/React 前端与 Rust/Tauri 后端 | [package.json](rust/projects/fragment-tutor/package.json) |
-| [rust/projects/subway-game/](rust/projects/subway-game/) | 地铁游戏 TypeScript/React 前端与 Rust/Tauri 后端 | [package.json](rust/projects/subway-game/package.json) |
 | [python/projects/py-ego/miniprogram/](python/projects/py-ego/miniprogram/) | 微信小程序前端 | [package.json](python/projects/py-ego/miniprogram/package.json) |
 | [cc/extentions/gpt-extension/](cc/extentions/gpt-extension/) | Chrome AI side panel 扩展 | [README](cc/extentions/gpt-extension/README.md) |
 

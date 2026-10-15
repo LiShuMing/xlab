@@ -1,5 +1,10 @@
 # Dependency consumer audit: xlab main bf3e2ed45c12cc551fd44ef3cb89366970cd92ba
 
+Snapshot note: the five-project owner decision on 2026-10-15 supersedes earlier
+retention statements for FragmentTutor, Umbra, subway-game, llm-runtime and
+py-academic. Historical evidence below remains tied to its stated commit; see
+[the retirement record](../migrations/2026-10-15-five-project-retirement.md).
+
 The underlying review was read-only: no installs, downloads or builds. This cleanup archives only the 29 recommended orphan declaration blocks into [the complete inventory](dependency-declarations.json); 38 unresolved orphan declarations and two pinned gitlinks remain. All 2,681 blobs match the verified baseline; 2,631 UTF-8 files were searched and matching build/source routes inspected.
 
 ## Decision summary

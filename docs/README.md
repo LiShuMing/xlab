@@ -39,7 +39,7 @@
 实际项目的 README、设计与测试说明跟随所属源码目录。迁出应用见
 [Constellation 迁移记录](migrations/2026-10-13-constellation.md)及
 [DayLog 源码退役记录](migrations/2026-10-14-daylog-source-retirement.md)；
-DayLog 已迁入 Carina，FragmentTutor 仍在 xlab。目录存在或有 README 不表示构建与测试已通过。
+DayLog 已迁入 Carina；FragmentTutor 等五个项目按所有者决定从 xlab 完整移除，见[退役记录](migrations/2026-10-15-five-project-retirement.md)。目录存在或有 README 不表示构建与测试已通过。
 
 ## 保留与隐私边界
 

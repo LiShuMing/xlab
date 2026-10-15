@@ -21,7 +21,7 @@ indent_style = tab
 end_of_line = crlf
 
 # Preserve imported, generated and notebook formats. No automatic rewrite policy.
-[{**/thirdparty/**,**/vendor/**,python/projects/py-academic/**,**/node_modules/**,**/.venv/**,**/__pycache__/**,**/dist/**,**/target/**,**/build/**,**/*.ipynb,**/*.lock,**/package-lock.json,**/pnpm-lock.yaml,**/robin_hood_map.h}]
+[{**/thirdparty/**,**/vendor/**,**/node_modules/**,**/.venv/**,**/__pycache__/**,**/dist/**,**/target/**,**/build/**,**/*.ipynb,**/*.lock,**/package-lock.json,**/pnpm-lock.yaml,**/robin_hood_map.h}]
 charset = unset
 end_of_line = unset
 insert_final_newline = unset

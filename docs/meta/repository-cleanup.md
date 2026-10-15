@@ -23,7 +23,10 @@ These destinations are ownership routes, not automatic cron replacements.
 
 ## Retention and remaining gates
 
-See [project classification](retained-projects.md). Unmigrated code,
+See [project classification](retained-projects.md). The five explicitly named
+projects were subsequently retired by owner decision regardless of migration
+completeness; see [scope and recovery](../migrations/2026-10-15-five-project-retirement.md).
+Other unmigrated code,
 privacy exclusions, ignored/runtime files and the two pinned gitlinks are not
 removed. Previously accepted Codex/Linux/email/learning source retirement is
 already part of the base, not a new deletion in PR #28.
@@ -50,4 +53,5 @@ section/path/URL and the two pins. 29 orphan declaration blocks move out of
 `.gitmodules`; 38 unresolved orphans remain visible to healthcheck and CI.
 Four direct legacy CMake inputs (glog, abseil-cpp, fmt, folly), one manual
 bootstrap input (fast_float), and 33 unknown-intent references need further
-ownership/build decisions. No source code or package consumer is removed.
+ownership/build decisions. Those dependency decisions did not remove source code or package consumers.
+The later five-project retirement does not change any retained declaration.

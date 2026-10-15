@@ -289,66 +289,6 @@ pnpm-debug.log*
 /python/projects/py-email/**/data/
 /python/projects/py-email/**/.worktrees/
 
-# py-academic local/private and framework output
-/python/projects/py-academic/**/MANIFEST
-/python/projects/py-academic/**/*.manifest
-/python/projects/py-academic/**/*.spec
-/python/projects/py-academic/**/.cache/
-/python/projects/py-academic/**/.coverage.*
-/python/projects/py-academic/**/.dmypy.json
-/python/projects/py-academic/**/dmypy.json
-/python/projects/py-academic/**/env.bak/
-/python/projects/py-academic/**/venv.bak/
-/python/projects/py-academic/**/github
-/python/projects/py-academic/**/.github
-/python/projects/py-academic/**/TEMP
-/python/projects/py-academic/**/TRASH
-/python/projects/py-academic/**/local_settings.py
-/python/projects/py-academic/**/db.sqlite3
-/python/projects/py-academic/**/db.sqlite3-journal
-/python/projects/py-academic/**/instance/
-/python/projects/py-academic/**/.webassets-cache/
-/python/projects/py-academic/**/.scrapy/
-/python/projects/py-academic/**/docs/_build/
-/python/projects/py-academic/**/profile_default/
-/python/projects/py-academic/**/ipython_config.py
-/python/projects/py-academic/**/.python-version
-/python/projects/py-academic/**/__pypackages__/
-/python/projects/py-academic/**/celerybeat-schedule
-/python/projects/py-academic/**/celerybeat.pid
-/python/projects/py-academic/**/*.sage.py
-/python/projects/py-academic/**/.spyderproject
-/python/projects/py-academic/**/.spyproject
-/python/projects/py-academic/**/.ropeproject
-/python/projects/py-academic/**/.pyre/
-/python/projects/py-academic/**/history
-/python/projects/py-academic/**/ssr_conf
-/python/projects/py-academic/**/config_private.py
-/python/projects/py-academic/**/gpt_log
-/python/projects/py-academic/**/private.md
-/python/projects/py-academic/**/private_upload/
-/python/projects/py-academic/**/other_llms/
-/python/projects/py-academic/**/cradle*
-/python/projects/py-academic/**/debug*
-/python/projects/py-academic/**/private*
-/python/projects/py-academic/crazy_functions/test_project/pdf_and_word/
-/python/projects/py-academic/crazy_functions/test_samples/
-/python/projects/py-academic/request_llms/jittorllms/
-/python/projects/py-academic/**/multi-language/
-/python/projects/py-academic/request_llms/moss/
-/python/projects/py-academic/**/media/
-/python/projects/py-academic/**/flagged/
-/python/projects/py-academic/request_llms/ChatGLM-6b-onnx-u8s8/
-/python/projects/py-academic/**/.pre-commit-config.yaml
-/python/projects/py-academic/**/test.*
-/python/projects/py-academic/**/temp.*
-/python/projects/py-academic/**/objdump*
-/python/projects/py-academic/**/*.min.*.js
-/python/projects/py-academic/**/TODO
-/python/projects/py-academic/**/experimental_mods/
-/python/projects/py-academic/**/search_results/
-/python/projects/py-academic/**/gg.docx
-/python/projects/py-academic/**/unstructured_reader.py
 
 # Liminalis runtime and bundled llm-wiki output
 /liminalis/.vite/
@@ -365,16 +305,7 @@ pnpm-debug.log*
 /liminalis/src/hooks/
 
 # Rust/Tauri project-specific output
-/rust/projects/fragment-tutor/Cargo.lock
-/rust/projects/fragment-tutor/src-tauri/src-tauri/
-/rust/projects/fragment-tutor/src-tauri/gen/
-/rust/projects/fragment-tutor/generated/
-/rust/projects/fragment-tutor/.talkcody/
 # Runtime SQLite database (schema created in src-tauri/src/services/database.rs)
-/rust/projects/fragment-tutor/src-tauri/fragment_tutor.db
-/rust/projects/subway-game/Cargo.lock
-/rust/projects/subway-game/src-tauri/src-tauri/
-/rust/projects/subway-game/generated/
 
 # Go binaries
 /go/hello/hello
@@ -400,3 +331,10 @@ gpt2-124M.ckpt
 # rust/thirdparty/
 **/.obsidian/
 .kunsdd/
+
+# Owner-retired projects: keep stale local/runtime copies out of xlab.
+/rust/projects/fragment-tutor/
+/rust/projects/umbra/
+/rust/projects/subway-game/
+/rust/projects/llm-runtime/
+/python/projects/py-academic/

@@ -31,8 +31,7 @@ Go: `gofmt -l` on the changed Go files; preserve tabs.
 Python: use module Ruff/Black/isort settings as configured, without running competing
 formatters blindly. LLM Lab uses its own pyproject settings and 100-column limit.
 Java/Kotlin: preserve existing module style; do not introduce a global formatter.
-JS/TS: use module scripts/Prettier configuration where available, such as
-FragmentTutor. No repo-wide node_modules installation or global line-width rule.
+JS/TS: use module scripts/Prettier configuration where available. No repo-wide node_modules installation or global line-width rule.
 Shell/Make: preserve shell syntax and Make recipe tabs; run `bash -n` on changed
 Bash scripts. Batch scripts may retain CRLF. Markdown may use two-space hard breaks.
 
@@ -53,7 +52,7 @@ added-line whitespace plus UTF-8, final newline and line endings of changed text
 files. Deletions, binary blobs and gitlinks are ignored. CI supplies explicit
 base/head commits; a clean checkout alone does not make a committed diff clean.
 
-Imported thirdparty/vendor sources, py-academic, the vendored robin_hood header,
+Imported thirdparty/vendor sources, the vendored robin_hood header,
 generated build/dist/target directories, lockfiles and notebooks are excluded.
 Do not bulk-reformat them or historical files solely to satisfy a new convention.
 Existing unrelated whitespace debt remains; fix it only within separately reviewed
