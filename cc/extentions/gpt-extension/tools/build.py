@@ -14,6 +14,7 @@ SRC_FILES = [
     'background.js',
     'sidepanel.html',
     'sidepanel.js',
+    'defaults.js',
     'rules.json',
     'options.html',
     'options.js',
@@ -68,6 +69,10 @@ def parse_hex_rgba(s, default):
         return default
 
 def main():
+    missing = [name for name in SRC_FILES if not (ROOT / name).is_file()]
+    if missing:
+        raise SystemExit('Cannot package incomplete extension; missing required files: '
+                         + ', '.join(missing) + '. No output was written.')
     manifest = read_json(ROOT / 'manifest.json')
     rules = read_json(ROOT / 'rules.json')
     version = manifest.get('version', '0.0.0')

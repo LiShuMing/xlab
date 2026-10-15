@@ -130,7 +130,7 @@
     },
     {
       "path": "java/xlab-itest",
-      "tracked_entries": 623,
+      "tracked_entries": 622,
       "classification": "retained experiment; no accepted migration mapping",
       "disposition": "retain"
     },
@@ -148,7 +148,7 @@
     },
     {
       "path": "python/llm_benchmark",
-      "tracked_entries": 39,
+      "tracked_entries": 38,
       "classification": "retained experiment; no accepted migration mapping",
       "disposition": "retain"
     },
@@ -172,7 +172,7 @@
     },
     {
       "path": "python/projects/py-ego",
-      "tracked_entries": 136,
+      "tracked_entries": 135,
       "classification": "retained experiment; no accepted migration mapping",
       "disposition": "retain"
     },
@@ -226,7 +226,7 @@
     },
     {
       "path": "rust/projects/llm-runtime",
-      "tracked_entries": 12,
+      "tracked_entries": 8,
       "classification": "design/scaffold; implementation maturity unverified",
       "disposition": "retain"
     },

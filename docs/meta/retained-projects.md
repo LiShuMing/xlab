@@ -1,8 +1,8 @@
 # Retained project classification
 
 Baseline: xlab `bf3e2ed45c12cc551fd44ef3cb89366970cd92ba` (2026-10-15).
-Counts are maintained with cleanup changes; LLM Lab excludes three redundant
-placeholders removed after their directories gained real files.
+Counts are maintained with cleanup changes; directory placeholders and the duplicate
+Java README are removed while meaningful source/package markers remain.
 This is a source-tree inventory, not build certification, product priority or
 permission to migrate/delete. Counts include tracked files, not runtime data.
 No project below has an accepted source-to-target mapping for retirement.
@@ -30,14 +30,14 @@ No project below has an accepted source-to-target mapping for retirement.
 | `haskell/projects/sql-parser` | 11 | retained experiment; no accepted migration mapping |
 | `haskell/projects/stm-engine` | 7 | retained experiment; no accepted migration mapping |
 | `java/xlab-iceberg` | 17 | retained experiment; no accepted migration mapping |
-| `java/xlab-itest` | 623 | retained experiment; no accepted migration mapping |
+| `java/xlab-itest` | 622 | retained experiment; no accepted migration mapping |
 | `llm/cuda` | 15 | retained experiment; no accepted migration mapping |
 | `python/ivm` | 2 | retained experiment; no accepted migration mapping |
-| `python/llm_benchmark` | 39 | retained experiment; no accepted migration mapping |
+| `python/llm_benchmark` | 38 | retained experiment; no accepted migration mapping |
 | `python/projects/llm-lab` | 27 | retained experiment; no accepted migration mapping |
 | `python/projects/py-academic` | 374 | vendored third-party fork; preserve attribution; packaging decision open |
 | `python/projects/py-cycle-lab` | 27 | retained experiment; no accepted migration mapping |
-| `python/projects/py-ego` | 136 | retained experiment; no accepted migration mapping |
+| `python/projects/py-ego` | 135 | retained experiment; no accepted migration mapping |
 | `python/projects/py-lab` | 38 | retained experiment; no accepted migration mapping |
 | `python/projects/py-numpy-pandas` | 8 | notebook/data learning project; not an empty shell |
 | `python/projects/py-stock` | 21 | retained experiment; no accepted migration mapping |
@@ -46,7 +46,7 @@ No project below has an accepted source-to-target mapping for retirement.
 | `python/projects/strata-review` | 8 | retained experiment; no accepted migration mapping |
 | `python/pylab` | 57 | retained experiment; no accepted migration mapping |
 | `rust/projects/fragment-tutor` | 63 | retained experiment; no accepted migration mapping |
-| `rust/projects/llm-runtime` | 12 | design/scaffold; implementation maturity unverified |
+| `rust/projects/llm-runtime` | 8 | design/scaffold; implementation maturity unverified |
 | `rust/projects/subway-game` | 57 | retained experiment; no accepted migration mapping |
 | `rust/projects/umbra` | 37 | retained experiment; no accepted migration mapping |
 | `rust/rdb` | 23 | retained experiment; no accepted migration mapping |

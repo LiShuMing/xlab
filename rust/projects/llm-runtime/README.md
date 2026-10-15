@@ -17,7 +17,10 @@
 
 模型格式统一参考 Python 项目中的 [模型产物契约](../../../python/projects/llm-lab/docs/artifact-contract.md)。不要在 Rust 目录维护第二份格式定义。
 
-## 目录
+## 当前文件与计划目录
+
+以下树形图是设计布局；`src/`、`tests/`、`benches/`、`configs/` 尚未创建，
+实现时按需创建，不用占位文件维持空目录。
 
 ```text
 llm-runtime/
