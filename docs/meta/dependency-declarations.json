@@ -1,0 +1,2541 @@
+{
+  "repository": "LiShuMing/xlab",
+  "baseline_commit": "bf3e2ed45c12cc551fd44ef3cb89366970cd92ba",
+  "baseline_tree": "50f9d7e0525381b372bce7209fa058e868b8019c",
+  "date": "2026-10-15",
+  "declaration_count": 69,
+  "preserved_gitlinks": {
+    "cc/thirdparty/benchmark": "c58e6d0710581e3a08d65c349664128a8d9a2461",
+    "cc/thirdparty/googletest": "b514bdc898e2951020cbdca1304b75f5950d1f59"
+  },
+  "orphan_count": 67,
+  "orphan_classification_counts": {
+    "active_consumer": 12,
+    "no_detected_consumer": 33,
+    "reference_example_only": 22
+  },
+  "orphan_recommendation_counts": {
+    "retain": 38,
+    "archive-declaration": 29
+  },
+  "entries": [
+    {
+      "section_name": "submodule \"cc/thirdparty/benchmark\"",
+      "config_key_name": "cc/thirdparty/benchmark",
+      "path": "cc/thirdparty/benchmark",
+      "original_url": "https://github.com/google/benchmark.git",
+      "gitlink_sha": "c58e6d0710581e3a08d65c349664128a8d9a2461",
+      "orphan": false,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 15,
+        "end_line": 17,
+        "excerpt": "[submodule \"cc/thirdparty/benchmark\"]\n\tpath = cc/thirdparty/benchmark\n\turl = https://github.com/google/benchmark.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L15"
+      },
+      "classification": "active_consumer",
+      "binding": "tracked_gitlink_and_build_input",
+      "recommendation": "retain",
+      "reason": "Keep the real gitlink and declaration unchanged. Root benchmark helper and legacy ccbench use it.",
+      "evidence": [
+        {
+          "path": "cmake/XlabDependencies.cmake",
+          "line": 44,
+          "end_line": 49,
+          "excerpt": "function(xlab_require_benchmark)\n    set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL \"Disable benchmark's own tests\" FORCE)\n    set(BENCHMARK_ENABLE_INSTALL OFF CACHE BOOL \"Disable dependency installation\" FORCE)\n    xlab_require_dependency(benchmark benchmark::benchmark\n        c58e6d0710581e3a08d65c349664128a8d9a2461)\nendfunction()",
+          "blob_sha": "bd907c00fc6832e31d63a75aaef0bf077c8fdd7c",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cmake/XlabDependencies.cmake#L44"
+        },
+        {
+          "path": "cc/ccbench/CMakeLists.txt",
+          "line": 138,
+          "end_line": 138,
+          "excerpt": "add_subdirectory(../thirdparty/benchmark benchmark)",
+          "blob_sha": "5e34c8adea69cdf9a1f3ae7e322ed835f5eab83d",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/ccbench/CMakeLists.txt#L138"
+        },
+        {
+          "path": "cc/cclab/src/CMakeLists.txt",
+          "line": 6,
+          "end_line": 9,
+          "excerpt": "# only build benchmark in release mode\nif (${CMAKE_BUILD_TYPE} STREQUAL \"RELEASE\")\n    add_subdirectory(../../thirdparty/benchmark benchmark)\n    add_subdirectory(bench)",
+          "blob_sha": "e3c6e7051a03afe1694d3f16416221d361ca6abf",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/cclab/src/CMakeLists.txt#L6"
+        }
+      ],
+      "confidence": "high",
+      "pins": [
+        "c58e6d0710581e3a08d65c349664128a8d9a2461"
+      ],
+      "raw_token_match_count": 527,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/glog\"",
+      "config_key_name": "cc/thirdparty/glog",
+      "path": "cc/thirdparty/glog",
+      "original_url": "git@github.com:google/glog.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 18,
+        "end_line": 20,
+        "excerpt": "[submodule \"cc/thirdparty/glog\"]\n\tpath = cc/thirdparty/glog\n\turl = git@github.com:google/glog.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L18"
+      },
+      "classification": "active_consumer",
+      "binding": "direct_legacy_cmake_checkout",
+      "recommendation": "retain",
+      "reason": "The absent checkout is still an unconditional configure input to legacy cclab and ccbench. Retain until those build contracts are repaired or intentionally retired; do not invent an upstream pin.",
+      "evidence": [
+        {
+          "path": "cc/cclab/CMakeLists.txt",
+          "line": 149,
+          "end_line": 149,
+          "excerpt": "add_subdirectory(../thirdparty/glog glog)",
+          "blob_sha": "648e1512657664054be06842a994f83fe7d4469f",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/cclab/CMakeLists.txt#L149"
+        },
+        {
+          "path": "cc/ccbench/CMakeLists.txt",
+          "line": 134,
+          "end_line": 134,
+          "excerpt": "add_subdirectory(../thirdparty/glog glog)",
+          "blob_sha": "5e34c8adea69cdf9a1f3ae7e322ed835f5eab83d",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/ccbench/CMakeLists.txt#L134"
+        }
+      ],
+      "confidence": "high",
+      "raw_token_match_count": 7,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/googletest\"",
+      "config_key_name": "cc/thirdparty/googletest",
+      "path": "cc/thirdparty/googletest",
+      "original_url": "https://github.com/google/googletest.git",
+      "gitlink_sha": "b514bdc898e2951020cbdca1304b75f5950d1f59",
+      "orphan": false,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 21,
+        "end_line": 23,
+        "excerpt": "[submodule \"cc/thirdparty/googletest\"]\n\tpath = cc/thirdparty/googletest\n\turl = https://github.com/google/googletest.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L21"
+      },
+      "classification": "active_consumer",
+      "binding": "tracked_gitlink_and_build_input",
+      "recommendation": "retain",
+      "reason": "Keep the real gitlink and declaration unchanged. Root CMake and independent C++ tests consume it; the explicit fetch/installed-package fallback is still supported.",
+      "evidence": [
+        {
+          "path": "cmake/XlabDependencies.cmake",
+          "line": 33,
+          "end_line": 42,
+          "excerpt": "function(xlab_require_googletest)\n    # Match the consuming MSVC targets' dynamic runtime, including Debug builds.\n    set(gtest_force_shared_crt ON CACHE BOOL \"Use shared MSVC runtime\" FORCE)\n    set(INSTALL_GTEST OFF CACHE BOOL \"Disable dependency installation\" FORCE)\n    if(NOT TARGET GTest::gtest_main)\n        find_package(GTest CONFIG QUIET)\n    endif()\n    xlab_require_dependency(googletest GTest::gtest_main\n        b514bdc898e2951020cbdca1304b75f5950d1f59)\nendfunction()",
+          "blob_sha": "bd907c00fc6832e31d63a75aaef0bf077c8fdd7c",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cmake/XlabDependencies.cmake#L33"
+        },
+        {
+          "path": "cc/projects/mini-seastar/CMakeLists.txt",
+          "line": 48,
+          "end_line": 48,
+          "excerpt": "add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../../cc/thirdparty/googletest googletest-build EXCLUDE_FROM_ALL)",
+          "blob_sha": "a340b0c32066fca4729613d3d8fa85757557bab7",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/projects/mini-seastar/CMakeLists.txt#L48"
+        },
+        {
+          "path": "cc/ccbench/CMakeLists.txt",
+          "line": 135,
+          "end_line": 135,
+          "excerpt": "add_subdirectory(../thirdparty/googletest googletest)",
+          "blob_sha": "5e34c8adea69cdf9a1f3ae7e322ed835f5eab83d",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/ccbench/CMakeLists.txt#L135"
+        }
+      ],
+      "confidence": "high",
+      "pins": [
+        "b514bdc898e2951020cbdca1304b75f5950d1f59"
+      ],
+      "raw_token_match_count": 216,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/robin-hood-hashing\"",
+      "config_key_name": "cc/thirdparty/robin-hood-hashing",
+      "path": "cc/thirdparty/robin-hood-hashing",
+      "original_url": "git@github.com:martinus/robin-hood-hashing.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 24,
+        "end_line": 26,
+        "excerpt": "[submodule \"cc/thirdparty/robin-hood-hashing\"]\n\tpath = cc/thirdparty/robin-hood-hashing\n\turl = git@github.com:martinus/robin-hood-hashing.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L24"
+      },
+      "classification": "active_consumer",
+      "binding": "tracked_vendored_header_not_orphan_checkout",
+      "recommendation": "archive-declaration",
+      "reason": "The live consumer includes an already tracked local header. Archive only the orphan declaration; preserve the header, tests, MIT attribution and version. The external add_subdirectory is commented out.",
+      "evidence": [
+        {
+          "path": "cc/cclab/src/common/map/robin_hood_map.h",
+          "line": 9,
+          "end_line": 14,
+          "excerpt": "// Fast & memory efficient hashtable based on robin hood hashing for C++11/14/17/20\n// https://github.com/martinus/robin-hood-hashing\n//\n// Licensed under the MIT License <http://opensource.org/licenses/MIT>.\n// SPDX-License-Identifier: MIT\n// Copyright (c) 2018-2021 Martin Ankerl <http://martin.ankerl.com>",
+          "blob_sha": "a0f31c91c06700d20521239838621b0f0cc01bfa",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/cclab/src/common/map/robin_hood_map.h#L9"
+        },
+        {
+          "path": "cc/cclab/src/common/map/robin_hood_map.h",
+          "line": 33,
+          "end_line": 35,
+          "excerpt": "#define ROBIN_HOOD_VERSION_MAJOR 3  // for incompatible API changes\n#define ROBIN_HOOD_VERSION_MINOR 11 // for adding functionality in a backwards-compatible manner\n#define ROBIN_HOOD_VERSION_PATCH 5  // for backwards-compatible bug fixes",
+          "blob_sha": "a0f31c91c06700d20521239838621b0f0cc01bfa",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/cclab/src/common/map/robin_hood_map.h#L33"
+        },
+        {
+          "path": "cc/cclab/test/common/robin_hood_map_test.cc",
+          "line": 16,
+          "end_line": 16,
+          "excerpt": "#include \"common/map/robin_hood_map.h\"",
+          "blob_sha": "272228e9fe58de95a993c920f9ae3f0b48ed2a34",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/cclab/test/common/robin_hood_map_test.cc#L16"
+        },
+        {
+          "path": "cc/cclab/CMakeLists.txt",
+          "line": 151,
+          "end_line": 151,
+          "excerpt": "# add_subdirectory(../thirdparty/robin-hood-hashing robin-hood-hashing)",
+          "blob_sha": "648e1512657664054be06842a994f83fe7d4469f",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/cclab/CMakeLists.txt#L151"
+        }
+      ],
+      "confidence": "high",
+      "pins": [
+        "Vendored header 3.11.5; upstream commit not recorded"
+      ],
+      "raw_token_match_count": 64,
+      "declaration_removal_preconditions": [
+        "Preserve the exact original path and URL in a tracked dependency/reference catalog with baseline commit, classification, evidence and caveats.",
+        "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
+        "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
+        "Re-run targeted static checks and confirm no gitlinks or executable files changed."
+      ]
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/abseil-cpp\"",
+      "config_key_name": "cc/thirdparty/abseil-cpp",
+      "path": "cc/thirdparty/abseil-cpp",
+      "original_url": "git@github.com:abseil/abseil-cpp.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 27,
+        "end_line": 29,
+        "excerpt": "[submodule \"cc/thirdparty/abseil-cpp\"]\n\tpath = cc/thirdparty/abseil-cpp\n\turl = git@github.com:abseil/abseil-cpp.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L27"
+      },
+      "classification": "active_consumer",
+      "binding": "direct_legacy_cmake_checkout",
+      "recommendation": "retain",
+      "reason": "Legacy cclab adds the missing local checkout and links absl::node_hash_map in live tests. The installed-package route in srlab is separate.",
+      "evidence": [
+        {
+          "path": "cc/cclab/CMakeLists.txt",
+          "line": 152,
+          "end_line": 155,
+          "excerpt": "# Abseil provides `absl::node_hash_map` used by tests\nset(ABSL_ENABLE_INSTALL ON CACHE BOOL \"Enable abseil install rules\" FORCE)\nset(ABSL_PROPAGATE_CXX_STD ON CACHE BOOL \"Propagate cxx standard to abseil\" FORCE)\nadd_subdirectory(../thirdparty/abseil-cpp abseil-cpp)",
+          "blob_sha": "648e1512657664054be06842a994f83fe7d4469f",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/cclab/CMakeLists.txt#L152"
+        },
+        {
+          "path": "cc/cclab/test/CMakeLists.txt",
+          "line": 8,
+          "end_line": 8,
+          "excerpt": "    target_link_libraries(${test_target} ${link_libs} PRIVATE common atomic pthread gtest absl::node_hash_map Threads::Threads)",
+          "blob_sha": "01bc658245cacecc676725d05f2b115c9e7c597e",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/cclab/test/CMakeLists.txt#L8"
+        },
+        {
+          "path": "cc/cclab/test/common/abseil_test.cc",
+          "line": 14,
+          "end_line": 17,
+          "excerpt": "#include \"absl/container/flat_hash_set.h\"\n#include \"absl/container/flat_hash_map.h\"\n#include \"absl/container/node_hash_map.h\"\n#include \"absl/strings/str_join.h\"",
+          "blob_sha": "df639fc0da5f226e6894a97be94ae43b0c2ac7a5",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/cclab/test/common/abseil_test.cc#L14"
+        },
+        {
+          "path": "cc/srlab/CMakeLists.txt",
+          "line": 72,
+          "end_line": 75,
+          "excerpt": "find_package(absl QUIET COMPONENTS strings)\nif(absl_FOUND)\n    target_link_libraries(srlab_app PRIVATE absl::strings)\n    target_compile_definitions(srlab_app PRIVATE SRLAB_USE_ABSL_STRINGS=1)",
+          "blob_sha": "4397c06020fe2f8f50824546e1229a55c63e5328",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/srlab/CMakeLists.txt#L72"
+        }
+      ],
+      "confidence": "high",
+      "raw_token_match_count": 40,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"c/minilisp\"",
+      "config_key_name": "c/minilisp",
+      "path": "c/minilisp",
+      "original_url": "git@github.com:rui314/minilisp.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 32,
+        "end_line": 34,
+        "excerpt": "[submodule \"c/minilisp\"]\n\tpath = c/minilisp\n\turl = git@github.com:rui314/minilisp.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L32"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "Only declaration/inventory evidence was found; no build, import, executable source-path or specific source-reading consumer was established. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [],
+      "confidence": "low",
+      "raw_token_match_count": 1,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"c/chibicc\"",
+      "config_key_name": "c/chibicc",
+      "path": "c/chibicc",
+      "original_url": "git@github.com:rui314/chibicc.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 35,
+        "end_line": 37,
+        "excerpt": "[submodule \"c/chibicc\"]\n\tpath = c/chibicc\n\turl = git@github.com:rui314/chibicc.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L35"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "Only declaration/inventory evidence was found; no build, import, executable source-path or specific source-reading consumer was established. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [],
+      "confidence": "low",
+      "raw_token_match_count": 1,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/gperftools\"",
+      "config_key_name": "cc/thirdparty/gperftools",
+      "path": "cc/thirdparty/gperftools",
+      "original_url": "git@github.com:gperftools/gperftools.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 40,
+        "end_line": 42,
+        "excerpt": "[submodule \"cc/thirdparty/gperftools\"]\n\tpath = cc/thirdparty/gperftools\n\turl = git@github.com:gperftools/gperftools.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L40"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "Only a commented add_subdirectory besides inventory; comments do not establish an active dependency. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [
+        {
+          "path": "cc/cclab/CMakeLists.txt",
+          "line": 156,
+          "end_line": 156,
+          "excerpt": "# add_subdirectory(../thirdparty/gperftools gperftools)",
+          "blob_sha": "648e1512657664054be06842a994f83fe7d4469f",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/cclab/CMakeLists.txt#L156"
+        }
+      ],
+      "confidence": "low",
+      "raw_token_match_count": 2,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/concurrentqueue\"",
+      "config_key_name": "cc/thirdparty/concurrentqueue",
+      "path": "cc/thirdparty/concurrentqueue",
+      "original_url": "git@github.com:cameron314/concurrentqueue.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 43,
+        "end_line": 45,
+        "excerpt": "[submodule \"cc/thirdparty/concurrentqueue\"]\n\tpath = cc/thirdparty/concurrentqueue\n\turl = git@github.com:cameron314/concurrentqueue.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L43"
+      },
+      "classification": "reference_example_only",
+      "binding": "no_declared_checkout_consumer_detected",
+      "recommendation": "archive-declaration",
+      "reason": "DuckDB reading notes explicitly describe moodycamel::ConcurrentQueue. The identically named local test class is defined inline and does not include the upstream queue header.",
+      "evidence": [
+        {
+          "path": "docs/reports/duckdb/reading-ducdb.md",
+          "line": 1236,
+          "end_line": 1236,
+          "excerpt": "2. **无锁队列实现**：使用 moodycamel::ConcurrentQueue，基于 CAS（Compare-And-Swap）原子操作，避免了互斥锁的内核调度开销",
+          "blob_sha": "054f33453923f91b522c0c9788c124e91a8acf45",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/docs/reports/duckdb/reading-ducdb.md#L1236"
+        },
+        {
+          "path": "cc/cclab/test/common/boost_test.cc",
+          "line": 67,
+          "end_line": 79,
+          "excerpt": "class ConcurrentQueue {\npublic:\n    class ImplicitProducer {\n    public:\n        template <bool canAlloc, typename U>\n        bool enqueue(U&& element) {\n            if constexpr (canAlloc) {\n                std::cout << \"Enqueuing with allocation: \" << element << std::endl;\n            } else {\n                std::cout << \"Enqueuing without allocation: \" << element << std::endl;\n            }\n            return true;\n        }",
+          "blob_sha": "05d2886f7f38437ff1cefb27d42b757e28f8927f",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/cclab/test/common/boost_test.cc#L67"
+        }
+      ],
+      "confidence": "medium",
+      "raw_token_match_count": 11,
+      "declaration_removal_preconditions": [
+        "Preserve the exact original path and URL in a tracked dependency/reference catalog with baseline commit, classification, evidence and caveats.",
+        "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
+        "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
+        "Re-run targeted static checks and confirm no gitlinks or executable files changed."
+      ]
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/x86-simd-sort\"",
+      "config_key_name": "cc/thirdparty/x86-simd-sort",
+      "path": "cc/thirdparty/x86-simd-sort",
+      "original_url": "git@github.com:intel/x86-simd-sort.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 46,
+        "end_line": 48,
+        "excerpt": "[submodule \"cc/thirdparty/x86-simd-sort\"]\n\tpath = cc/thirdparty/x86-simd-sort\n\turl = git@github.com:intel/x86-simd-sort.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L46"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "Only declaration/inventory evidence was found; no build, import, executable source-path or specific source-reading consumer was established. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [],
+      "confidence": "low",
+      "raw_token_match_count": 1,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/clang_combined_time_trace\"",
+      "config_key_name": "cc/thirdparty/clang_combined_time_trace",
+      "path": "cc/thirdparty/clang_combined_time_trace",
+      "original_url": "git@github.com:woodroof/clang_combined_time_trace.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 49,
+        "end_line": 51,
+        "excerpt": "[submodule \"cc/thirdparty/clang_combined_time_trace\"]\n\tpath = cc/thirdparty/clang_combined_time_trace\n\turl = git@github.com:woodroof/clang_combined_time_trace.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L49"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "Only declaration/inventory evidence was found; no build, import, executable source-path or specific source-reading consumer was established. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [],
+      "confidence": "low",
+      "raw_token_match_count": 1,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/ClangBuildAnalyzer\"",
+      "config_key_name": "cc/thirdparty/ClangBuildAnalyzer",
+      "path": "cc/thirdparty/ClangBuildAnalyzer",
+      "original_url": "git@github.com:aras-p/ClangBuildAnalyzer.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 52,
+        "end_line": 54,
+        "excerpt": "[submodule \"cc/thirdparty/ClangBuildAnalyzer\"]\n\tpath = cc/thirdparty/ClangBuildAnalyzer\n\turl = git@github.com:aras-p/ClangBuildAnalyzer.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L52"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "Only declaration/inventory evidence was found; no build, import, executable source-path or specific source-reading consumer was established. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [],
+      "confidence": "low",
+      "raw_token_match_count": 1,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/C-Plus-Plus\"",
+      "config_key_name": "cc/thirdparty/C-Plus-Plus",
+      "path": "cc/thirdparty/C-Plus-Plus",
+      "original_url": "git@github.com:TheAlgorithms/C-Plus-Plus.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 55,
+        "end_line": 57,
+        "excerpt": "[submodule \"cc/thirdparty/C-Plus-Plus\"]\n\tpath = cc/thirdparty/C-Plus-Plus\n\turl = git@github.com:TheAlgorithms/C-Plus-Plus.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L55"
+      },
+      "classification": "reference_example_only",
+      "binding": "no_declared_checkout_consumer_detected",
+      "recommendation": "archive-declaration",
+      "reason": "Explicit external reading/source link; no executable consumer of the declared checkout found. Preserve original URL/path in a reference catalog before removing the orphan declaration.",
+      "evidence": [
+        {
+          "path": "cc/README.md",
+          "line": 32,
+          "end_line": 32,
+          "excerpt": "- git clone git@github.com:TheAlgorithms/C-Plus-Plus.git",
+          "blob_sha": "90f5b85462e5828d7fcbc1581f08b7ff47727fad",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/README.md#L32"
+        }
+      ],
+      "confidence": "high",
+      "raw_token_match_count": 2,
+      "declaration_removal_preconditions": [
+        "Preserve the exact original path and URL in a tracked dependency/reference catalog with baseline commit, classification, evidence and caveats.",
+        "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
+        "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
+        "Re-run targeted static checks and confirm no gitlinks or executable files changed."
+      ]
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/wren\"",
+      "config_key_name": "cc/thirdparty/wren",
+      "path": "cc/thirdparty/wren",
+      "original_url": "git@github.com:wren-lang/wren.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 58,
+        "end_line": 60,
+        "excerpt": "[submodule \"cc/thirdparty/wren\"]\n\tpath = cc/thirdparty/wren\n\turl = git@github.com:wren-lang/wren.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L58"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "Only declaration/inventory evidence was found; no build, import, executable source-path or specific source-reading consumer was established. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [],
+      "confidence": "low",
+      "raw_token_match_count": 1,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/libcoro\"",
+      "config_key_name": "cc/thirdparty/libcoro",
+      "path": "cc/thirdparty/libcoro",
+      "original_url": "git@github.com:jbaldwin/libcoro.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 61,
+        "end_line": 63,
+        "excerpt": "[submodule \"cc/thirdparty/libcoro\"]\n\tpath = cc/thirdparty/libcoro\n\turl = git@github.com:jbaldwin/libcoro.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L61"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "Only declaration/inventory evidence was found; no build, import, executable source-path or specific source-reading consumer was established. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [],
+      "confidence": "low",
+      "raw_token_match_count": 1,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/sqlite\"",
+      "config_key_name": "cc/thirdparty/sqlite",
+      "path": "cc/thirdparty/sqlite",
+      "original_url": "git@github.com:sqlite/sqlite.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 64,
+        "end_line": 66,
+        "excerpt": "[submodule \"cc/thirdparty/sqlite\"]\n\tpath = cc/thirdparty/sqlite\n\turl = git@github.com:sqlite/sqlite.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L64"
+      },
+      "classification": "active_consumer",
+      "binding": "python_stdlib_runtime_not_orphan_checkout",
+      "recommendation": "archive-declaration",
+      "reason": "py-stock and pylab use Python sqlite3. This runtime binding does not build cc/thirdparty/sqlite. Archive the source-declaration metadata only; preserve SQLite-backed applications and data handling.",
+      "evidence": [
+        {
+          "path": "python/projects/py-stock/db.py",
+          "line": 1,
+          "end_line": 9,
+          "excerpt": "import sqlite3\nfrom datetime import datetime, timezone\nfrom typing import Iterable, List, Dict, Any\n\nfrom config import DEFAULT_DB_PATH\n\ndef get_connection(db_path: str = DEFAULT_DB_PATH) -> sqlite3.Connection:\n    conn = sqlite3.connect(db_path)\n    conn.row_factory = sqlite3.Row",
+          "blob_sha": "9f0ef9c4e251f1738f9b000c36a6c3cd8af0e682",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/python/projects/py-stock/db.py#L1"
+        },
+        {
+          "path": "python/pylab/test/test_cryptography.py",
+          "line": 1,
+          "end_line": 2,
+          "excerpt": "from cryptography.fernet import Fernet\nimport sqlite3",
+          "blob_sha": "5cbed14e2fed1190b85593111eda98130d2a4b3f",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/python/pylab/test/test_cryptography.py#L1"
+        }
+      ],
+      "confidence": "high",
+      "raw_token_match_count": 73,
+      "declaration_removal_preconditions": [
+        "Preserve the exact original path and URL in a tracked dependency/reference catalog with baseline commit, classification, evidence and caveats.",
+        "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
+        "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
+        "Re-run targeted static checks and confirm no gitlinks or executable files changed."
+      ]
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/hardware-effects\"",
+      "config_key_name": "cc/thirdparty/hardware-effects",
+      "path": "cc/thirdparty/hardware-effects",
+      "original_url": "git@github.com:Kobzol/hardware-effects.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 67,
+        "end_line": 69,
+        "excerpt": "[submodule \"cc/thirdparty/hardware-effects\"]\n\tpath = cc/thirdparty/hardware-effects\n\turl = git@github.com:Kobzol/hardware-effects.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L67"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "Only declaration/inventory evidence was found; no build, import, executable source-path or specific source-reading consumer was established. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [],
+      "confidence": "low",
+      "raw_token_match_count": 1,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/liburing4cpp\"",
+      "config_key_name": "cc/thirdparty/liburing4cpp",
+      "path": "cc/thirdparty/liburing4cpp",
+      "original_url": "git@github.com:CarterLi/liburing4cpp.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 70,
+        "end_line": 72,
+        "excerpt": "[submodule \"cc/thirdparty/liburing4cpp\"]\n\tpath = cc/thirdparty/liburing4cpp\n\turl = git@github.com:CarterLi/liburing4cpp.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L70"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "The io-uring project has its own include/io_uring implementation and links system uring. That does not establish usage of CarterLi/liburing4cpp. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [
+        {
+          "path": "cc/projects/io-uring/CMakeLists.txt",
+          "line": 33,
+          "end_line": 41,
+          "excerpt": "target_include_directories(\n    ${libname}\n    INTERFACE\n    include/)\n# The library has fmt, uring, and Threads::Threads as dependencies\ntarget_link_libraries(\n    ${libname}\n    INTERFACE\n    fmt uring Threads::Threads)",
+          "blob_sha": "26b5fb1947b213b387c86779918017d4d0f30f3a",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/projects/io-uring/CMakeLists.txt#L33"
+        }
+      ],
+      "confidence": "low",
+      "raw_token_match_count": 1,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/Radix-Hash-Join\"",
+      "config_key_name": "cc/thirdparty/Radix-Hash-Join",
+      "path": "cc/thirdparty/Radix-Hash-Join",
+      "original_url": "git@github.com:giorgospan/Radix-Hash-Join.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 73,
+        "end_line": 75,
+        "excerpt": "[submodule \"cc/thirdparty/Radix-Hash-Join\"]\n\tpath = cc/thirdparty/Radix-Hash-Join\n\turl = git@github.com:giorgospan/Radix-Hash-Join.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L73"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "Only declaration/inventory evidence was found; no build, import, executable source-path or specific source-reading consumer was established. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [],
+      "confidence": "low",
+      "raw_token_match_count": 1,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/simde\"",
+      "config_key_name": "cc/thirdparty/simde",
+      "path": "cc/thirdparty/simde",
+      "original_url": "git@github.com:simd-everywhere/simde.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 76,
+        "end_line": 78,
+        "excerpt": "[submodule \"cc/thirdparty/simde\"]\n\tpath = cc/thirdparty/simde\n\turl = git@github.com:simd-everywhere/simde.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L76"
+      },
+      "classification": "reference_example_only",
+      "binding": "no_declared_checkout_consumer_detected",
+      "recommendation": "archive-declaration",
+      "reason": "Explicit external reading/source link; no executable consumer of the declared checkout found. Preserve original URL/path in a reference catalog before removing the orphan declaration.",
+      "evidence": [
+        {
+          "path": "cc/README.md",
+          "line": 36,
+          "end_line": 36,
+          "excerpt": "- git clone git@github.com:simd-everywhere/simde.git",
+          "blob_sha": "90f5b85462e5828d7fcbc1581f08b7ff47727fad",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/README.md#L36"
+        }
+      ],
+      "confidence": "high",
+      "raw_token_match_count": 2,
+      "declaration_removal_preconditions": [
+        "Preserve the exact original path and URL in a tracked dependency/reference catalog with baseline commit, classification, evidence and caveats.",
+        "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
+        "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
+        "Re-run targeted static checks and confirm no gitlinks or executable files changed."
+      ]
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/seastar\"",
+      "config_key_name": "cc/thirdparty/seastar",
+      "path": "cc/thirdparty/seastar",
+      "original_url": "git@github.com:LiShuMing/seastar.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 79,
+        "end_line": 81,
+        "excerpt": "[submodule \"cc/thirdparty/seastar\"]\n\tpath = cc/thirdparty/seastar\n\turl = git@github.com:LiShuMing/seastar.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L79"
+      },
+      "classification": "reference_example_only",
+      "binding": "no_declared_checkout_consumer_detected",
+      "recommendation": "archive-declaration",
+      "reason": "MiniSeastar is documented as inspired by Seastar and is locally implemented. Its CMake file uses its own sources and GoogleTest, not the orphan Seastar checkout.",
+      "evidence": [
+        {
+          "path": "cc/projects/mini-seastar/AGENTS.md",
+          "line": 9,
+          "end_line": 9,
+          "excerpt": "MiniSeastar is a C++20 coroutine-based asynchronous runtime inspired by Seastar. It's designed for learning modern C++ coroutines and high-performance async I/O patterns.",
+          "blob_sha": "020464a7af8f37f9557d975dd5dc2f0593fd7ed9",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/projects/mini-seastar/AGENTS.md#L9"
+        },
+        {
+          "path": "cc/projects/mini-seastar/CMakeLists.txt",
+          "line": 35,
+          "end_line": 35,
+          "excerpt": "add_library(miniseastar_lib STATIC",
+          "blob_sha": "a340b0c32066fca4729613d3d8fa85757557bab7",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/projects/mini-seastar/CMakeLists.txt#L35"
+        }
+      ],
+      "confidence": "medium",
+      "raw_token_match_count": 36,
+      "declaration_removal_preconditions": [
+        "Preserve the exact original path and URL in a tracked dependency/reference catalog with baseline commit, classification, evidence and caveats.",
+        "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
+        "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
+        "Re-run targeted static checks and confirm no gitlinks or executable files changed."
+      ]
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/noisepage\"",
+      "config_key_name": "cc/thirdparty/noisepage",
+      "path": "cc/thirdparty/noisepage",
+      "original_url": "git@github.com:cmu-db/noisepage.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 82,
+        "end_line": 84,
+        "excerpt": "[submodule \"cc/thirdparty/noisepage\"]\n\tpath = cc/thirdparty/noisepage\n\turl = git@github.com:cmu-db/noisepage.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L82"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "Only declaration/inventory evidence was found; no build, import, executable source-path or specific source-reading consumer was established. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [],
+      "confidence": "low",
+      "raw_token_match_count": 1,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/fmt\"",
+      "config_key_name": "cc/thirdparty/fmt",
+      "path": "cc/thirdparty/fmt",
+      "original_url": "git@github.com:fmtlib/fmt.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 85,
+        "end_line": 87,
+        "excerpt": "[submodule \"cc/thirdparty/fmt\"]\n\tpath = cc/thirdparty/fmt\n\turl = git@github.com:fmtlib/fmt.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L85"
+      },
+      "classification": "active_consumer",
+      "binding": "direct_legacy_cmake_checkout_plus_independent_routes",
+      "recommendation": "retain",
+      "reason": "Legacy cclab requires this checkout. io-uring independently fetches fmt master; Bazel and srlab use independent packages. Do not remove the declaration while the local build contract remains.",
+      "evidence": [
+        {
+          "path": "cc/cclab/CMakeLists.txt",
+          "line": 145,
+          "end_line": 148,
+          "excerpt": "set(FMT_DOC OFF CACHE BOOL \"Disable fmt docs\" FORCE)\nset(FMT_TEST OFF CACHE BOOL \"Disable fmt tests\" FORCE)\nset(FMT_INSTALL OFF CACHE BOOL \"Disable fmt install\" FORCE)\nadd_subdirectory(../thirdparty/fmt fmt)",
+          "blob_sha": "648e1512657664054be06842a994f83fe7d4469f",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/cclab/CMakeLists.txt#L145"
+        },
+        {
+          "path": "cc/projects/io-uring/CMakeLists.txt",
+          "line": 18,
+          "end_line": 21,
+          "excerpt": "find_or_fetch(\n    fmt                                 # Package Name\n    https://github.com/fmtlib/fmt.git   # Repository\n    master)                             # Branch (or commit or tag)",
+          "blob_sha": "26b5fb1947b213b387c86779918017d4d0f30f3a",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/projects/io-uring/CMakeLists.txt#L18"
+        },
+        {
+          "path": "cc/projects/learn-balel/MODULE.bazel",
+          "line": 7,
+          "end_line": 7,
+          "excerpt": "# 引入fmt库",
+          "blob_sha": "629669d8dedf0cf2a89722cbd07b254f9533a8ab",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/projects/learn-balel/MODULE.bazel#L7"
+        },
+        {
+          "path": "cc/srlab/CMakeLists.txt",
+          "line": 66,
+          "end_line": 69,
+          "excerpt": "find_package(fmt QUIET)\nif(fmt_FOUND)\n    target_link_libraries(srlab_app PRIVATE fmt::fmt)\n    target_compile_definitions(srlab_app PRIVATE SRLAB_USE_FMT=1)",
+          "blob_sha": "4397c06020fe2f8f50824546e1229a55c63e5328",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/srlab/CMakeLists.txt#L66"
+        }
+      ],
+      "confidence": "high",
+      "pins": [
+        "Bazel fmt 10.2.1",
+        "io-uring master is mutable, not pinned"
+      ],
+      "raw_token_match_count": 161,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/babylon\"",
+      "config_key_name": "cc/thirdparty/babylon",
+      "path": "cc/thirdparty/babylon",
+      "original_url": "git@github.com:baidu/babylon.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 88,
+        "end_line": 90,
+        "excerpt": "[submodule \"cc/thirdparty/babylon\"]\n\tpath = cc/thirdparty/babylon\n\turl = git@github.com:baidu/babylon.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L88"
+      },
+      "classification": "reference_example_only",
+      "binding": "no_declared_checkout_consumer_detected",
+      "recommendation": "archive-declaration",
+      "reason": "Explicit external reading/source link; no executable consumer of the declared checkout found. Preserve original URL/path in a reference catalog before removing the orphan declaration.",
+      "evidence": [
+        {
+          "path": "cc/README.md",
+          "line": 34,
+          "end_line": 34,
+          "excerpt": "- git clone git@github.com:baidu/babylon.git",
+          "blob_sha": "90f5b85462e5828d7fcbc1581f08b7ff47727fad",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/README.md#L34"
+        }
+      ],
+      "confidence": "high",
+      "raw_token_match_count": 2,
+      "declaration_removal_preconditions": [
+        "Preserve the exact original path and URL in a tracked dependency/reference catalog with baseline commit, classification, evidence and caveats.",
+        "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
+        "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
+        "Re-run targeted static checks and confirm no gitlinks or executable files changed."
+      ]
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/boost\"",
+      "config_key_name": "cc/thirdparty/boost",
+      "path": "cc/thirdparty/boost",
+      "original_url": "git@github.com:boostorg/boost.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 91,
+        "end_line": 93,
+        "excerpt": "[submodule \"cc/thirdparty/boost\"]\n\tpath = cc/thirdparty/boost\n\turl = git@github.com:boostorg/boost.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L91"
+      },
+      "classification": "active_consumer",
+      "binding": "installed_external_package_not_orphan_checkout",
+      "recommendation": "archive-declaration",
+      "reason": "srlab consumes installed Boost and Folly setup installs system packages. No live use of the declared source checkout was found; archive its metadata while keeping package configuration and consumers.",
+      "evidence": [
+        {
+          "path": "cc/srlab/CMakeLists.txt",
+          "line": 78,
+          "end_line": 82,
+          "excerpt": "find_package(Boost 1.80 QUIET COMPONENTS system filesystem)\nif(Boost_FOUND)\n    target_link_libraries(srlab_app PRIVATE Boost::system Boost::filesystem)\n    target_compile_definitions(srlab_app PRIVATE SRLAB_USE_BOOST=1)\n    message(STATUS \"Boost found for srlab_app: ${Boost_VERSION}\")",
+          "blob_sha": "4397c06020fe2f8f50824546e1229a55c63e5328",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/srlab/CMakeLists.txt#L78"
+        },
+        {
+          "path": "cc/srlab/tests/CMakeLists.txt",
+          "line": 57,
+          "end_line": 67,
+          "excerpt": "        if(Boost_FOUND)\n            add_executable(use_boost_tests test_boost.cpp)\n            set_target_properties(use_boost_tests PROPERTIES\n                CXX_STANDARD 17\n                CXX_STANDARD_REQUIRED ON\n                CXX_EXTENSIONS OFF)\n            \n            target_link_libraries(use_boost_tests PRIVATE\n                ${_srlab_gtest_target}\n                Boost::system\n                Boost::filesystem)",
+          "blob_sha": "8139ec8f3c7eb76316c426afcb7d022005ac1852",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/srlab/tests/CMakeLists.txt#L57"
+        },
+        {
+          "path": "shell/docker/build_folly.sh",
+          "line": 10,
+          "end_line": 17,
+          "excerpt": "apt-get install -y \\\n  libboost-context-dev \\\n  libboost-filesystem-dev \\\n  libboost-program-options-dev \\\n  libboost-regex-dev \\\n  libboost-thread-dev\n#（可选）兜底整个 Boost 开发包\napt-get install -y libboost-all-dev",
+          "blob_sha": "396fcecfd46a3347c10a5abf09516192950e393d",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/shell/docker/build_folly.sh#L10"
+        },
+        {
+          "path": "cc/cclab/CMakeLists.txt",
+          "line": 160,
+          "end_line": 160,
+          "excerpt": "#add_subdirectory(../thirdparty/boost)",
+          "blob_sha": "648e1512657664054be06842a994f83fe7d4469f",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/cclab/CMakeLists.txt#L160"
+        }
+      ],
+      "confidence": "high",
+      "pins": [
+        "srlab requires Boost >=1.80, hints Boost-1.80.0"
+      ],
+      "raw_token_match_count": 72,
+      "declaration_removal_preconditions": [
+        "Preserve the exact original path and URL in a tracked dependency/reference catalog with baseline commit, classification, evidence and caveats.",
+        "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
+        "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
+        "Re-run targeted static checks and confirm no gitlinks or executable files changed."
+      ]
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/flight-benchmark\"",
+      "config_key_name": "cc/thirdparty/flight-benchmark",
+      "path": "cc/thirdparty/flight-benchmark",
+      "original_url": "git@github.com:vichry2/flight-benchmark.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 94,
+        "end_line": 96,
+        "excerpt": "[submodule \"cc/thirdparty/flight-benchmark\"]\n\tpath = cc/thirdparty/flight-benchmark\n\turl = git@github.com:vichry2/flight-benchmark.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L94"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "Only declaration/inventory evidence was found; no build, import, executable source-path or specific source-reading consumer was established. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [],
+      "confidence": "low",
+      "raw_token_match_count": 1,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/junction\"",
+      "config_key_name": "cc/thirdparty/junction",
+      "path": "cc/thirdparty/junction",
+      "original_url": "git@github.com:preshing/junction.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 97,
+        "end_line": 99,
+        "excerpt": "[submodule \"cc/thirdparty/junction\"]\n\tpath = cc/thirdparty/junction\n\turl = git@github.com:preshing/junction.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L97"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "Physics semiconductor junctions and a word-DFA junction variable are false-positive names, not preshing/junction use. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [],
+      "confidence": "low",
+      "raw_token_match_count": 4,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/libchef\"",
+      "config_key_name": "cc/thirdparty/libchef",
+      "path": "cc/thirdparty/libchef",
+      "original_url": "git@github.com:q191201771/libchef.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 100,
+        "end_line": 102,
+        "excerpt": "[submodule \"cc/thirdparty/libchef\"]\n\tpath = cc/thirdparty/libchef\n\turl = git@github.com:q191201771/libchef.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L100"
+      },
+      "classification": "reference_example_only",
+      "binding": "no_declared_checkout_consumer_detected",
+      "recommendation": "archive-declaration",
+      "reason": "Explicit external reading/source link; no executable consumer of the declared checkout found. Preserve original URL/path in a reference catalog before removing the orphan declaration.",
+      "evidence": [
+        {
+          "path": "cc/README.md",
+          "line": 29,
+          "end_line": 29,
+          "excerpt": "- [libchef](https://github.com/q191201771/libchef)",
+          "blob_sha": "90f5b85462e5828d7fcbc1581f08b7ff47727fad",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/README.md#L29"
+        }
+      ],
+      "confidence": "high",
+      "raw_token_match_count": 2,
+      "declaration_removal_preconditions": [
+        "Preserve the exact original path and URL in a tracked dependency/reference catalog with baseline commit, classification, evidence and caveats.",
+        "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
+        "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
+        "Re-run targeted static checks and confirm no gitlinks or executable files changed."
+      ]
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/simple-sqlite\"",
+      "config_key_name": "cc/thirdparty/simple-sqlite",
+      "path": "cc/thirdparty/simple-sqlite",
+      "original_url": "git@github.com:madushadhanushka/simple-sqlite.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 103,
+        "end_line": 105,
+        "excerpt": "[submodule \"cc/thirdparty/simple-sqlite\"]\n\tpath = cc/thirdparty/simple-sqlite\n\turl = git@github.com:madushadhanushka/simple-sqlite.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L103"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "Only declaration/inventory evidence was found; no build, import, executable source-path or specific source-reading consumer was established. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [],
+      "confidence": "low",
+      "raw_token_match_count": 1,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/templight-tools\"",
+      "config_key_name": "cc/thirdparty/templight-tools",
+      "path": "cc/thirdparty/templight-tools",
+      "original_url": "git@github.com:mikael-s-persson/templight-tools.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 106,
+        "end_line": 108,
+        "excerpt": "[submodule \"cc/thirdparty/templight-tools\"]\n\tpath = cc/thirdparty/templight-tools\n\turl = git@github.com:mikael-s-persson/templight-tools.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L106"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "Only declaration/inventory evidence was found; no build, import, executable source-path or specific source-reading consumer was established. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [],
+      "confidence": "low",
+      "raw_token_match_count": 1,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/rocksdb\"",
+      "config_key_name": "cc/thirdparty/rocksdb",
+      "path": "cc/thirdparty/rocksdb",
+      "original_url": "git@github.com:facebook/rocksdb.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 109,
+        "end_line": 111,
+        "excerpt": "[submodule \"cc/thirdparty/rocksdb\"]\n\tpath = cc/thirdparty/rocksdb\n\turl = git@github.com:facebook/rocksdb.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L109"
+      },
+      "classification": "reference_example_only",
+      "binding": "no_declared_checkout_consumer_detected",
+      "recommendation": "archive-declaration",
+      "reason": "Current research discusses RocksDB/Pebble storage engines. No local source-checkout consumer detected; reference use does not establish that the project is inactive.",
+      "evidence": [
+        {
+          "path": "docs/reading-open-source/crockroachdb/deepdive-2025.md",
+          "line": 16,
+          "end_line": 18,
+          "excerpt": "  - **存储引擎演进**：基于 Pebble（自研 LSM-tree 存储引擎，替代 RocksDB）\n     的持续迭代：Block Cache、Compaction 策略、WAL 设计、Multi-level\n     Bloom Filter 的工程权衡；与 RocksDB 的性能对比及迁移完成度；",
+          "blob_sha": "add294f66f45cf740f638d81f840482d1d15f96b",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/docs/reading-open-source/crockroachdb/deepdive-2025.md#L16"
+        }
+      ],
+      "confidence": "medium",
+      "raw_token_match_count": 33,
+      "declaration_removal_preconditions": [
+        "Preserve the exact original path and URL in a tracked dependency/reference catalog with baseline commit, classification, evidence and caveats.",
+        "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
+        "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
+        "Re-run targeted static checks and confirm no gitlinks or executable files changed."
+      ]
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/mimalloc\"",
+      "config_key_name": "cc/thirdparty/mimalloc",
+      "path": "cc/thirdparty/mimalloc",
+      "original_url": "git@github.com:microsoft/mimalloc.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 112,
+        "end_line": 114,
+        "excerpt": "[submodule \"cc/thirdparty/mimalloc\"]\n\tpath = cc/thirdparty/mimalloc\n\turl = git@github.com:microsoft/mimalloc.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L112"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "Only declaration/inventory evidence was found; no build, import, executable source-path or specific source-reading consumer was established. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [],
+      "confidence": "low",
+      "raw_token_match_count": 1,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/lua\"",
+      "config_key_name": "cc/thirdparty/lua",
+      "path": "cc/thirdparty/lua",
+      "original_url": "git@github.com:lua/lua.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 115,
+        "end_line": 117,
+        "excerpt": "[submodule \"cc/thirdparty/lua\"]\n\tpath = cc/thirdparty/lua\n\turl = git@github.com:lua/lua.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L115"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "Source-file analysis support and a sysbench .lua invocation do not establish usage of the lua/lua source checkout; sysbench interpreter implementation was not audited. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [
+        {
+          "path": "python/projects/py-academic/crazy_functions/SourceCode_Analyse.py",
+          "line": 315,
+          "end_line": 315,
+          "excerpt": "    file_manifest = [f for f in glob.glob(f'{project_folder}/**/*.lua', recursive=True)] + \\",
+          "blob_sha": "9f2c342f60cf960d2c1f0d27213d8086c16baafa",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/python/projects/py-academic/crazy_functions/SourceCode_Analyse.py#L315"
+        },
+        {
+          "path": "python/pylab/tools/benchmark/sysbench.sh",
+          "line": 1,
+          "end_line": 1,
+          "excerpt": "sysbench --db-driver=mysql --time=300 --threads=1 --report-interval=30 --mysql-host= --mysql-port=9032 --mysql-user=root --mysql-password= --mysql-db=db1 temp.lua run",
+          "blob_sha": "ff4ffa51e2b08f482eff9f8e6ed0c13aa2055b27",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/python/pylab/tools/benchmark/sysbench.sh#L1"
+        }
+      ],
+      "confidence": "low",
+      "raw_token_match_count": 21,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/brpc\"",
+      "config_key_name": "cc/thirdparty/brpc",
+      "path": "cc/thirdparty/brpc",
+      "original_url": "git@github.com:apache/brpc.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 118,
+        "end_line": 120,
+        "excerpt": "[submodule \"cc/thirdparty/brpc\"]\n\tpath = cc/thirdparty/brpc\n\turl = git@github.com:apache/brpc.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L118"
+      },
+      "classification": "reference_example_only",
+      "binding": "no_declared_checkout_consumer_detected",
+      "recommendation": "archive-declaration",
+      "reason": "A dedicated source-reading report exists; legacy add_subdirectory is commented out. Archive only declaration metadata and preserve report/source links.",
+      "evidence": [
+        {
+          "path": "docs/reports/brpc/readming-brpc.md",
+          "line": 1,
+          "end_line": 5,
+          "excerpt": "# brpc Framework Analysis: High-Performance Implementation from Computer Architecture Perspective\n\n> Author: Li ShuMing\n> Date: 2026-01-25\n> Based on brpc codebase analysis from `/Users/lism/work/brpc`",
+          "blob_sha": "43f957a5e8b0f59102dcdeaa04ef3191504f5ee7",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/docs/reports/brpc/readming-brpc.md#L1"
+        },
+        {
+          "path": "cc/cclab/CMakeLists.txt",
+          "line": 158,
+          "end_line": 158,
+          "excerpt": "# add_subdirectory(../thirdparty/brpc brpc)",
+          "blob_sha": "648e1512657664054be06842a994f83fe7d4469f",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/cclab/CMakeLists.txt#L158"
+        }
+      ],
+      "confidence": "medium",
+      "raw_token_match_count": 22,
+      "declaration_removal_preconditions": [
+        "Preserve the exact original path and URL in a tracked dependency/reference catalog with baseline commit, classification, evidence and caveats.",
+        "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
+        "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
+        "Re-run targeted static checks and confirm no gitlinks or executable files changed."
+      ]
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/velox\"",
+      "config_key_name": "cc/thirdparty/velox",
+      "path": "cc/thirdparty/velox",
+      "original_url": "git@github.com:facebookincubator/velox.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 121,
+        "end_line": 123,
+        "excerpt": "[submodule \"cc/thirdparty/velox\"]\n\tpath = cc/thirdparty/velox\n\turl = git@github.com:facebookincubator/velox.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L121"
+      },
+      "classification": "reference_example_only",
+      "binding": "no_declared_checkout_consumer_detected",
+      "recommendation": "archive-declaration",
+      "reason": "Active reading/report navigation points to Cygnus, with additional xlab source-analysis notes. No local executable checkout binding found.",
+      "evidence": [
+        {
+          "path": "docs/README.md",
+          "line": 28,
+          "end_line": 28,
+          "excerpt": "| [Velox](https://github.com/LiShuMing/cygnus/tree/main/research/velox) | [research/velox](https://github.com/LiShuMing/cygnus/tree/main/research/velox) |",
+          "blob_sha": "43a956500df62117b1f7d4ddac16fe97efa4163a",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/docs/README.md#L28"
+        },
+        {
+          "path": "docs/reading-open-source/velox/reading-velox.md",
+          "line": 1,
+          "end_line": 1,
+          "excerpt": "",
+          "blob_sha": "011a1ee66a4c4fe6351c0407a9affd9e71e2f1dc",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/docs/reading-open-source/velox/reading-velox.md#L1"
+        }
+      ],
+      "confidence": "medium",
+      "raw_token_match_count": 144,
+      "declaration_removal_preconditions": [
+        "Preserve the exact original path and URL in a tracked dependency/reference catalog with baseline commit, classification, evidence and caveats.",
+        "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
+        "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
+        "Re-run targeted static checks and confirm no gitlinks or executable files changed."
+      ]
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/muduo\"",
+      "config_key_name": "cc/thirdparty/muduo",
+      "path": "cc/thirdparty/muduo",
+      "original_url": "git@github.com:chenshuo/muduo.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 124,
+        "end_line": 126,
+        "excerpt": "[submodule \"cc/thirdparty/muduo\"]\n\tpath = cc/thirdparty/muduo\n\turl = git@github.com:chenshuo/muduo.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L124"
+      },
+      "classification": "reference_example_only",
+      "binding": "no_declared_checkout_consumer_detected",
+      "recommendation": "archive-declaration",
+      "reason": "A C++ learning resource explicitly names chenshuo/muduo and Reactor study. No build consumer of the declared checkout was found.",
+      "evidence": [
+        {
+          "path": "docs/how-to-do/how-to-learn/learn-cpp-resources.md",
+          "line": 177,
+          "end_line": 177,
+          "excerpt": "| **muduo** | chenshuo/muduo | 网络库、Reactor 模式 |",
+          "blob_sha": "682a1f65b8255c9f1e13df7059b640acd20f5827",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/docs/how-to-do/how-to-learn/learn-cpp-resources.md#L177"
+        }
+      ],
+      "confidence": "medium",
+      "raw_token_match_count": 7,
+      "declaration_removal_preconditions": [
+        "Preserve the exact original path and URL in a tracked dependency/reference catalog with baseline commit, classification, evidence and caveats.",
+        "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
+        "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
+        "Re-run targeted static checks and confirm no gitlinks or executable files changed."
+      ]
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/dlmalloc\"",
+      "config_key_name": "cc/thirdparty/dlmalloc",
+      "path": "cc/thirdparty/dlmalloc",
+      "original_url": "git@github.com:ennorehling/dlmalloc.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 127,
+        "end_line": 129,
+        "excerpt": "[submodule \"cc/thirdparty/dlmalloc\"]\n\tpath = cc/thirdparty/dlmalloc\n\turl = git@github.com:ennorehling/dlmalloc.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L127"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "Only declaration/inventory evidence was found; no build, import, executable source-path or specific source-reading consumer was established. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [],
+      "confidence": "low",
+      "raw_token_match_count": 1,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"rust/thirdparty/dbeel\"",
+      "config_key_name": "rust/thirdparty/dbeel",
+      "path": "rust/thirdparty/dbeel",
+      "original_url": "git@github.com:tontinton/dbeel.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 132,
+        "end_line": 134,
+        "excerpt": "[submodule \"rust/thirdparty/dbeel\"]\n\tpath = rust/thirdparty/dbeel\n\turl = git@github.com:tontinton/dbeel.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L132"
+      },
+      "classification": "reference_example_only",
+      "binding": "no_declared_checkout_consumer_detected",
+      "recommendation": "archive-declaration",
+      "reason": "Explicit external reading/source link; no executable consumer of the declared checkout found. Preserve original URL/path in a reference catalog before removing the orphan declaration.",
+      "evidence": [
+        {
+          "path": "cc/README.md",
+          "line": 35,
+          "end_line": 35,
+          "excerpt": "- git clone git@github.com:tontinton/dbeel.git",
+          "blob_sha": "90f5b85462e5828d7fcbc1581f08b7ff47727fad",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/README.md#L35"
+        }
+      ],
+      "confidence": "high",
+      "raw_token_match_count": 2,
+      "declaration_removal_preconditions": [
+        "Preserve the exact original path and URL in a tracked dependency/reference catalog with baseline commit, classification, evidence and caveats.",
+        "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
+        "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
+        "Re-run targeted static checks and confirm no gitlinks or executable files changed."
+      ]
+    },
+    {
+      "section_name": "submodule \"rust/thirdparty/feldera\"",
+      "config_key_name": "rust/thirdparty/feldera",
+      "path": "rust/thirdparty/feldera",
+      "original_url": "git@github.com:feldera/feldera.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 135,
+        "end_line": 137,
+        "excerpt": "[submodule \"rust/thirdparty/feldera\"]\n\tpath = rust/thirdparty/feldera\n\turl = git@github.com:feldera/feldera.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L135"
+      },
+      "classification": "reference_example_only",
+      "binding": "no_declared_checkout_consumer_detected",
+      "recommendation": "archive-declaration",
+      "reason": "The materialized-view research identifies Feldera as the DBSP implementation. No registry or local-checkout executable consumer detected.",
+      "evidence": [
+        {
+          "path": "docs/build-projects/reports/materialized_views/ivm/ivm_report2.md",
+          "line": 71,
+          "end_line": 71,
+          "excerpt": "DBSP 的工程产物是 **Feldera**（原 DBSP 开源实现），已支持完整 SQL 的增量计算。",
+          "blob_sha": "707bf11f5d03f3642c706c7a6ba481529484906e",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/docs/build-projects/reports/materialized_views/ivm/ivm_report2.md#L71"
+        }
+      ],
+      "confidence": "medium",
+      "raw_token_match_count": 3,
+      "declaration_removal_preconditions": [
+        "Preserve the exact original path and URL in a tracked dependency/reference catalog with baseline commit, classification, evidence and caveats.",
+        "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
+        "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
+        "Re-run targeted static checks and confirm no gitlinks or executable files changed."
+      ]
+    },
+    {
+      "section_name": "submodule \"rust/thirdparty/timely-dataflow\"",
+      "config_key_name": "rust/thirdparty/timely-dataflow",
+      "path": "rust/thirdparty/timely-dataflow",
+      "original_url": "git@github.com:TimelyDataflow/timely-dataflow.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 138,
+        "end_line": 140,
+        "excerpt": "[submodule \"rust/thirdparty/timely-dataflow\"]\n\tpath = rust/thirdparty/timely-dataflow\n\turl = git@github.com:TimelyDataflow/timely-dataflow.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L138"
+      },
+      "classification": "reference_example_only",
+      "binding": "no_declared_checkout_consumer_detected",
+      "recommendation": "archive-declaration",
+      "reason": "RisingWave comparison references the TimelyDataflow ecosystem. This is conceptual research evidence, not a local Cargo dependency or source-path usage.",
+      "evidence": [
+        {
+          "path": "docs/reports/risingwave/deepdive-2025.md",
+          "line": 414,
+          "end_line": 414,
+          "excerpt": "| **IVM 实现基础** | 自研 Streaming DAG（Delta 流模型） | Differential Dataflow（RUST，来自TimelyDataflow生态）|",
+          "blob_sha": "fc5504694538f98304332532499de42265b2cc86",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/docs/reports/risingwave/deepdive-2025.md#L414"
+        }
+      ],
+      "confidence": "medium",
+      "raw_token_match_count": 1,
+      "declaration_removal_preconditions": [
+        "Preserve the exact original path and URL in a tracked dependency/reference catalog with baseline commit, classification, evidence and caveats.",
+        "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
+        "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
+        "Re-run targeted static checks and confirm no gitlinks or executable files changed."
+      ]
+    },
+    {
+      "section_name": "submodule \"rust/thirdparty/arroyo\"",
+      "config_key_name": "rust/thirdparty/arroyo",
+      "path": "rust/thirdparty/arroyo",
+      "original_url": "git@github.com:ArroyoSystems/arroyo.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 141,
+        "end_line": 143,
+        "excerpt": "[submodule \"rust/thirdparty/arroyo\"]\n\tpath = rust/thirdparty/arroyo\n\turl = git@github.com:ArroyoSystems/arroyo.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L141"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "Only declaration/inventory evidence was found; no build, import, executable source-path or specific source-reading consumer was established. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [],
+      "confidence": "low",
+      "raw_token_match_count": 1,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"rust/thirdparty/optd\"",
+      "config_key_name": "rust/thirdparty/optd",
+      "path": "rust/thirdparty/optd",
+      "original_url": "git@github.com:cmu-db/optd.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 144,
+        "end_line": 146,
+        "excerpt": "[submodule \"rust/thirdparty/optd\"]\n\tpath = rust/thirdparty/optd\n\turl = git@github.com:cmu-db/optd.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L144"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "The prior audit found only a repo-list link in migrated python/projects/py-tools/git-repos.md. That file is absent on this baseline. No current checkout consumer established. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [],
+      "confidence": "low",
+      "raw_token_match_count": 1,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"rust/thirdparty/sqleibniz\"",
+      "config_key_name": "rust/thirdparty/sqleibniz",
+      "path": "rust/thirdparty/sqleibniz",
+      "original_url": "git@github.com:xNaCly/sqleibniz.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 147,
+        "end_line": 149,
+        "excerpt": "[submodule \"rust/thirdparty/sqleibniz\"]\n\tpath = rust/thirdparty/sqleibniz\n\turl = git@github.com:xNaCly/sqleibniz.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L147"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "Only declaration/inventory evidence was found; no build, import, executable source-path or specific source-reading consumer was established. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [],
+      "confidence": "low",
+      "raw_token_match_count": 1,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"rust/thirdparty/differential-dataflow\"",
+      "config_key_name": "rust/thirdparty/differential-dataflow",
+      "path": "rust/thirdparty/differential-dataflow",
+      "original_url": "https://github.com/TimelyDataflow/differential-dataflow.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 150,
+        "end_line": 152,
+        "excerpt": "[submodule \"rust/thirdparty/differential-dataflow\"]\n\tpath = rust/thirdparty/differential-dataflow\n\turl = https://github.com/TimelyDataflow/differential-dataflow.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L150"
+      },
+      "classification": "reference_example_only",
+      "binding": "no_declared_checkout_consumer_detected",
+      "recommendation": "archive-declaration",
+      "reason": "RisingWave comparison names Differential Dataflow and Frank McSherry. No Cargo dependency on the declared checkout found.",
+      "evidence": [
+        {
+          "path": "docs/reports/risingwave/deepdive-2025.md",
+          "line": 422,
+          "end_line": 422,
+          "excerpt": "Materialize 基于 **Differential Dataflow** 的理论更为成熟（Frank McSherry 的工作），但 RisingWave 在工程实现和商业推进上更为激进，在中国市场（和亚太地区）拥有更强的生态。",
+          "blob_sha": "fc5504694538f98304332532499de42265b2cc86",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/docs/reports/risingwave/deepdive-2025.md#L422"
+        }
+      ],
+      "confidence": "medium",
+      "raw_token_match_count": 1,
+      "declaration_removal_preconditions": [
+        "Preserve the exact original path and URL in a tracked dependency/reference catalog with baseline commit, classification, evidence and caveats.",
+        "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
+        "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
+        "Re-run targeted static checks and confirm no gitlinks or executable files changed."
+      ]
+    },
+    {
+      "section_name": "submodule \"rust/thirdparty/osblog\"",
+      "config_key_name": "rust/thirdparty/osblog",
+      "path": "rust/thirdparty/osblog",
+      "original_url": "git@github.com:sgmarz/osblog.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 153,
+        "end_line": 155,
+        "excerpt": "[submodule \"rust/thirdparty/osblog\"]\n\tpath = rust/thirdparty/osblog\n\turl = git@github.com:sgmarz/osblog.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L153"
+      },
+      "classification": "reference_example_only",
+      "binding": "no_declared_checkout_consumer_detected",
+      "recommendation": "archive-declaration",
+      "reason": "Explicit external reading/source link; no executable consumer of the declared checkout found. Preserve original URL/path in a reference catalog before removing the orphan declaration.",
+      "evidence": [
+        {
+          "path": "cc/README.md",
+          "line": 33,
+          "end_line": 33,
+          "excerpt": "- git clone git@github.com:sgmarz/osblog.git",
+          "blob_sha": "90f5b85462e5828d7fcbc1581f08b7ff47727fad",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/README.md#L33"
+        }
+      ],
+      "confidence": "high",
+      "raw_token_match_count": 2,
+      "declaration_removal_preconditions": [
+        "Preserve the exact original path and URL in a tracked dependency/reference catalog with baseline commit, classification, evidence and caveats.",
+        "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
+        "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
+        "Re-run targeted static checks and confirm no gitlinks or executable files changed."
+      ]
+    },
+    {
+      "section_name": "submodule \"rust/thirdparty/toydb\"",
+      "config_key_name": "rust/thirdparty/toydb",
+      "path": "rust/thirdparty/toydb",
+      "original_url": "git@github.com:erikgrinaker/toydb.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 156,
+        "end_line": 158,
+        "excerpt": "[submodule \"rust/thirdparty/toydb\"]\n\tpath = rust/thirdparty/toydb\n\turl = git@github.com:erikgrinaker/toydb.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L156"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "Native CI and Python ToyDB refer to the local Python project inspired by TinyDB, not erikgrinaker/toydb. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [
+        {
+          "path": "python/projects/py-toydb/README.md",
+          "line": 7,
+          "end_line": 7,
+          "excerpt": "ToyDB is a lightweight, document-oriented database written in pure Python. It provides a simple and intuitive API for storing and querying JSON-like documents. Inspired by [TinyDB](https://github.com/msiemens/tinydb), ToyDB is designed for small-scale applications, prototyping, and learning.",
+          "blob_sha": "a37cd75191038aad04bc0f8f0705ebe3ec9ee668",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/python/projects/py-toydb/README.md#L7"
+        }
+      ],
+      "confidence": "low",
+      "raw_token_match_count": 169,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"rust/thirdparty/risingwave\"",
+      "config_key_name": "rust/thirdparty/risingwave",
+      "path": "rust/thirdparty/risingwave",
+      "original_url": "https://github.com/risingwavelabs/risingwave.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 159,
+        "end_line": 161,
+        "excerpt": "[submodule \"rust/thirdparty/risingwave\"]\n\tpath = rust/thirdparty/risingwave\n\turl = https://github.com/risingwavelabs/risingwave.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L159"
+      },
+      "classification": "reference_example_only",
+      "binding": "no_declared_checkout_consumer_detected",
+      "recommendation": "archive-declaration",
+      "reason": "Dedicated code-reading chapters and reports remain on this baseline. Archive source declaration metadata without deleting books/reports or assuming their separate migration is complete.",
+      "evidence": [
+        {
+          "path": "docs/books/risingwave-book/chapters/03-SQL解析器.md",
+          "line": 11,
+          "end_line": 15,
+          "excerpt": "在数据库系统的技术选型中，SQL Parser 通常有两种策略：**自研**或是**复用开源**。RisingWave 的选择是 Fork 自 [Apache DataFusion](https://github.com/apache/datafusion) 的 [sqlparser-rs](https://github.com/sqlparser-rs/sqlparser-rs)，然后进行了大量定制化改造。\n\n这个决策背后有三个考量：\n\n1. **PostgreSQL 兼容性的刚需**。作为一款定位为\"Postgres-compatible\"的流数据库，RisingWave 需要支持大量 PG 特有语法（`::type` 类型转换、`$1` 参数化、Dollar-quoted string 等），通用的 ANSI SQL Parser 远远不够。",
+          "blob_sha": "67f17bba9994e0af5a1eb0dc05eae16e7e449c0a",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/docs/books/risingwave-book/chapters/03-SQL%E8%A7%A3%E6%9E%90%E5%99%A8.md#L11"
+        },
+        {
+          "path": "docs/reports/risingwave/deepdive-2025.md",
+          "line": 408,
+          "end_line": 418,
+          "excerpt": "### 7.2 vs Materialize\n\nMaterialize 和 RisingWave 是目前最接近的两个竞品：都以\"SQL on Streams\"为核心，都以 IVM 为设计哲学，都以 PostgreSQL 协议为接入标准。\n\n| 维度 | RisingWave | Materialize |\n|------|-----------|-------------|\n| **IVM 实现基础** | 自研 Streaming DAG（Delta 流模型） | Differential Dataflow（RUST，来自TimelyDataflow生态）|\n| **状态存储** | Hummock（自研，S3 LSM-tree） | PERSIST（基于S3，但架构不同） |\n| **实现语言** | Rust | Rust |\n| **PostgreSQL兼容** | 高度兼容 | 高度兼容 |\n| **商业化** | RisingWave Cloud + 开源社区 | Materialize Cloud（主要商业产品） |",
+          "blob_sha": "fc5504694538f98304332532499de42265b2cc86",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/docs/reports/risingwave/deepdive-2025.md#L408"
+        }
+      ],
+      "confidence": "medium",
+      "raw_token_match_count": 113,
+      "declaration_removal_preconditions": [
+        "Preserve the exact original path and URL in a tracked dependency/reference catalog with baseline commit, classification, evidence and caveats.",
+        "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
+        "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
+        "Re-run targeted static checks and confirm no gitlinks or executable files changed."
+      ]
+    },
+    {
+      "section_name": "submodule \"rust/thirdparty/materialize\"",
+      "config_key_name": "rust/thirdparty/materialize",
+      "path": "rust/thirdparty/materialize",
+      "original_url": "https://github.com/MaterializeInc/materialize.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 162,
+        "end_line": 164,
+        "excerpt": "[submodule \"rust/thirdparty/materialize\"]\n\tpath = rust/thirdparty/materialize\n\turl = https://github.com/MaterializeInc/materialize.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L162"
+      },
+      "classification": "reference_example_only",
+      "binding": "no_declared_checkout_consumer_detected",
+      "recommendation": "archive-declaration",
+      "reason": "The RisingWave comparison clearly refers to the Materialize product, distinct from generic SQL materialization or similarly named functions. No executable checkout consumer found.",
+      "evidence": [
+        {
+          "path": "docs/reports/risingwave/deepdive-2025.md",
+          "line": 408,
+          "end_line": 422,
+          "excerpt": "### 7.2 vs Materialize\n\nMaterialize 和 RisingWave 是目前最接近的两个竞品：都以\"SQL on Streams\"为核心，都以 IVM 为设计哲学，都以 PostgreSQL 协议为接入标准。\n\n| 维度 | RisingWave | Materialize |\n|------|-----------|-------------|\n| **IVM 实现基础** | 自研 Streaming DAG（Delta 流模型） | Differential Dataflow（RUST，来自TimelyDataflow生态）|\n| **状态存储** | Hummock（自研，S3 LSM-tree） | PERSIST（基于S3，但架构不同） |\n| **实现语言** | Rust | Rust |\n| **PostgreSQL兼容** | 高度兼容 | 高度兼容 |\n| **商业化** | RisingWave Cloud + 开源社区 | Materialize Cloud（主要商业产品） |\n| **开源授权** | Apache 2.0 | BSL（商业限制，2年后转Apache）|\n| **融资/背景** | RisingWave Labs（VC支持） | 有充分融资，美国市场为主 |\n\nMaterialize 基于 **Differential Dataflow** 的理论更为成熟（Frank McSherry 的工作），但 RisingWave 在工程实现和商业推进上更为激进，在中国市场（和亚太地区）拥有更强的生态。",
+          "blob_sha": "fc5504694538f98304332532499de42265b2cc86",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/docs/reports/risingwave/deepdive-2025.md#L408"
+        }
+      ],
+      "confidence": "medium",
+      "raw_token_match_count": 52,
+      "declaration_removal_preconditions": [
+        "Preserve the exact original path and URL in a tracked dependency/reference catalog with baseline commit, classification, evidence and caveats.",
+        "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
+        "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
+        "Re-run targeted static checks and confirm no gitlinks or executable files changed."
+      ]
+    },
+    {
+      "section_name": "submodule \"rust/thirdparty/datafusion\"",
+      "config_key_name": "rust/thirdparty/datafusion",
+      "path": "rust/thirdparty/datafusion",
+      "original_url": "git@github.com:apache/datafusion.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 165,
+        "end_line": 167,
+        "excerpt": "[submodule \"rust/thirdparty/datafusion\"]\n\tpath = rust/thirdparty/datafusion\n\turl = git@github.com:apache/datafusion.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L165"
+      },
+      "classification": "active_consumer",
+      "binding": "cargo_registry_not_orphan_checkout",
+      "recommendation": "archive-declaration",
+      "reason": "Umbra directly depends on DataFusion and lance-datafusion through registry versions; preserve manifests/lockfile. Research references do not require a gitlink at rust/thirdparty/datafusion.",
+      "evidence": [
+        {
+          "path": "rust/projects/umbra/Cargo.toml",
+          "line": 18,
+          "end_line": 21,
+          "excerpt": "lance = \"0.20\"\nlance-index = \"0.20\"\nlance-datafusion = \"0.20\"\ndatafusion = \"43\"",
+          "blob_sha": "084655bc86c86c892ac69845f5f757b5647c417e",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/rust/projects/umbra/Cargo.toml#L18"
+        },
+        {
+          "path": "rust/projects/umbra/umbra-core/Cargo.toml",
+          "line": 14,
+          "end_line": 14,
+          "excerpt": "lance-datafusion.workspace = true",
+          "blob_sha": "62e90292706ad0379d9c7528f59b21e272619721",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/rust/projects/umbra/umbra-core/Cargo.toml#L14"
+        },
+        {
+          "path": "docs/README.md",
+          "line": 26,
+          "end_line": 26,
+          "excerpt": "| [DataFusion](https://github.com/LiShuMing/cygnus/tree/main/research/datafusion) | [research/datafusion](https://github.com/LiShuMing/cygnus/tree/main/research/datafusion) |",
+          "blob_sha": "43a956500df62117b1f7d4ddac16fe97efa4163a",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/docs/README.md#L26"
+        }
+      ],
+      "confidence": "high",
+      "pins": [
+        "datafusion = 43; lance-datafusion = 0.20; lockfile present"
+      ],
+      "raw_token_match_count": 383,
+      "declaration_removal_preconditions": [
+        "Preserve the exact original path and URL in a tracked dependency/reference catalog with baseline commit, classification, evidence and caveats.",
+        "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
+        "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
+        "Re-run targeted static checks and confirm no gitlinks or executable files changed."
+      ]
+    },
+    {
+      "section_name": "submodule \"python/thirdparty/tinydb\"",
+      "config_key_name": "python/thirdparty/tinydb",
+      "path": "python/thirdparty/tinydb",
+      "original_url": "git@github.com:msiemens/tinydb.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 170,
+        "end_line": 172,
+        "excerpt": "[submodule \"python/thirdparty/tinydb\"]\n\tpath = python/thirdparty/tinydb\n\turl = git@github.com:msiemens/tinydb.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L170"
+      },
+      "classification": "reference_example_only",
+      "binding": "no_declared_checkout_consumer_detected",
+      "recommendation": "archive-declaration",
+      "reason": "Python ToyDB explicitly cites TinyDB as its inspiration and uses its own tracked relative imports. Preserve its implementation and attribution; archive only the upstream source declaration.",
+      "evidence": [
+        {
+          "path": "python/projects/py-toydb/README.md",
+          "line": 7,
+          "end_line": 7,
+          "excerpt": "ToyDB is a lightweight, document-oriented database written in pure Python. It provides a simple and intuitive API for storing and querying JSON-like documents. Inspired by [TinyDB](https://github.com/msiemens/tinydb), ToyDB is designed for small-scale applications, prototyping, and learning.",
+          "blob_sha": "a37cd75191038aad04bc0f8f0705ebe3ec9ee668",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/python/projects/py-toydb/README.md#L7"
+        },
+        {
+          "path": "python/projects/py-toydb/pyproject.toml",
+          "line": 42,
+          "end_line": 43,
+          "excerpt": "[tool.poetry.dependencies]\npython = \"^3.8\"",
+          "blob_sha": "c3962ea5ab90e059f552eb2470e49852e7d41edf",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/python/projects/py-toydb/pyproject.toml#L42"
+        },
+        {
+          "path": "python/projects/py-toydb/toydb/db.py",
+          "line": 4,
+          "end_line": 9,
+          "excerpt": "from typing import Dict, Iterator, Set, Type\n\nfrom . import JSONStorage\nfrom .storages import Storage\nfrom .table import Table, Document\nfrom .utils import with_typehint",
+          "blob_sha": "674682a6279cc214a76a5cf3ca6865de063a8619",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/python/projects/py-toydb/toydb/db.py#L4"
+        }
+      ],
+      "confidence": "medium",
+      "raw_token_match_count": 30,
+      "declaration_removal_preconditions": [
+        "Preserve the exact original path and URL in a tracked dependency/reference catalog with baseline commit, classification, evidence and caveats.",
+        "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
+        "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
+        "Re-run targeted static checks and confirm no gitlinks or executable files changed."
+      ]
+    },
+    {
+      "section_name": "submodule \"python/thirdparty/pydbsp\"",
+      "config_key_name": "python/thirdparty/pydbsp",
+      "path": "python/thirdparty/pydbsp",
+      "original_url": "git@github.com:brurucy/pydbsp.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 173,
+        "end_line": 175,
+        "excerpt": "[submodule \"python/thirdparty/pydbsp\"]\n\tpath = python/thirdparty/pydbsp\n\turl = git@github.com:brurucy/pydbsp.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L173"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "Name occurs in inventory/guidance only; no import, package dependency or source-checkout consumer found. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [],
+      "confidence": "low",
+      "raw_token_match_count": 2,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"python/thirdparty/Python\"",
+      "config_key_name": "python/thirdparty/Python",
+      "path": "python/thirdparty/Python",
+      "original_url": "git@github.com:TheAlgorithms/Python.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 176,
+        "end_line": 178,
+        "excerpt": "[submodule \"python/thirdparty/Python\"]\n\tpath = python/thirdparty/Python\n\turl = git@github.com:TheAlgorithms/Python.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L176"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "Generic Python language mentions are not TheAlgorithms/Python use. The prior repo-list reference migrated out with py-tools; no current specific consumer established. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [],
+      "confidence": "low",
+      "raw_token_match_count": 1787,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/duckdb\"",
+      "config_key_name": "cc/thirdparty/duckdb",
+      "path": "cc/thirdparty/duckdb",
+      "original_url": "git@github.com:duckdb/duckdb.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 181,
+        "end_line": 183,
+        "excerpt": "[submodule \"cc/thirdparty/duckdb\"]\n\tpath = cc/thirdparty/duckdb\n\turl = git@github.com:duckdb/duckdb.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L181"
+      },
+      "classification": "active_consumer",
+      "binding": "python_registry_package_and_research_reference",
+      "recommendation": "archive-declaration",
+      "reason": "Python imports the installed DuckDB package; research documents discuss its internals. Neither route consumes cc/thirdparty/duckdb. Preserve installed-package requirements and remaining research links.",
+      "evidence": [
+        {
+          "path": "python/pylab/requirements.txt",
+          "line": 20,
+          "end_line": 20,
+          "excerpt": "duckdb == 1.1.3",
+          "blob_sha": "a4d75792618f3efc30fe4e754c9a11b58f94c4fd",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/python/pylab/requirements.txt#L20"
+        },
+        {
+          "path": "python/pylab/test/test_duckdb.py",
+          "line": 1,
+          "end_line": 1,
+          "excerpt": "import duckdb",
+          "blob_sha": "f4b16d28e5f0ba26f61593f2644926339647a2ca",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/python/pylab/test/test_duckdb.py#L1"
+        },
+        {
+          "path": "docs/README.md",
+          "line": 23,
+          "end_line": 23,
+          "excerpt": "| [DuckDB](https://github.com/LiShuMing/cygnus/tree/main/books/duckdb-internals) | [books/duckdb-internals](https://github.com/LiShuMing/cygnus/tree/main/books/duckdb-internals) |",
+          "blob_sha": "43a956500df62117b1f7d4ddac16fe97efa4163a",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/docs/README.md#L23"
+        }
+      ],
+      "confidence": "high",
+      "pins": [
+        "duckdb == 1.1.3 in pylab requirements"
+      ],
+      "raw_token_match_count": 379,
+      "declaration_removal_preconditions": [
+        "Preserve the exact original path and URL in a tracked dependency/reference catalog with baseline commit, classification, evidence and caveats.",
+        "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
+        "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
+        "Re-run targeted static checks and confirm no gitlinks or executable files changed."
+      ]
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/duckdb_ivm\"",
+      "config_key_name": "cc/thirdparty/duckdb_ivm",
+      "path": "cc/thirdparty/duckdb_ivm",
+      "original_url": "git@github.com:ila/duckdb.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 184,
+        "end_line": 186,
+        "excerpt": "[submodule \"cc/thirdparty/duckdb_ivm\"]\n\tpath = cc/thirdparty/duckdb_ivm\n\turl = git@github.com:ila/duckdb.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L184"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "DuckDB package imports/reports do not establish use of the separate ila/duckdb fork. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [],
+      "confidence": "low",
+      "raw_token_match_count": 1,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/perf-tools\"",
+      "config_key_name": "cc/thirdparty/perf-tools",
+      "path": "cc/thirdparty/perf-tools",
+      "original_url": "git@github.com:brendangregg/perf-tools.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 187,
+        "end_line": 189,
+        "excerpt": "[submodule \"cc/thirdparty/perf-tools\"]\n\tpath = cc/thirdparty/perf-tools\n\turl = git@github.com:brendangregg/perf-tools.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L187"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "Only declaration/inventory evidence was found; no build, import, executable source-path or specific source-reading consumer was established. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [],
+      "confidence": "low",
+      "raw_token_match_count": 1,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"rust/thirdparty/denormalized\"",
+      "config_key_name": "rust/thirdparty/denormalized",
+      "path": "rust/thirdparty/denormalized",
+      "original_url": "git@github.com:probably-nothing-labs/denormalized.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 190,
+        "end_line": 192,
+        "excerpt": "[submodule \"rust/thirdparty/denormalized\"]\n\tpath = rust/thirdparty/denormalized\n\turl = git@github.com:probably-nothing-labs/denormalized.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L190"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "Only declaration/inventory evidence was found; no build, import, executable source-path or specific source-reading consumer was established. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [],
+      "confidence": "low",
+      "raw_token_match_count": 1,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/datasketch-cpp\"",
+      "config_key_name": "cc/thirdparty/datasketch-cpp",
+      "path": "cc/thirdparty/datasketch-cpp",
+      "original_url": "git@github.com:apache/datasketches-cpp.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 193,
+        "end_line": 195,
+        "excerpt": "[submodule \"cc/thirdparty/datasketch-cpp\"]\n\tpath = cc/thirdparty/datasketch-cpp\n\turl = git@github.com:apache/datasketches-cpp.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L193"
+      },
+      "classification": "reference_example_only",
+      "binding": "no_declared_checkout_consumer_detected",
+      "recommendation": "archive-declaration",
+      "reason": "DataSketches is discussed in Iceberg/Puffin and IVM research. This proves a project-family reference, not consumption of the specific C++ checkout.",
+      "evidence": [
+        {
+          "path": "docs/reports/iceberg/iceberg-deep-dive.md",
+          "line": 189,
+          "end_line": 189,
+          "excerpt": "- **`apache-datasketches-theta-v1`**：基于 Apache DataSketches 库的 Theta Sketch，用于近似估算列的 NDV（Number of Distinct Values）。NDV 对查询优化器的 Join 重排序（Join Reordering）至关重要——CBO 需要知道 `user_id` 列有 1 亿个不同值 vs `country_code` 只有 200 个，才能做出正确的 Join 顺序决策。",
+          "blob_sha": "1b0b2b3e2af7ec9287a68438304abf4e03ab5da3",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/docs/reports/iceberg/iceberg-deep-dive.md#L189"
+        },
+        {
+          "path": "docs/build-projects/reports/materialized_views/ivm/ivm_report2.md",
+          "line": 424,
+          "end_line": 424,
+          "excerpt": "| Theta Sketch（Apache DataSketches） | COUNT DISTINCT（更精确） | ~0.5% | ✅ |",
+          "blob_sha": "707bf11f5d03f3642c706c7a6ba481529484906e",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/docs/build-projects/reports/materialized_views/ivm/ivm_report2.md#L424"
+        }
+      ],
+      "confidence": "medium",
+      "raw_token_match_count": 3,
+      "declaration_removal_preconditions": [
+        "Preserve the exact original path and URL in a tracked dependency/reference catalog with baseline commit, classification, evidence and caveats.",
+        "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
+        "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
+        "Re-run targeted static checks and confirm no gitlinks or executable files changed."
+      ]
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/doris\"",
+      "config_key_name": "cc/thirdparty/doris",
+      "path": "cc/thirdparty/doris",
+      "original_url": "git@github.com:apache/doris.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 196,
+        "end_line": 198,
+        "excerpt": "[submodule \"cc/thirdparty/doris\"]\n\tpath = cc/thirdparty/doris\n\turl = git@github.com:apache/doris.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L196"
+      },
+      "classification": "reference_example_only",
+      "binding": "no_declared_checkout_consumer_detected",
+      "recommendation": "archive-declaration",
+      "reason": "The libunwind experiment cites a specific Doris PR as a possible implementation source; dedicated Doris research also remains. No direct dependency on this checkout found.",
+      "evidence": [
+        {
+          "path": "cc/cclab/test/tools/libunwind_test.cc",
+          "line": 1,
+          "end_line": 3,
+          "excerpt": "// /**\n//  * 1. apt install libunwind-dev\n//  * 2. maybe use code : https://github.com/apache/doris/pull/21755/files#",
+          "blob_sha": "1d08b50366805e03358b420172df1f406e6195e0",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/cclab/test/tools/libunwind_test.cc#L1"
+        },
+        {
+          "path": "docs/reading-open-source/doris/deepdive-2025.md",
+          "line": 1,
+          "end_line": 1,
+          "excerpt": "我是一名拥有 10 年以上经验的资深研发工程师，目前是顶尖开源 OLAP 数据库",
+          "blob_sha": "decce5b88c6a2f00e55a819a088299df8c9526ee",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/docs/reading-open-source/doris/deepdive-2025.md#L1"
+        }
+      ],
+      "confidence": "medium",
+      "raw_token_match_count": 95,
+      "declaration_removal_preconditions": [
+        "Preserve the exact original path and URL in a tracked dependency/reference catalog with baseline commit, classification, evidence and caveats.",
+        "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
+        "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
+        "Re-run targeted static checks and confirm no gitlinks or executable files changed."
+      ]
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/json\"",
+      "config_key_name": "cc/thirdparty/json",
+      "path": "cc/thirdparty/json",
+      "original_url": "git@github.com:nlohmann/json.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 199,
+        "end_line": 201,
+        "excerpt": "[submodule \"cc/thirdparty/json\"]\n\tpath = cc/thirdparty/json\n\turl = git@github.com:nlohmann/json.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L199"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "Generic JSON files and imports are not nlohmann/json. No nlohmann include or manifest binding was found. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [],
+      "confidence": "low",
+      "raw_token_match_count": 1115,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"python/thirdparty/parquet-python\"",
+      "config_key_name": "python/thirdparty/parquet-python",
+      "path": "python/thirdparty/parquet-python",
+      "original_url": "git@github.com:jcrobak/parquet-python.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 202,
+        "end_line": 204,
+        "excerpt": "[submodule \"python/thirdparty/parquet-python\"]\n\tpath = python/thirdparty/parquet-python\n\turl = git@github.com:jcrobak/parquet-python.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L202"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "Parquet data format usage and PyArrow packages do not establish usage of jcrobak/parquet-python. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [],
+      "confidence": "low",
+      "raw_token_match_count": 1,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/parquet-format\"",
+      "config_key_name": "cc/thirdparty/parquet-format",
+      "path": "cc/thirdparty/parquet-format",
+      "original_url": "git@github.com:apache/parquet-format.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 205,
+        "end_line": 207,
+        "excerpt": "[submodule \"cc/thirdparty/parquet-format\"]\n\tpath = cc/thirdparty/parquet-format\n\turl = git@github.com:apache/parquet-format.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L205"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "Arrow/Parquet packages and format mentions do not establish consumption of apache/parquet-format at the declared checkout. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [],
+      "confidence": "low",
+      "raw_token_match_count": 1,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/arrow\"",
+      "config_key_name": "cc/thirdparty/arrow",
+      "path": "cc/thirdparty/arrow",
+      "original_url": "git@github.com:apache/arrow.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 208,
+        "end_line": 210,
+        "excerpt": "[submodule \"cc/thirdparty/arrow\"]\n\tpath = cc/thirdparty/arrow\n\turl = git@github.com:apache/arrow.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L208"
+      },
+      "classification": "active_consumer",
+      "binding": "installed_external_libraries_and_registry_packages",
+      "recommendation": "archive-declaration",
+      "reason": "srlab links installed Arrow static archives; Umbra uses registry Arrow crates, and py-numpy-pandas uses PyArrow. None consumes cc/thirdparty/arrow. Archive source-declaration metadata only.",
+      "evidence": [
+        {
+          "path": "cc/srlab/tests/CMakeLists.txt",
+          "line": 34,
+          "end_line": 40,
+          "excerpt": "        target_include_directories(use_arrow_tests PRIVATE\n            \"${THIRDPARTY_ROOT}/installed/include\")\n        \n        target_link_libraries(use_arrow_tests PRIVATE\n            ${_srlab_gtest_target}\n            \"${THIRDPARTY_ROOT}/installed/lib64/libarrow.a\"\n            \"${THIRDPARTY_ROOT}/installed/lib64/libarrow_bundled_dependencies.a\"",
+          "blob_sha": "8139ec8f3c7eb76316c426afcb7d022005ac1852",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/srlab/tests/CMakeLists.txt#L34"
+        },
+        {
+          "path": "rust/projects/umbra/Cargo.toml",
+          "line": 15,
+          "end_line": 17,
+          "excerpt": "arrow = \"53\"\narrow-schema = \"53\"\narrow-array = \"53\"",
+          "blob_sha": "084655bc86c86c892ac69845f5f757b5647c417e",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/rust/projects/umbra/Cargo.toml#L15"
+        },
+        {
+          "path": "python/projects/py-numpy-pandas/requirements.txt",
+          "line": 8,
+          "end_line": 8,
+          "excerpt": "pyarrow>=16.0",
+          "blob_sha": "50a3b26066f74c851f32e919f5d7868b4c731fbc",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/python/projects/py-numpy-pandas/requirements.txt#L8"
+        }
+      ],
+      "confidence": "high",
+      "pins": [
+        "Umbra Arrow crates 53",
+        "PyArrow >=16.0",
+        "srlab shared Arrow archive version not pinned"
+      ],
+      "raw_token_match_count": 374,
+      "declaration_removal_preconditions": [
+        "Preserve the exact original path and URL in a tracked dependency/reference catalog with baseline commit, classification, evidence and caveats.",
+        "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
+        "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
+        "Re-run targeted static checks and confirm no gitlinks or executable files changed."
+      ]
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/Clickhouse\"",
+      "config_key_name": "cc/thirdparty/Clickhouse",
+      "path": "cc/thirdparty/Clickhouse",
+      "original_url": "git@github.com:ClickHouse/ClickHouse.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 211,
+        "end_line": 213,
+        "excerpt": "[submodule \"cc/thirdparty/Clickhouse\"]\n\tpath = cc/thirdparty/Clickhouse\n\turl = git@github.com:ClickHouse/ClickHouse.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L211"
+      },
+      "classification": "reference_example_only",
+      "binding": "no_declared_checkout_consumer_detected",
+      "recommendation": "archive-declaration",
+      "reason": "The local Cow implementation explicitly cites ClickHouse/Rust inspiration and book navigation routes to Cygnus. It does not include/build the declared ClickHouse checkout.",
+      "evidence": [
+        {
+          "path": "cc/cclab/src/common/cow.h",
+          "line": 22,
+          "end_line": 22,
+          "excerpt": "// A Clone-on-write base class inspired by Clickhouse and Rust.",
+          "blob_sha": "da4cc163723c0d47065ee7d8c332a0d0a6ed8774",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/cclab/src/common/cow.h#L22"
+        },
+        {
+          "path": "docs/README.md",
+          "line": 20,
+          "end_line": 20,
+          "excerpt": "| [ClickHouse](https://github.com/LiShuMing/cygnus/tree/main/books/clickhouse-book) | [books/clickhouse-book](https://github.com/LiShuMing/cygnus/tree/main/books/clickhouse-book) |",
+          "blob_sha": "43a956500df62117b1f7d4ddac16fe97efa4163a",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/docs/README.md#L20"
+        }
+      ],
+      "confidence": "medium",
+      "raw_token_match_count": 435,
+      "declaration_removal_preconditions": [
+        "Preserve the exact original path and URL in a tracked dependency/reference catalog with baseline commit, classification, evidence and caveats.",
+        "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
+        "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
+        "Re-run targeted static checks and confirm no gitlinks or executable files changed."
+      ]
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/btop\"",
+      "config_key_name": "cc/thirdparty/btop",
+      "path": "cc/thirdparty/btop",
+      "original_url": "git@github.com:aristocratos/btop.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 214,
+        "end_line": 216,
+        "excerpt": "[submodule \"cc/thirdparty/btop\"]\n\tpath = cc/thirdparty/btop\n\turl = git@github.com:aristocratos/btop.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L214"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "Only declaration/inventory evidence was found; no build, import, executable source-path or specific source-reading consumer was established. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [],
+      "confidence": "low",
+      "raw_token_match_count": 1,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/leveldb\"",
+      "config_key_name": "cc/thirdparty/leveldb",
+      "path": "cc/thirdparty/leveldb",
+      "original_url": "git@github.com:google/leveldb.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 217,
+        "end_line": 219,
+        "excerpt": "[submodule \"cc/thirdparty/leveldb\"]\n\tpath = cc/thirdparty/leveldb\n\turl = git@github.com:google/leveldb.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L217"
+      },
+      "classification": "reference_example_only",
+      "binding": "no_declared_checkout_consumer_detected",
+      "recommendation": "archive-declaration",
+      "reason": "There is a current LevelDB example in research prose and a commented-out local add_subdirectory. This establishes a reference only, not a working integration; prose correctness was not evaluated.",
+      "evidence": [
+        {
+          "path": "cc/cclab/CMakeLists.txt",
+          "line": 157,
+          "end_line": 157,
+          "excerpt": "# add_subdirectory(../thirdparty/leveldb leveldb)",
+          "blob_sha": "648e1512657664054be06842a994f83fe7d4469f",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/cclab/CMakeLists.txt#L157"
+        },
+        {
+          "path": "docs/books/feiman-book/vol1-ch03-physics-and-other-sciences.md",
+          "line": 98,
+          "end_line": 98,
+          "excerpt": "> **工程映射**：AlphaFold 的范式，和数据库的**learned index（学习型索引）**完全同构。传统 B-Tree 索引是\"理解数据分布规律后设计的数据结构\"，learned index 是\"用神经网络直接学习数据分布的映射函数\"。两者都在用统计学习跨越\"理解\"与\"计算\"之间的鸿沟。RocksDB 的 learned compaction、LevelDB 的 learned bloom filter，都是同一种哲学：当解析式规律太复杂时，用神经网络近似它。",
+          "blob_sha": "95170c676ef75b2785297f791b6b36f334360622",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/docs/books/feiman-book/vol1-ch03-physics-and-other-sciences.md#L98"
+        }
+      ],
+      "confidence": "medium",
+      "raw_token_match_count": 4,
+      "declaration_removal_preconditions": [
+        "Preserve the exact original path and URL in a tracked dependency/reference catalog with baseline commit, classification, evidence and caveats.",
+        "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
+        "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
+        "Re-run targeted static checks and confirm no gitlinks or executable files changed."
+      ]
+    },
+    {
+      "section_name": "submodule \"rust/thirdparty/tantivy\"",
+      "config_key_name": "rust/thirdparty/tantivy",
+      "path": "rust/thirdparty/tantivy",
+      "original_url": "git@github.com:quickwit-oss/tantivy.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 220,
+        "end_line": 222,
+        "excerpt": "[submodule \"rust/thirdparty/tantivy\"]\n\tpath = rust/thirdparty/tantivy\n\turl = git@github.com:quickwit-oss/tantivy.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L220"
+      },
+      "classification": "active_consumer",
+      "binding": "transitive_cargo_registry_not_orphan_checkout",
+      "recommendation": "archive-declaration",
+      "reason": "Umbra has a locked transitive Tantivy dependency through Lance, not a local path dependency. Preserve the Cargo lockfile and runtime graph.",
+      "evidence": [
+        {
+          "path": "rust/projects/umbra/Cargo.toml",
+          "line": 18,
+          "end_line": 20,
+          "excerpt": "lance = \"0.20\"\nlance-index = \"0.20\"\nlance-datafusion = \"0.20\"",
+          "blob_sha": "084655bc86c86c892ac69845f5f757b5647c417e",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/rust/projects/umbra/Cargo.toml#L18"
+        },
+        {
+          "path": "rust/projects/umbra/Cargo.lock",
+          "line": 5966,
+          "end_line": 5969,
+          "excerpt": "name = \"tantivy\"\nversion = \"0.22.1\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"96599ea6fccd844fc833fed21d2eecac2e6a7c1afd9e044057391d78b1feb141\"",
+          "blob_sha": "a470c2a9fd4510f99994d271349d598417a0d967",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/rust/projects/umbra/Cargo.lock#L5966"
+        }
+      ],
+      "confidence": "high",
+      "pins": [
+        "Cargo.lock Tantivy 0.22.1"
+      ],
+      "raw_token_match_count": 30,
+      "declaration_removal_preconditions": [
+        "Preserve the exact original path and URL in a tracked dependency/reference catalog with baseline commit, classification, evidence and caveats.",
+        "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
+        "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
+        "Re-run targeted static checks and confirm no gitlinks or executable files changed."
+      ]
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/fastgrind\"",
+      "config_key_name": "cc/thirdparty/fastgrind",
+      "path": "cc/thirdparty/fastgrind",
+      "original_url": "git@github.com:adny-code/fastgrind.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 223,
+        "end_line": 225,
+        "excerpt": "[submodule \"cc/thirdparty/fastgrind\"]\n\tpath = cc/thirdparty/fastgrind\n\turl = git@github.com:adny-code/fastgrind.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L223"
+      },
+      "classification": "no_detected_consumer",
+      "binding": "not_established",
+      "recommendation": "retain",
+      "reason": "Only declaration/inventory evidence was found; no build, import, executable source-path or specific source-reading consumer was established. Retain pending owner intent or stronger evidence; absence of a detected consumer is not proof of uselessness.",
+      "evidence": [],
+      "confidence": "low",
+      "raw_token_match_count": 1,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/folly\"",
+      "config_key_name": "cc/thirdparty/folly",
+      "path": "cc/thirdparty/folly",
+      "original_url": "git@github.com:facebook/folly.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 226,
+        "end_line": 228,
+        "excerpt": "[submodule \"cc/thirdparty/folly\"]\n\tpath = cc/thirdparty/folly\n\turl = git@github.com:facebook/folly.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L226"
+      },
+      "classification": "active_consumer",
+      "binding": "default_on_legacy_local_checkout_and_optional_srlab_source",
+      "recommendation": "retain",
+      "reason": "Legacy cclab defaults ENABLE_FOLLY to ON and adds this absent checkout. srlab separately offers an OFF-by-default hard-coded source path. Restoring only Folly cannot satisfy the external transitive dependency bundle.",
+      "evidence": [
+        {
+          "path": "cc/cclab/CMakeLists.txt",
+          "line": 161,
+          "end_line": 177,
+          "excerpt": "option(ENABLE_FOLLY \"Build folly thirdparty dependency\" ON)\nif (ENABLE_FOLLY)\n    set(THIRDPARTY_PREFIX \"/home/disk1/sr-deps/thirdparty-aws/installed\")\n    if (EXISTS \"${THIRDPARTY_PREFIX}\")\n        set(CMAKE_PREFIX_PATH \"${THIRDPARTY_PREFIX};${THIRDPARTY_PREFIX}/cachelib/deps;${CMAKE_PREFIX_PATH}\")\n        list(APPEND CMAKE_INCLUDE_PATH \"${THIRDPARTY_PREFIX}/include\" \"${THIRDPARTY_PREFIX}/cachelib/deps/include\")\n        list(APPEND CMAKE_LIBRARY_PATH \"${THIRDPARTY_PREFIX}/lib\" \"${THIRDPARTY_PREFIX}/lib64\"\n            \"${THIRDPARTY_PREFIX}/cachelib/deps/lib\" \"${THIRDPARTY_PREFIX}/cachelib/deps/lib64\")\n        message(STATUS \"Using third-party prefix: ${THIRDPARTY_PREFIX}\")\n    else()\n        message(WARNING \"Expected third-party prefix ${THIRDPARTY_PREFIX} not found. \"\n                        \"You may need to install folly dependencies manually.\")\n    endif()\n    set(Boost_USE_STATIC_LIBS ON CACHE BOOL \"Link Boost libraries statically\" FORCE)\n    set(Boost_USE_STATIC_RUNTIME ON CACHE BOOL \"Link Boost runtime statically\" FORCE)\n    set(BOOST_LINK_STATIC ON CACHE STRING \"Link folly's Boost dependencies statically\" FORCE)\n    add_subdirectory(../thirdparty/folly folly)",
+          "blob_sha": "648e1512657664054be06842a994f83fe7d4469f",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/cclab/CMakeLists.txt#L161"
+        },
+        {
+          "path": "cc/srlab/CMakeLists.txt",
+          "line": 32,
+          "end_line": 35,
+          "excerpt": "option(SRLAB_BUILD_FOLLY \"Build Folly from source (requires all dependencies)\" OFF)\nset(FOLLY_SOURCE_DIR \"/home/disk1/lishuming/work/xlab/cc/thirdparty/folly\" CACHE PATH \"Folly source directory\")\n\nif(SRLAB_BUILD_FOLLY AND EXISTS \"${FOLLY_SOURCE_DIR}/CMakeLists.txt\")",
+          "blob_sha": "4397c06020fe2f8f50824546e1229a55c63e5328",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/srlab/CMakeLists.txt#L32"
+        },
+        {
+          "path": "cc/srlab/CMakeLists.txt",
+          "line": 49,
+          "end_line": 53,
+          "excerpt": "    add_subdirectory(\"${FOLLY_SOURCE_DIR}\" \"${CMAKE_BINARY_DIR}/folly\" EXCLUDE_FROM_ALL)\nelseif(SRLAB_BUILD_FOLLY)\n    message(WARNING \"Folly source directory not found: ${FOLLY_SOURCE_DIR}\")\nelse()\n    message(STATUS \"Folly build disabled. Set SRLAB_BUILD_FOLLY=ON to enable.\")",
+          "blob_sha": "4397c06020fe2f8f50824546e1229a55c63e5328",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/cc/srlab/CMakeLists.txt#L49"
+        }
+      ],
+      "confidence": "high",
+      "raw_token_match_count": 53,
+      "declaration_removal_preconditions": []
+    },
+    {
+      "section_name": "submodule \"cc/thirdparty/fast_float\"",
+      "config_key_name": "cc/thirdparty/fast_float",
+      "path": "cc/thirdparty/fast_float",
+      "original_url": "git@github.com:fastfloat/fast_float.git",
+      "gitlink_sha": null,
+      "orphan": true,
+      "declaration": {
+        "path": ".gitmodules",
+        "line": 229,
+        "end_line": 231,
+        "excerpt": "[submodule \"cc/thirdparty/fast_float\"]\n\tpath = cc/thirdparty/fast_float\n\turl = git@github.com:fastfloat/fast_float.git",
+        "blob_sha": "a32797604acb20025fe03f6dc327be6d30fcf32f",
+        "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/.gitmodules#L229"
+      },
+      "classification": "active_consumer",
+      "binding": "manual_bootstrap_checkout_intent_unverified",
+      "recommendation": "retain",
+      "reason": "Manual Folly setup invokes git submodule add at this exact path, then copies from a mismatched relative fast_float/include path. Retain until the bootstrap is repaired or deliberately retired. This is code-level consumer intent, not a working build or an instruction to execute it.",
+      "evidence": [
+        {
+          "path": "shell/docker/build_folly.sh",
+          "line": 18,
+          "end_line": 30,
+          "excerpt": "apt-get install -y libfast-float-dev\n\n# copy fast_float to /opt/fast_float/include\ngit submodule add git@github.com:fastfloat/fast_float.git cc/thirdparty/fast_float\nmkdir -p /opt/fast_float/include\ncp -r fast_float/include/fast_float /opt/fast_float/include/\n\n# build folly\ncmake .. \\\n  -DBUILD_SHARED_LIBS=ON \\\n  -DCMAKE_BUILD_TYPE=Release \\\n  -DFOLLY_USE_JEMALLOC=ON \\\n  -DFASTFLOAT_INCLUDE_DIR=/opt/fast_float/include",
+          "blob_sha": "396fcecfd46a3347c10a5abf09516192950e393d",
+          "url": "https://github.com/LiShuMing/xlab/blob/bf3e2ed45c12cc551fd44ef3cb89366970cd92ba/shell/docker/build_folly.sh#L18"
+        }
+      ],
+      "confidence": "high",
+      "raw_token_match_count": 6,
+      "declaration_removal_preconditions": []
+    }
+  ],
+  "methodology": [
+    "Token/alias and exact-path scan of all tracked UTF-8 files; exact upstream URL and import/header follow-ups for ambiguous names.",
+    "Manual inspection of CMake, Bazel, Cargo manifests/lockfile, Python requirements/imports, manual bootstrap and matching source includes.",
+    "Excluded inventory-only mentions and generic homonyms from positive consumer proof.",
+    "Prior audit used only as leads; final evidence points to files present on current baseline."
+  ],
+  "limitations": [
+    "Active consumer means a live source/build declaration, not proof of recent use or successful compilation.",
+    "No upstream downloads, installs, builds, runtime tests or services were executed.",
+    "No detected consumer is not proof of inactivity, absence of personal use or safety of deletion.",
+    "Reference/example only distinguishes executable checkout use; it does not devalue research or authorize deleting its content.",
+    "Only a bounded static audit; dynamically constructed or out-of-repository consumers may exist.",
+    "Archived declaration means preserve metadata then remove the orphan block, not delete dependency code or data."
+  ],
+  "disposition": "29 orphan declaration blocks archived into this inventory; 38 unresolved orphan blocks and two gitlinks retained."
+}

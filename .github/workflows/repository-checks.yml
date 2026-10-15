@@ -5,6 +5,8 @@ on:
     paths:
       - '**/*.md'
       - docs/migrations/**
+      - docs/meta/**
+      - python/projects/cron.sh
       - swift/**
       - python/projects/py-cli/**
       - python/projects/py-tools/**
@@ -22,6 +24,8 @@ on:
     paths:
       - '**/*.md'
       - docs/migrations/**
+      - docs/meta/**
+      - python/projects/cron.sh
       - swift/**
       - python/projects/py-cli/**
       - python/projects/py-tools/**
@@ -67,10 +71,10 @@ jobs:
           cat healthcheck-report.txt
           printf '\nFull checkout healthcheck exit code: %s\n' "$result" >> "$GITHUB_STEP_SUMMARY"
           printf 'Fixture success is not a full repository health/build pass.\n' >> "$GITHUB_STEP_SUMMARY"
-          # Keep the known 67 orphan declarations visible; fail any other error.
+          # Keep the known 38 orphan declarations visible; fail any other error.
           failures=$(grep -c '^FAIL:' healthcheck-report.txt || true)
           orphans=$(grep -c '^FAIL: declaration without gitlink:' healthcheck-report.txt || true)
-          if [ "$result" -ne 1 ] || [ "$failures" -ne 67 ] || [ "$orphans" -ne 67 ]; then
+          if [ "$result" -ne 1 ] || [ "$failures" -ne 38 ] || [ "$orphans" -ne 38 ]; then
             echo 'Dependency diagnostics differ from the explicitly recorded baseline.' >&2
             exit 1
           fi

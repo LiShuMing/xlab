@@ -26,6 +26,6 @@ CI 的专用 Linux Debug/Release job 验证实际 Gitlink 版本和 fetch-OFF �
 
 ## 未解决的范围
 
-仍有 67 个声明未配 Gitlink，健康检查应继续报告失败，不能把回归测试通过说成全仓健康。某个库被 Cargo、Python 或系统包引用，不意味着同名 thirdparty 路径需要恢复。阅读资料与未知用途声明继续保留，后续逐项评估。
+2026-10-15 逐项复核后，29 个参考/独立包声明移入 [完整审计清单](dependency-declarations.json)，仍有 38 个声明未配 Gitlink（5 个本地遗留输入、33 个用途待定）。健康检查继续报告这 38 项失败，不能把回归测试通过说成全仓健康。包消费者、源码和两项固定 Gitlink 均未修改。详见 [消费证据](dependency-declarations.md)。
 
 回退只需普通 Git revert 本批提交；不删除用户机器上已有依赖工作区，不清除运行数据。
