@@ -67,7 +67,7 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | Strata 只读代码审查 | [python/projects/strata-review/](python/projects/strata-review/) |
 | 论文处理、学术工具 | [python/projects/py-academic/](python/projects/py-academic/) |
 | AI 沙盒、Streamlit、LangChain | [python/projects/py-lab/](python/projects/py-lab/) |
-| 邮件、newsletter、Gmail 摘要 | [python/projects/py-email/](python/projects/py-email/) |
+| 邮件、newsletter、Gmail 摘要 | [Lyra email-digest](https://github.com/LiShuMing/lyra/tree/main/modules/email-digest) |
 | 产品 release notes、数据库产品情报 | [carina/modules/product-intelligence](https://github.com/LiShuMing/carina/tree/main/modules/product-intelligence) |
 | 技术信号、X/Reddit、OpenCLI、日报 | [carina/modules/tech-radar/](https://github.com/LiShuMing/carina/tree/main/modules/tech-radar/) |
 | LLM 深度研究报告 | [carina/modules/research-report](https://github.com/LiShuMing/carina/tree/main/modules/research-report) |
@@ -170,9 +170,9 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | [python/projects/py-ego/](python/projects/py-ego/) | 对话陪护与记忆；README 同时保留 StarRocks 监控背景 | [README](python/projects/py-ego/README.md)、[main.py](python/projects/py-ego/main.py) |
 | [python/projects/py-ego/miniprogram/](python/projects/py-ego/miniprogram/) | 微信小程序前端 | [README](python/projects/py-ego/miniprogram/README.md)、[package.json](python/projects/py-ego/miniprogram/package.json) |
 | [python/projects/py-ego/py-ego-miniapp/](python/projects/py-ego/py-ego-miniapp/) | miniapp 服务与部署辅助项目 | [部署说明](python/projects/py-ego/py-ego-miniapp/deploy/README.md) |
-| [python/projects/py-email/](python/projects/py-email/) | Gmail/newsletter 邮件摘要；安装后命令 `my-email` | [README](python/projects/py-email/README.md)、[pyproject.toml](python/projects/py-email/pyproject.toml) |
+| [Lyra email-digest](https://github.com/LiShuMing/lyra/tree/main/modules/email-digest) | Gmail/newsletter 邮件摘要；安装后命令 `my-email` | [README](https://github.com/LiShuMing/lyra/blob/main/modules/email-digest/README.md)、[pyproject.toml](https://github.com/LiShuMing/lyra/blob/main/modules/email-digest/pyproject.toml) |
 | [python/projects/py-lab/](python/projects/py-lab/) | Streamlit/LangChain AI 实验平台 | [README](python/projects/py-lab/README.md)、[app.py](python/projects/py-lab/app.py) |
-| [python/projects/py-learn/](python/projects/py-learn/) | Telegram/SQLite 每日学习 Agent | [README](python/projects/py-learn/README.md)、[源码](python/projects/py-learn/src/) |
+| [Lyra daily-learning](https://github.com/LiShuMing/lyra/tree/main/modules/daily-learning) | Telegram/SQLite 每日学习 Agent | [README](https://github.com/LiShuMing/lyra/blob/main/modules/daily-learning/README.md)、[源码](https://github.com/LiShuMing/lyra/tree/main/modules/daily-learning/src/) |
 | [python/projects/py-numpy-pandas/](python/projects/py-numpy-pandas/) | NumPy/pandas Jupyter 学习空间 | [README](python/projects/py-numpy-pandas/README.md)、[notebooks](python/projects/py-numpy-pandas/notebooks/) |
 | [python/projects/py-stock/](python/projects/py-stock/) | 股票历史价格采集、SQLite 存储与 Web/CLI 查询 | [README](python/projects/py-stock/README.md)、[cli.py](python/projects/py-stock/cli.py) |
 | [python/projects/py-torch/](python/projects/py-torch/) | PyTorch 学习、micrograd、自动求导 | [README](python/projects/py-torch/README.md)、[micrograd](python/projects/py-torch/micrograd/) |

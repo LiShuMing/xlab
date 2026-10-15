@@ -175,3 +175,6 @@ experiments continue to use WSL.
 - Prefer focused module documentation over one giant root document.
 - When reorganizing code, preserve migration intent in `TASKS.md` or module
   changelogs so future readers can understand what moved and why.
+
+Codex/Linux 研究稿、邮件摘要及每日学习模块的当前归属、排除项与恢复入口见
+[本批迁移记录](docs/migrations/2026-10-14-books-email-learning-retirement.md)。

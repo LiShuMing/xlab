@@ -103,9 +103,7 @@ xlab/
 │       ├── py-academic/  # VENDORED fork of binary-husky/gpt_academic
 │       ├── py-cycle-lab/ # Long-cycle investment compass
 │       ├── py-ego/       # StarRocks MV monitor + LLM companion
-│       ├── py-email/     # Gmail newsletter digest
 │       ├── py-lab/       # Streamlit/LangChain AI platform
-│       ├── py-learn/     # Telegram daily-learning agent
 │       ├── py-stock/     # Stock price database
 │       ├── py-torch/     # micrograd + PyTorch learning
 │       └── py-toydb/     # Toy database
@@ -710,20 +708,9 @@ executing any task here, confirm which branch you are on; tasks written against
 
 ---
 
-#### Project: python/projects/py-email
+#### Migrated: Lyra email-digest and daily-learning
 
-**现状**: Email processing tool
-
-**Tasks**:
-
-1. **创建项目文件**
-   - [ ] 创建 `python/projects/py-email/AGENTS.md`
-   - [ ] 创建 `python/projects/py-email/RULES.md`
-   - [ ] 创建 `python/projects/py-email/README.md`
-   - [ ] 创建 `python/projects/py-email/CHANGELOG.md`
-
-2. **丰富单元测试**
-   - [ ] 为src/my_email添加测试
+Current code, safety boundaries and tests live in [email-digest](https://github.com/LiShuMing/lyra/tree/main/modules/email-digest) and [daily-learning](https://github.com/LiShuMing/lyra/tree/main/modules/daily-learning). Historical xlab backlog is superseded; do not recreate retired roots.
 
 ---
 
@@ -1041,14 +1028,14 @@ kubelet 模拟器 / `cmd/demo`），全包测试覆盖率 82%~100%，`-race` 全
 14. **cc/projects/web-server** - io_uring/kqueue 双后端 Web 服务器
 15. **rust/projects/umbra** - AI 记忆数据库，Arrow/Lance/DataFusion、向量索引与 gRPC；当前不是 JIT 编译流水线
 16. **已迁出：[lyra/backend/invest](https://github.com/LiShuMing/lyra/tree/main/backend/invest)** - 原 `liminalis/backend/invest`；历史排序保留，当前任务见目标仓库。
-17. **python/projects/py-email** - Gmail 摘要工具
+17. **已迁出：[Lyra email-digest](https://github.com/LiShuMing/lyra/tree/main/modules/email-digest)** - 当前任务在目标仓库维护。
 18. **已迁出：[Lyra developer-tools](https://github.com/LiShuMing/lyra/tree/main/modules/developer-tools)** - 当前任务在目标仓库维护。
 19. **python/projects/py-toydb** - 玩具数据库
 20. **java/xlab-itest** - Java 集成测试（4 个 Gradle 模块，10k 行）
 
 ### P2 - 其他项目（按需重构）
 
-21. **python/projects/{py-lab, py-torch, py-cycle-lab, py-learn, py-stock, py-ego}**
+21. **python/projects/{py-lab, py-torch, py-cycle-lab, py-stock, py-ego}**
 22. **python/ivm** - 仅 2 个文件，但与增量视图维护研究方向直接相关，值得升级为正式项目
 23. 其余 C++ 项目（`cc/projects/{cpython, interpreter, io-uring, llvm-jit, learn-balel}`）
 24. **haskell/projects/{sql-parser, stm-engine, dsl-transform}**、`haskell/hslab`

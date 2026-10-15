@@ -1,0 +1,2797 @@
+{
+  "schema_version": 1,
+  "status": "local-candidate-awaiting-cleanup-approval",
+  "source_commit": "7f32434e0fdea5e9d957fd806121b68554fa3272",
+  "backup_ref": "backup/pre-constellation-cleanup-2026-10-14",
+  "backup_commit": "fd15e65059ff7d0d01ed48b6347cd75881fb4b36",
+  "retired_roots": [
+    "docs/books/codex-code-book",
+    "docs/books/deep-linux-book",
+    "python/projects/py-email",
+    "python/projects/py-learn"
+  ],
+  "file_count": 174,
+  "migrated_or_adapted_count": 161,
+  "excluded_count": 13,
+  "targets": {
+    "cygnus": {
+      "commit": "a96bf87e08dcfa31ee40d1d04adb750a1c7be7c3",
+      "pull_request": 6,
+      "ci": [
+        {
+          "run_id": 38651636378,
+          "head_sha": "a96bf87e08dcfa31ee40d1d04adb750a1c7be7c3",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/LiShuMing/cygnus/actions/runs/38651636378"
+        }
+      ]
+    },
+    "lyra": {
+      "commit": "c403bd2699afb7a526ef8b67b3d4f6d8ce9a2ad3",
+      "pull_request": 5,
+      "ci": [
+        {
+          "run_id": 38651630807,
+          "head_sha": "c403bd2699afb7a526ef8b67b3d4f6d8ce9a2ad3",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/LiShuMing/lyra/actions/runs/38651630807"
+        }
+      ]
+    }
+  },
+  "files": [
+    {
+      "source_path": "docs/books/codex-code-book/appendix-a-crate-index.md",
+      "source_git_blob": "a00a8b80eef39b6b0571e8b533811844c5e2ec07",
+      "source_sha256": "22e145f7780ae1bceb1ade429b3d3fe76d989ef886d3cbef292abcee69c49576",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/codex-code-book/appendix-a-crate-index.md",
+          "git_blob": "bf96158474d460a3ad56fc76b6745e7e45724ef6",
+          "sha256": "273747189361470c6aa311acb04a4b5c09bcc444c516fe7dd71634a508697f9e"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/codex-code-book/appendix-b-config-reference.md",
+      "source_git_blob": "db5b82426f1dd8bc5a0492b034ee887e8d405e58",
+      "source_sha256": "9b257aeb6dc50f54eedd0a4e03a9d722709ce3f0979119752cf65a62381ac614",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/codex-code-book/appendix-b-config-reference.md",
+          "git_blob": "d02831fc8c29f393f8f080e0a8ceb0521f8d2ddf",
+          "sha256": "450773d8c613b424fb20c5dbb3c657cd95537e4e1f460dec50c9561c098b52c0"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/codex-code-book/appendix-c-glossary.md",
+      "source_git_blob": "07b93487647a1590ab3617d514f5273a897f70c2",
+      "source_sha256": "6f85908aa3b182f5a7d6f8b9e226bbc60096804789b5ba02000a7729da80594f",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/codex-code-book/appendix-c-glossary.md",
+          "git_blob": "73a5d19fb34d74ac43b9bbf5cdd72b11d622f3ad",
+          "sha256": "18123390be9df823b50b11f25251913103881de2a04a69c05600f424b8fd9881"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/codex-code-book/chapter-01-what-is-codex.md",
+      "source_git_blob": "756232892f750537331a92f1efac3039a41a4c15",
+      "source_sha256": "c24c1a0123593f3fc07aa266a27df351b3b651327e20a71ab8424c3167359a50",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/codex-code-book/chapter-01-what-is-codex.md",
+          "git_blob": "31618d29316f5a5a28b2a58f7eff22cc9732e1ab",
+          "sha256": "9eb8e5cdc3dbb38420cd5bbc36317954b14758251b9e4d2ff5908a197e4d5ee2"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/codex-code-book/chapter-02-multiprocess-architecture.md",
+      "source_git_blob": "8162a102a4fdf1b4a3ec89c4ab2518ec80203ce5",
+      "source_sha256": "647de7bd08b673c2147a10497365240e3274ba3162f8cf82c848f5e69b51a1d5",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/codex-code-book/chapter-02-multiprocess-architecture.md",
+          "git_blob": "73ab9c8cc8d93d575c6f685d587ce29b007e15ab",
+          "sha256": "545182ee33767a8a3db8099c130a9d5b46c1b4d9bb297730da9ca9c991c53856"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/codex-code-book/chapter-03-core-abstractions.md",
+      "source_git_blob": "9494861d385bfec94bf6f0ed2b5824fec179a238",
+      "source_sha256": "112ba9b1edee6d9b4265bc422c27db23ad3a426f5451657fbb64434873f19574",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/codex-code-book/chapter-03-core-abstractions.md",
+          "git_blob": "57dd63e209b128011f3996ebbe81fb68de672bb6",
+          "sha256": "01cc8794a617a57ed5f4d51e8e1fffaa2138e4b1eeee3121069dd173442401e3"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/codex-code-book/chapter-04-request-flow.md",
+      "source_git_blob": "900e565733fa9173d29cbf93322340960bba0699",
+      "source_sha256": "7ab9e377f57e77aef8d30b8d3f2333f989db320d32d23d284630dcef18bb152a",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/codex-code-book/chapter-04-request-flow.md",
+          "git_blob": "6e6f6c0e92469f44079ad62d7d4e1050a4a2a0ca",
+          "sha256": "328b51ea1b22a5beada5c5447e74548c944491aab26b56002485a63dc5c57b7a"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/codex-code-book/chapter-05-context-assembly.md",
+      "source_git_blob": "ec39da302d0c3f1e7faab8460690eea0195a2539",
+      "source_sha256": "e85d8b2f511e612da57b1f2057f1b573898f057cb6b356ee6ee02a90673fde0c",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/codex-code-book/chapter-05-context-assembly.md",
+          "git_blob": "0aed0c26b0d2472d2ca26869e4ba6377bbc6b847",
+          "sha256": "6d03e5752d2f46c53ad395dab0a29a85704985226fdce23fc0cf6da4d2620def"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; two documented private local-path normalizations across this batch"
+    },
+    {
+      "source_path": "docs/books/codex-code-book/chapter-06-model-client.md",
+      "source_git_blob": "651bbda7993e81e9ff709a65b44d23d47ec27a76",
+      "source_sha256": "c5727f3b2ebe8ed1fa173a18be07efbce0a18c0baecde5d5c5145c78f11cffd5",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/codex-code-book/chapter-06-model-client.md",
+          "git_blob": "6a8dffae00a3f9d1650d00b9b4e9e4931d877017",
+          "sha256": "99635e45975cd21d5aec10f43e8bde62c5f9f65c6fa36e273c704a8133e1c1ed"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/codex-code-book/chapter-07-agent-engine.md",
+      "source_git_blob": "a7be05bd8b02ef0a1b22a1ebd36d89c0ad5b1ba0",
+      "source_sha256": "cbd3d0c334177223bba0101a20908a251ccfa6a0bd1c866ebd358c68b1c63d96",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/codex-code-book/chapter-07-agent-engine.md",
+          "git_blob": "67ffebe9078a5f4698b373f46bc6ca5be54aa82d",
+          "sha256": "49789a9af9d07e04682eee1e289402bf2b7101a242739688af26415130b8f598"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/codex-code-book/chapter-08-tool-system.md",
+      "source_git_blob": "e1ae0d2c1d2640423ddeeaeb4dac089042ea1223",
+      "source_sha256": "f404fa09e0da6573376934d3751845e4ecf2c56aa0f9e5abf3aa26a95bd33b33",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/codex-code-book/chapter-08-tool-system.md",
+          "git_blob": "022d817c862ba044beba0bccfdf9eab3bb0cfbba",
+          "sha256": "b7c84f8b404382c51e2dff487681047fa2fe3fc5170709c47ec34d544fa1ab79"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/codex-code-book/chapter-09-sandbox-security.md",
+      "source_git_blob": "b7403f63429bdb0fc8ed388b865e5780e299e6a6",
+      "source_sha256": "f25602c49a0c92be5f816a8e0b38105877cb33e03f907d2e2c36a15f4716d80c",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/codex-code-book/chapter-09-sandbox-security.md",
+          "git_blob": "153a43c7cadd8f14dc3f953fa8e40a0accecfc97",
+          "sha256": "28b771f8bbe4d36030411d9d9f485253e4c5346dcfea854794037309a9b19a57"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/codex-code-book/chapter-10-mcp-integration.md",
+      "source_git_blob": "232792164c0929a7514cd3b13890806186de9b5f",
+      "source_sha256": "dfcecdd0322210a807e53f9f78adc7261addd125c51b77e4e5be08e0aef12057",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/codex-code-book/chapter-10-mcp-integration.md",
+          "git_blob": "2ac4cfd64f7e2175c13585220041cd241a5f04f8",
+          "sha256": "c94d01314a3074d9d26a76f04143b14fa363ccf787aa9939994e9f15efdb2d70"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/codex-code-book/chapter-11-session-persistence.md",
+      "source_git_blob": "9bd08b86e1de1c3e291568fea38f9fb954f18f5f",
+      "source_sha256": "fc498f27d083354424353ab6497d302122994f15d10971c7a574a520eb6d71d2",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/codex-code-book/chapter-11-session-persistence.md",
+          "git_blob": "54ad71ff3687f25027267a91d10b6d3bd31a2d50",
+          "sha256": "22a59a0f96e34300a290b870f387c5194abc9f71644c87d8e7ab55b5ed5cf3e2"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/codex-code-book/chapter-12-tui-rendering.md",
+      "source_git_blob": "ac3bf4d3eb79de44ca0a7de8ebf033e82be45b65",
+      "source_sha256": "fcfdb5e4e6f5c09523db0b860f1ab4529c87e5a871a5df9589e9c9897bed3593",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/codex-code-book/chapter-12-tui-rendering.md",
+          "git_blob": "1d202559dafc5c02f5b56da226a739f89e56155f",
+          "sha256": "8a8f4bb35c0862c0f538ceccae510490ebf54ac4f3045d2b147ba6563102478d"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/codex-code-book/chapter-13-observability.md",
+      "source_git_blob": "ec5e124c7cfc5ab5f6170d684331b62948ef7869",
+      "source_sha256": "dc0787e2b9b5c116e7d9c3236b943316c2bf7dbc733a19570b69d53bd0679c74",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/codex-code-book/chapter-13-observability.md",
+          "git_blob": "96ea27e41ba332ac6b74df9de10b5711b36b6646",
+          "sha256": "a68e37cc8fca6a5779f94917254c792476b65c3d6bbe1f98271f296e61702fde"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/codex-code-book/chapter-14-build-engineering.md",
+      "source_git_blob": "93fc7ace275142bc8c8a8188df2cf3815d247288",
+      "source_sha256": "e212c744ce048a5d2bd4f35e5860de6f944c446238ac01986ad9803a5df3e1f0",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/codex-code-book/chapter-14-build-engineering.md",
+          "git_blob": "251629206796e0294aad3c4af60db758dbde628d",
+          "sha256": "c9bfd5a1c4668195840d0ad174f0a654928a5ffc74f6ac1b3e9d45b07724e1de"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/codex-code-book/chapter-15-developer-workflow.md",
+      "source_git_blob": "4eb9f72c5cfc5173b4ef1d3b48593ff4645ee22b",
+      "source_sha256": "a972619df0a4199cae14e8f7c0ea3ad8ca2fd19ded0af6df5cebfdd4c46bd4d9",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/codex-code-book/chapter-15-developer-workflow.md",
+          "git_blob": "425f24c2f47f6504e68f4b647019ef2d50927068",
+          "sha256": "88248ed195448bf30bde70481ef848d96e725894301448587fc33e9a508ba585"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; two documented private local-path normalizations across this batch"
+    },
+    {
+      "source_path": "docs/books/codex-code-book/chapter-16-architecture-evolution.md",
+      "source_git_blob": "39dec809e654aa5e103a8d79b0baebc9019e8719",
+      "source_sha256": "f37d74048045d2622a8b9aa621ad837657621ecb351f4e414ebfb5f2327b4519",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/codex-code-book/chapter-16-architecture-evolution.md",
+          "git_blob": "c855fc010a2867512cb2672705137c4ac4b5493b",
+          "sha256": "700b2028367cfe0d5363aed7b3f2accaa77b82e5cfff4800cd1b8a5e679acdf1"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/codex-code-book/chapter-17-comparison.md",
+      "source_git_blob": "38a9bb14671d45adefc103e49cfafb0f7002c336",
+      "source_sha256": "9a808ee66dcdae50df3c9ab83c30f87a4e1471fd0766be97f06686f46b128de1",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/codex-code-book/chapter-17-comparison.md",
+          "git_blob": "332523b92323e64f7b5f10ba1281077463463edc",
+          "sha256": "45f8f53fba603ff12fa53d95d0141022ae45dc9c87dad38f99d334a8b06894c8"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/00-BOOK-OUTLINE.md",
+      "source_git_blob": "030dc0e8da0a306324bd97c63db55d22d0602e18",
+      "source_sha256": "e1d98e5d11f1de8ebdb36c33c427a3734b784deea9653308fa9e96f9739a53da",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/00-BOOK-OUTLINE.md",
+          "git_blob": "3804bc1c972fb9067e3f072a534c4445f2f47660",
+          "sha256": "a441d714eac5410c33030eb2cb589e7826e64833e46406404416d576dc7e53e8"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/appendix/appendix-a-source-reading-guide.md",
+      "source_git_blob": "0e83c0ba7ac1ccf3c533acfcd6eb7bc0eacf5916",
+      "source_sha256": "8cd274b0c51220d4ae63bb19ec3da7af4d6312c72b501fa7799b96591a93ff3c",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/appendix/appendix-a-source-reading-guide.md",
+          "git_blob": "e5632398e4319c021a5e30adf3665c8980abb6c9",
+          "sha256": "8fd6b87c2f123fbc2342fd1d3679ceea45a59de072bb294bd44708daf6b2aa36"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/appendix/appendix-b-data-structures.md",
+      "source_git_blob": "ebf668c615acaaf37c55e96cbfe7ee518c93832c",
+      "source_sha256": "0b0dea5e2b322fd5557d30f0151682128e583985223c13e1c5ac39cf0132a1b5",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/appendix/appendix-b-data-structures.md",
+          "git_blob": "d2b133c706e983a7b20286262fa6677294c689f5",
+          "sha256": "b342cd490fc185056876dc74d95fae91db802ae794e0c16b9630877dd186f2d0"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/appendix/appendix-c-selftests.md",
+      "source_git_blob": "328d055deda0444938372e3843cdf52720a8dbac",
+      "source_sha256": "5cf1bd054b0a3b0d2d841e620e815a1978e3fd6bf7969c8b6773a4c8b5940c55",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/appendix/appendix-c-selftests.md",
+          "git_blob": "3585e46067d2f72a9fdd8776c0603e7722855630",
+          "sha256": "8141f082bf2162604b70eeee1133d0e5d68af0138a92edf578f8e0a2a08154bb"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/appendix/appendix-d-rust-kernel.md",
+      "source_git_blob": "aa4ca6e034274ada84fdc705d32ce7a7fc7abb58",
+      "source_sha256": "50a297d12d33bac98d37f0503ffa5380d2c6484f2b4481acafcfddc95fb96831",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/appendix/appendix-d-rust-kernel.md",
+          "git_blob": "214d266c5bc5bf0e90cc095285ba53821e75ef23",
+          "sha256": "3dff17d5137e0dc4bfd28dfd6bbebbe22594d83493a60e0464493cbb32f48ece"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/appendix/appendix-e-glossary.md",
+      "source_git_blob": "9d38a8430eeea141d335588c287d2922bc9f670d",
+      "source_sha256": "db819ba0a41110eca5b790f579340377fdabb39f308e15b33c993f1dba785c21",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/appendix/appendix-e-glossary.md",
+          "git_blob": "c1207bb0a60fab47a38d553f5569d482a95da1b8",
+          "sha256": "74113add57338547c54d1ab042505cbfb33efbb847af77033a74309465725bce"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part1-hardware/ch01-x86-entry-content.md",
+      "source_git_blob": "ea4eb596834bdf0ac82baa8ef13a5e46557d8386",
+      "source_sha256": "02c82d8f0cca51f0c7ecb56ac47ffad560e912c704d2341df049e363e9246788",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part1-hardware/ch01-x86-entry-content.md",
+          "git_blob": "3a9267f66a552c5f0c7160502a60c40286570323",
+          "sha256": "d39087cc12fae32ae0d1d88914b39683d61f33cd14241cc0500e635a75f08678"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part1-hardware/ch01-x86-entry.md",
+      "source_git_blob": "092652cf9a2cf5df587ae601b1137bb4883fa9dd",
+      "source_sha256": "c7ccf0ba9439b0f9207f6d32af2b46dcdb50e90a249e338dbb2257d16c9ea1fe",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part1-hardware/ch01-x86-entry.md",
+          "git_blob": "f5c06d3b096b22ff2a56b758eadf17252f4689d4",
+          "sha256": "d95525c3adf1a0b3dd39d21c009252abbd37f4dd83f931f46ff6ad75cd961f49"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part1-hardware/ch02-cache-tlb-numa-content.md",
+      "source_git_blob": "7c3ec396c91d987db458c123d692132554bd2715",
+      "source_sha256": "5f557564b676353d41cc62d4f32bd954ee9ef7ce91b9190792b2322bbe53f853",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part1-hardware/ch02-cache-tlb-numa-content.md",
+          "git_blob": "b6b7fa848661b7a472c4662b0e7a7b762399f9aa",
+          "sha256": "95744ad36dafb5f39b59d909fef508ea976a7216c4368836c4f24cbdac215dd8"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part1-hardware/ch02-cache-tlb-numa.md",
+      "source_git_blob": "2ad8b8b7e554ae9367e6d01b6dbdf307fa79aca3",
+      "source_sha256": "912488ae5314d3bdfc8d8619e402cb701b3c2cec9a6ca23653edc6c129d5eb05",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part1-hardware/ch02-cache-tlb-numa.md",
+          "git_blob": "a37dbf9772cda03ddd99f794765153f62ed7e9f6",
+          "sha256": "cf332c4025c22b8f34383de7ef4ec1390a7702b3be118df7bb3cfc6bd35366d3"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part1-hardware/ch03-storage-io-hardware-content.md",
+      "source_git_blob": "eb63ad308449af55e7b2370551b8b1f18df8e3a8",
+      "source_sha256": "44cffb6b444a2b5e1f639130f7d9133a3411e92cdedb2d809ae57726c8948833",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part1-hardware/ch03-storage-io-hardware-content.md",
+          "git_blob": "cd9b820b1f60af1722ceda240544c0697ae60f1e",
+          "sha256": "36acc491be990c2acc93a1db914074adddda75cde829f5eb658c66088158d9c8"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part1-hardware/ch03-storage-io-hardware.md",
+      "source_git_blob": "1f39832f88e8c18909849b45e6d150e9084b76df",
+      "source_sha256": "49e8e830e87772698dfbf1124c36f06c080273fee4654a22e24769bc8f28ff5b",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part1-hardware/ch03-storage-io-hardware.md",
+          "git_blob": "1767f4b3e931ebce75909211a45b3352c29783be",
+          "sha256": "7220405fdbb6ff35fc838977b69ad442012b0e871b84f6cb69e9d3e27d842a2c"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part1-hardware/ch04-interconnect-accelerator-cxl-content.md",
+      "source_git_blob": "0d67cb569b2db4a8e0398b4b673175f07f97e494",
+      "source_sha256": "a05a55ac4ce0ed441ae6081b4eb27138928ddfecf50d6d1d4d8a7ef5cdaf0214",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part1-hardware/ch04-interconnect-accelerator-cxl-content.md",
+          "git_blob": "063f89cd2249397033b3b0d91b7c81b0bd4cd74e",
+          "sha256": "7531af60ad873971ff0b52b481dc0cdf800012dce429adccc91497219884fb16"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part1-hardware/ch04-interconnect-accelerator-cxl.md",
+      "source_git_blob": "de54df90125a0c56b9ebad1bfd081d27c61fc00c",
+      "source_sha256": "eaae726e0b8267bff57e6f1e972d4efa3ab9c8fca4ec08481124c9016168658d",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part1-hardware/ch04-interconnect-accelerator-cxl.md",
+          "git_blob": "caa7ad9c7ea6894b9665495de7d58f82f497fc94",
+          "sha256": "9a0e28c8f453fe469e012c28007ded9562cfdc1801f808e2d6cfea39e2889dba"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part2-boot-process/ch05-boot-content.md",
+      "source_git_blob": "4a46403220de5e8323210219ade9980e488548cc",
+      "source_sha256": "c752f7676824da612bccdad2c2775ca10e4891264bf13cd47f012e6f39391560",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part2-boot-process/ch05-boot-content.md",
+          "git_blob": "afb0b28ac8aa56ecfb45fb38ad69f90529691bdb",
+          "sha256": "8084f11e5d6fe7adb5c9024ac3827106df34f03a5009073583883ec0f82a07b7"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part2-boot-process/ch05-boot.md",
+      "source_git_blob": "8f35ff8a123f145a18dcde3a12ee657a30b7bab4",
+      "source_sha256": "19deb2417ecfb6994e3be161a1020a49ac786f0c62b922a092e74c949a1a7a9c",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part2-boot-process/ch05-boot.md",
+          "git_blob": "9a306b15e6cfed91ff16c9add15b66a3a762497e",
+          "sha256": "94be49d17218d88605b7bb350cc054edc7452e52e35e8e2581a8fd28487e86db"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part2-boot-process/ch06-process-content.md",
+      "source_git_blob": "7139240696bc9eef7dc9bb391b9dd1ef9f7d5394",
+      "source_sha256": "ffbb05a57bc48a670e92c6e80d80e9fb9e2db985a236ff703d29763ceb352daf",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part2-boot-process/ch06-process-content.md",
+          "git_blob": "b3bacd208dc845c8fc8fcdcafa7a37bcbc49d52d",
+          "sha256": "feef7f5c6eacc9e7d5723fbe76784ee1e60f5b6625012b2238b927ca33c72623"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part2-boot-process/ch06-process.md",
+      "source_git_blob": "acc0bff6e5e32051ab4944a6f397a946b09579dd",
+      "source_sha256": "4a0c7b7eda99f09ef95c0c0940502b01eb593a1615daa32b506aec0b44495a15",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part2-boot-process/ch06-process.md",
+          "git_blob": "6a40817ca15ef2d1cfd635dd6be7bf4ae1834877",
+          "sha256": "0463ff38f7b31b34c0dbfede8ed82145be08eb613b2fdc4424818b79e35cefb1"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part2-boot-process/ch07-scheduler-content.md",
+      "source_git_blob": "2db6bd8797aac08fcb35465742580eacf313a94e",
+      "source_sha256": "3c546488fcad6e25f4ca5d97b5b9593fd6083a3058d4ecd6966c7de52d1f5045",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part2-boot-process/ch07-scheduler-content.md",
+          "git_blob": "390649f25ec1ebed61c7bfc403001fe154ecab24",
+          "sha256": "1937435fba1742325b78563f28a99278f091dd9371ba07fa9024a008e9134079"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part2-boot-process/ch07-scheduler.md",
+      "source_git_blob": "6ee204e8eb92068dc3ef8d12dd054443f15d8412",
+      "source_sha256": "54fbb4bd5f0890d794fc9d4c68a7a975e0557aa47dcc866a9360539ddc742ad4",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part2-boot-process/ch07-scheduler.md",
+          "git_blob": "7245b2058cb4747edabee988411a1b758fd484e0",
+          "sha256": "808b8fc548ff5c1236cd907b5fa96df33476ce6cda5957f7037d0503a8848ba4"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part2-boot-process/ch08-cgroup-content.md",
+      "source_git_blob": "5b157b53345a5306955bdfc1f64dddbef2a2a025",
+      "source_sha256": "a9ead8c36eb7e1e095aee672e47a259cc7fce6de65deba84194c71f7b7a80a6e",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part2-boot-process/ch08-cgroup-content.md",
+          "git_blob": "9a5e693013656014032df3dc8f7e6475a81b12e3",
+          "sha256": "52c131014ba08331b536b035ef457426ac79f5b3dc00d03597bd365f69b14e44"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part2-boot-process/ch08-cgroup.md",
+      "source_git_blob": "530d7abae5e5775ac7ab981a46605dd76a192925",
+      "source_sha256": "d9dc4203c8c18211f1e4d80d72bfc69c9ad84770b9353936dd1be7300dd3edab",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part2-boot-process/ch08-cgroup.md",
+          "git_blob": "cc04ab9aab1fb938564d90b3748a1b4e8789bbbd",
+          "sha256": "2e85b5a38e76e8c956c4d78b6cd1ed9aa1b3ff028b71805510731bc8dde367b3"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part3-memory/ch09-physical-memory-content.md",
+      "source_git_blob": "0157737f41dd8a23f58e1ef81a5f3296906784fb",
+      "source_sha256": "ace656001dea60590b34767a1d617aca28c626870168d47a5ab19555a24644fa",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part3-memory/ch09-physical-memory-content.md",
+          "git_blob": "d8c4603e484ed5884845e3a1fdf711030eaba48b",
+          "sha256": "9bcd5c6187461e0b90abccd610cdebf5f05e34c55ea275ce45d7f9b8cf59e191"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part3-memory/ch09-physical-memory.md",
+      "source_git_blob": "776c741bc609bdb410680cf163126b8e473639ae",
+      "source_sha256": "dba8f6dd8836c8245deb567a093c00feccc3c72591d0edbd701a183d51a170e7",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part3-memory/ch09-physical-memory.md",
+          "git_blob": "9c937ac86628531fe2d0111fbc37ef2a5c401de6",
+          "sha256": "7f75b09f316d65a5b57cf61c6c6f255cabb4afd28391bd16204dc0399b2dc246"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part3-memory/ch10-virtual-memory-content.md",
+      "source_git_blob": "47d3642d75a9063143b5a511af2e6e99d77e4a6a",
+      "source_sha256": "583b3a9ed20e588326ded92c2f4ee1d12927a75bb7ecd549ed45d153156791b3",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part3-memory/ch10-virtual-memory-content.md",
+          "git_blob": "5fbcb45b8f99fd97f71be7bb6142b84566d84bfe",
+          "sha256": "55d684f8cf060c19f817de7e06101ae7abd44d5a0d48b9c0121800bb161f2f8b"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part3-memory/ch10-virtual-memory.md",
+      "source_git_blob": "4e11862c43b0e1699e76aa4ad9f9ff79c7847ce9",
+      "source_sha256": "76f2926b3877b9b152e0a51dc4bd4fe6c8a86b2b8d0cc2b753d4d93df26f3e9d",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part3-memory/ch10-virtual-memory.md",
+          "git_blob": "82f48c39441aa772edbd5bd89656de7ad482b5b4",
+          "sha256": "6b17a7dcc40d93a18535cf268dadc231ace92df0445d407e2a45e74060b05b4a"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part3-memory/ch11-page-reclaim-content.md",
+      "source_git_blob": "ce2768c6ada5a8ae3fd65dafd29bde463f8d8875",
+      "source_sha256": "fca1753e479e43b6d7f49e605e26d4ce5bfb02210a2662e1168d9e3fcdcabbfe",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part3-memory/ch11-page-reclaim-content.md",
+          "git_blob": "7cf89079ad5e4e0eff58bf92c2b73a89b19e2750",
+          "sha256": "b206987338506c74533011f87eb758c8179283beaa01f5f8e5566110f93e8626"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part3-memory/ch11-page-reclaim.md",
+      "source_git_blob": "a28d138b065f57e0296eb1837cec51426415f800",
+      "source_sha256": "7a6b2b1e4f17498f621ce70347bd3601dda3a24efa6555ba02884c36f376492c",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part3-memory/ch11-page-reclaim.md",
+          "git_blob": "d4df8395eb92ffaece99a1dfdb82cee1f2a1ee58",
+          "sha256": "5880fc8bb3fa4f31240f8ad3a7b7386c9760dd58a027260f8a4c195b04cc1e3c"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part3-memory/ch12-hugepage-ksm-content.md",
+      "source_git_blob": "8e854ad7f65609d792dd593e86d0a079f34e5074",
+      "source_sha256": "b31cb1b5b9d518243812694f9b3f5b163e3c1a638f73ae71512afe881bb0d1ec",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part3-memory/ch12-hugepage-ksm-content.md",
+          "git_blob": "339e9339ad2c93e6d93d48e0a887befc38c9669b",
+          "sha256": "b18963141666af14d84a31f257db94f0c19b2f00ad30e2dc703f8ae00b1639a9"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part3-memory/ch12-hugepage-ksm.md",
+      "source_git_blob": "50db252e53a7b83da34ff27cd1723f824788466a",
+      "source_sha256": "73282cadf85dcc79e359796de05d3bb262379b78ca52861c86b9d0fc7c806064",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part3-memory/ch12-hugepage-ksm.md",
+          "git_blob": "8d931b6e148abfde70a64346a362c144ba55b96d",
+          "sha256": "236cbcf8e535203b84a3e93b178d4c63d3a8e32a3e99649b8be9b9bc1efbb0cb"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part3-memory/ch13-memory-security-content.md",
+      "source_git_blob": "aca6d6a883041ba00c1d68f5c25737ca28dc5aa0",
+      "source_sha256": "8f3f7ce39d5d2ada334f50345e99b8dbe4d7b1649475515902155f4ee143bf0e",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part3-memory/ch13-memory-security-content.md",
+          "git_blob": "1b80537573e905ade14411f9c5fa71245fee83b5",
+          "sha256": "b552570644f5d4129154c8ea72cb23b7208d19e16908c7bfd61f47ea8e147e6b"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part3-memory/ch13-memory-security.md",
+      "source_git_blob": "2eea6731c39c0609c0975b9bbe944254d91cf0cf",
+      "source_sha256": "1046c517b9cb2f4ef17788eccf08f595ab6d498f54a96b6a1d676c9aa14611e1",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part3-memory/ch13-memory-security.md",
+          "git_blob": "4eba1b27c3e7a1933c7d4e98e7b0c14f24ba5f16",
+          "sha256": "38c9df2975485501c0cc037103c371dd0b2b2a15919c6fe440a4239fe1b829a6"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part4-sync-concurrency/ch14-spinlock-mutex-content.md",
+      "source_git_blob": "17a88fd437dcff69ef8bf907ce3420f6e8235805",
+      "source_sha256": "ac7424ba364e2fd92368c3d7b5816304635509934ec3203fa51e5e4d0a1847a2",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part4-sync-concurrency/ch14-spinlock-mutex-content.md",
+          "git_blob": "2bc13aafdfc89105d0f83615417e0861bbab4ca5",
+          "sha256": "82802c197001696220f97f70a273acf19ef9f6ac080bbb77d217389a047ce30d"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part4-sync-concurrency/ch14-spinlock-mutex.md",
+      "source_git_blob": "f105380bd13a2867a3afc7d368e301625dedcdda",
+      "source_sha256": "fa63f4e801744978a9a4f868ab6059e9395449e7b99c1d04431648e9efa1c91c",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part4-sync-concurrency/ch14-spinlock-mutex.md",
+          "git_blob": "c0951dd043c82b12372d1792342480e64fc2d01e",
+          "sha256": "897fb8be505984c3bb020daf8d5f4a233b221b479897432d2b0c81e80ab78d9a"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part4-sync-concurrency/ch15-rcu-content.md",
+      "source_git_blob": "9608c960cc78ab26a4d94ba76ec1fc32064d17ad",
+      "source_sha256": "b233b506cce0ffc6c677f9ff5a0024a94e8c5f2ab152d6d8d32c072fbf6c6e43",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part4-sync-concurrency/ch15-rcu-content.md",
+          "git_blob": "6130fbd4d41e6d480a9f3b8aa97e3e53e767f7c9",
+          "sha256": "0804da6881cc475826f79059fd47a5f56a5540a427d29937900f6ff765e990d9"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part4-sync-concurrency/ch15-rcu.md",
+      "source_git_blob": "a9766637c52d8c3c121330ed78b799df2de94835",
+      "source_sha256": "2144243215e43e6445da24e847cd6bb8e25d4ffe32a0f2e552c377ab3442ef31",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part4-sync-concurrency/ch15-rcu.md",
+          "git_blob": "303cf70bee8307036ff79f211a4ec69e26c7e221",
+          "sha256": "cddc35dd7842babc2bc0f14f6533783b0e3da67cd9f3a9bfdcaa7196a53ca234"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part4-sync-concurrency/ch16-futex-content.md",
+      "source_git_blob": "86b2e868ba1c24efd72aa35aa8530c28a277c617",
+      "source_sha256": "77a2f207fb0d10f83d6d59131fbf7b04615ee1d73c02e89eb1cd1b864c61b898",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part4-sync-concurrency/ch16-futex-content.md",
+          "git_blob": "a5da258c068346099d03599aa3315ca5f2ac0dcf",
+          "sha256": "3cacafa9012684852f47b4070b0af8e99a36e0e1626c440556d05a76887dd0a0"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part4-sync-concurrency/ch16-futex.md",
+      "source_git_blob": "c8aa14f83c84af18943663a7370db662c28a9ed5",
+      "source_sha256": "f4f27d3fe0db6c491bb99002c4872d675936cc676d3306cfa213310f4b3451bb",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part4-sync-concurrency/ch16-futex.md",
+          "git_blob": "e52f858edc509563726dbd52a1a31dd37ba0c2ad",
+          "sha256": "633d0390104b6a95051d43582f3f256828833a74b974504c96451a254e4ee8a4"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part4-sync-concurrency/ch17-memory-ordering-content.md",
+      "source_git_blob": "859ee35acc846f6549ad99e63dcc5704330c6caf",
+      "source_sha256": "dad7b12f872f5d484c6b6a7498f5548699559f51422f96e20e4cfbbb5aeab634",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part4-sync-concurrency/ch17-memory-ordering-content.md",
+          "git_blob": "3f1b3c64760617973d5cfde827b4e109dd3988b0",
+          "sha256": "a2bef7be8103de1e16bbeac57b828b8466bcd02fbe8b318d635b79241cfd9ced"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part4-sync-concurrency/ch17-memory-ordering.md",
+      "source_git_blob": "f580c228be6a2569493d6c711d6f9c7984a1db98",
+      "source_sha256": "ec13020b21ad6dc067bda5184deb308eaae4d99df3613c80e9533c939b71abe2",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part4-sync-concurrency/ch17-memory-ordering.md",
+          "git_blob": "3008e9773b285eff530089f3baf0bbb6c6c5d4a4",
+          "sha256": "129fca176b2780364455e7c19cf7e9cf7007c944a2009b21020aae8ac02c3f39"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part5-irq-time-signal/ch18-interrupt-content.md",
+      "source_git_blob": "aab51fe78fd294ed426f8b65fd4a9c3a8d1aae5c",
+      "source_sha256": "6341a0e73fe1058c92ac322ac8a1e7b5b8b353487ed0c1bc58e3b183d0ae9d3e",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part5-irq-time-signal/ch18-interrupt-content.md",
+          "git_blob": "dd66fc80594638ee064276d5070ccd869fa38554",
+          "sha256": "6dd5ed683828683b0ede086476cb7c5f5e4111b038de11bfa1c74d29ef608eeb"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part5-irq-time-signal/ch18-interrupt.md",
+      "source_git_blob": "aa82f3cb02d5db05cae203f895b2c3e7ce8a95b9",
+      "source_sha256": "c3e3d9fc5c0dab3b74a0778e288afd5cef801d44a56ac8c66188cf01d477af74",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part5-irq-time-signal/ch18-interrupt.md",
+          "git_blob": "c2af93c777f8f9c9d0809a049936fd5583a23df0",
+          "sha256": "fd4a27f6cf0544d9a5e18e0d8aef16569a15eed4191102ff7b561a3e52e0ea3b"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part5-irq-time-signal/ch19-time-content.md",
+      "source_git_blob": "ee6de9745e4a8bcc0335e5f35b71123e2986cff3",
+      "source_sha256": "621ded36659f264afce021692a5b995a57c8dc2c48ac250fac07aa61a64dba18",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part5-irq-time-signal/ch19-time-content.md",
+          "git_blob": "903016023979433231e41cd33096c0dc926f1d60",
+          "sha256": "f8d2f11baed3144fa9f166c52e410d90c8663d6748c47c872c4a2eeda5a19f20"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part5-irq-time-signal/ch19-time.md",
+      "source_git_blob": "67d22069c7937b8fb3ee8475907f0915c7f01221",
+      "source_sha256": "2f1348119a1ad6082e5c271a2a18ddb386cbc30ce69172889988bda05032cd77",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part5-irq-time-signal/ch19-time.md",
+          "git_blob": "21027d7a4b286da04ba55ddfbd1e0c316ec82cfe",
+          "sha256": "ccca57248370342200dc8492d7e6937a0b3e5db1e95f7c1b8d6d545abfbb60d5"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part5-irq-time-signal/ch20-signal-content.md",
+      "source_git_blob": "ee7ad13c0ac3836b74ae575d2c61b1759373c348",
+      "source_sha256": "6fda22d47f254d2377aa8cb7dda080f97ff2f585890f8f472e8acaa050a0d2b3",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part5-irq-time-signal/ch20-signal-content.md",
+          "git_blob": "ee7ade1921c74a75ad355829f3b8f3823ddb829e",
+          "sha256": "92c09a7e07f296775172d5080bc69dbba16efa1fc686a8494588b3b8c8abde6c"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part5-irq-time-signal/ch20-signal.md",
+      "source_git_blob": "b3e9c21bb5aafdfd8c868f185d6bd6bb454cd83e",
+      "source_sha256": "70182cfea364b4d82804d9ff53a08c49f0810efc98b1cb556ec87cadd60ed739",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part5-irq-time-signal/ch20-signal.md",
+          "git_blob": "23ffa62ecbcaf15806f1d3c06ad458581c0a2866",
+          "sha256": "23f469906c0e76d81bc36a73447c30124214ce1d352b56f3feb5270463132580"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part6-io-storage/ch21-block-layer-content.md",
+      "source_git_blob": "715db9f2827aad7745b9d18f620ca1044a58d390",
+      "source_sha256": "db814c160c9b895c954a5250612b117739825ebada1e85c1482f3f68add34620",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part6-io-storage/ch21-block-layer-content.md",
+          "git_blob": "b396ae78c9a93598a0b8199cbfca8bde13cbe5bf",
+          "sha256": "c1e90b36e13c628842b9bfbc9ced7a3699664f587c84e352f5344afb0076c2f1"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part6-io-storage/ch21-block-layer.md",
+      "source_git_blob": "69e340cd2926d1099049cc2572bfe7a53c3984b9",
+      "source_sha256": "2554493a2dce8d98196b59fb9870719c067550b8e0ef76c63b9dd6399d530c30",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part6-io-storage/ch21-block-layer.md",
+          "git_blob": "dde463f2d890bbc61b9b4a5f4ea6fc846783c9dd",
+          "sha256": "ba73bb52cce19fd35032f1404f2523b5605d6850cb06600d80bfbe8538727520"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part6-io-storage/ch22-filesystem-content.md",
+      "source_git_blob": "caa1a2c8f14786de732e70a0415d13d2f4f7eada",
+      "source_sha256": "caf793af1cf14761b0567faceb5e9383de307e58f78ae6116bc7f09a5dfe86b8",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part6-io-storage/ch22-filesystem-content.md",
+          "git_blob": "caf2dbaf6062ec11e88e7335140876928c1cbf3c",
+          "sha256": "3f16bfb686e5207c3a3c00b4c003b0eeb6cfeabdcfa26ffd3357bbda2a04e02a"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part6-io-storage/ch22-filesystem.md",
+      "source_git_blob": "297eed9b4e9409af21d0be62850d9a0a533b384f",
+      "source_sha256": "e0940af27812b1cf6f343e635e6fe709b2fb9faef7a53e5372b83ac24a7995e3",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part6-io-storage/ch22-filesystem.md",
+          "git_blob": "9f085414fa8ed1e7d0e655d2c7c420e66e067045",
+          "sha256": "47d959dd36f792eba2a11d4dc612b45a2d98727e7599ab3dff6ca60f649e757f"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part6-io-storage/ch23-io-uring-content.md",
+      "source_git_blob": "446dee5ae30bcacf37e2a991e7da97d4eab7af53",
+      "source_sha256": "0ef27efa3562fcaf16004c77d0dfffb587fca7ad24b040b665a28f2a850707ad",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part6-io-storage/ch23-io-uring-content.md",
+          "git_blob": "b8268897be6e4862cfdb04ceb2fae4a9dbb278bd",
+          "sha256": "e4ab144039a119cd67e0daf6276ecdb20119bd821bd7ecf01fa2fa8a79264702"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part6-io-storage/ch23-io-uring.md",
+      "source_git_blob": "8688a80e67c264d79a90b6bb6907b98a2634e793",
+      "source_sha256": "467b3c438d04f1764f77ea0a206d4cf0064c60446ea6adb69e835bc4f1f4bb22",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part6-io-storage/ch23-io-uring.md",
+          "git_blob": "890f5e679e152f859aeb7a71c6be0e6787b4eb0c",
+          "sha256": "3a2529061f9c6f48c3b313eab7a6f1d061174ac7a4eccdc052762fcaf0b1dd85"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part6-io-storage/ch24-network-content.md",
+      "source_git_blob": "d1515e0d0c4b8f2ced3f0dff05867d3445268094",
+      "source_sha256": "053bf6df63b40dd511066e6ff11842fd1072daa1357dd8697d7172085f5451d0",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part6-io-storage/ch24-network-content.md",
+          "git_blob": "6a5751de87bb09ac9cd9e293640a850e4b139e42",
+          "sha256": "29779964662902cc81fbdc933568eb344259405a0f667bfa5dbf5528b8c3014a"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part6-io-storage/ch24-network.md",
+      "source_git_blob": "71c16c8f708757d7c3d282a1c543abacc2567645",
+      "source_sha256": "f5b84707bf6f71b06f2c30571163ee2ad3a8a43e12c6d7644c4d39dd48f0ce76",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part6-io-storage/ch24-network.md",
+          "git_blob": "f0b2a125bee7c4d6cac850d66387c50c2f66ef85",
+          "sha256": "ced7b3a4522754622ad63b3ff86d8a83293deb628dbdc7bebb21089d96faf40d"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part7-observability-security/ch25-ebpf-content.md",
+      "source_git_blob": "6091f6118b3aa36d2a85e435fe1cb77e66d0d00c",
+      "source_sha256": "93e5717fc8a1e461668016525ba9af1c01fcfbe9079b67df8eac07e1d55a3ae0",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part7-observability-security/ch25-ebpf-content.md",
+          "git_blob": "7160b85badac1004bad454edb992bdfca06923b9",
+          "sha256": "5647ab7551a500b288cf3d40ce9002e5d155624111ab422ccf49d5e4ed8d72e6"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part7-observability-security/ch25-ebpf.md",
+      "source_git_blob": "6bd8515c4f0836dfb027b40a5cf2b2efeb11bbe3",
+      "source_sha256": "77de947365a853c8d43d6a7e5682150a7142518bac5eea3b83a3b1844bd828ce",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part7-observability-security/ch25-ebpf.md",
+          "git_blob": "bbd3e9a7c8c5ae155aec1b109903f407fbd2ba61",
+          "sha256": "bbc5d7ff72bbcec42158ccc101f35f3b8bb47a59ec5487d6c5630d86e3a77624"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part7-observability-security/ch26-tracing-perf-content.md",
+      "source_git_blob": "6caf1d17cd4539805698314bab9f78a10c1d8a05",
+      "source_sha256": "11b8a97eacfb94cac33a070c566339c984b6108e883b30860c1158ef444ec4f2",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part7-observability-security/ch26-tracing-perf-content.md",
+          "git_blob": "cb7a2221e1ea44c448e7a6abdd74e0af22096c05",
+          "sha256": "b5e76344605a89c8f9d91611104bcd22360b93d67a304ce6ade7b47d81e15d0a"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part7-observability-security/ch26-tracing-perf.md",
+      "source_git_blob": "4abc299c39f5046d638987e55d22d61ac921c9f5",
+      "source_sha256": "5bc45cf5343c2e824fb27ee48cac93da71235f00124746d1b13c11a3de9d8804",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part7-observability-security/ch26-tracing-perf.md",
+          "git_blob": "4c51098021cf03074fac953810e9c44ed4dc51e0",
+          "sha256": "bc63cb6505e0813434d938ccaf770aa1c3417b1435e2a2f433c3405347358bdc"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part7-observability-security/ch27-security-content.md",
+      "source_git_blob": "3c6b519df5fd58e3823b7e0f504089af7ba9cb7e",
+      "source_sha256": "3b7139f1a63e6227ce94ef48864036d1422d5e1740aaffcf5e5bc5e700f04b7e",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part7-observability-security/ch27-security-content.md",
+          "git_blob": "0895920cadcd1bd1318324a6ca1f30aa860612de",
+          "sha256": "5c43d9278026517bdb275b5f3c82db76a2c9091d4487004d75c0d4c687a4df60"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part7-observability-security/ch27-security.md",
+      "source_git_blob": "8b809a1af32d9921ce78b9fdca9e8c140bf38692",
+      "source_sha256": "35be68a829c63b6db03e9420825dc37144e79faeba617dce0460b8bc8708c4d0",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part7-observability-security/ch27-security.md",
+          "git_blob": "c1973b31be9e402f023ef802d9aa743ba279b897",
+          "sha256": "6f00ae38149bb736ee635c4644290266c8978c03a6a4fee497f6e5bba0846df6"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part8-database-os/ch28-storage-engine-content.md",
+      "source_git_blob": "5382f12493b2fc768997c79824de3869e3b23686",
+      "source_sha256": "c087e790c2a26e7de336dbbd97a06163b92273cfc74700035ff9426c1c1467cc",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part8-database-os/ch28-storage-engine-content.md",
+          "git_blob": "7652cb13bcf6a853bb3805cbc36b2f4736f7739b",
+          "sha256": "8a66dceb4394df28cc7823621ff82a91a23e72ba361f59c7022b6b3e5bfe408d"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part8-database-os/ch28-storage-engine.md",
+      "source_git_blob": "05d3a5a973fe8b929782a9f22807caa7b29e616f",
+      "source_sha256": "2d7c5e3611e927156999beefb64fdee9570c365e87bba049d1a8d073109eff87",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part8-database-os/ch28-storage-engine.md",
+          "git_blob": "63c2b49f762d6f27de6f63cd8b186a058ebe4222",
+          "sha256": "024c2a23196caf7ee595c0b6dc7a6c892ce0a9303f46a4521c85884cd60b68c1"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part8-database-os/ch29-query-execution-content.md",
+      "source_git_blob": "dc38a8fcd57d5e2a90e01fa724937df03ba0e9a0",
+      "source_sha256": "0455f1dac4facb1700a3b61a92b4cfacee2fdb69cbe42d75c2b86433689e467a",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part8-database-os/ch29-query-execution-content.md",
+          "git_blob": "7f2595e71caa728846182b7bbcb36be6477e70c4",
+          "sha256": "afad670509d8e00511f78a7b5e744da28937c440c420fc131c7628751d0ed610"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part8-database-os/ch29-query-execution.md",
+      "source_git_blob": "b0260130d16b315d3f9233f3010a536905e0c89d",
+      "source_sha256": "f6f0c0639fdee518652484ecc637f9b55967655734d1b6b0e3dfb5f89c6f7979",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part8-database-os/ch29-query-execution.md",
+          "git_blob": "ea745c4bb9b944adfb1826d5fb0b6fe51c76ea97",
+          "sha256": "232a79576cfe6be37d4c7569d550b73109556afee9c9fb6ad824d8183e5fe705"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part8-database-os/ch30-concurrency-mapping-content.md",
+      "source_git_blob": "7dfeafeb7aff56f657930fd4d4b084db1b80d8c0",
+      "source_sha256": "a413701d65f89418874abd5986ee7b9d39e775ab56e5e8704978edb236619243",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part8-database-os/ch30-concurrency-mapping-content.md",
+          "git_blob": "d53cea1ebb7327615fee83fd9456fa09ce8a6777",
+          "sha256": "1ec6d6681c30ca630cc48e86e95c45db96816f12d9148c70cdc361d665eac6b0"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part8-database-os/ch30-concurrency-mapping.md",
+      "source_git_blob": "e096f89750fc36e1bee0e14c5a00357f191acfe6",
+      "source_sha256": "e6a0dc16daa8c725a6ddba21e4ff0d5179dcad1128069eaf858deb13707ceb56",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part8-database-os/ch30-concurrency-mapping.md",
+          "git_blob": "cb42da2e05dda7f0f14121062c486afb55413fa3",
+          "sha256": "c836c049393695d2ffbb1870138bc117a51ec472d409f1ebbf1d6eff8f636cfd"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part9-ai-era/ch31-llm-inference-content.md",
+      "source_git_blob": "59e556e6cb3932964e0d6f69acb587f163030758",
+      "source_sha256": "84c6cb9848fc7a9148b5ad12dcc37aec049daf009a8c8811b1424e91b88a8ab9",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part9-ai-era/ch31-llm-inference-content.md",
+          "git_blob": "87cca806d91402782be3bac66204c2e67fbb6e6e",
+          "sha256": "b08dac650fc8ed97af1752ab73bab84bb1ed3b13c4892f1afbc348b365515641"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part9-ai-era/ch31-llm-inference.md",
+      "source_git_blob": "1d36a24f616859fa096a2faf3767a3cba39e8ad0",
+      "source_sha256": "3d35b5c6cdfb8a9798e4ecf5f16cbaf783cb310f9f0ab321d149e01d4853c2a0",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part9-ai-era/ch31-llm-inference.md",
+          "git_blob": "cf7f94a69f3e04b768c837eb4eae634a9916a88d",
+          "sha256": "a27d1c558a723aec087c9199868c543b7ff1f9b167634bd925601f0b30014dfb"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part9-ai-era/ch32-gpu-accelerator-content.md",
+      "source_git_blob": "dcb8a6a9c85d6927cfc7334f454080b580b92a95",
+      "source_sha256": "6aa4a1e5ee1afebbbd4029bb0c93bdd2f93e70f06cb1f9abbb6da90aaf9b4b14",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part9-ai-era/ch32-gpu-accelerator-content.md",
+          "git_blob": "8560dc8e1062e0f405fa5439d563995c584f0853",
+          "sha256": "cdafba7f956f44c0ab22370a38a057ae796281d9386fa7b4204dac19f5e9bc2b"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part9-ai-era/ch32-gpu-accelerator.md",
+      "source_git_blob": "c4dfae4ae3c55519d1086afa2ee201b616b19752",
+      "source_sha256": "aa19fbbe863462977543546b68e7e0737212a91881b08e6324d3ab118fe6421c",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part9-ai-era/ch32-gpu-accelerator.md",
+          "git_blob": "72d172c6dc5bb8bdd910dba84b2ffac04202c2fe",
+          "sha256": "af80dc72246916bc88fcf6ae1bec1203678ab38f63e69d1f8656dbbad5112d2d"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part9-ai-era/ch33-cxl-heterogeneous-memory-content.md",
+      "source_git_blob": "9bd3a4e016ffe19877bdc9f598e31b34048b440f",
+      "source_sha256": "c783e6386b39089ac257c1301f9541065dc9503cb6b9a686a20ea42dedeaaca8",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part9-ai-era/ch33-cxl-heterogeneous-memory-content.md",
+          "git_blob": "b434de22c91c70a5c03c792de63978e2e85479ba",
+          "sha256": "4ddd1ed08600f2b2986e0f6b9588c374a05a40b25651631c623ac5d43b0f29e2"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part9-ai-era/ch33-cxl-heterogeneous-memory.md",
+      "source_git_blob": "42fb3fac3eaafc5a5925fd23d7caf7b13cc6da04",
+      "source_sha256": "5370d14310dd950e0d457b157b1493b5b5d51edabc46b72e9fc13ec0894dd77f",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part9-ai-era/ch33-cxl-heterogeneous-memory.md",
+          "git_blob": "700f49e40bfbd0accf0e9e1543856bea2542c1ae",
+          "sha256": "480323f743a753038e10836c378b9e49f99886fb371321a61351754266587b34"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part9-ai-era/ch34-os-evolution-content.md",
+      "source_git_blob": "f1799041f4b2f33e7b5baf81fd7ebfda6c177a19",
+      "source_sha256": "a43a947c7986a686867dfd01bac7b12e0d2bac950165275445af1f266cc07881",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part9-ai-era/ch34-os-evolution-content.md",
+          "git_blob": "9aa7ddb148993837beb901490a06268ea86c7ac4",
+          "sha256": "7ec884679ec89ab9422aa1b36f5b2966f9b029f1f5bad27df5ede930504a9769"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part9-ai-era/ch34-os-evolution.md",
+      "source_git_blob": "acb3e8eec4a6aff9383cb51c9e41f95a2a934709",
+      "source_sha256": "7e96aead0b8d0e54cca006d41f152820f7a07663a50d6717aa64c577750e0884",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part9-ai-era/ch34-os-evolution.md",
+          "git_blob": "d7279076cb5aa3d49b1fc357a1d38bbb6f32f42f",
+          "sha256": "6988aedbb9d00da362b8ec505d6044e11b8a1cc64b1ffe92561f3943574ed554"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part9-ai-era/ch35-future-content.md",
+      "source_git_blob": "36230acf32c3aaa9ab9f919e3b32bf65e3077d77",
+      "source_sha256": "da14bce6d1839cfba053c0b2e373527808eab04b9b6041975deb1bf8a9bfc793",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part9-ai-era/ch35-future-content.md",
+          "git_blob": "129780166c41ab589f1ea915cc369b2adb158519",
+          "sha256": "73b63231e66933ed168b8999f4652fe74b7f9d1282fac995f912e819beec76ac"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "docs/books/deep-linux-book/part9-ai-era/ch35-future.md",
+      "source_git_blob": "e5cc0e0ca57c67664945f14b450df1f248b399fd",
+      "source_sha256": "9cbe3fbbae25f0f00a9b5efcb90dc9d0dff859f1787dab8d1ddb8c8451182e60",
+      "source_mode": "100644",
+      "disposition": "archived-with-review-metadata",
+      "destination_repository": "LiShuMing/cygnus",
+      "destinations": [
+        {
+          "path": "books/deep-linux-book/part9-ai-era/ch35-future.md",
+          "git_blob": "be587fc6666d97fd2885dd6ba54bf2a87dd935e5",
+          "sha256": "9ab3b0b26fe5fb2dc774a93405be3a9962ea2dd58c54f45866a86b29ec2737a3"
+        }
+      ],
+      "reason": "metadata-and-review-notice-prefix; source body byte-for-byte preserved"
+    },
+    {
+      "source_path": "python/projects/py-email/AGENTS.md",
+      "source_git_blob": "1d7a0ae88d956c74600adb0bf2206653dc6dc716",
+      "source_sha256": "74bde84fddf2bb08af0c41992b600196a9266f4d48694a25795dc2e16807928e",
+      "disposition": "adapted",
+      "reason": "Replaced legacy agent/environment instructions with isolated module invariants, explicit safety boundaries and exact checks.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/AGENTS.md",
+          "git_blob": "219726f77fd2172c6360efa9819963f9c8c44f45",
+          "sha256": "d432ab66a990ef92e08e21b763c98b5bd6a139f3278509bed403be30df937de3"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/CHANGELOG.md",
+      "source_git_blob": "78a644a0ed9ff2f1ac58782f2d8061e32a8f4be6",
+      "source_sha256": "1bccd4b40f21b993974f628afef88d146a79a611a3e6cc0b4d8cb074605a26f1",
+      "disposition": "excluded",
+      "reason": "Legacy operational notes, role/task instructions or superseded plan; excluded to avoid importing personal operational context and obsolete unsafe setup/reset guidance. Fresh module documentation replaces it.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": []
+    },
+    {
+      "source_path": "python/projects/py-email/CHANGE_LOGS.md",
+      "source_git_blob": "cbeb2adea60cba84a1e8bac9ff0ae328ea27fd22",
+      "source_sha256": "fbde8c022cc08c4da263dbaa299f6b3f6b313a21cb1e5940ce7b53b9e926645a",
+      "disposition": "excluded",
+      "reason": "Legacy operational notes, role/task instructions or superseded plan; excluded to avoid importing personal operational context and obsolete unsafe setup/reset guidance. Fresh module documentation replaces it.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": []
+    },
+    {
+      "source_path": "python/projects/py-email/CLAUDE.md",
+      "source_git_blob": "7044162282d35c1424667d8cc1ade238407b18af",
+      "source_sha256": "4ef5c0406abfec95975ac8a84047b0c2c1a574efbbb7157d1eef53bbb44472b4",
+      "disposition": "excluded",
+      "reason": "Legacy operational notes, role/task instructions or superseded plan; excluded to avoid importing personal operational context and obsolete unsafe setup/reset guidance. Fresh module documentation replaces it.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": []
+    },
+    {
+      "source_path": "python/projects/py-email/CLAUDE_v1.md",
+      "source_git_blob": "8deea5b3912bea105804a553876ec2435597dab2",
+      "source_sha256": "bc5bb5214ef132a84720240ff753e40e474f42dcc5c2655a0d2e34aa40f47bf6",
+      "disposition": "excluded",
+      "reason": "Legacy operational notes, role/task instructions or superseded plan; excluded to avoid importing personal operational context and obsolete unsafe setup/reset guidance. Fresh module documentation replaces it.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": []
+    },
+    {
+      "source_path": "python/projects/py-email/ISSUES.md",
+      "source_git_blob": "2ceeea1485904f1ff902721ac66c9e7471538668",
+      "source_sha256": "1a8434a0a714668b20d4296cf945ae6f1d2ddc87c7d53f952722555915dd4e54",
+      "disposition": "excluded",
+      "reason": "Legacy operational notes, role/task instructions or superseded plan; excluded to avoid importing personal operational context and obsolete unsafe setup/reset guidance. Fresh module documentation replaces it.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": []
+    },
+    {
+      "source_path": "python/projects/py-email/README.md",
+      "source_git_blob": "73a6ae5a834ebb6e55ee632fe48a71c0741d096c",
+      "source_sha256": "60c67ce086d67b67ce25209137d657bde3825f4da55aaaa95dd4e64c7c5aef9a",
+      "disposition": "adapted",
+      "reason": "Rewritten as standalone explicit-configuration guide; removed personal machine paths, ambient dotenv and automatic provider startup.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/README.md",
+          "git_blob": "157edbf04bfa0f0cbfbab5514f8d6d9fa41acdcb",
+          "sha256": "c873189ff8e0e9e174bc56be0de77612cb04c9e7644874ab42b46c3b202bad69"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/ROLE.md",
+      "source_git_blob": "6c8b7d0113c973032f4f4b73fe096ae96236e2d3",
+      "source_sha256": "df39fde77202ad2c455d76349886ccabe4504b1e72c99a8562d02ffe2081bdbd",
+      "disposition": "excluded",
+      "reason": "Legacy operational notes, role/task instructions or superseded plan; excluded to avoid importing personal operational context and obsolete unsafe setup/reset guidance. Fresh module documentation replaces it.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": []
+    },
+    {
+      "source_path": "python/projects/py-email/RULES.md",
+      "source_git_blob": "bb33e7399a5f10c67a8f1e315df63d1761f7be2b",
+      "source_sha256": "bbe1de7065bff4604d6fd2abc962a8b853dfa8e7107b03cb93f296f54f8c89c6",
+      "disposition": "excluded",
+      "reason": "Legacy operational notes, role/task instructions or superseded plan; excluded to avoid importing personal operational context and obsolete unsafe setup/reset guidance. Fresh module documentation replaces it.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": []
+    },
+    {
+      "source_path": "python/projects/py-email/TODOS.md",
+      "source_git_blob": "423f29f1933915f55ee2ff2e24296a8606887715",
+      "source_sha256": "8aab65bcdbebbbf4af16bb117727b34de7e656887552ca71e8c342db305d954c",
+      "disposition": "excluded",
+      "reason": "Legacy operational notes, role/task instructions or superseded plan; excluded to avoid importing personal operational context and obsolete unsafe setup/reset guidance. Fresh module documentation replaces it.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": []
+    },
+    {
+      "source_path": "python/projects/py-email/digest-2026-03-23.html",
+      "source_git_blob": "fd027b31ed1f62f0cf713c276e567669c7fad0da",
+      "source_sha256": "bc0ec3bfa196b6975e02fe0b81de57b28e699ecda8386f0aa44b661aacf63055",
+      "disposition": "excluded",
+      "reason": "Generated dated email digest may contain private mail content; excluded, no replacement content imported.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": []
+    },
+    {
+      "source_path": "python/projects/py-email/docs/superpowers/plans/2026-03-24-email-inbox-mvp.md",
+      "source_git_blob": "26aecd90046c8a28ee82e05285ce610bc8d134ab",
+      "source_sha256": "bf2d708735539d62493c7fc7812d513a10dc632ab9a2e1e9952ad13f7e4248db",
+      "disposition": "excluded",
+      "reason": "Legacy operational notes, role/task instructions or superseded plan; excluded to avoid importing personal operational context and obsolete unsafe setup/reset guidance. Fresh module documentation replaces it.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": []
+    },
+    {
+      "source_path": "python/projects/py-email/docs/superpowers/specs/2026-03-24-email-inbox-mvp-design.md",
+      "source_git_blob": "1fd21dbe27bfa12852ea575925bff8a3421bbf71",
+      "source_sha256": "30df7d1369766db9418d13b45ffa72800abedbe2cbcd3cc046740d2fbc858c51",
+      "disposition": "excluded",
+      "reason": "Legacy operational notes, role/task instructions or superseded plan; excluded to avoid importing personal operational context and obsolete unsafe setup/reset guidance. Fresh module documentation replaces it.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": []
+    },
+    {
+      "source_path": "python/projects/py-email/pyproject.toml",
+      "source_git_blob": "2af6fd60f93ebf90ff7f6b3780f8bbb0c70cc02f",
+      "source_sha256": "72549992ef5aa6ea4faf2a0c18a5b6fcc7d40182bbb9d4b5460c30042247a3d8",
+      "disposition": "adapted",
+      "reason": "Independent distribution preserves my_email and my-email; pins dependencies/build/Ruff, packages all templates and JS, sets tested Python compatibility floor.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/pyproject.toml",
+          "git_blob": "35574acb9a4f3bd76514164230046fef006c761a",
+          "sha256": "840d35f5d5cba55473a3619b430534771d4f5b85f1ca4d5b24d6f639258f5d33"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/__init__.py",
+      "source_git_blob": "b74f510732ead4f6056deb23100f3595b1fdd5a9",
+      "source_sha256": "c42deefa50d507795c47d99394466520d4530c979e65ba1d0f9f25692999a4aa",
+      "disposition": "copied",
+      "reason": "Retained original compatible source bytes.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/__init__.py",
+          "git_blob": "b74f510732ead4f6056deb23100f3595b1fdd5a9",
+          "sha256": "c42deefa50d507795c47d99394466520d4530c979e65ba1d0f9f25692999a4aa"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/cli.py",
+      "source_git_blob": "6d8d64358de5bee3e19b1d016a5f2859b81d6802",
+      "source_sha256": "9c1cf91c0d2176d8a4b284d5268ea6c28ee568589e688b19ce201b5446a39ec8",
+      "disposition": "adapted",
+      "reason": "Repaired missing repository/sync imports, deferred config until leaf execution, added explicit init/auth and network controls, fixed no-aggregate, enforced loopback server.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/cli.py",
+          "git_blob": "def14a589bc84e90056972ce8137cc4c4a6b8b1e",
+          "sha256": "5c59904e3b7521ee8349686b00ac0fbc9ff831d736ef60d6cd6f901c7c602704"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/config.py",
+      "source_git_blob": "f51989fd0c00a7add570bd0c9aeb9d07699849b1",
+      "source_sha256": "2c9c376c6a535d88e3e8da9fb84695e5a054573742c1c99047ccaa24d0e49ad9",
+      "disposition": "adapted",
+      "reason": "Replaced implicit environment/home loading with immutable explicit JSON/model configuration, context-local compatibility proxy, URL validation and redacted secrets.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/config.py",
+          "git_blob": "d5b90da65d306ca2739f5e51c2ca5bfd76a9f838",
+          "sha256": "01379da275d5fab696e7b928db3fbd390ec004e2b9d82eec06a8f7af45251de4"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/db/__init__.py",
+      "source_git_blob": "05ec9ddef91c4a1dcb1d233175b8dcff746925e1",
+      "source_sha256": "01c53c1f9f9be1fd31eb50391e01408bae5fa8665f9cdcdf1fbfcafa7d868ec9",
+      "disposition": "copied",
+      "reason": "Retained original compatible source bytes.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/db/__init__.py",
+          "git_blob": "05ec9ddef91c4a1dcb1d233175b8dcff746925e1",
+          "sha256": "01c53c1f9f9be1fd31eb50391e01408bae5fa8665f9cdcdf1fbfcafa7d868ec9"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/db/models.py",
+      "source_git_blob": "f85e81cf6b4e1e122155e7b7a931ce5ba548fe3b",
+      "source_sha256": "7521cbb97aec9861a65d5b46145e08e4585d14747e448c63b6d3fe8093d1b108",
+      "disposition": "adapted",
+      "reason": "Retained inbox schema and added compatible digest/project tables; removed destructive DROP migration constant.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/db/models.py",
+          "git_blob": "53541fa15e650828025b510dd0bf13df0eff02f2",
+          "sha256": "a23bd8fcba99fc0c25bccd283eeb3ae0c2583dfe6d74705690a89e0ba859c027"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/db/repository.py",
+      "source_git_blob": "0493e8aa9cffa2d5527506bf81a0c765edfef006",
+      "source_sha256": "29fa9731716a0624178587a86402bcb21d82bdd29c2809802e22c92ea36e96dc",
+      "disposition": "adapted",
+      "reason": "Added missing digest APIs and transactional non-destructive schema reconciliation, preserved legacy multiversion history and current topic projections.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/db/repository.py",
+          "git_blob": "04fc5faee90d78f46b63ea1c350c1036ca5138ad",
+          "sha256": "aa45ec32f1bd5ccb397ad97def0a1e0d3efd02b1eaf782c0402ed9c4e41f7a2e"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/db/topic_repository.py",
+      "source_git_blob": "a0497ceedf9182d43b988ff24d58c190f223567b",
+      "source_sha256": "f95601752a26f8b80b80313d4536a92665aa4a1f03317ab79f130c6a0839245e",
+      "disposition": "adapted",
+      "reason": "Retained compatible behavior/tests; normalized imports and formatting with pinned Ruff 0.17.0.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/db/topic_repository.py",
+          "git_blob": "5cddb62cd4e2b08611238389cbfe1c369eaec38d",
+          "sha256": "5afdaf913681bc196386642aa7718dc62da07c48aea3bb93b2bbceebb1180d4b"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/digest/__init__.py",
+      "source_git_blob": "78ec52f1a46549cea95f59125bfe7fa31bfefdbf",
+      "source_sha256": "cf9c4aafff1eae99de81876304f510cd11e167e348f8dd2f17c9112d86e91924",
+      "disposition": "adapted",
+      "reason": "Retained compatible behavior/tests; normalized imports and formatting with pinned Ruff 0.17.0.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/digest/__init__.py",
+          "git_blob": "2324843d08b6b9cfb77383a75765298012198745",
+          "sha256": "49ab777d1d7e3cccd41ca89673cf97c355cdf09286c927511b7942810f4f2bce"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/digest/builder.py",
+      "source_git_blob": "cb510f0606ba02388452bd04ea4b6d62fd39dec0",
+      "source_sha256": "d530d5b824057ba51bcf62ba7d9b66939a1284342cde7f67d710955f803ac742",
+      "disposition": "adapted",
+      "reason": "Preserved aggregation contract using restored repository API; removed private title/topic log fields; pinned formatting.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/digest/builder.py",
+          "git_blob": "e785f195c39f32734d85d9c16a356ac756d9ff81",
+          "sha256": "c7ab98c31369464444ee74dd3917141bb52f1adcea688058df4712502fc2aba8"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/digest/renderer.py",
+      "source_git_blob": "6c3912affa17d35ef49e594bdefc6bb41e987cbd",
+      "source_sha256": "0de72844b609dcfbd93a41570c77b66869ed8de9f64bf3ad18eeced164636ba2",
+      "disposition": "adapted",
+      "reason": "Preserved escaped standalone rendering using packaged template resources; pinned formatting.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/digest/renderer.py",
+          "git_blob": "912b8de8e3daa7379cc75fa79356352c9f86f5ac",
+          "sha256": "f91f684fbf629d24e0eca5b3c90596a0913c4bb0106b3d2a786a3c386d4ed37f"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/digest/templates/digest.html.j2",
+      "source_git_blob": "a0158d744c3eb72d0f4c756305c4d4ed1cf14b10",
+      "source_sha256": "6892956bd56facd621d089eb7bd92bb9473f2ee0d2962d00306ae380d14bdc5c",
+      "disposition": "copied",
+      "reason": "Retained original compatible source bytes.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/digest/templates/digest.html.j2",
+          "git_blob": "a0158d744c3eb72d0f4c756305c4d4ed1cf14b10",
+          "sha256": "6892956bd56facd621d089eb7bd92bb9473f2ee0d2962d00306ae380d14bdc5c"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/gmail/__init__.py",
+      "source_git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "disposition": "copied",
+      "reason": "Retained original compatible source bytes.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/gmail/__init__.py",
+          "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/gmail/auth.py",
+      "source_git_blob": "4986f3a8b8090c1479ed063a8c27a1ecf0347a8a",
+      "source_sha256": "dcc3cb7cec031ceb6594165152c55ab082fbcb4829ebfbb63e8bb9165c520c37",
+      "disposition": "adapted",
+      "reason": "Added explicit network/OAuth boundaries, disabled ambient request configuration, validated distinct paths, atomic 0600 token writes and symlink rejection.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/gmail/auth.py",
+          "git_blob": "15b9bf9d534ff37de0e008819781297b2f4363ae",
+          "sha256": "35712bac65569a4b67f307e3cab7d179547269dbdbc769de8a978f9b65ce1950"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/gmail/sync.py",
+      "source_git_blob": "9b11c30ceaec4c4b61f0702ebdaeaad95719a7ee",
+      "source_sha256": "94c4b7855fb8ddf747e85ed6ec8eab3d49abb9c8fb14e8890a4cb310711b5b0b",
+      "disposition": "adapted",
+      "reason": "Explicit authenticated adapter, no implicit OAuth/proxies, safe payload decoding, bounded full/incremental selection and checkpoint retention after failures.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/gmail/sync.py",
+          "git_blob": "51495faccefef4d8d03762ff33b0bff5b086107f",
+          "sha256": "d61291ebd031013337afcb7afee76b30167fb83aa6570d5ce95521ade7550e77"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/llm/__init__.py",
+      "source_git_blob": "a37721fa12e5723f3af2cf11f68c50f096993e76",
+      "source_sha256": "db498a16a2794f4b8d21f1ac7be38e6852f82f80c90dbc45a820040983404f81",
+      "disposition": "copied",
+      "reason": "Retained original compatible source bytes.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/llm/__init__.py",
+          "git_blob": "a37721fa12e5723f3af2cf11f68c50f096993e76",
+          "sha256": "db498a16a2794f4b8d21f1ac7be38e6852f82f80c90dbc45a820040983404f81"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/llm/email_filter.py",
+      "source_git_blob": "c5da6887399ef0c2bc8de910a3453925813553a9",
+      "source_sha256": "d970c9ddd0fe0a45cce4d476a12e5c34f9bed38c5308d625309aa41b80c25cae",
+      "disposition": "adapted",
+      "reason": "Preserved filtering behavior; removed private fields from routine/debug logs and formatted with pinned Ruff.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/llm/email_filter.py",
+          "git_blob": "fa1fd38ad6b7d09c27af32ddd3876babde72d2fd",
+          "sha256": "1d5da8bb9679e19081d263bec05942d42b4debe8a9ae3a3b2305001b61f5a31a"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/llm/summarizer.py",
+      "source_git_blob": "b5a8836576eb271459770148b0f2a06aab027adf",
+      "source_sha256": "243a431a752e43c39814a50ad8a387fc140a276e0eb49907a882a66b4b6615fc",
+      "disposition": "adapted",
+      "reason": "Opt-in provider construction, endpoint validation/no redirects/ambient proxies, validated relevance, client closure and redacted request/error logging.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/llm/summarizer.py",
+          "git_blob": "d6367627f9dfa360211af5a817f546a41bd212e7",
+          "sha256": "9494d468b69d754036ebfa0b944a2c15032d68b5c86602c748d7aa6247cbbcf1"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/llm/thread_aggregator.py",
+      "source_git_blob": "f3d3bc4fca7179c956fa2df1dec53ccb27697a0d",
+      "source_sha256": "bde4c9f590b7fafee7797046368dff83834bcd41d0b286711b8c16fee5953b50",
+      "disposition": "adapted",
+      "reason": "Preserved aggregation; separated blank-subject messages, tolerated absent bodies and bounded thread prompt size; pinned formatting.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/llm/thread_aggregator.py",
+          "git_blob": "4165e16ef5a285b4fd629fd02e2462b76d6ec908",
+          "sha256": "41a5327d3b5954858d74511b2fb92f0848c38fd34b5330e6430b47ecf0a1c642"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/parser/__init__.py",
+      "source_git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "disposition": "copied",
+      "reason": "Retained original compatible source bytes.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/parser/__init__.py",
+          "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/parser/cleaner.py",
+      "source_git_blob": "c778838e9f29f1583b4d68eaaf4c9ff87d8415b2",
+      "source_sha256": "c11cbbdcf7590affc5c539564f88c3be2bc8c1bf071011c9615ba0cc606b40c4",
+      "disposition": "adapted",
+      "reason": "Preserved HTML-to-text cleanup with per-call converter to avoid shared mutable parser state; pinned formatting.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/parser/cleaner.py",
+          "git_blob": "43ce214467f353db4163d98900a403811473eddc",
+          "sha256": "822539dd32e4f0e0d5f11c8a907d7ec91dffc8f1d13d3df4a0a300e465c3ce7a"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/project/__init__.py",
+      "source_git_blob": "a83220a27dca3f06f217732e3335445dceae80fd",
+      "source_sha256": "51a612a7456b18b7344bed6499719b7b261b4ed1df5a96d33f9c5d4e6aac3843",
+      "disposition": "copied",
+      "reason": "Retained original compatible source bytes.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/project/__init__.py",
+          "git_blob": "a83220a27dca3f06f217732e3335445dceae80fd",
+          "sha256": "51a612a7456b18b7344bed6499719b7b261b4ed1df5a96d33f9c5d4e6aac3843"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/project/clusterer.py",
+      "source_git_blob": "2cb925dd7d76b199be30a202442c859be74af0da",
+      "source_sha256": "f81c106d5a8e35bd8c5a55df420ef77eeeec2af7675b64bd6229189b5c31d73b",
+      "disposition": "adapted",
+      "reason": "Preserved topic clustering/persistence; use current inbox summary projection to avoid duplicate legacy-history joins; pinned formatting.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/project/clusterer.py",
+          "git_blob": "b5f46c256d13d30071a487b75b732cdbf5685985",
+          "sha256": "91abe188a53a40fd186ee1e0cc50b0db678eafc4068e505aafe0fdb358e663cc"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/project/models.py",
+      "source_git_blob": "8147fecd103ad4a8a2afa469bc083d32af958d09",
+      "source_sha256": "0b41b78b0dd01e8617054cb84354c5cf6879b463b3e2ac21a01087d93ebfd535",
+      "disposition": "copied",
+      "reason": "Retained original compatible source bytes.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/project/models.py",
+          "git_blob": "8147fecd103ad4a8a2afa469bc083d32af958d09",
+          "sha256": "0b41b78b0dd01e8617054cb84354c5cf6879b463b3e2ac21a01087d93ebfd535"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/scheduler/__init__.py",
+      "source_git_blob": "827c5b3f5d99078fea10f4ec284d8f95000ec400",
+      "source_sha256": "4ecd98cdbc35c5cdd756fe4a7324350376506d163609d593ec53b095770ddfa5",
+      "disposition": "adapted",
+      "reason": "Retained compatible behavior/tests; normalized imports and formatting with pinned Ruff 0.17.0.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/scheduler/__init__.py",
+          "git_blob": "bbdfac45d0cef965d78c55108ad16b8b4be10528",
+          "sha256": "b66244f76026938c842130ec5e2ebb38849ceadc7d484ec440752f3853aa16da"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/scheduler/cleanup_task.py",
+      "source_git_blob": "24260cacc30268cd97d67a5cace5fb3243656c78",
+      "source_sha256": "551dacd11c09ecea22808cdbf35203f804cc3b92df1650dc13706b48930c233c",
+      "disposition": "adapted",
+      "reason": "Kept explicit cleanup behind independent retention/scheduler opt-in; never started by app; pinned formatting.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/scheduler/cleanup_task.py",
+          "git_blob": "afb7fcac76729c91ac7dba2abd54e7d493a39671",
+          "sha256": "bcd5a596e0c10f34682ca238d3457c191020102dcb3fb93486c1a85ebe5b3284"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/scheduler/sync_task.py",
+      "source_git_blob": "722acf17ba3e9c946bf4e9c86c4d310be27f363b",
+      "source_sha256": "d4f380378f9fb63d517a2ce8673f159a1d68d8b9b9f26d7cef4032f1c677d11b",
+      "disposition": "adapted",
+      "reason": "Kept explicitly invoked scheduler APIs behind opt-in; preserved context across worker threads, corrected thread grouping and removed private logs.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/scheduler/sync_task.py",
+          "git_blob": "96f12f0e15995715c953a8a6f3dc0d0420a29b15",
+          "sha256": "b2dd834a6f1adb6eaf2fd9a90cceb9808ddef30d75437217fe484c85d1bf2c03"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/server/__init__.py",
+      "source_git_blob": "7f5e6faaf92a5b0f70f2056b2c80227acfc186b7",
+      "source_sha256": "19332eb0667f393f244661387035d39e92259343213f7401edd2f73e3197b7ef",
+      "disposition": "copied",
+      "reason": "Retained original compatible source bytes.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/server/__init__.py",
+          "git_blob": "7f5e6faaf92a5b0f70f2056b2c80227acfc186b7",
+          "sha256": "19332eb0667f393f244661387035d39e92259343213f7401edd2f73e3197b7ef"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/server/app.py",
+      "source_git_blob": "a24c81b49085d90ff9638db593b3103af971c244",
+      "source_sha256": "8398f134547cd92079780b51ae817c4a967b21921d320db38397c43339ab6252",
+      "disposition": "adapted",
+      "reason": "Replaced unauthenticated automatic startup with inert explicitly configured app, owner authentication, CSRF/origin checks, atomic validation and redacted errors.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/server/app.py",
+          "git_blob": "56132bc281cd745406f78be6117290762b0ad25f",
+          "sha256": "7e7054f7a7b939d91fde3f952f482f35d00c33a9be1cbd941b7eac9d9e1767cf"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/server/templates/inbox.html.j2",
+      "source_git_blob": "ba98099ef1837d8a0f14d06eeec559cdf35bfc47",
+      "source_sha256": "13079563779f20fcc42077d69f14820b2cb046e709ef3d7f2962bf208e8f3b60",
+      "disposition": "adapted",
+      "reason": "Replaced legacy unsafe/unwired UI template with escaped packaged local UI, encoded links and no inline JavaScript interpolation.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/server/templates/inbox.html.j2",
+          "git_blob": "c68663b0b1cb61396614656408954fa533370ff5",
+          "sha256": "ee7931fc48526028f39572a5b3196f31a0dab6fc1420576c7878137564527ef2"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/server/templates/index.html.j2",
+      "source_git_blob": "e523ee9492a97a0cb41155b0cb2beb4312015e20",
+      "source_sha256": "a810f95f7228fa3205095e961c742cc2087ed82dfed6472718c1d637a40aad05",
+      "disposition": "adapted",
+      "reason": "Replaced legacy unsafe/unwired UI template with escaped packaged local UI, encoded links and no inline JavaScript interpolation.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/server/templates/index.html.j2",
+          "git_blob": "6c1dc9e62109b20a16b1f6c9f1b7c5e0fde1a869",
+          "sha256": "33df172eec1048c9e3a2fcbb449b3ba68bd6d8bed3447e30ab8c925e9e8104cf"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/server/templates/project_detail.html.j2",
+      "source_git_blob": "baf42dde2327a86ce040f23ba477c9f109ee2b4d",
+      "source_sha256": "0aa86399a46638e3fad90605d523ee487d5415ad7c3ce8146e1d3391b0404656",
+      "disposition": "adapted",
+      "reason": "Replaced legacy unsafe/unwired UI template with escaped packaged local UI, encoded links and no inline JavaScript interpolation.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/server/templates/project_detail.html.j2",
+          "git_blob": "9fff322f48ff41bf3612bd3e11f137e304f33cc9",
+          "sha256": "d0222158c779447b5536e89fdd4dac7fa7a53585467c60dc66916977ece75735"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/server/templates/projects.html.j2",
+      "source_git_blob": "ca44379ed370ce3f7b392bb2d8d4a69b44396ddd",
+      "source_sha256": "2f130bed09e9fccaa81d1119cbe735fe6c798c204c1aabf23c885417036b9d24",
+      "disposition": "adapted",
+      "reason": "Replaced legacy unsafe/unwired UI template with escaped packaged local UI, encoded links and no inline JavaScript interpolation.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/server/templates/projects.html.j2",
+          "git_blob": "90a162935ca615e548a0595f6167ffee265a876c",
+          "sha256": "ccc2eb6515b9d3fe2aefb57a1f62c87351cda5991aa2bfc2277b0fd5d3d7023f"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/src/my_email/server/templates/settings.html.j2",
+      "source_git_blob": "7c93f29059390e662869f4d1fca5fb9db2f22140",
+      "source_sha256": "fa439b6de7377fc637a05dc395d4553d3c1230051e78300311a564760434ee7a",
+      "disposition": "adapted",
+      "reason": "Replaced legacy unsafe/unwired UI template with escaped packaged local UI, encoded links and no inline JavaScript interpolation.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/src/my_email/server/templates/settings.html.j2",
+          "git_blob": "9d70de33d065336e07f9cf293fe18364378b927e",
+          "sha256": "465990eb2ae5b9f13e8b880456cbe60e40f0d9211ff2a5f8d2266993f0042fae"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/tests/__init__.py",
+      "source_git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "disposition": "copied",
+      "reason": "Retained original compatible source bytes.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/tests/__init__.py",
+          "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/tests/test_cleaner.py",
+      "source_git_blob": "546fff52a806af923fcfc52a915121234f7e07d8",
+      "source_sha256": "2606ce2d60a45f4e214e9f14e61048e0870cdfddff52a695adcf27aabe634b79",
+      "disposition": "adapted",
+      "reason": "Retained compatible behavior/tests; normalized imports and formatting with pinned Ruff 0.17.0.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/tests/test_cleaner.py",
+          "git_blob": "884c278f947e4ea745cc2d982a84fbe04b2f5e60",
+          "sha256": "2c08867dcbb9de43fbfc47ec5d406defd36570844953046b148d86f19625cde4"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/tests/test_config.py",
+      "source_git_blob": "e0fd110551b8cb201070e65b128c447ac0fafb38",
+      "source_sha256": "c0c8f8c5341663bc5548eb9cae1ff4a29074dce70866f595528a65db9ede4e46",
+      "disposition": "adapted",
+      "reason": "Replaced ambient-home override expectations with explicit configuration, URL/secret validation and context isolation regressions.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/tests/test_config.py",
+          "git_blob": "e279a32d60f20805b42a3ffed55abfbd05d7704c",
+          "sha256": "d9b34e30c5a2b687d2398d2a9e99ead22e3a04f58471f9eb0186e2d6920edad2"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/tests/test_email_filter.py",
+      "source_git_blob": "d23ce1357c8d4cac9813988f9c1d1594783aa494",
+      "source_sha256": "995d1ff76fe1eb86400657110dde6115a11970e450b39629b5ed919d656055d5",
+      "disposition": "adapted",
+      "reason": "Retained compatible behavior/tests; normalized imports and formatting with pinned Ruff 0.17.0.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/tests/test_email_filter.py",
+          "git_blob": "787d8cc460a410f34d66e2d7757223443b340e96",
+          "sha256": "b1613643548c5851114a50c95bc0251ba1a90ac67ae44ff65b7e5b6669df4027"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/tests/test_models.py",
+      "source_git_blob": "133a3e3a8a3b4c66cb25ab4dca93d2376b5142bf",
+      "source_sha256": "ff3a6f1c239fc5905a90c72dc24dbbdfddf0f6d09b8cade4589e7e9c7d84d2ce",
+      "disposition": "adapted",
+      "reason": "Retained schema tests; replaced destructive-reset expectation with additive compatibility and absence-of-reset assertions.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/tests/test_models.py",
+          "git_blob": "1be732b405463da494e87534dbfff4b9c9d4c495",
+          "sha256": "532fd03281391723cb515cfabf4250d758dbc0dddc11247852bf510c2d1a2c68"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/tests/test_project.py",
+      "source_git_blob": "6d919501af7e458ea4699b00a381f26dc838a2b4",
+      "source_sha256": "b479c628c75ca2178314ad0ef9063bac487bd73ead438b60f2b64e2a7d828cbd",
+      "disposition": "adapted",
+      "reason": "Retained compatible behavior/tests; normalized imports and formatting with pinned Ruff 0.17.0.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/tests/test_project.py",
+          "git_blob": "4b3c60fe54f608189bbf3bc9c74132d7a964154a",
+          "sha256": "46543dd6fc78cf70f279bfcd23b11349157054fc1bb656e4914d537a15d47f30"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/tests/test_project_integration.py",
+      "source_git_blob": "18eaaf1d9f2a6f5ba376e2fb0baeeeef3fc4f945",
+      "source_sha256": "a7af1e011aec7438ef3219aca6233f6e60de628da92f7537eb0478bea567e18f",
+      "disposition": "adapted",
+      "reason": "Retained compatible behavior/tests; normalized imports and formatting with pinned Ruff 0.17.0.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/tests/test_project_integration.py",
+          "git_blob": "466bedeb47a6bd89d278f5aab830054dae2a7f27",
+          "sha256": "3be803a49ef2a44d8b65ae6d143c03b563496f551ea1d18faa71a25411020b86"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/tests/test_repository.py",
+      "source_git_blob": "c4139912701eaaa0ac32d1cbcd18672e8f74addb",
+      "source_sha256": "a8f05875a82323cebf3b61e5fa26709b12b97ac6cc3f2ecf4877d8f1b8d09b93",
+      "disposition": "copied",
+      "reason": "Retained original compatible source bytes.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/tests/test_repository.py",
+          "git_blob": "c4139912701eaaa0ac32d1cbcd18672e8f74addb",
+          "sha256": "a8f05875a82323cebf3b61e5fa26709b12b97ac6cc3f2ecf4877d8f1b8d09b93"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/tests/test_summarizer.py",
+      "source_git_blob": "fdec80cd5556ce4a4f03ca612de3d4f420116c2d",
+      "source_sha256": "1f8954899bc2649486df43c9bdb61b6b7228b95de936e1d1f723f90203b64e1d",
+      "disposition": "adapted",
+      "reason": "Retained mocked provider cases and explicitly configured synthetic adapter; no real model operations.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/tests/test_summarizer.py",
+          "git_blob": "a7ba2ff24de134cc1be9a5f53d5a00fe02947b8e",
+          "sha256": "f21f51950553f6736c32b7a132757c3563569acc82749e748a357608200e7ec8"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-email/tests/test_thread_aggregator.py",
+      "source_git_blob": "6680f2a5693257961106e77f2e64c178931eff5b",
+      "source_sha256": "cdb4b73261aa3b2af48d569d4a475c9396a39e281c68761415420bbb75a0471c",
+      "disposition": "adapted",
+      "reason": "Retained compatible behavior/tests; normalized imports and formatting with pinned Ruff 0.17.0.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/email-digest/tests/test_thread_aggregator.py",
+          "git_blob": "b6ae805a52cf5cc5d2df1822477d79bbb1c42518",
+          "sha256": "469b02a3e5a76a0df55329f1966235b04e10834c47f93215edb23301bb25449b"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-learn/CHANGES_LOG.md",
+      "source_git_blob": "717a87353999aedfc695cdf0a2e7665133da5bf5",
+      "source_sha256": "dce58dc6a2f390b8014c102e22e8f768501032ff71301d46a015c157eba3d697",
+      "disposition": "excluded",
+      "reason": "Historical operational/change report; replaced by the independently verified migration record, no source report contents copied.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": []
+    },
+    {
+      "source_path": "python/projects/py-learn/DESIGN.md",
+      "source_git_blob": "1206a2c3d273e112e2796a532fc07f48b50213db",
+      "source_sha256": "d86cfe7b7b4dcb58af8a0d7627747c25d2a025c62643608be0715e05a3c1144d",
+      "disposition": "adapted",
+      "reason": "Retain documented domain model and learning intent; replace unimplemented operational claims and personal assumptions with actual supported behavior.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/daily-learning/README.md",
+          "git_blob": "db30324cf80d354f6c7cef072f8537395c973336",
+          "sha256": "e7271ee8a2932a0ca08e1542e6b9f80303e9b2c4ef1f15afd82e7fdc52893c81"
+        },
+        {
+          "path": "modules/daily-learning/MIGRATION.md",
+          "git_blob": "f26516d6239a31b82bc76a659ec9a9cb005beb49",
+          "sha256": "69fe4511999305a14fef8b74fdf15fe58d81470c43e6c3c50a5da388e201ef92"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-learn/README.md",
+      "source_git_blob": "b32352f38f297524409cd353363a3f567159e1b4",
+      "source_sha256": "5dbc7dc18a3df59fc0261db2b0b4f8380437b50358652488ab7cad8ffd0c0bd0",
+      "disposition": "adapted",
+      "reason": "Replace machine-specific environment/dotenv/default-daemon setup and incomplete feature claims with explicit isolated-package commands; no new license assigned.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/daily-learning/README.md",
+          "git_blob": "db30324cf80d354f6c7cef072f8537395c973336",
+          "sha256": "e7271ee8a2932a0ca08e1542e6b9f80303e9b2c4ef1f15afd82e7fdc52893c81"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-learn/RULES.md",
+      "source_git_blob": "8f6db6d3b7b7f35df2629b60ab49b70af8348553",
+      "source_sha256": "06452df92bd24e00a8d730658dc48a57ab49073db8654e482947d22447d4ffda",
+      "disposition": "adapted",
+      "reason": "Preserve typed modular development and documentation/testing expectations; explicit parent task overrides personal virtualenv and implicit home dotenv requirements.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/daily-learning/AGENTS.md",
+          "git_blob": "cb0748d4543e52843fe3c3fbe29f6f7dae6912e6",
+          "sha256": "1afa5fabc8fe0938d737475d50e4a28c41060e954f2a1d90af9dceac7742fcfd"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-learn/TASKS.md",
+      "source_git_blob": "1112ef282a6f891940c57b1c83fc828790bbe72a",
+      "source_sha256": "a8567e379d6f0c3945b0513bdf6c5e7a4c28b0e71165270a3b15b946f70d18a6",
+      "disposition": "excluded",
+      "reason": "Historical project backlog/state, not executable behavior or evidence of current completion; no operational report copied.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": []
+    },
+    {
+      "source_path": "python/projects/py-learn/config.yaml",
+      "source_git_blob": "c2b6d1e04ffbb6298d8cccfaeee6e666a6ddc1bb",
+      "source_sha256": "12cfc6c76d557ac3775bb0a6620f1ea3e06fb7b03ee8a19c97e762464661acb7",
+      "disposition": "adapted",
+      "reason": "Safe defaults, explicit config-relative paths, booleans/timezone validation, no discovered credentials; source operational provider defaults and endpoints not carried forward.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/daily-learning/examples/config.yaml",
+          "git_blob": "01ac45b606f82cfb418d2d393882bf440c061904",
+          "sha256": "db2e0daac53b3a6d2db9ac4fc9eb75d1e2438dcb7c9573548de4dea6ec3cce32"
+        },
+        {
+          "path": "modules/daily-learning/src/lyra_daily_learning/config.py",
+          "git_blob": "710b64940a8dab93f0ec7d51194a0a2097ba661a",
+          "sha256": "3b4b68c2bd2aa2791f82e6bafd84655ac9a5ef66e9f9dc59d6f4d51a2b432857"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-learn/requirements.txt",
+      "source_git_blob": "9882c81b2d6b8166b69d11aba47c0be905321da1",
+      "source_sha256": "9a9bac7624c4b7a4d0f117e2177a643dad0b605a364cab1ad07706a9ce76c169",
+      "disposition": "adapted",
+      "reason": "Pinned package and optional adapter dependencies; SQLite remains standard library; remove unused python-dateutil and old unbounded requirements.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/daily-learning/pyproject.toml",
+          "git_blob": "99d408986d17af3fd7c631525db73651b9846131",
+          "sha256": "00716d432ffbcc7a4242e9b0a599e703325dfb9a95d170b6e2ff9f66d1f5d3c8"
+        },
+        {
+          "path": "modules/daily-learning/requirements.lock",
+          "git_blob": "68f38a5aae688b63bf8ca175db2cbc9722317d4f",
+          "sha256": "c7aaa3b015c6aab4a5224c84807db05311277fc828cff75baa0f92b9e32c4746"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-learn/src/__init__.py",
+      "source_git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "disposition": "adapted",
+      "reason": "Namespaced, import-safe package with version.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/daily-learning/src/lyra_daily_learning/__init__.py",
+          "git_blob": "c303ebe95627d29f30e109048ecc86996ba567d6",
+          "sha256": "3470d1f95977ee58ffe060153b80437e0d56ed063cb275775e176ed32696da18"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-learn/src/bot.py",
+      "source_git_blob": "5b0914b1c5f44092048b7c051c83462b6c5f1c35",
+      "source_sha256": "5e2d14dd06a3a416f09734ed3d5c8dd52541b5eca5dfc39985d5c909a65afe51",
+      "disposition": "adapted",
+      "reason": "Explicit send adapter, plain text, authenticated private-owner command router, atomic send reservation and uncertain-state handling; remove unsafe implicit polling and placeholder commands.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/daily-learning/src/lyra_daily_learning/bot.py",
+          "git_blob": "9480195761a4e343ba5f2201c860f7d445aac8d7",
+          "sha256": "bad26392edc28154a1f1c4295413da8285cff2548709a61f50b0792264620f23"
+        },
+        {
+          "path": "modules/daily-learning/src/lyra_daily_learning/service.py",
+          "git_blob": "866f2b0f01bb40ff7b1002e971f56f32caceeb00",
+          "sha256": "a5588033d6683ed1bbaf9219972cceb8b70bc1e835b2f0caca3a3f7fe1916974"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-learn/src/config.py",
+      "source_git_blob": "5acc293e94810c9959ec87b1d50baaeb7f74d0c9",
+      "source_sha256": "79911a6d4a90461396e60186351cd2256900a85c4370cbe59cb71dac107ca1d7",
+      "disposition": "adapted",
+      "reason": "Explicit-file-only configuration, scalar interpolation after YAML parsing, strict flags/paths/timezones/provider URL validation, no home or dotenv access.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/daily-learning/src/lyra_daily_learning/config.py",
+          "git_blob": "710b64940a8dab93f0ec7d51194a0a2097ba661a",
+          "sha256": "3b4b68c2bd2aa2791f82e6bafd84655ac9a5ef66e9f9dc59d6f4d51a2b432857"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-learn/src/db.py",
+      "source_git_blob": "9fe49080db6d409dedf76cc0b4a27d600228fb28",
+      "source_sha256": "5d792bc4144695becc41acb2ba50d281e07da9361dc81eac707a2026d91ad94e",
+      "disposition": "adapted",
+      "reason": "Preserve six tables/columns/indexes and legacy UTC timestamps; atomic idempotent evaluation/stat writes, safe upserts, real score queries, age-based expiry and local-week summaries.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/daily-learning/src/lyra_daily_learning/db.py",
+          "git_blob": "5614e5c0aa0fef8320ec32f2f6d4f400734bd412",
+          "sha256": "5a5cd69ed87d11282f3360283cc0a7961750050f69b291ad6804fac1d321dc2d"
+        },
+        {
+          "path": "modules/daily-learning/tests/legacy_schema.sql",
+          "git_blob": "ef28eaa8f5b3ae4f91b13d0f1900b3119eee4b76",
+          "sha256": "927f73b1ba34192cbcb6d48ba41e6498a9676ae0e25fbd9aa11ef1f6a635130e"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-learn/src/generate.py",
+      "source_git_blob": "1446700b0d4f8a5163fa152597e1413276d1c29d",
+      "source_sha256": "7cd6027d4616938348289834e00f50b5b07598ec0c6ac83b2b51f6c5f8adb72a",
+      "disposition": "adapted",
+      "reason": "Retain rubric/question prompts and fallback with strong output checks, injected model, source labels, bounded retry/timeouts; remove personal profile assumptions and duplicated SDK implementation.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/daily-learning/src/lyra_daily_learning/generate.py",
+          "git_blob": "cc775739874c717c3118b6c6f3bc57ef0534e132",
+          "sha256": "137b538e2aa7f9754fb3de7d383d7540bec290fc763e687178499a97e4f2ac10"
+        },
+        {
+          "path": "modules/daily-learning/src/lyra_daily_learning/adapters.py",
+          "git_blob": "dc27217be55669b24d5afac46464cc864404a313",
+          "sha256": "c844e8556e933d3fed80b7589e7bae30e20c8124820593b1a772a0995ff375a5"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-learn/src/main.py",
+      "source_git_blob": "04274d471fed800db1a3fca0a0973255d74a8e71",
+      "source_sha256": "59fe65908b037f9bfd7c5061ed0c2684ee776800785b6e722136c20f9a324963",
+      "disposition": "adapted",
+      "reason": "Explicit local commands and domain service replace default daemon; help is side-effect-free, scheduling/sends/model requests opt-in; no root service or Carina integration.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/daily-learning/src/lyra_daily_learning/cli.py",
+          "git_blob": "541f0faa6b9d3d17623b7ac1b9740719fc5e0d1c",
+          "sha256": "dd9ddef2433136c2f2816804cd59db91e1a0e566dd849aa3a8aa5fee35e046d1"
+        },
+        {
+          "path": "modules/daily-learning/src/lyra_daily_learning/__main__.py",
+          "git_blob": "eb53e2f31b2f703ad32ef64b8a41faa3e7d18e08",
+          "sha256": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d"
+        },
+        {
+          "path": "modules/daily-learning/src/lyra_daily_learning/service.py",
+          "git_blob": "866f2b0f01bb40ff7b1002e971f56f32caceeb00",
+          "sha256": "a5588033d6683ed1bbaf9219972cceb8b70bc1e835b2f0caca3a3f7fe1916974"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-learn/src/plan.py",
+      "source_git_blob": "2469472bee98218a1ea80ed677c71f8f8bbb0d1b",
+      "source_sha256": "998f55a4d00faf4bc029d428da6dd72b35339dc4e2f371dd7279cb8f471efcd7",
+      "disposition": "adapted",
+      "reason": "Preserve rotation, weak/recency weighting, difficulty and type choices; correct Sunday selection, use configured local clock and persisted streak changes instead of unfinished score stub.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/daily-learning/src/lyra_daily_learning/plan.py",
+          "git_blob": "b4398162551766385349dba0656ed14750237eda",
+          "sha256": "ee206589a4f3fe3db718444d900d1d530bb69d64cedfc262164d7bacaae8f621"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-learn/src/reflect.py",
+      "source_git_blob": "df10e2a89682ecfa4f5dc86bddf3b9a308a033bc",
+      "source_sha256": "4a95e62be33aab7fd8370d378a8bbd7201043d6eafc58c3813a8980db1b51bbc",
+      "disposition": "adapted",
+      "reason": "Preserve evaluation rubric, validate finite component scores, compute authoritative total, remove invented failure scores; atomic persistence and injected shared adapter.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/daily-learning/src/lyra_daily_learning/reflect.py",
+          "git_blob": "6c378cbc2297447faed534ebc757dcc70c6b2ea1",
+          "sha256": "f580a6dfd641d6876fae938e49871f725e5c348c941a8ee73ec0a64a5320bbfa"
+        },
+        {
+          "path": "modules/daily-learning/src/lyra_daily_learning/adapters.py",
+          "git_blob": "dc27217be55669b24d5afac46464cc864404a313",
+          "sha256": "c844e8556e933d3fed80b7589e7bae30e20c8124820593b1a772a0995ff375a5"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-learn/src/scheduler.py",
+      "source_git_blob": "80d7dfdf779b6639ace6ce18883c6530744020b9",
+      "source_sha256": "ad80ad36464faafccbee680e6f41a8d59d182707191bb94ec4bfe0db68d2684a",
+      "disposition": "adapted",
+      "reason": "Explicit hour/minute/timezone triggers correct reversed cron; scheduling off by default, no hidden/persistent jobs, bounded coalescing and configured timeout callback.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/daily-learning/src/lyra_daily_learning/scheduler.py",
+          "git_blob": "160f82b7e5ef13f189b94f66fca0962e918e096a",
+          "sha256": "b50ad1d68d958bb907b79ad1aac707f873733be5b430aeda55e4bed8b8f5c0af"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-learn/src/tools/__init__.py",
+      "source_git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "disposition": "adapted",
+      "reason": "Namespaced import-safe tools package.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/daily-learning/src/lyra_daily_learning/tools/__init__.py",
+          "git_blob": "c8fef26eac9541e652b78970f212d8dec61f66f8",
+          "sha256": "1c45f69b57c6fb549d852d358a55a496eaed384f78517628acbb666c420e4670"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-learn/src/tools/crawler.py",
+      "source_git_blob": "2a3dc34ef41f83de263b4c4ab7897d70ed2084b6",
+      "source_sha256": "a4426750a2cb43411e4d46d0b39013195fd1eb42c1c84815f1fde8afaed73000",
+      "disposition": "adapted",
+      "reason": "Preserve hotspot record and disabled boundary; replace misleading enabled empty-success stub with explicit reviewed-adapter requirement. No crawler URLs fetched.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/daily-learning/src/lyra_daily_learning/tools/crawler.py",
+          "git_blob": "2bef6266a8959c3a92bdf47a769d55052d21a8de",
+          "sha256": "847c126221738e4a0d4e8c59c67d1847a474a4e4ed16f2df8b4f2a4d89274255"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-learn/src/tools/knowledge.py",
+      "source_git_blob": "dd3134ec550bb672e7eaeca93c125303b9706c94",
+      "source_sha256": "24fdddceb5502147faf484ee4fe62a96a073eb49ac401103d371bf72431d9a29",
+      "disposition": "adapted",
+      "reason": "Retain knowledge graph/context API with explicit absolute paths and unique validated domain/topic schemas.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/daily-learning/src/lyra_daily_learning/tools/knowledge.py",
+          "git_blob": "72578dedd8e6cae89ab45d53eb738c2b9983c538",
+          "sha256": "a5c293adfe41d60e00f90ff6e1a784d6fda443fa61910a242a6ca1be822c710f"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-learn/src/tools/memory.py",
+      "source_git_blob": "f53445ccd178db26ddf2872270c59a85fdd17e80",
+      "source_sha256": "8ab6f5b833c0e0db31b2db6ecce01285d3521d01c9fd49f1cf496320d2075467",
+      "disposition": "adapted",
+      "reason": "Retain history/weak/progress/context readers, implement real recent scores and text-based duplicate comparison instead of placeholders.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/daily-learning/src/lyra_daily_learning/tools/memory.py",
+          "git_blob": "0e3373d6d4d287e786bdd5463267246f0dcfc63b",
+          "sha256": "4485c7740b54a9f7b94e46320cb04a3448cac92a75fbf5cab3748c730cb56673"
+        }
+      ]
+    },
+    {
+      "source_path": "python/projects/py-learn/topics.yaml",
+      "source_git_blob": "8e828b10e0335eb43c3cb2b229d5d9af73a8bbc3",
+      "source_sha256": "86e9d7f96c7c36ae4117d76d725e4aa13b885b2da599e57d07605eb720e778fc",
+      "disposition": "copied",
+      "reason": "Nonpersonal engineering curriculum retained byte-for-byte as an explicit example; no runtime learner state.",
+      "source_mode": "100644",
+      "destination_repository": "LiShuMing/lyra",
+      "destinations": [
+        {
+          "path": "modules/daily-learning/examples/topics.yaml",
+          "git_blob": "8e828b10e0335eb43c3cb2b229d5d9af73a8bbc3",
+          "sha256": "86e9d7f96c7c36ae4117d76d725e4aa13b885b2da599e57d07605eb720e778fc"
+        }
+      ]
+    }
+  ]
+}

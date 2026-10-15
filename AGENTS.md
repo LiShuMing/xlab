@@ -87,6 +87,8 @@ instructions and build manifests before working there.
 | `python/projects/py-optimizer2/` | [vela/research/optimizer-scanner](https://github.com/LiShuMing/vela/tree/main/research/optimizer-scanner) |
 | `python/projects/py-pia/` | [carina/modules/product-intelligence](https://github.com/LiShuMing/carina/tree/main/modules/product-intelligence) |
 | `python/projects/py-report/` | [carina/modules/research-report](https://github.com/LiShuMing/carina/tree/main/modules/research-report) |
+| `python/projects/py-email/` | [lyra/modules/email-digest](https://github.com/LiShuMing/lyra/tree/main/modules/email-digest) |
+| `python/projects/py-learn/` | [lyra/modules/daily-learning](https://github.com/LiShuMing/lyra/tree/main/modules/daily-learning) |
 
 ## Technology Stack by Module
 
@@ -118,8 +120,8 @@ instructions and build manifests before working there.
 - **Environment**: Virtual environments (.venv)
 - **Testing**: pytest
 - **Key Packages**: numpy, pandas, duckdb, matplotlib, faiss-cpu
-- **Projects**: py-academic, py-cycle-lab, py-ego, py-email, py-lab,
-  py-learn, py-stock, py-torch, py-toydb
+- **Projects**: py-academic, py-cycle-lab, py-ego, py-lab,
+  py-stock, py-torch, py-toydb
 - **Standalone**: `python/llm_benchmark` (LLM eval framework), `python/ivm`
   (incremental view maintenance prototypes)
 - ⚠️ `py-academic` is a vendored fork of `binary-husky/gpt_academic`, not
