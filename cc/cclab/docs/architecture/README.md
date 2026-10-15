@@ -1,8 +1,9 @@
 # cc/cclab Architecture Documentation
 
-This directory contains architecture documentation for the cc/cclab project.
+This directory reserves the architecture documentation outline for cc/cclab.
+The pages below are planned and have not been written.
 
-## Contents
+## Planned pages
 
 - `overview.md` - High-level architecture overview
 - `data-structures.md` - Data structure design patterns
@@ -10,6 +11,6 @@ This directory contains architecture documentation for the cc/cclab project.
 
 ## Quick Links
 
-- [Project README](../README.md)
+- [Project README](../../README.md)
 - [API Documentation](../api/)
-- [Source Code](../src/)
+- [Source Code](../../src/)

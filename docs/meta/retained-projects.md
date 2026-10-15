@@ -1,6 +1,8 @@
 # Retained project classification
 
 Baseline: xlab `bf3e2ed45c12cc551fd44ef3cb89366970cd92ba` (2026-10-15).
+Counts are maintained with cleanup changes; LLM Lab excludes three redundant
+placeholders removed after their directories gained real files.
 This is a source-tree inventory, not build certification, product priority or
 permission to migrate/delete. Counts include tracked files, not runtime data.
 No project below has an accepted source-to-target mapping for retirement.
@@ -32,7 +34,7 @@ No project below has an accepted source-to-target mapping for retirement.
 | `llm/cuda` | 15 | retained experiment; no accepted migration mapping |
 | `python/ivm` | 2 | retained experiment; no accepted migration mapping |
 | `python/llm_benchmark` | 39 | retained experiment; no accepted migration mapping |
-| `python/projects/llm-lab` | 30 | retained experiment; no accepted migration mapping |
+| `python/projects/llm-lab` | 27 | retained experiment; no accepted migration mapping |
 | `python/projects/py-academic` | 374 | vendored third-party fork; preserve attribution; packaging decision open |
 | `python/projects/py-cycle-lab` | 27 | retained experiment; no accepted migration mapping |
 | `python/projects/py-ego` | 136 | retained experiment; no accepted migration mapping |
