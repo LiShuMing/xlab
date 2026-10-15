@@ -21,14 +21,13 @@ These destinations are ownership routes, not automatic cron replacements.
 
 ## Retention and remaining gates
 
-See [project classification](retained-projects.md). Unmigrated code, held books,
+See [project classification](retained-projects.md). Unmigrated code,
 privacy exclusions, ignored/runtime files and the two pinned gitlinks are not
 removed. Previously accepted Codex/Linux/email/learning source retirement is
 already part of the base, not a new deletion in this proposal.
 
-Calcite/RisingWave source retirement is pending target-main acceptance and exact
-per-file mappings. If accepted, incorporate it into this same xlab proposal.
-Claude Code/Feynman stay held. Do not fabricate acceptance or delete first.
+All four remaining book roots (76 files) have accepted Cygnus mappings and
+retire without stubs in this same proposal. See [acceptance and recovery](../migrations/2026-10-15-remaining-books-retirement.md).
 
 The old [draft PR #20](https://github.com/LiShuMing/xlab/pull/20) contains obsolete
 pre-acceptance status. Reconcile or close it separately with permission; do not

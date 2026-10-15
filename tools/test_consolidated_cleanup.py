@@ -26,10 +26,6 @@ class ConsolidatedCleanupTests(unittest.TestCase):
             with self.subTest(project=row['path']):
                 self.assertEqual(row['disposition'], 'retain')
                 self.assertEqual(sum(p.startswith(row['path'] + '/') for p in entries), row['tracked_entries'])
-        for row in record['held_books']:
-            with self.subTest(book=row['path']):
-                self.assertEqual(sum(p.startswith(row['path'] + '/') for p in entries), row['files'])
-
     def test_dependency_declarations_are_accounted_for(self):
         import configparser
         record = json.loads((ROOT / 'docs/meta/dependency-declarations.json').read_text())

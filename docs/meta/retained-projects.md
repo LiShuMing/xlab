@@ -54,12 +54,10 @@ No project below has an accepted source-to-target mapping for retirement.
 | `shell/fio` | 2 | retained experiment; no accepted migration mapping |
 | `shell/mysql` | 3 | retained experiment; no accepted migration mapping |
 
-## Held knowledge
+## Accepted book retirement
 
-Calcite (22 files), RisingWave (12), Claude Code (21) and Feynman (21)
-remain in xlab. Missing-chapter disclosure and source/provenance/quotation review
-must precede target acceptance. A prepared import is not acceptance. Source
-retirement must join the same consolidated proposal only after that gate.
+The former four book roots (76 files) have accepted Cygnus mappings and are
+removed without stubs in this consolidated proposal. See the [retirement ledger](../migrations/2026-10-15-remaining-books-retirement.json).
 
 Other docs, migration records, ignore rules, project code and user runtime data
 are retained. `py-academic` vendoring and the large `cc/srlab/data/v1.jstack`

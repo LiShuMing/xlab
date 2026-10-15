@@ -279,26 +279,5 @@
       "disposition": "retain"
     }
   ],
-  "held_books": [
-    {
-      "path": "docs/books/calcite-code-book",
-      "files": 22,
-      "disposition": "retain pending accepted target migration"
-    },
-    {
-      "path": "docs/books/risingwave-book",
-      "files": 12,
-      "disposition": "retain pending accepted target migration"
-    },
-    {
-      "path": "docs/books/claude-code-internals",
-      "files": 21,
-      "disposition": "retain pending accepted target migration"
-    },
-    {
-      "path": "docs/books/feiman-book",
-      "files": 21,
-      "disposition": "retain pending accepted target migration"
-    }
-  ]
+  "book_retirement_ledger": "../migrations/2026-10-15-remaining-books-retirement.json"
 }

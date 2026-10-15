@@ -29,7 +29,7 @@
 
 ## 仍在 xlab 的资料
 
-- [books/](books/)：其他书籍与长篇笔记，不因上述部分迁移而整体退役
+- 书稿现统一在 [Cygnus books](https://github.com/LiShuMing/cygnus/tree/main/books) 维护；最后四组、76 个源文件的验收与恢复见 [本次退役记录](migrations/2026-10-15-remaining-books-retirement.md)。
 - [reading-open-source/](reading-open-source/)、[about-llm/](about-llm/)：其余源码阅读与 LLM 笔记
 - [learn/](learn/)：学习计划；未写的关联笔记标为计划项，不伪造空文件
 - [reports/](reports/)、[build-projects/](build-projects/)：历史研究与项目资料

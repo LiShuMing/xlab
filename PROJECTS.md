@@ -261,7 +261,7 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | [llm/cuda/](llm/cuda/) | GPU 诊断、本地模型与 CUDA/ROCm 实验 | [PYTORCH_SETUP.md](llm/cuda/PYTORCH_SETUP.md)、[diagnose_gpu.sh](llm/cuda/diagnose_gpu.sh) |
 | [tools/](tools/) | 仓库级工具 | [build-windows.ps1](tools/build-windows.ps1)、[healthcheck.sh](tools/healthcheck.sh) |
 | [cmake/](cmake/) | 共享 CMake 依赖与编译选项 | [XlabDependencies.cmake](cmake/XlabDependencies.cmake) |
-| [docs/](docs/) | 知识库、技术报告、书籍笔记与技能 | [文档导航与归属](docs/README.md)、[books](docs/books/)、[reports](docs/reports/)、[skills](docs/skills/) |
+| [docs/](docs/) | 知识库、技术报告、书籍笔记与技能 | [文档导航与归属](docs/README.md)、[Cygnus books](https://github.com/LiShuMing/cygnus/tree/main/books)、[reports](docs/reports/)、[skills](docs/skills/) |
 
 ## 第三方依赖与历史参考目录
 

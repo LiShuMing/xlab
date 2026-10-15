@@ -51,10 +51,10 @@ DayLog source retirement and recovery: [verification record](docs/migrations/202
 ## Current cleanup decisions (2026-10-15)
 
 - Keep one consolidated xlab cleanup proposal. Publication and merge need authorization.
-- Preserve unmigrated projects and held books; classify them using the [current inventory](docs/meta/retained-projects.md).
+- Preserve unmigrated projects; classify them using the [current inventory](docs/meta/retained-projects.md).
 - Review every orphan dependency declaration against its actual consumers before changing it; preserve the two pinned gitlinks.
 - Legacy cron is removed without a stub; no installed schedule was inspected or changed. Replacing installed schedules and migrating live state are separate actions.
-- Calcite/RisingWave import review is pending. Their source retirement can join this same proposal only after accepted target-main mappings exist. Claude Code/Feynman remain held for provenance/quotation review.
+- All four remaining book roots (76 files) have accepted Cygnus mappings and retire in this same proposal; see [acceptance and recovery](docs/migrations/2026-10-15-remaining-books-retirement.md).
 - Review the obsolete draft [PR #20](https://github.com/LiShuMing/xlab/pull/20) for reconciliation or closure; it is not automatically merged or closed here.
 - Remaining experiments keep their current ownership. A matching name in another repository is not migration evidence.
 
@@ -1056,7 +1056,7 @@ kubelet 模拟器 / `cmd/demo`），全包测试覆盖率 82%~100%，`-race` 全
 25. **rust/projects/{fragment-tutor, subway-game}**（保留项目；规模与实现状态须按当前源码核对）
 26. **已迁出：[lyra/llm-wiki](https://github.com/LiShuMing/lyra/tree/main/llm-wiki)** - 原 `liminalis/llm-wiki`；历史排序保留，当前任务见目标仓库。
 27. **shell/{bin, docker, mysql, fio}**、**llm/cuda**、**tools**
-28. **docs/books** - 当前保留 4 组待审稿件、76 个文件；已迁稿件在 Cygnus 维护，不能沿用旧总量。
+28. **书稿已迁出** - 最后四组 76 个文件已验收并退出 xlab 当前树；维护与后续审阅在 Cygnus，不能沿用旧总量。
 
 ---
 

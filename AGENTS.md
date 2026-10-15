@@ -63,7 +63,7 @@ xlab/
 │   ├── fio/              # FIO benchmark scripts
 │   └── mysql/            # MySQL utilities
 ├── tools/                # Repository maintenance scripts (healthcheck.sh)
-└── docs/                 # Obsidian vault: notes, reports, book-length studies (Chinese)
+└── docs/                 # Obsidian vault: retained notes/reports; books maintained in Cygnus
 ```
 
 ## Migrated Project Routing
@@ -395,3 +395,5 @@ When generating code for this repository:
 - **Focus Areas**: Database kernels, OLAP systems, query optimization, materialized views
 - **Open Source**: Committer on StarRocks
 - **Research Interests**: Incremental view maintenance (IVM), streaming systems, query optimizers
+
+All former `docs/books/` source roots are retired without stubs. Use the [accepted book routes](docs/migrations/2026-10-15-remaining-books-retirement.md); do not recreate them in xlab.
