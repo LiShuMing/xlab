@@ -62,7 +62,7 @@
 
 ## 与 Rust 的关系
 
-[llm-runtime](../../../rust/projects/llm-runtime/README.md) 仍为独立设计骨架。运行本项目无需 Rust；未来通过模型文件与固定参考 logits 对照，不通过 FFI 绑定。
+原 llm-runtime 设计项目已按所有者决定从 xlab 移除；这里不再提供本地入口。运行本项目无需 Rust；未来通过模型文件与固定参考 logits 对照，不通过 FFI 绑定。
 
 ## 参考
 

@@ -103,18 +103,13 @@ xlab/
 │       └── web-server/   # Web server
 ├── rust/                 # Rust Projects
 │   ├── rlab/             # Core Rust lab
-│   ├── rdb/              # Database implementation
-│   └── projects/         # Projects
-│       ├── fragment-tutor/
-│       ├── subway-game/
-│       └── umbra/
+│   └── rdb/              # Database implementation
 ├── python/               # Python Projects
 │   ├── pylab/            # Core Python lab
 │   ├── llm_benchmark/    # LLM evaluation framework
 │   ├── ivm/              # Incremental view maintenance prototypes
 │   ├── tools/            # Python tooling
 │   └── projects/         # Projects
-│       ├── py-academic/  # VENDORED fork of binary-husky/gpt_academic
 │       ├── py-cycle-lab/ # Long-cycle investment compass
 │       ├── py-ego/       # StarRocks MV monitor + LLM companion
 │       ├── py-lab/       # Streamlit/LangChain AI platform
@@ -626,23 +621,6 @@ executing any task here, confirm which branch you are on; tasks written against
 
 ---
 
-#### Project: rust/projects/umbra
-
-**现状**: Umbra database experiments
-
-**Tasks**:
-
-1. **创建项目文件**
-   - [ ] 创建 `rust/projects/umbra/AGENTS.md`
-   - [ ] 创建 `rust/projects/umbra/RULES.md`
-   - [ ] 复核 `rust/projects/umbra/README.md`（文件已存在；内容与质量需按当前实现核对）
-   - [ ] 创建 `rust/projects/umbra/CHANGELOG.md`
-
-2. **丰富单元测试**
-   - [ ] 分析并补充测试
-
----
-
 ### 【Python 项目】
 
 #### Project: python/pylab
@@ -759,23 +737,6 @@ Current code, safety boundaries and tests live in [email-digest](https://github.
 
 2. **丰富单元测试**
    - [ ] 为核心模块添加测试
-
----
-
-#### Project: python/projects/py-academic
-
-**现状**: Academic paper tools
-
-**Tasks**:
-
-1. **创建项目文件**
-   - [ ] 复核 `python/projects/py-academic/AGENTS.md`（文件已存在；内容与质量需按当前实现核对）
-   - [ ] 创建 `python/projects/py-academic/RULES.md`
-   - [ ] 复核 `python/projects/py-academic/README.md`（文件已存在；内容与质量需按当前实现核对）
-   - [ ] 创建 `python/projects/py-academic/CHANGELOG.md`
-
-2. **丰富单元测试**
-   - [ ] 为crazy_functions模块添加测试
 
 ---
 
@@ -1015,7 +976,7 @@ kubelet 模拟器 / `cmd/demo`），全包测试覆盖率 82%~100%，`-race` 全
 **待办**：
 
 - [x] 提交上述改动（分支 `chore/repo-hygiene`，基于 `origin/main`）
-- [ ] 决定 `python/projects/py-academic`（283 文件 / 63k 行 vendored fork）是否改为 submodule
+- [x] 所有者决定完整退役 py-academic；不再在 xlab 转换或维护该项目。
 - [x] 核对目录：顶层 `projects/` 不在 Git 树中；`python/projects/py-numpy-pandas` 有 8 个跟踪文件（含 notebook、数据和启动脚本），不能因无 `.py` 判为空壳。
 - [ ] 评估 `cc/srlab/data/v1.jstack`（1MB，代码中无引用）是否仍需入库
 - [x] 已迁移 Python 项目的旧抓取缓存与生成产物随源码目录退出当前树；不改写历史或用户运行目录。
@@ -1040,7 +1001,6 @@ kubelet 模拟器 / `cmd/demo`），全包测试覆盖率 82%~100%，`-race` 全
 12. **cc/projects/mini-seastar** - 协程异步框架
 13. **cc/projects/thread-pool** - work-stealing 线程池
 14. **cc/projects/web-server** - io_uring/kqueue 双后端 Web 服务器
-15. **rust/projects/umbra** - AI 记忆数据库，Arrow/Lance/DataFusion、向量索引与 gRPC；当前不是 JIT 编译流水线
 16. **已迁出：[lyra/backend/invest](https://github.com/LiShuMing/lyra/tree/main/backend/invest)** - 原 `liminalis/backend/invest`；历史排序保留，当前任务见目标仓库。
 17. **已迁出：[Lyra email-digest](https://github.com/LiShuMing/lyra/tree/main/modules/email-digest)** - 当前任务在目标仓库维护。
 18. **已迁出：[Lyra developer-tools](https://github.com/LiShuMing/lyra/tree/main/modules/developer-tools)** - 当前任务在目标仓库维护。
@@ -1053,7 +1013,6 @@ kubelet 模拟器 / `cmd/demo`），全包测试覆盖率 82%~100%，`-race` 全
 22. **python/ivm** - 仅 2 个文件，但与增量视图维护研究方向直接相关，值得升级为正式项目
 23. 其余 C++ 项目（`cc/projects/{cpython, interpreter, io-uring, llvm-jit, learn-balel}`）
 24. **haskell/projects/{sql-parser, stm-engine, dsl-transform}**、`haskell/hslab`
-25. **rust/projects/{fragment-tutor, subway-game}**（保留项目；规模与实现状态须按当前源码核对）
 26. **已迁出：[lyra/llm-wiki](https://github.com/LiShuMing/lyra/tree/main/llm-wiki)** - 原 `liminalis/llm-wiki`；历史排序保留，当前任务见目标仓库。
 27. **shell/{bin, docker, mysql, fio}**、**llm/cuda**、**tools**
 28. **书稿已迁出** - 最后四组 76 个文件已验收并退出 xlab 当前树；维护与后续审阅在 Cygnus，不能沿用旧总量。
@@ -1080,3 +1039,10 @@ kubelet 模拟器 / `cmd/demo`），全包测试覆盖率 82%~100%，`-race` 全
 - 重构时不改变现有代码功能
 - 优先完成P0项目，再处理P1和P2
 - 每个项目完成后创建独立的commit
+
+## Five-project retirement decision
+
+FragmentTutor, Umbra, subway-game, llm-runtime and py-academic are retired from
+xlab at the owner’s explicit request, irrespective of destination completeness.
+Their former xlab maintenance tasks are closed; see the
+[scope and recovery ledger](docs/migrations/2026-10-15-five-project-retirement.md).

@@ -1,4 +1,5 @@
 """Offline fixtures for staged and committed first-party formatting checks."""
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -77,7 +78,7 @@ class FormattingTests(unittest.TestCase):
 
     def test_deleted_and_imported_content_is_not_reformatted(self):
         self.git('rm', '-q', 'base.txt')
-        for p in ('python/projects/py-academic/a.py', 'cc/thirdparty/a.txt',
+        for p in ('vendor/example/a.py', 'cc/thirdparty/a.txt',
                   'notebook.ipynb', 'uv.lock', 'src/robin_hood_map.h'):
             self.write(p, b'old legacy \r\nno newline')
         self.git('add', '.')
@@ -92,6 +93,53 @@ class FormattingTests(unittest.TestCase):
         self.git('add', '.')
         self.git('commit', '-qm', 'good changed line')
         self.assertEqual(self.check('--base', base, '--head', 'HEAD').returncode, 0)
+
+    def test_new_branch_push_checks_branch_delta_not_legacy_baseline(self):
+        self.write('legacy.py', b'legacy = 1 \n')
+        self.git('add', '.')
+        self.git('commit', '-qm', 'existing legacy baseline')
+        base = self.git('rev-parse', 'HEAD').strip()
+        self.git('update-ref', 'refs/remotes/origin/main', base)
+        self.write('bad.py', b'bad = 1 \n')
+        self.git('add', '.')
+        self.git('commit', '-qm', 'first branch commit')
+        self.write('good.py', b'good = 1\n')
+        self.git('add', '.')
+        self.git('commit', '-qm', 'second branch commit')
+        workflow = (CHECKER.parents[1] / '.github/workflows/repository-checks.yml').read_text()
+        script = workflow.split('          if [ -z "$BASE_SHA" ]; then', 1)[1]
+        script = 'if [ -z "$BASE_SHA" ]; then' + script.split('          python3 tools/check_formatting.py', 1)[0]
+        script += '\nprintf "%s" "$BASE_SHA"'
+        result = subprocess.check_output(['bash', '-c', script], cwd=self.root,
+                                         env={**os.environ, 'BASE_SHA': '0' * 40,
+                                              'HEAD_SHA': 'HEAD', 'DEFAULT_BRANCH': 'main'}).decode()
+        self.assertEqual(result, base)
+        checked = self.check('--base', result, '--head', 'HEAD')
+        self.assertEqual(checked.returncode, 1)
+        self.assertIn('bad.py', checked.stderr)
+        self.assertNotIn('legacy.py', checked.stderr)
+
+    def new_branch_baseline(self):
+        workflow = (CHECKER.parents[1] / '.github/workflows/repository-checks.yml').read_text()
+        script = workflow.split('          if [ -z "$BASE_SHA" ]; then', 1)[1]
+        script = 'if [ -z "$BASE_SHA" ]; then' + script.split('          python3 tools/check_formatting.py', 1)[0]
+        return subprocess.run(['bash', '-c', script], cwd=self.root,
+                              env={**os.environ, 'BASE_SHA': '0' * 40,
+                                   'HEAD_SHA': 'HEAD', 'DEFAULT_BRANCH': 'main'},
+                              capture_output=True, text=True)
+
+    def test_new_branch_missing_default_ref_fails_closed(self):
+        result = self.new_branch_baseline()
+        self.assertEqual(result.returncode, 2)
+        self.assertIn('Cannot establish new-branch formatting baseline', result.stderr)
+
+    def test_new_branch_unrelated_default_ref_fails_closed(self):
+        tree = self.git('rev-parse', 'HEAD^{tree}').strip()
+        unrelated = self.git('commit-tree', tree, '-m', 'unrelated root').strip()
+        self.git('update-ref', 'refs/remotes/origin/main', unrelated)
+        result = self.new_branch_baseline()
+        self.assertEqual(result.returncode, 2)
+        self.assertIn('Cannot establish new-branch formatting baseline', result.stderr)
 
     def test_workflow_checks_all_code_changes(self):
         workflow = CHECKER.parents[1] / '.github/workflows/repository-checks.yml'

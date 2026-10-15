@@ -69,6 +69,8 @@ Python source retirement: [verified migration record](docs/migrations/2026-10-14
 
 DayLog source retirement and recovery: [verification record](docs/migrations/2026-10-14-daylog-source-retirement.md). Native UI acceptance was not run; the owner waived it as a source-retirement prerequisite.
 
+Five named projects were retired by owner decision: [scope and recovery](docs/migrations/2026-10-15-five-project-retirement.md).
+
 ### Standalone Projects in xlab
 
 Selected projects and design scaffolds are listed below. Runnable projects own
@@ -77,9 +79,7 @@ their build systems; a scaffold is explicitly marked and has no build command.
 | Project | Path | Stack | Notes |
 | --- | --- | --- | --- |
 | MiniSeastar | `cc/projects/mini-seastar/` | C++20, CMake | Coroutine scheduler, per-thread reactor. |
-| Umbra | `rust/projects/umbra/` | Rust, Cargo | AI memory database: Arrow/Lance/DataFusion and gRPC. |
 | K8s Lab | `go/k8s-lab/` | Go (stdlib only) | Mini Kubernetes control plane: MVCC store, apiserver, informers, workqueue, ReplicaSet controller, kubelet sim. |
-| LLM Runtime | [rust/projects/llm-runtime/](rust/projects/llm-runtime/) | Rust design scaffold | No Cargo.toml or runnable implementation yet. |
 | LLM Lab | [python/projects/llm-lab/](python/projects/llm-lab/) | Python | Model training/reference experiments. |
 | LLM Benchmark | `python/llm_benchmark/` | Python | Quantified LLM evaluation framework. |
 
