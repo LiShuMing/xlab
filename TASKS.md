@@ -50,11 +50,11 @@ DayLog source retirement and recovery: [verification record](docs/migrations/202
 
 ## Current cleanup decisions (2026-10-15)
 
-- Keep one consolidated xlab cleanup proposal. Publication and merge need authorization.
+- Consolidated cleanup [PR #28](https://github.com/LiShuMing/xlab/pull/28) merged at `dfcd093c1888fddcb043c2cbb68919c26a3413b9`; its exact main inventory and post-merge CI were verified.
 - Preserve unmigrated projects; classify them using the [current inventory](docs/meta/retained-projects.md).
 - Review every orphan dependency declaration against its actual consumers before changing it; preserve the two pinned gitlinks.
 - Legacy cron is removed without a stub; no installed schedule was inspected or changed. Replacing installed schedules and migrating live state are separate actions.
-- All four remaining book roots (76 files) have accepted Cygnus mappings and retire in this same proposal; see [acceptance and recovery](docs/migrations/2026-10-15-remaining-books-retirement.md).
+- All four remaining book roots (76 files) have accepted Cygnus mappings and were retired in PR #28; see [acceptance and recovery](docs/migrations/2026-10-15-remaining-books-retirement.md).
 - Review the obsolete draft [PR #20](https://github.com/LiShuMing/xlab/pull/20) for reconciliation or closure; it is not automatically merged or closed here.
 - Remaining experiments keep their current ownership. A matching name in another repository is not migration evidence.
 

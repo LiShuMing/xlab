@@ -252,7 +252,7 @@ Research-report documentation and commands now live in
 
 ### Python
 - **Style**: PEP 8
-- **Tools**: black, isort (recommended)
+- **Tools**: follow module pyproject settings first (including Ruff); Black/isort are legacy guidance only when no conflicting module policy exists.
 - Use type hints for function signatures
 - Virtual environments for all projects
 
@@ -397,3 +397,5 @@ When generating code for this repository:
 - **Research Interests**: Incremental view maintenance (IVM), streaming systems, query optimizers
 
 All former `docs/books/` source roots are retired without stubs. Use the [accepted book routes](docs/migrations/2026-10-15-remaining-books-retirement.md); do not recreate them in xlab.
+
+Path, placeholder and formatting conventions: [FORMATTING.md](FORMATTING.md).

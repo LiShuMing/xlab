@@ -2,11 +2,17 @@
 
 This repository hosts a minimal Chrome Extension that opens a Side Panel with quick access to AI assistants. Use this guide to contribute consistently and safely.
 
+## Current checkout boundary
+
+`manifest.json` and `rules.json` are absent. Unpacked loading and packaging are
+not currently valid entry points. `tools/build.py` fails before producing output
+until required inputs exist; do not invent permissions/rules as a cleanup fix.
+
 ## Project Structure & Module Organization
 
 - Root files: `manifest.json`, `background.js`, `sidepanel.html`, `sidepanel.js`, `rules.json`.
 - Assets: place icons or images in `assets/` (create if needed).
-- No build system by default; extension loads as “unpacked”.
+- `tools/build.py` packages complete inputs; unpacked loading also requires a valid manifest.
 
 ## Build, Test, and Development Commands
 

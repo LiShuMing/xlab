@@ -1,8 +1,10 @@
 # Consolidated repository cleanup
 
 Base: xlab `bf3e2ed45c12cc551fd44ef3cb89366970cd92ba`.
-One reviewable proposal covers repository hygiene. It does not authorize a push,
-merge, live service operation, credential change or real-state migration.
+Consolidated cleanup [PR #28](https://github.com/LiShuMing/xlab/pull/28) merged at
+`dfcd093c1888fddcb043c2cbb68919c26a3413b9`. Its exact main inventory and post-merge
+CI were verified. No live service operation, credential change or real-state
+migration was performed.
 
 ## Legacy scheduler
 
@@ -24,14 +26,14 @@ These destinations are ownership routes, not automatic cron replacements.
 See [project classification](retained-projects.md). Unmigrated code,
 privacy exclusions, ignored/runtime files and the two pinned gitlinks are not
 removed. Previously accepted Codex/Linux/email/learning source retirement is
-already part of the base, not a new deletion in this proposal.
+already part of the base, not a new deletion in PR #28.
 
 All four remaining book roots (76 files) have accepted Cygnus mappings and
-retire without stubs in this same proposal. See [acceptance and recovery](../migrations/2026-10-15-remaining-books-retirement.md).
+were retired without stubs in PR #28. See [acceptance and recovery](../migrations/2026-10-15-remaining-books-retirement.md).
 
 The old [draft PR #20](https://github.com/LiShuMing/xlab/pull/20) contains obsolete
 pre-acceptance status. Reconcile or close it separately with permission; do not
-merge it blindly. This local proposal has not changed that PR.
+merge it blindly. PR #28 did not change that draft, which remains open as of 2026-10-15.
 
 ## Validation boundaries
 

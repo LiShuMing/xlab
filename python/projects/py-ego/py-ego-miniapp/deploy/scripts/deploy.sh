@@ -24,6 +24,15 @@ log_warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 log_step() { echo -e "${BLUE}[STEP]${NC} $1"; }
 
+# Fail before Docker, backups or deployment when migration configuration is absent.
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+for prerequisite in alembic.ini alembic/env.py; do
+    if [ ! -f "$PROJECT_ROOT/$prerequisite" ]; then
+        log_error "Unsupported deployment: missing migration prerequisite $prerequisite. No deployment was attempted."
+        exit 2
+    fi
+done
+
 # ============================================================================
 # Pre-deployment Checks
 # ============================================================================
@@ -140,7 +149,7 @@ fi
 
 # Run database migrations (if needed)
 log_info "Running database migrations..."
-docker compose exec -T app alembic upgrade head || log_warn "Migration skipped or failed"
+docker compose exec -T app alembic upgrade head
 
 # Cleanup old images
 log_info "Cleaning up old Docker images..."

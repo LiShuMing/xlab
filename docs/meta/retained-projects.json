@@ -1,6 +1,6 @@
 {
   "source_commit": "bf3e2ed45c12cc551fd44ef3cb89366970cd92ba",
-  "scope": "classified retained project roots; no claim of build or runtime acceptance",
+  "scope": "classified retained project roots; current counts exclude retired redundant placeholders; no claim of build or runtime acceptance",
   "projects": [
     {
       "path": "cc/algo",
@@ -130,7 +130,7 @@
     },
     {
       "path": "java/xlab-itest",
-      "tracked_entries": 623,
+      "tracked_entries": 622,
       "classification": "retained experiment; no accepted migration mapping",
       "disposition": "retain"
     },
@@ -148,13 +148,13 @@
     },
     {
       "path": "python/llm_benchmark",
-      "tracked_entries": 39,
+      "tracked_entries": 38,
       "classification": "retained experiment; no accepted migration mapping",
       "disposition": "retain"
     },
     {
       "path": "python/projects/llm-lab",
-      "tracked_entries": 30,
+      "tracked_entries": 27,
       "classification": "retained experiment; no accepted migration mapping",
       "disposition": "retain"
     },
@@ -172,7 +172,7 @@
     },
     {
       "path": "python/projects/py-ego",
-      "tracked_entries": 136,
+      "tracked_entries": 135,
       "classification": "retained experiment; no accepted migration mapping",
       "disposition": "retain"
     },
@@ -226,7 +226,7 @@
     },
     {
       "path": "rust/projects/llm-runtime",
-      "tracked_entries": 12,
+      "tracked_entries": 8,
       "classification": "design/scaffold; implementation maturity unverified",
       "disposition": "retain"
     },

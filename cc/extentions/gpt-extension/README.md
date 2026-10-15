@@ -1,6 +1,13 @@
 # AI Side Panel (Chrome Extension)
 
-## Quick Start
+## Current checkout status
+
+Packaging and loading are blocked: `manifest.json` and `rules.json` are not
+tracked in this checkout. Do not follow the load steps below until those inputs
+are supplied and their permissions/rules are reviewed. The build preflight fails
+before writing artifacts; it does not invent browser permissions or rules.
+
+## Planned manual workflow (requires complete inputs)
 
 - Load at chrome://extensions → Developer Mode → Load unpacked → select this folder.
 - Open via toolbar icon or shortcut: Ctrl+Shift+Y (Win/Linux) or Command+Shift+Y (macOS).
@@ -18,7 +25,7 @@ Notes
 - Some sites block iframes via X-Frame-Options or CSP. The extension includes DNR rules to remove common blocking headers for listed hosts, but this may not always work and may conflict with site policies.
 - Permissions are limited to the Side Panel API, storage, and the listed hosts for DNR.
 
-## Build and Package
+## Build and Package (currently blocked)
 - Optional: add extra approved hosts for DNR in `build/hosts.json` (e.g., "example.com").
 - Optional: tweak icon colors in `build/branding.json`.
 - Run: `python3 tools/build.py`

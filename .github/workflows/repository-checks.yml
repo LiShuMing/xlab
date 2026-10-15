@@ -1,44 +1,9 @@
 name: repository-checks
 
+# Changed-text policy applies to every PR and push, including code-only changes.
 on:
   pull_request:
-    paths:
-      - '**/*.md'
-      - docs/migrations/**
-      - docs/meta/**
-      - python/projects/cron.sh
-      - swift/**
-      - python/projects/py-cli/**
-      - python/projects/py-tools/**
-      - python/projects/py-optimizer1/**
-      - python/projects/py-optimizer2/**
-      - python/projects/py-pia/**
-      - python/projects/py-report/**
-      - .gitmodules
-      - cc/thirdparty/googletest
-      - cc/thirdparty/benchmark
-      - tools/healthcheck.sh
-      - tools/test_*.py
-      - .github/workflows/repository-checks.yml
   push:
-    paths:
-      - '**/*.md'
-      - docs/migrations/**
-      - docs/meta/**
-      - python/projects/cron.sh
-      - swift/**
-      - python/projects/py-cli/**
-      - python/projects/py-tools/**
-      - python/projects/py-optimizer1/**
-      - python/projects/py-optimizer2/**
-      - python/projects/py-pia/**
-      - python/projects/py-report/**
-      - .gitmodules
-      - cc/thirdparty/googletest
-      - cc/thirdparty/benchmark
-      - tools/healthcheck.sh
-      - tools/test_*.py
-      - .github/workflows/repository-checks.yml
   workflow_dispatch:
 
 permissions:
@@ -52,13 +17,24 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Shell syntax and whitespace
+      - name: Shell syntax and committed-diff formatting
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           bash -n tools/healthcheck.sh
-          git diff --check
+          bash -n python/projects/py-ego/py-ego-miniapp/deploy/scripts/deploy.sh
+          if [ -z "$BASE_SHA" ]; then
+            BASE_SHA=$(git rev-parse --verify "$HEAD_SHA^" 2>/dev/null || printf '%s' 4b825dc642cb6eb9a060e54bf8d69288fbee4904)
+          elif [ "$BASE_SHA" = 0000000000000000000000000000000000000000 ]; then
+            BASE_SHA=4b825dc642cb6eb9a060e54bf8d69288fbee4904
+          fi
+          python3 tools/check_formatting.py --base "$BASE_SHA" --head "$HEAD_SHA"
       - name: Offline regression fixtures and maintained navigation
         run: python3 -m unittest discover -s tools -p 'test_*.py' -v
       - name: Report current dependency debt separately

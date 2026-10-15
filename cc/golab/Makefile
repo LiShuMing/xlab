@@ -1,7 +1,6 @@
 # Makefile for golab leetcode solutions
 
 GO := go
-MODULE := cc/golab
 SRC_DIR := src/leetcode
 OUTPUT_DIR := bin
 
@@ -37,17 +36,10 @@ list:
 		echo "  - $$f"; \
 	done
 
-# Tidy module dependencies
-.PHONY: tidy
-tidy:
-	$(GO) mod tidy
-
 .PHONY: help
 help:
 	@echo "Available targets:"
 	@echo "  all      - Build all leetcode binaries (default)"
-	@echo "  run      - Run a specific problem (usage: make run PROG=leetcode_433)"
-	@echo "  leetcode_.*  - Run leetcode_.*"
+	@echo "  leetcode_<id> - Run a problem (example: make leetcode_433)"
 	@echo "  clean    - Remove built binaries"
 	@echo "  list     - List all available problems"
-	@echo "  tidy     - Tidy Go module dependencies"
