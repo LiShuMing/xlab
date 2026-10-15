@@ -40,7 +40,8 @@ class BooksEmailLearningRetirementTests(unittest.TestCase):
         for name in ('README.md', 'PROJECTS.md', 'AGENTS.md', 'TASKS.md', 'docs/README.md', 'python/SKILL.md'):
             for url in re.findall(r'\]\(([^)]+)\)', (ROOT / name).read_text()):
                 self.assertFalse(any(root in url for root in record['retired_roots']), (name, url))
-        self.assertTrue((ROOT / 'python/projects/cron.sh').is_file())
+        # A later consolidated cleanup retires the legacy scheduler without a stub.
+        self.assertFalse((ROOT / 'python/projects/cron.sh').exists())
         text = RECORD.with_suffix('.md').read_text()
         for term in ('git revert', 'unsupported', '13', '174', '161'):
             self.assertIn(term, text)

@@ -29,7 +29,7 @@
 
 ## 仍在 xlab 的资料
 
-- [books/](books/)：其他书籍与长篇笔记，不因上述部分迁移而整体退役
+- 书稿现统一在 [Cygnus books](https://github.com/LiShuMing/cygnus/tree/main/books) 维护；最后四组、76 个源文件的验收与恢复见 [本次退役记录](migrations/2026-10-15-remaining-books-retirement.md)。
 - [reading-open-source/](reading-open-source/)、[about-llm/](about-llm/)：其余源码阅读与 LLM 笔记
 - [learn/](learn/)：学习计划；未写的关联笔记标为计划项，不伪造空文件
 - [reports/](reports/)、[build-projects/](build-projects/)：历史研究与项目资料
@@ -60,3 +60,5 @@ Python 工具与研究模块的去向、验证和恢复方式见
 - [邮件摘要](https://github.com/LiShuMing/lyra/tree/main/modules/email-digest)与[每日学习](https://github.com/LiShuMing/lyra/tree/main/modules/daily-learning)在 Lyra 维护。
 
 本批 174 个源路径全部登记：161 个归档或适配，13 个历史文档/生成输出仅保留于 Git 历史和备份，未迁入目标。详情、排除清单和恢复方式见[退役记录](migrations/2026-10-14-books-email-learning-retirement.md)。Calcite、RisingWave、Claude、Feynman 资料不在本批范围。
+
+Current retained-project decisions and cleanup boundaries: [classification](meta/retained-projects.md), [consolidated cleanup](meta/repository-cleanup.md).

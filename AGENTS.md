@@ -63,7 +63,7 @@ xlab/
 │   ├── fio/              # FIO benchmark scripts
 │   └── mysql/            # MySQL utilities
 ├── tools/                # Repository maintenance scripts (healthcheck.sh)
-└── docs/                 # Obsidian vault: notes, reports, book-length studies (Chinese)
+└── docs/                 # Obsidian vault: retained notes/reports; books maintained in Cygnus
 ```
 
 ## Migrated Project Routing
@@ -294,17 +294,20 @@ Research-report documentation and commands now live in
 
 ## Git Submodules
 
-`.gitmodules` retains 69 declarations; GoogleTest and Google Benchmark are the
-only two tracked mode 160000 gitlinks. Initialize just these two paths when
-using the portable C++ suite. The remaining 67 orphan declarations still make
-`bash tools/healthcheck.sh` fail; do not remove or restore them indiscriminately.
-Root CMake also retains its explicit `XLAB_FETCH_DEPENDENCIES=ON` fallback.
-See [pinned dependencies and validation](docs/meta/cpp-test-dependencies.md).
+`.gitmodules` has 40 declarations: two tracked mode 160000 gitlinks and 38
+unresolved orphan declarations. Initialize only GoogleTest and Google Benchmark
+for the portable C++ suite. 29 orphan reference/external-package declarations
+were archived into [the complete inventory](docs/meta/dependency-declarations.json),
+without deleting their code or consumers. The healthcheck still fails on the 38
+retained orphans; five have local legacy inputs and 33 have unresolved intent.
+Do not restore, remove or invent dependency versions merely to make it green.
+Root CMake retains its explicit `XLAB_FETCH_DEPENDENCIES=ON` fallback.
+See [consumer audit](docs/meta/dependency-declarations.md) and [pinned dependencies](docs/meta/cpp-test-dependencies.md).
 
-### Key Submodule Categories
-- **C++ thirdparty**: 40+ submodules including DuckDB, RocksDB, Folly, Arrow
-- **Rust thirdparty**: RisingWave, Materialize, DataFusion, Timely Dataflow
-- **Python thirdparty**: TinyDB, PyDBSP
+### Historical Reference Categories
+- **C++ reference catalog**: DuckDB, RocksDB, Folly, Arrow and other historical references
+- **Rust reference catalog**: RisingWave, Materialize, DataFusion, Timely Dataflow
+- **Python reference catalog**: TinyDB, PyDBSP
 
 ⚠️ A successful empty `git submodule status` is not evidence of healthy dependencies.
 Compare declarations and tracked gitlinks before discussing initialization.
@@ -392,3 +395,5 @@ When generating code for this repository:
 - **Focus Areas**: Database kernels, OLAP systems, query optimization, materialized views
 - **Open Source**: Committer on StarRocks
 - **Research Interests**: Incremental view maintenance (IVM), streaming systems, query optimizers
+
+All former `docs/books/` source roots are retired without stubs. Use the [accepted book routes](docs/migrations/2026-10-15-remaining-books-retirement.md); do not recreate them in xlab.

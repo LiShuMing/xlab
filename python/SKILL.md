@@ -70,4 +70,4 @@ python/
 | `python/projects/py-learn/` | [lyra/modules/daily-learning](https://github.com/LiShuMing/lyra/tree/main/modules/daily-learning) |
 
 Do not recreate these retired roots. Read the destination module guide before running commands.
-The shared `projects/cron.sh` is retained unchanged as an unsupported historical, machine-specific script. It still references retired PIA and email roots; do not run or install it as a current scheduler. Scheduler migration and live state remain separate work in Carina and the target modules.
+The obsolete `projects/cron.sh` is removed without a stub. No installed scheduler has been inspected or changed; an old cron entry pointing to it will fail with a missing-file error until its owner removes or replaces that entry. Review destination setup and live-state handling separately; see [cleanup boundaries](../docs/meta/repository-cleanup.md).

@@ -1,0 +1,707 @@
+{
+  "source_repository": "LiShuMing/xlab",
+  "source_commit": "bf3e2ed45c12cc551fd44ef3cb89366970cd92ba",
+  "backup_commit": "fd15e65059ff7d0d01ed48b6347cd75881fb4b36",
+  "destination_repository": "LiShuMing/cygnus",
+  "destination_commit": "ad36e55ea612f9a4a8fec3552f4a874610ab05f0",
+  "destination_tree": "25d3103cf2d76dc4dfd31d1f6c48dab0aba1f872",
+  "acceptance_pr": "https://github.com/LiShuMing/cygnus/pull/7",
+  "ci": {
+    "url": "https://github.com/LiShuMing/cygnus/actions/runs/38689016663",
+    "head_sha": "ad36e55ea612f9a4a8fec3552f4a874610ab05f0",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "retired_roots": {
+    "docs/books/calcite-code-book": 22,
+    "docs/books/risingwave-book": 12,
+    "docs/books/claude-code-internals": 21,
+    "docs/books/feiman-book": 21
+  },
+  "files": [
+    {
+      "source_path": "docs/books/calcite-code-book/SUMMARY.md",
+      "source_git_blob": "1989f5d44b1b5a20f51b5f2670c325449f2af024",
+      "source_sha256": "14a22e1ac409cda53ad8477edbceab382cee1871de45386d186ce17c0796276a",
+      "source_mode": "100644",
+      "destination_path": "books/calcite-code-book/SUMMARY.md",
+      "destination_git_blob": "534b6880f4fac83d4ed11b870a623f6da11b1f5a",
+      "destination_sha256": "50b20f6e3cd4785df6a6debfd37cda49b83af298be456b883f257227b0a3b6ac"
+    },
+    {
+      "source_path": "docs/books/calcite-code-book/TASKSPEC.md",
+      "source_git_blob": "d2959e9e9433f10ef80cbddbbd6b7d94722f3da5",
+      "source_sha256": "1e5a8b66cd22fc3b1e28f3bbe5c46897d920316576e439a0032310062e3de438",
+      "source_mode": "100644",
+      "destination_path": "books/calcite-code-book/TASKSPEC.md",
+      "destination_git_blob": "372ac8dd34148b4a7336564971458749d818df54",
+      "destination_sha256": "e4a076d22db1d15675a7222637f107323a31c95b122ce7ebedb3f1ceb195084d"
+    },
+    {
+      "source_path": "docs/books/calcite-code-book/ch01-first-principles.md",
+      "source_git_blob": "441575c168106e5956233632b7c1d28d35abeb0b",
+      "source_sha256": "fab57a7534a24cbabfed9859c60e1a185008e5572925978b20d39528dbd300f8",
+      "source_mode": "100644",
+      "destination_path": "books/calcite-code-book/ch01-first-principles.md",
+      "destination_git_blob": "0eb6feb53852e12fcafa4ba39fa2512c8f1b5864",
+      "destination_sha256": "70bf4754677c8a42f244303ed3594a6b9080111aec75536c075422d2502c2b7f"
+    },
+    {
+      "source_path": "docs/books/calcite-code-book/ch02-type-system.md",
+      "source_git_blob": "ed7b77f6d2f6ccf90df49ec95fdd8293f3171aee",
+      "source_sha256": "d5fb1ffda5fc07d43aaf854436327d3aa134b0d8906387546948229db3de325d",
+      "source_mode": "100644",
+      "destination_path": "books/calcite-code-book/ch02-type-system.md",
+      "destination_git_blob": "7966a3a6f4b45c1c99a862c26b8ca72764e059fb",
+      "destination_sha256": "5ec29a7599c3a3a48087128f602a7e708875e7a3db2c0d837c6cc13c76250eef"
+    },
+    {
+      "source_path": "docs/books/calcite-code-book/ch03-sql-parser.md",
+      "source_git_blob": "91c8a5f1aa8ee511703543c45f96100dcef8bf41",
+      "source_sha256": "b86cd7f4f7780a41c8b651d460c97df2410cc3c13a2259e31544f5becf497a99",
+      "source_mode": "100644",
+      "destination_path": "books/calcite-code-book/ch03-sql-parser.md",
+      "destination_git_blob": "2ab776b82320fbf70c6c5e82538a1891402e5b42",
+      "destination_sha256": "e345d8d2a21273a39993270078a7f31255c48d5dcd2c2897c9b95ba3abb681d1"
+    },
+    {
+      "source_path": "docs/books/calcite-code-book/ch04-sql-validator.md",
+      "source_git_blob": "5c43e0369f9b5608ee9060866404e75f1849b14f",
+      "source_sha256": "f083f6acdee270a097ef944044c6c493910e0d7beecba287e8c5214eba2001a0",
+      "source_mode": "100644",
+      "destination_path": "books/calcite-code-book/ch04-sql-validator.md",
+      "destination_git_blob": "f8001ff376fad3503d72e2d3e7845bb251963642",
+      "destination_sha256": "de24e8e0a1277ab0e31c8ccc4f922be5648d4eaf03596c537d9071c657742acf"
+    },
+    {
+      "source_path": "docs/books/calcite-code-book/ch05-sql-to-rel.md",
+      "source_git_blob": "e4affd4b30630e7f4d71ee3125f43b2e0b20b665",
+      "source_sha256": "7aeba683c6b1d4324060bc0dd251287105f6da5a3a68804420131c969ddaa440",
+      "source_mode": "100644",
+      "destination_path": "books/calcite-code-book/ch05-sql-to-rel.md",
+      "destination_git_blob": "f295dcb9e223a42984d5e332d0a706115e66999b",
+      "destination_sha256": "b7f2aeec91d542f8a13f182a49a671afd25be944978c1e2c13e0cb13bf2ee8fb"
+    },
+    {
+      "source_path": "docs/books/calcite-code-book/ch06-rex-expression.md",
+      "source_git_blob": "027d0ce716f3e2e224ec58cacb74005d4d66ff2c",
+      "source_sha256": "b341a6d855409aa9874ba51250ec0175db2cf0e33541d593320a794ff37b6aa9",
+      "source_mode": "100644",
+      "destination_path": "books/calcite-code-book/ch06-rex-expression.md",
+      "destination_git_blob": "82dfa7d39780e348845dfc73d40c3db82c5a1499",
+      "destination_sha256": "88389418e44f8a1b194b1201bd952c55503523c8621d0d56ffac0c1904ca06c2"
+    },
+    {
+      "source_path": "docs/books/calcite-code-book/ch07-relnode.md",
+      "source_git_blob": "d893a9b871bca610a1c6c98f0f29cfe04e4f68cc",
+      "source_sha256": "b83a69e9a01fff4a8bc5e714422c4fea6e3eb0b6fa924f3abd7a0184b89dc8ba",
+      "source_mode": "100644",
+      "destination_path": "books/calcite-code-book/ch07-relnode.md",
+      "destination_git_blob": "8fd65358ed9b851d64f63a9d12b2c3a0bca24748",
+      "destination_sha256": "9b25452cd8b16d60cdc0c200a9911614c073a5f67c74a9524b0e87ec35178f0f"
+    },
+    {
+      "source_path": "docs/books/calcite-code-book/ch08-planner-framework.md",
+      "source_git_blob": "992fededb3a84771e0933bff91ed1d47656923cb",
+      "source_sha256": "603d1e6f10f7068ea811709e7e5bf8ce9def20f8ee77d701b537d10cdb228707",
+      "source_mode": "100644",
+      "destination_path": "books/calcite-code-book/ch08-planner-framework.md",
+      "destination_git_blob": "ad12d3909635ea836bf13e9e69215a79572c109d",
+      "destination_sha256": "1d123ea2fb13c6939fd2dc10be42bbc35d18e9906eaaa6ce0432d65669b6b67f"
+    },
+    {
+      "source_path": "docs/books/calcite-code-book/ch09-volcano-planner.md",
+      "source_git_blob": "2aa53b05cb7cb5dd09b6c4fc3a9f10c79cf1d723",
+      "source_sha256": "66ddbe501642cde12f041290404f14332c5863fb13810ee219cff9c54a9882fb",
+      "source_mode": "100644",
+      "destination_path": "books/calcite-code-book/ch09-volcano-planner.md",
+      "destination_git_blob": "adaac5dc829751d142aff1bf4cad54a154e64bac",
+      "destination_sha256": "dc11a122d23b6953dcc18486e3f072bab16718b4cc228ac1641456aa34d1d15f"
+    },
+    {
+      "source_path": "docs/books/calcite-code-book/ch10-hep-planner.md",
+      "source_git_blob": "4b5248b89792c1d89fdd234f432eabb5f3d58e64",
+      "source_sha256": "cc8c760016b601b31d6ae7d58f5f2dc09770472a7759873d30372895a3c216d8",
+      "source_mode": "100644",
+      "destination_path": "books/calcite-code-book/ch10-hep-planner.md",
+      "destination_git_blob": "14629dd298d295927b640cd613f2e28c9a22e784",
+      "destination_sha256": "90faa6f8b3f85457b166ab4c106fc8876e61933fdff60d3d2d3df72d7d692f80"
+    },
+    {
+      "source_path": "docs/books/calcite-code-book/ch11-optimization-rules.md",
+      "source_git_blob": "5d02e6062c8a73ca37d7547122680a4e3633aa1f",
+      "source_sha256": "c9a0bec3536b4ddc8ce0b107ea06d78b7dcc129e0e10949cac91667d8e7c5389",
+      "source_mode": "100644",
+      "destination_path": "books/calcite-code-book/ch11-optimization-rules.md",
+      "destination_git_blob": "35c0b7686db2912ccac98ffabefa36261612ddcd",
+      "destination_sha256": "a0aec2751b20b57752a22d00b77a14e7e585f608490a7a337cb0214bab24b469"
+    },
+    {
+      "source_path": "docs/books/calcite-code-book/ch12-metadata-system.md",
+      "source_git_blob": "1cdcfa5be996576960096b9369b5c0951c237f44",
+      "source_sha256": "1f928f7effcb2206b4ac3cd4094596b43b9e7aac6ffe9f439ad6bbba71495d1b",
+      "source_mode": "100644",
+      "destination_path": "books/calcite-code-book/ch12-metadata-system.md",
+      "destination_git_blob": "0eb6cfc943954c97cf1f6788befd6672b69e879d",
+      "destination_sha256": "e79371cd5369265d243183a0fc73d0f93cad427d68bea2da0b6513433d9e6ad8"
+    },
+    {
+      "source_path": "docs/books/calcite-code-book/ch13-convention-codegen.md",
+      "source_git_blob": "2ac67a2d9f2351a689e76eb2398be7ac62e806f9",
+      "source_sha256": "b1bb3cc487ca5c2ce121deeaa5198425cadcdd3d9e6d6c55d5d1c63b74684478",
+      "source_mode": "100644",
+      "destination_path": "books/calcite-code-book/ch13-convention-codegen.md",
+      "destination_git_blob": "e821b9df0e50c14c8bdcde5f3be9117eb58371a8",
+      "destination_sha256": "6121a8835102b1ee01138eae99d8fb914b9a507789d5b38ae297680823d5c335"
+    },
+    {
+      "source_path": "docs/books/calcite-code-book/ch14-interpreter-runtime.md",
+      "source_git_blob": "3f659923b0afa3d81c6ef3df678e4d34e8253fe7",
+      "source_sha256": "c370f07955d706a1a26933e2f727f4c4ae4c8c12306246b739b3fe1714e6538e",
+      "source_mode": "100644",
+      "destination_path": "books/calcite-code-book/ch14-interpreter-runtime.md",
+      "destination_git_blob": "26bc026cf06b5c424d0d537b7a3e73bed8c2c8a0",
+      "destination_sha256": "ad64d3338d6d2fef8d5d73f178ef4a4e67fa74cab83d9ea962fc18907dba2d87"
+    },
+    {
+      "source_path": "docs/books/calcite-code-book/ch15-schema.md",
+      "source_git_blob": "99bdedd90fda9ec626017983a75e6a22c2e7ffcb",
+      "source_sha256": "3e434f73abcd74a68a7582eb9e1081ab0c6a1064b0e141231905f34fa2386a7e",
+      "source_mode": "100644",
+      "destination_path": "books/calcite-code-book/ch15-schema.md",
+      "destination_git_blob": "10d1b7352a5e08ef9ba3725ee0980fd56b386837",
+      "destination_sha256": "06f8d21db6113609b88db6cbc956a51ecd4e032ed6a74e5b176ac23bb708a695"
+    },
+    {
+      "source_path": "docs/books/calcite-code-book/ch16-adapter.md",
+      "source_git_blob": "95d3f5c7374930ade7cef889ea3bfbe6ec584d85",
+      "source_sha256": "b857891019a58f5cf4796747b4c5ef1d4c5ac62e0cd2ff2bbbed696f779eddc1",
+      "source_mode": "100644",
+      "destination_path": "books/calcite-code-book/ch16-adapter.md",
+      "destination_git_blob": "13f50b0dc28ddd3153ee0c2546d47b3d43eaf303",
+      "destination_sha256": "0becdc4860bc687e5308411700fac297b28015a3f97dd950606a3a30ef2ac2e5"
+    },
+    {
+      "source_path": "docs/books/calcite-code-book/ch17-dialect.md",
+      "source_git_blob": "f6d3f0ad62b2911fbe37bc3b3f0fbfaffd06f307",
+      "source_sha256": "4c4d5e3aa50e81570f80f1316180741420d19bb5a39c3e0af27a9f51c02bfd2c",
+      "source_mode": "100644",
+      "destination_path": "books/calcite-code-book/ch17-dialect.md",
+      "destination_git_blob": "aaefc8afff7fe6e782e05ef4f00aa8bf878dcf37",
+      "destination_sha256": "82b9891f79d279107bb5fc078978a0844ccf6ec360159af63b6b279470a62d18"
+    },
+    {
+      "source_path": "docs/books/calcite-code-book/ch18-materialized-view.md",
+      "source_git_blob": "9956613b668d57855e250d425c4f8c0d6d69b5de",
+      "source_sha256": "4a2faa90f029618fc8a85d60af360714497aa0967e1ae67288f4840f4e82bc12",
+      "source_mode": "100644",
+      "destination_path": "books/calcite-code-book/ch18-materialized-view.md",
+      "destination_git_blob": "d0524ba03c963308cd974dd0361aa43a5d12a30e",
+      "destination_sha256": "241bdb7b80151071ebc3e6d36859fdf41245d15d52661f2800a968852f276a21"
+    },
+    {
+      "source_path": "docs/books/calcite-code-book/ch19-correlation-decorrelation.md",
+      "source_git_blob": "1c03c53984924d231630e449ad85e282c31303e8",
+      "source_sha256": "df59ed3b2b447357c710e6f5a4c3f0397de7d73ee54c14d5d2de04f3511f6438",
+      "source_mode": "100644",
+      "destination_path": "books/calcite-code-book/ch19-correlation-decorrelation.md",
+      "destination_git_blob": "335c41340ae7ecee668195f0328d8e4c031a3858",
+      "destination_sha256": "2566f36cd6b0089928e6eda86985d1de9e13c0c5c8171c5faf152d8f0165388f"
+    },
+    {
+      "source_path": "docs/books/calcite-code-book/ch20-jdbc-lifecycle.md",
+      "source_git_blob": "82777b3c380c289902992d0fa282af0d3a421153",
+      "source_sha256": "112a474f41849aaccbe8973dc2371d5acae6724c487ad22da481dc1152f966af",
+      "source_mode": "100644",
+      "destination_path": "books/calcite-code-book/ch20-jdbc-lifecycle.md",
+      "destination_git_blob": "c14c0d04c04781dbe28691d838c5756cf183cb97",
+      "destination_sha256": "e957b867ac6de7e3e8f81ea022f5e3b6a9a7283341b33019388bbd5a1ad4df14"
+    },
+    {
+      "source_path": "docs/books/risingwave-book/chapters/03-SQL解析器.md",
+      "source_git_blob": "67f17bba9994e0af5a1eb0dc05eae16e7e449c0a",
+      "source_sha256": "6b1959817754238aec67c595a1f48a23516bedebddff047c17f2af79c2d68769",
+      "source_mode": "100644",
+      "destination_path": "books/risingwave-book/chapters/03-SQL解析器.md",
+      "destination_git_blob": "8d4b2c12f63db930f8379e72c1f983c09ccf8b73",
+      "destination_sha256": "58200f92f3a7d5ed506f0b7086c15a9a70a77a51db04642540030722457d0697"
+    },
+    {
+      "source_path": "docs/books/risingwave-book/chapters/04-Binder-语义分析.md",
+      "source_git_blob": "b87f1218092c22c575237513c06894b38d712b9e",
+      "source_sha256": "0f05cd101ad8a27f2affb52ab83b7805cdb22614909699ca9a41a05775e8bda5",
+      "source_mode": "100644",
+      "destination_path": "books/risingwave-book/chapters/04-Binder-语义分析.md",
+      "destination_git_blob": "3cf7d6f8398fd49ef794034ccbc3076cc8dfae9e",
+      "destination_sha256": "0172a59eb2aeb0ab6a0efa51fbe5d83a342aaa73788ca865799cb88c3b344b19"
+    },
+    {
+      "source_path": "docs/books/risingwave-book/chapters/05-Planner-逻辑计划生成.md",
+      "source_git_blob": "6ab816653d6bec753456566be148897babd880cf",
+      "source_sha256": "0a1ff1af97b3c3d4da42cd37cb1c2cee460d220d088434724e242ccd163c0d12",
+      "source_mode": "100644",
+      "destination_path": "books/risingwave-book/chapters/05-Planner-逻辑计划生成.md",
+      "destination_git_blob": "21af7e51c2da07933f6f9e8318c72d71d02b56fc",
+      "destination_sha256": "6b440b824b674ed8777947710efd8aaa0a522c047b81d9676a86ce792ddc8bb8"
+    },
+    {
+      "source_path": "docs/books/risingwave-book/chapters/06-Optimizer-查询优化器.md",
+      "source_git_blob": "a171110b2e0b581b14b39a7f6d66fcb06164d514",
+      "source_sha256": "c39ce6e1aada6d1f89f54602b7c271b8d5b211e310108fcbd4aff037bc72455e",
+      "source_mode": "100644",
+      "destination_path": "books/risingwave-book/chapters/06-Optimizer-查询优化器.md",
+      "destination_git_blob": "02dec5369094000cb99483781ccc1f871de6b111",
+      "destination_sha256": "79afb6de1988ab05f7b971f893b880a8339dd385e226dc56750466a217446af7"
+    },
+    {
+      "source_path": "docs/books/risingwave-book/chapters/07-物理计划到Fragment-Graph.md",
+      "source_git_blob": "d6b708705ee60a0f1a6c12f5332041ceeebb9930",
+      "source_sha256": "a974b5d798cb7d0a93b0262886815defc9eb4133158ac628f7ffea7062ab6722",
+      "source_mode": "100644",
+      "destination_path": "books/risingwave-book/chapters/07-物理计划到Fragment-Graph.md",
+      "destination_git_blob": "fdbc03385b10f7f88b29cb530ec1874baeb45cf5",
+      "destination_sha256": "52b60ae984f9e8b3e50ef557fd821abbd0a70b5e24e99632127a232bab236a03"
+    },
+    {
+      "source_path": "docs/books/risingwave-book/chapters/08-核心抽象-Message-Barrier-Executor.md",
+      "source_git_blob": "745d48e536bcd19b2f811287e1f6612f8f6ca43c",
+      "source_sha256": "21b85939d319a21b9c2a3ab9d0a5acdfe2a8c0733cbd853fcafd7c46d34c3978",
+      "source_mode": "100644",
+      "destination_path": "books/risingwave-book/chapters/08-核心抽象-Message-Barrier-Executor.md",
+      "destination_git_blob": "70db557234d2538456bbe3a094737883d2abdb64",
+      "destination_sha256": "be227931d812db555e128b6c3bbf85b6dc7af097f3ac2bb5759928ad8dcd9fb2"
+    },
+    {
+      "source_path": "docs/books/risingwave-book/chapters/09-Actor模型-流计算的调度单元.md",
+      "source_git_blob": "13911c0b2ff0a48d4e095fb238d285348887064b",
+      "source_sha256": "09eaa96c432567fe0ace6fd96f7beda29dcff7045f5a2aa666ed61709fcc66fa",
+      "source_mode": "100644",
+      "destination_path": "books/risingwave-book/chapters/09-Actor模型-流计算的调度单元.md",
+      "destination_git_blob": "9885a189fa961388aee7f42b5f3f5b2748fcbf90",
+      "destination_sha256": "402be9ea7a4a0d72f9f68edeabf1779d2b745b752b03541febf79f02e1923fe3"
+    },
+    {
+      "source_path": "docs/books/risingwave-book/chapters/10-数据流动-Exchange与Dispatch.md",
+      "source_git_blob": "731b0c45203dcaf0f596a8c3ced29a79b1c06241",
+      "source_sha256": "4fe356489dc1cc5eb927ce19aa24490b87ae3d5a7d7d5fb3b76e8d952b1bc773",
+      "source_mode": "100644",
+      "destination_path": "books/risingwave-book/chapters/10-数据流动-Exchange与Dispatch.md",
+      "destination_git_blob": "f795093882617f2b3deba0d0997de0afd460c69e",
+      "destination_sha256": "9b5ec6cbf862d489dc7a2b00a898697edba6e544bed469a4072cdabf89774169"
+    },
+    {
+      "source_path": "docs/books/risingwave-book/chapters/11-算子实现精析上-无状态算子.md",
+      "source_git_blob": "f406643df6a03afb066a1c210b2f436eb579d386",
+      "source_sha256": "d096d6df6eda9152891dd01208a1df273503d402a8fb8ed2a0c033afef51e462",
+      "source_mode": "100644",
+      "destination_path": "books/risingwave-book/chapters/11-算子实现精析上-无状态算子.md",
+      "destination_git_blob": "1db842fdb49dfb8a62d031dfe5ea8de1ebd92ea9",
+      "destination_sha256": "317e2e7d54b4bca21af4dd0903075ae4c9b9dede7c4113d783fd2e40cd7f722e"
+    },
+    {
+      "source_path": "docs/books/risingwave-book/chapters/12-算子实现精析中-连接算子.md",
+      "source_git_blob": "fcb77fe146873e9ae58533ef3bf558b7d99ebba8",
+      "source_sha256": "6bf6959c478983294a7a5924bf4ea67acf0cc4884319f1d1d52926def8287981",
+      "source_mode": "100644",
+      "destination_path": "books/risingwave-book/chapters/12-算子实现精析中-连接算子.md",
+      "destination_git_blob": "352452bba9b3d8c943c91b456268a7542ca7af82",
+      "destination_sha256": "ae588fe2bc3763e203d153e2a5d8c86950f754bb2b9d396c34fb3ac12fbe605c"
+    },
+    {
+      "source_path": "docs/books/risingwave-book/chapters/13-算子实现精析下-聚合与TopN.md",
+      "source_git_blob": "8fc58404cc1cddf98a16cfc8c2f1d7c04ef5c1dd",
+      "source_sha256": "07f1430c50b3d0fd9882f6d527f62c3eb50451f266943bea6b552c4c8c9ec811",
+      "source_mode": "100644",
+      "destination_path": "books/risingwave-book/chapters/13-算子实现精析下-聚合与TopN.md",
+      "destination_git_blob": "8cd44bd6c10d71f89f285991abdaecb3c99062e0",
+      "destination_sha256": "b07ebefba211f79a47f29af084bb62de1ebf7b139545f3e97f6428000ba1e79f"
+    },
+    {
+      "source_path": "docs/books/risingwave-book/spec/BOOK_SPEC.md",
+      "source_git_blob": "017cb056e7323cc6ff4c9688c5c40a2271f99182",
+      "source_sha256": "c62a5ff6e5a12e582d3f33c0527184cfedbdf8fa63932698bce342b30a6f6e5a",
+      "source_mode": "100644",
+      "destination_path": "books/risingwave-book/spec/BOOK_SPEC.md",
+      "destination_git_blob": "7a7aef69e9250d5ef76498978b7f8e09b742a94b",
+      "destination_sha256": "7647bd25ea8f3a46cf454de4d9e903eed7fb9a453324c37bd237a46e67cdd303"
+    },
+    {
+      "source_path": "docs/books/claude-code-internals/README.md",
+      "source_git_blob": "d5c87842031db456759e3645c4e5d7f332259b38",
+      "source_sha256": "3ad4a632349d45a8e1008ca238468c7d5e9ebf151998b19d5d21df526f159bc0",
+      "source_mode": "100644",
+      "destination_path": "books/claude-code-internals/README.md",
+      "destination_git_blob": "a4a0677a4e923578fa840672858c906744e6a2d9",
+      "destination_sha256": "378049b1a735befbea9102a35911395fdc95dde813bb34b0e26a59d6acadfa89"
+    },
+    {
+      "source_path": "docs/books/claude-code-internals/ch01-entry.md",
+      "source_git_blob": "31984b1a82f18fa7c45fd99723429c1f46ec37f0",
+      "source_sha256": "f05c1a79ccc013a5f860c006b54189a5fc36056d39c288aafd3da971c29d79eb",
+      "source_mode": "100644",
+      "destination_path": "books/claude-code-internals/ch01-entry.md",
+      "destination_git_blob": "9d5a5c0558c0fdb754aba146cfdf308173fbedd1",
+      "destination_sha256": "601334ddaa869c3b7deafe4c64c6241e356981041b84aef346068da50a42a49e"
+    },
+    {
+      "source_path": "docs/books/claude-code-internals/ch02-system-prompt.md",
+      "source_git_blob": "343170d2389f1c3832ff6633124bf5f08499c3e4",
+      "source_sha256": "d4ca554b052fc7e6d1a255e94ee9ff00ab243a1c5dc6ee623a8bbc95b9b4dd1a",
+      "source_mode": "100644",
+      "destination_path": "books/claude-code-internals/ch02-system-prompt.md",
+      "destination_git_blob": "ea708a20260a412bf7c42321710aee67fb61d93e",
+      "destination_sha256": "390276ad1164ff4ff779fd4de3dd1154cfcdea4f90688bb458238c95c1f22f90"
+    },
+    {
+      "source_path": "docs/books/claude-code-internals/ch03-model-call.md",
+      "source_git_blob": "4a7e0db5c074660bafffa98977cae2070aa94a15",
+      "source_sha256": "5be3f79c20a8e401c201b77e45af075fded8b6baf3a79619e678a4dc19b52629",
+      "source_mode": "100644",
+      "destination_path": "books/claude-code-internals/ch03-model-call.md",
+      "destination_git_blob": "c1792788fa6742aca8632cbb8eccac27688cc87c",
+      "destination_sha256": "d9b67e8d063549eb9a4abef814e5b0d92c5eca7baf57091888dbe6fae29a76d0"
+    },
+    {
+      "source_path": "docs/books/claude-code-internals/ch04-agent-loop.md",
+      "source_git_blob": "7c20b066692710d087550dd64e0908c50dbdcc3c",
+      "source_sha256": "3e9a074ad2e9123f5509b891919415dee2c5bd850a8ca8404b8168b9cbe19914",
+      "source_mode": "100644",
+      "destination_path": "books/claude-code-internals/ch04-agent-loop.md",
+      "destination_git_blob": "6cb7f86a61ce429045fd108a57d00d359f259d76",
+      "destination_sha256": "174631dceec2a252b736c4cd6aca2bd660b14bc02430563fabffab714228eef6"
+    },
+    {
+      "source_path": "docs/books/claude-code-internals/ch05-tool-system.md",
+      "source_git_blob": "8fa659dfcbd4223510cda7556eb6f7056acb3fa7",
+      "source_sha256": "d9afa0e407998498323077394a3116e6f4b8387c26f45d9193941f25fddebdd5",
+      "source_mode": "100644",
+      "destination_path": "books/claude-code-internals/ch05-tool-system.md",
+      "destination_git_blob": "68d5704b6c4234229abf2e85132a7e824e96702e",
+      "destination_sha256": "fdad9ac470be17c2d8c2723d0cfd303cfddc0a13a41f87f72eb2eb85651c10d5"
+    },
+    {
+      "source_path": "docs/books/claude-code-internals/ch06-tool-pipeline.md",
+      "source_git_blob": "3459f3dacc047a35a6a74051b6d35972d3d8137e",
+      "source_sha256": "ba80c89188417eea597e5f1643a4bc6a78033ef937f9c94927d29fb0ee859208",
+      "source_mode": "100644",
+      "destination_path": "books/claude-code-internals/ch06-tool-pipeline.md",
+      "destination_git_blob": "9efa75cbb755a8b714eb4b6805d6e30dbb82d4f8",
+      "destination_sha256": "db35dc4b267b223f737b59d474dd0c77bf02d7b675b1decf4c871e5097b65168"
+    },
+    {
+      "source_path": "docs/books/claude-code-internals/ch07-permissions.md",
+      "source_git_blob": "fed4a5b6ea6714ae74f11e95014b1be6f1b5ed8f",
+      "source_sha256": "26c7d80b4b4347b084baeba1524fb028f32da030850865d32ef5a4d5b5613295",
+      "source_mode": "100644",
+      "destination_path": "books/claude-code-internals/ch07-permissions.md",
+      "destination_git_blob": "27ac2451823f97f2f9eec77a2b97c432981c71de",
+      "destination_sha256": "1da0dc0ed3631727dfe2377ce2f88dab5827e002ccc2055fc3aaaee343822fec"
+    },
+    {
+      "source_path": "docs/books/claude-code-internals/ch08-finite-context.md",
+      "source_git_blob": "d3f4ddb96aa967978be4fc9ad128cf3d656df21f",
+      "source_sha256": "78a5a3a4be0b8095d0e512455740f87390979cb01fdacad27686d989ccafd4da",
+      "source_mode": "100644",
+      "destination_path": "books/claude-code-internals/ch08-finite-context.md",
+      "destination_git_blob": "5f4c034c6e5afe7a032cb383461e4c87b3d8ecb7",
+      "destination_sha256": "54f1d1a1c4db32330d249c2e9615a1b83e645775b3391d7ec16abb6da9c8eb14"
+    },
+    {
+      "source_path": "docs/books/claude-code-internals/ch09-compression.md",
+      "source_git_blob": "d83f955ff36f235bd41eaa7cc5eb5d9b4025626a",
+      "source_sha256": "b7db96f3e697c7b79696302fd0169153f534f4a73ccef92fb253bb47bbd7e1e4",
+      "source_mode": "100644",
+      "destination_path": "books/claude-code-internals/ch09-compression.md",
+      "destination_git_blob": "2be43f49d5fc0d02f769735ec971753bff221f33",
+      "destination_sha256": "6b687871102604216e1e45a374012fed89206cdc43278e4585a3c3d60bde3798"
+    },
+    {
+      "source_path": "docs/books/claude-code-internals/ch10-compact-boundary.md",
+      "source_git_blob": "6f9c1bdb672dbc3f43feaf1409ff6fca4f88d0b6",
+      "source_sha256": "a258c0c4b547e4775dcbaee523f61d094edafa34f9c51e8c481967188a3d9764",
+      "source_mode": "100644",
+      "destination_path": "books/claude-code-internals/ch10-compact-boundary.md",
+      "destination_git_blob": "5f8194912bd69e4b48fd680ffeb0dcd9727ee993",
+      "destination_sha256": "700a10cee18c73d79995e850cd35eb51ef012a74b7f4de68856498a91c665a0d"
+    },
+    {
+      "source_path": "docs/books/claude-code-internals/ch11-token-budget.md",
+      "source_git_blob": "ffdbc338b48ba8e639316e77f0007c2d7869e8a7",
+      "source_sha256": "9e2bae8fad504d14aec4ae3236c757c8a41c84f24588c1f189221f90e0dc4b03",
+      "source_mode": "100644",
+      "destination_path": "books/claude-code-internals/ch11-token-budget.md",
+      "destination_git_blob": "41ccdf2b22ddc937e4e8f21500bfd534cc6853cb",
+      "destination_sha256": "de749efec7fbbcebdeb84d422544f84f104cc3ca86e468ed848d383ffa620690"
+    },
+    {
+      "source_path": "docs/books/claude-code-internals/ch12-agent-tool.md",
+      "source_git_blob": "110b8314048954f0c40fd41d421ef443433f3e22",
+      "source_sha256": "c62753208e7ea7bab4a324b46ec74a335e1423f586a4dad87add7d2c36de8f63",
+      "source_mode": "100644",
+      "destination_path": "books/claude-code-internals/ch12-agent-tool.md",
+      "destination_git_blob": "fa8f919405e48a5ae836e64aec54b045ad9ff5d7",
+      "destination_sha256": "dd194a8e0e1d12b63f3ab4c05da1bf97fc59ae19cfd668c859bc2084ddcb8254"
+    },
+    {
+      "source_path": "docs/books/claude-code-internals/ch13-subagent.md",
+      "source_git_blob": "918f83cb61f36c33ca48bdea21589360bc324ff9",
+      "source_sha256": "15a5594fac3a5a9c34db40bc55a890dd36c41a316485753bdc5ebcdf92b1bb21",
+      "source_mode": "100644",
+      "destination_path": "books/claude-code-internals/ch13-subagent.md",
+      "destination_git_blob": "d0e54a7e1b4a26f5c450e1abe92f2ce512bed377",
+      "destination_sha256": "93158cba5677f606836c645e6020fca01e19977c448948867c173f0e7b670b6d"
+    },
+    {
+      "source_path": "docs/books/claude-code-internals/ch14-fork.md",
+      "source_git_blob": "4cc8f410fa33860d7765e5f9da7997f18eae9558",
+      "source_sha256": "1f74577033bd1aa2b456ebf4e7acb9519ac389e8f7470b807310fbf53742e37b",
+      "source_mode": "100644",
+      "destination_path": "books/claude-code-internals/ch14-fork.md",
+      "destination_git_blob": "3a837b525a74264b8a2eb92e23feab455788cda7",
+      "destination_sha256": "345f5689bff392125efb279943c619eaa4f2755120bb8a95ad49c5bc0eb30701"
+    },
+    {
+      "source_path": "docs/books/claude-code-internals/ch15-swarm.md",
+      "source_git_blob": "a9d0b9be48e409b48d4cfcf9c7d022ab39dd4eca",
+      "source_sha256": "d05fc966ac05f1c87a9e7fbf4e97ba814ede702aa075257ec7f824b09b6dccc0",
+      "source_mode": "100644",
+      "destination_path": "books/claude-code-internals/ch15-swarm.md",
+      "destination_git_blob": "07ee0850fe549796242c991c1e553fd626dc3df7",
+      "destination_sha256": "83a225c6354de1c0793cbba10667ef3617844cfbaa6692be02c492a169c68b72"
+    },
+    {
+      "source_path": "docs/books/claude-code-internals/ch16-prompt-as-os.md",
+      "source_git_blob": "a37fbb52325f0248d83632834601d85d37ef916c",
+      "source_sha256": "0ebe9f748b9ccaffc1a1fe98f712ca5525aa31faca1d88dd9a1895ce1693a3fe",
+      "source_mode": "100644",
+      "destination_path": "books/claude-code-internals/ch16-prompt-as-os.md",
+      "destination_git_blob": "2685d88e5ce1dbfdce789a367bd91249b6b8800a",
+      "destination_sha256": "ae0d103b7cb28fd16d513fe92d953af541b37a4aec969e1c9f8dd15dbb1ed1ac"
+    },
+    {
+      "source_path": "docs/books/claude-code-internals/ch17-lossy-fidelity.md",
+      "source_git_blob": "11cef5fd560eb5eae76797e8e50aaa99796d9591",
+      "source_sha256": "e7ab8d6152255631a5466816d0c63a0ad7a31ec59e07dc8ffa95081056d11fa4",
+      "source_mode": "100644",
+      "destination_path": "books/claude-code-internals/ch17-lossy-fidelity.md",
+      "destination_git_blob": "385e16a6c7caf41f709f6b28e6b574cf27c698e9",
+      "destination_sha256": "939e91117915764291ab9bb9a594872882f4f3db2bf2fa22252fb4232b87e3da"
+    },
+    {
+      "source_path": "docs/books/claude-code-internals/ch18-streaming.md",
+      "source_git_blob": "c935dc4d81b7cea621a629b1420df95daebb4896",
+      "source_sha256": "18668ac7dc24611cd2bf309d9222d24a6f0b4c283b3eb3501a3a1c6fa752ec8e",
+      "source_mode": "100644",
+      "destination_path": "books/claude-code-internals/ch18-streaming.md",
+      "destination_git_blob": "8b23657c8857fec29f5539f534b0a6c5bdedf228",
+      "destination_sha256": "88a3f4c49728b5fb9191940706ae916b81132072eff114b54dc48a5407c892fc"
+    },
+    {
+      "source_path": "docs/books/claude-code-internals/ch19-boundaries.md",
+      "source_git_blob": "f787173e9c340ea133878fff773f793fdc2a5254",
+      "source_sha256": "5825f1b4ede8b777abe3a702c39a86844a33d84bc95c29d6a444e24b38bf0759",
+      "source_mode": "100644",
+      "destination_path": "books/claude-code-internals/ch19-boundaries.md",
+      "destination_git_blob": "85f93cfec8b9ac07fc55d5e96e4e2f017cf6a275",
+      "destination_sha256": "45bfff7a43c2bd26e70db4a220efa3bd17c25851e80fcae65603553a2bf6bdcb"
+    },
+    {
+      "source_path": "docs/books/claude-code-internals/ch20-first-principles.md",
+      "source_git_blob": "b6966de40bb14d5b788823472a0920c7d70ef0cb",
+      "source_sha256": "fd0a6b56eae4e7a5d79a6d21db9ebcad5f62ebdddf674860c4af30fe610a33e1",
+      "source_mode": "100644",
+      "destination_path": "books/claude-code-internals/ch20-first-principles.md",
+      "destination_git_blob": "599f3b98149028fa573808502888e2af0bc7037c",
+      "destination_sha256": "c2bff60e022dc32f33be8503460beefd75a99b6c9015f6c7120f405b89ff9484"
+    },
+    {
+      "source_path": "docs/books/feiman-book/vol1-ch01-atoms-in-motion.md",
+      "source_git_blob": "c3fe7407128357db9f7f2dad881033c966e9bc77",
+      "source_sha256": "10ce47f5e36c63efe38c3672dd4ef50c661c395aaa93c2c93343562b9bb67649",
+      "source_mode": "100644",
+      "destination_path": "books/feiman-book/vol1-ch01-atoms-in-motion.md",
+      "destination_git_blob": "a93e2cb47d575c59255ad80521f4b72354fab392",
+      "destination_sha256": "a0992b0ddf9fd26937b42aeae9095d1f53868d3a4a0a647b88f0a0199e6a5eed"
+    },
+    {
+      "source_path": "docs/books/feiman-book/vol1-ch02-basic-physics.md",
+      "source_git_blob": "d194fc7363c0360cf2256e11d931917397ea9dc7",
+      "source_sha256": "d753b00c9a52cff7c429e89cdb0e3e6eebeffff4dcf9c4816289d1363478a4b9",
+      "source_mode": "100644",
+      "destination_path": "books/feiman-book/vol1-ch02-basic-physics.md",
+      "destination_git_blob": "fc3b348792b8588a19ad40a0e7dac63667dde79b",
+      "destination_sha256": "08c631549bee451fada75aad1729f3da1006afe4c689f55dc76c89471501d8f5"
+    },
+    {
+      "source_path": "docs/books/feiman-book/vol1-ch03-physics-and-other-sciences.md",
+      "source_git_blob": "95170c676ef75b2785297f791b6b36f334360622",
+      "source_sha256": "b22f57069e978f530cb2019107ae8ef8244da3a1f7205ee808a106e42f8dcd4b",
+      "source_mode": "100644",
+      "destination_path": "books/feiman-book/vol1-ch03-physics-and-other-sciences.md",
+      "destination_git_blob": "57d7daba661684162879a602b47e83b8f7d80f79",
+      "destination_sha256": "63a0738384a3d6afdd10be6490de8ca6bd08be9cf87305621d3eec2ac019bd27"
+    },
+    {
+      "source_path": "docs/books/feiman-book/vol1-ch04-conservation-of-energy.md",
+      "source_git_blob": "b4e6e081de69b54d54cc0933bd5e8ebb78b507e3",
+      "source_sha256": "b7693bc07532c7f4d594e8968926ad5ac615d90142443549eedfe66f6fd8dd27",
+      "source_mode": "100644",
+      "destination_path": "books/feiman-book/vol1-ch04-conservation-of-energy.md",
+      "destination_git_blob": "cc81668adf44e8d0ae11384d3f1c220ce4f6fb2e",
+      "destination_sha256": "28faae6f3567ab186be7a959e9a12dd3dbac2379ebb60ae6f942a736097380cb"
+    },
+    {
+      "source_path": "docs/books/feiman-book/vol1-ch05-time-and-distance.md",
+      "source_git_blob": "e6ba057e6027c69b345ea0757147dc95bb2a67a3",
+      "source_sha256": "6f62ae091ce26b78f935ea9c41d7ad68ff0b1f06c383cff34c1eecb109d0dffe",
+      "source_mode": "100644",
+      "destination_path": "books/feiman-book/vol1-ch05-time-and-distance.md",
+      "destination_git_blob": "6465713f8bb883587914240405590b2d156441cb",
+      "destination_sha256": "ce41fb2f072bc9090016b53e0f8dc5ad03802164db64f6a422d14cea9764b075"
+    },
+    {
+      "source_path": "docs/books/feiman-book/vol1-ch06-probability.md",
+      "source_git_blob": "4e0ce563a555a9b1fffe33817b74d0af5086027e",
+      "source_sha256": "59c92940c4fb870f44b3197ce4039e5aae818be212ae69354d20e728ba22bb0d",
+      "source_mode": "100644",
+      "destination_path": "books/feiman-book/vol1-ch06-probability.md",
+      "destination_git_blob": "b8f3cb6892d7182cf1f04e0f8b72993402e747a8",
+      "destination_sha256": "62f3d8de0f4fc9ec02ef0934569b12497c07d670670d62cd26dea86c8f3ca771"
+    },
+    {
+      "source_path": "docs/books/feiman-book/vol1-ch07-gravitation.md",
+      "source_git_blob": "5c0cb59b214272b16124ca248dd7bd4fd8ca924a",
+      "source_sha256": "7facd6c538a47665fe99a45d4d01c1d80d3fbee1c00aee60317719bf80435796",
+      "source_mode": "100644",
+      "destination_path": "books/feiman-book/vol1-ch07-gravitation.md",
+      "destination_git_blob": "a87f38622425fe519545f33a25779ab1d53239a7",
+      "destination_sha256": "2fa56236a163e17d7498ff829346395b19ef5d6219162f9c7d64b31ef5c9ac69"
+    },
+    {
+      "source_path": "docs/books/feiman-book/vol1-ch08-09-motion-newtons-laws.md",
+      "source_git_blob": "7212821ce779b7182c1c7aca83179c4a35365b20",
+      "source_sha256": "b49e9248dd483cacfb7c402c1b91eb49e506aa114f5426fc406ce1dc1790b87c",
+      "source_mode": "100644",
+      "destination_path": "books/feiman-book/vol1-ch08-09-motion-newtons-laws.md",
+      "destination_git_blob": "856300d5ab59bb653e872d3ed8c58ef1b9f87cef",
+      "destination_sha256": "4edd4c69c17d352049018f5182b8a8ef3a522d06796538aefe5241bb32555955"
+    },
+    {
+      "source_path": "docs/books/feiman-book/vol1-ch10-11-momentum-vectors.md",
+      "source_git_blob": "d9fde25a4bed2e27df5d22a9cba954003d15570f",
+      "source_sha256": "cd2a6f9eeb766e2c1e35e80fbc9f65a5fbedc320ffe96f1a4f450266d3963874",
+      "source_mode": "100644",
+      "destination_path": "books/feiman-book/vol1-ch10-11-momentum-vectors.md",
+      "destination_git_blob": "6e3d2696605530deaa51331cc6cb846888152be4",
+      "destination_sha256": "bf06102520d7b72d88da50aff8a20c6fe567b9a92b86b09a0d6d43e2b4fccf6c"
+    },
+    {
+      "source_path": "docs/books/feiman-book/vol1-ch12-14-forces-potential-energy.md",
+      "source_git_blob": "f3e547edf0ea727554b28da55cac12fa311ee6af",
+      "source_sha256": "c4a7b918bbe9acabb481b4c257091f995caf9cb9fea19c3099bfb2208b603c2e",
+      "source_mode": "100644",
+      "destination_path": "books/feiman-book/vol1-ch12-14-forces-potential-energy.md",
+      "destination_git_blob": "e724ef43b0b9ae6c05bff40ee98f40d4378ffd0c",
+      "destination_sha256": "7aa5fcea4f25763cf67aa5fd7bf5b9a25d834d4dfc63f8595698b773b2d40292"
+    },
+    {
+      "source_path": "docs/books/feiman-book/vol1-ch15-17-special-relativity-spacetime.md",
+      "source_git_blob": "adaafc0448c98312b6b5643476b5fbce20801a1b",
+      "source_sha256": "d83bd81de37bc91b4aec39001c89fafc80a420d9de07407d81c84533ffe93592",
+      "source_mode": "100644",
+      "destination_path": "books/feiman-book/vol1-ch15-17-special-relativity-spacetime.md",
+      "destination_git_blob": "4f22197ddf4b45303c909869da3acb549967ed5d",
+      "destination_sha256": "641fce12523d49fc14954998469b561c70437824cc4abdf41bc04cabf625eeaa"
+    },
+    {
+      "source_path": "docs/books/feiman-book/vol1-ch18-25-rotation-oscillation-linear-systems.md",
+      "source_git_blob": "a924cd3550934b315281016339a78d41c7c10a69",
+      "source_sha256": "e73cd9c433efa1a47d82bbd0d2de223adc67c81d19e02f793559fca112605414",
+      "source_mode": "100644",
+      "destination_path": "books/feiman-book/vol1-ch18-25-rotation-oscillation-linear-systems.md",
+      "destination_git_blob": "e76267a5e669e46b87b6739f6afb970733100a5c",
+      "destination_sha256": "687f9e1098e34de001d49b324e2305cdce8387cc2a40701b77efd6a286c74233"
+    },
+    {
+      "source_path": "docs/books/feiman-book/vol1-ch26-36-optics.md",
+      "source_git_blob": "731c3b1f6d6e950f7733ea97dada95eceff841ce",
+      "source_sha256": "16238fbe6aeef511e001726ade534fca786f9769bcac91de36ca8cccaf00cbef",
+      "source_mode": "100644",
+      "destination_path": "books/feiman-book/vol1-ch26-36-optics.md",
+      "destination_git_blob": "0701e12a0a2c5087818dd751b5b901b3e6fe7ce3",
+      "destination_sha256": "eecbeb8a6bb495756f02f3661f0178d267f293986a0b4335d7a4225b71f49f48"
+    },
+    {
+      "source_path": "docs/books/feiman-book/vol1-ch37-46-quantum-thermodynamics.md",
+      "source_git_blob": "10c102ba4a531501fd3b63c0c7437926562660b7",
+      "source_sha256": "fb868c3f1dc45675b919ab80facd9e3e1833c3b26a1cbe99ef157ce9fef1bf06",
+      "source_mode": "100644",
+      "destination_path": "books/feiman-book/vol1-ch37-46-quantum-thermodynamics.md",
+      "destination_git_blob": "31cbf53e9bd17530f29ee524803665d55e8aa9eb",
+      "destination_sha256": "2e109673105b2e9fa747bbc64acf85a253bffb54db7cf411e2d846b9b024e5b7"
+    },
+    {
+      "source_path": "docs/books/feiman-book/vol1-ch47-52-waves-symmetry-finale.md",
+      "source_git_blob": "dc9ba4932638649594153144cfea2de9739cb8b0",
+      "source_sha256": "15b7f9bb6686e86d259c090e0bbad015ad4f8930d849bb429800dcdfa61397c2",
+      "source_mode": "100644",
+      "destination_path": "books/feiman-book/vol1-ch47-52-waves-symmetry-finale.md",
+      "destination_git_blob": "c239536d1d71f06e3555b3c86b483068529b0e3a",
+      "destination_sha256": "a7a63005abefa0d12b3743217b508108ecb4b06e6c1d11bb25631b530e03683f"
+    },
+    {
+      "source_path": "docs/books/feiman-book/vol2-ch01-06-electromagnetism-vectors.md",
+      "source_git_blob": "fcae7e1b8a7ed07eb293671310f90db92c639ba6",
+      "source_sha256": "40ed2b25798a4e90e9baf76f4c2f18a769c541ccc6ac922145d4495787bd49a6",
+      "source_mode": "100644",
+      "destination_path": "books/feiman-book/vol2-ch01-06-electromagnetism-vectors.md",
+      "destination_git_blob": "3eae1cb9c2958bc0b56ea646151d3e225c0c545d",
+      "destination_sha256": "609448089f8ee948173938b6d33a7bcbba4e63c510485064ddfaf110a08243a1"
+    },
+    {
+      "source_path": "docs/books/feiman-book/vol2-ch07-18-fields-maxwell.md",
+      "source_git_blob": "db57a75cfe54cfb713d8abd9b6c156eb58f51260",
+      "source_sha256": "85327dcfdbd9401196698063106b4bd2f8697db04e2b25a100393752814ac31b",
+      "source_mode": "100644",
+      "destination_path": "books/feiman-book/vol2-ch07-18-fields-maxwell.md",
+      "destination_git_blob": "c625c4863cdacb1c4c31b7081968784a2c3c2608",
+      "destination_sha256": "aaa086848aca1568d752b7b875ad3cd0cb3d080c7a5be07ef175ee698148f0c2"
+    },
+    {
+      "source_path": "docs/books/feiman-book/vol2-ch19-28-waves-circuits-relativity.md",
+      "source_git_blob": "b75f688499c906d3fe067b531bdb2c6251fe67fb",
+      "source_sha256": "8ac8ade80bfb9c7b39f47e0af5d59f66d4fba1e1693334f8b18e43b66f42a4e2",
+      "source_mode": "100644",
+      "destination_path": "books/feiman-book/vol2-ch19-28-waves-circuits-relativity.md",
+      "destination_git_blob": "5dbc4fac590c60672da4199a3940b7ea66213550",
+      "destination_sha256": "c06d484dda87f68624110281af2f71a41305812302074c886bea73ee664766a9"
+    },
+    {
+      "source_path": "docs/books/feiman-book/vol2-ch29-42-particles-tensors-fluids-curved-spacetime.md",
+      "source_git_blob": "770a315da514570ac8b30d9e67cf0b2119931b8e",
+      "source_sha256": "088db9f756fd002bc478161b433661ef914b4ecff4a3459a182af77a001bd391",
+      "source_mode": "100644",
+      "destination_path": "books/feiman-book/vol2-ch29-42-particles-tensors-fluids-curved-spacetime.md",
+      "destination_git_blob": "9a1b5d201fbf584cfdb39e3bb2779b38643b9339",
+      "destination_sha256": "ea483b51efc72f51d5606deed38e8d16f0f40bcbf9c03185abc370e2cd057517"
+    },
+    {
+      "source_path": "docs/books/feiman-book/vol3-ch01-10-quantum-mechanics-foundations.md",
+      "source_git_blob": "f1f63e58a50d6eda0a0899555a10597add22e976",
+      "source_sha256": "f18860a15933bf0b633c17abc635163b4396cb0e20fac50595c02df43406cfc8",
+      "source_mode": "100644",
+      "destination_path": "books/feiman-book/vol3-ch01-10-quantum-mechanics-foundations.md",
+      "destination_git_blob": "2d6827254d88658e2f348b67321cf86630962a6d",
+      "destination_sha256": "2e990364a8f3f7270537d634fdc87bdc5a6d7560b9669e649c1c07afdec9813c"
+    },
+    {
+      "source_path": "docs/books/feiman-book/vol3-ch11-21-semiconductors-superconductivity-finale.md",
+      "source_git_blob": "a911caae416fa7f9edacdce0bd7cd7a3aa04ef19",
+      "source_sha256": "58227ec5fec143ad9378a1217bd8a26e3172523f3d7c1214b6441efc10efc187",
+      "source_mode": "100644",
+      "destination_path": "books/feiman-book/vol3-ch11-21-semiconductors-superconductivity-finale.md",
+      "destination_git_blob": "b56f3e7a03c61a4b3c3433a9a192f96269231bfe",
+      "destination_sha256": "39c222c2d3defea53f4a27841fcfc744f8534083d8c193b3cdf8e0f31a985e0a"
+    }
+  ]
+}
