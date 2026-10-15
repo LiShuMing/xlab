@@ -66,6 +66,8 @@ python/
 | `python/projects/py-optimizer2/` | [vela/research/optimizer-scanner](https://github.com/LiShuMing/vela/tree/main/research/optimizer-scanner) |
 | `python/projects/py-pia/` | [carina/modules/product-intelligence](https://github.com/LiShuMing/carina/tree/main/modules/product-intelligence) |
 | `python/projects/py-report/` | [carina/modules/research-report](https://github.com/LiShuMing/carina/tree/main/modules/research-report) |
+| `python/projects/py-email/` | [lyra/modules/email-digest](https://github.com/LiShuMing/lyra/tree/main/modules/email-digest) |
+| `python/projects/py-learn/` | [lyra/modules/daily-learning](https://github.com/LiShuMing/lyra/tree/main/modules/daily-learning) |
 
 Do not recreate these retired roots. Read the destination module guide before running commands.
-The shared `projects/cron.sh` remains a legacy, machine-specific entry point pending py-email migration; its old PIA path must not be treated as a supported current setup.
+The shared `projects/cron.sh` is retained unchanged as an unsupported historical, machine-specific script. It still references retired PIA and email roots; do not run or install it as a current scheduler. Scheduler migration and live state remain separate work in Carina and the target modules.
