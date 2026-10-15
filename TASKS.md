@@ -9,7 +9,7 @@ Stable project navigation belongs in `README.md`; coding-agent rules belong in
 
 ## Migrated Work: Destination Routing
 
-The thirteen source roots below have been accepted into their destination repositories.
+The earlier source roots below have been accepted into their destination repositories.
 Their old task lists are retained only as historical planning context, not active
 xlab backlog or verified statements of current destination gaps. Reconcile any
 remaining work with the destination’s current tests, documentation, and backlog;
@@ -47,6 +47,20 @@ DayLog source retirement and recovery: [verification record](docs/migrations/202
 - [ ] Audit native extensions, LLVM/ANTLR, Tauri, and service-dependent applications separately.
 - [ ] Validate Java, Go, and Haskell with their Windows toolchains.
 - [ ] Keep Linux kernel/POSIX API experiments runnable in WSL.
+
+## Current cleanup decisions (2026-10-15)
+
+- Keep one consolidated xlab cleanup proposal. Publication and merge need authorization.
+- Preserve unmigrated projects and held books; classify them using the [current inventory](docs/meta/retained-projects.md).
+- Review every orphan dependency declaration against its actual consumers before changing it; preserve the two pinned gitlinks.
+- Legacy cron is removed without a stub; no installed schedule was inspected or changed. Replacing installed schedules and migrating live state are separate actions.
+- Calcite/RisingWave import review is pending. Their source retirement can join this same proposal only after accepted target-main mappings exist. Claude Code/Feynman remain held for provenance/quotation review.
+- Review the obsolete draft [PR #20](https://github.com/LiShuMing/xlab/pull/20) for reconciliation or closure; it is not automatically merged or closed here.
+- Remaining experiments keep their current ownership. A matching name in another repository is not migration evidence.
+
+The long-form backlog below is historical planning, not a current audit of missing
+files or feature gaps. Before implementation, verify the module's current state.
+Existing-file checklist entries are marked for review rather than creation.
 
 ## Overview
 
@@ -247,16 +261,16 @@ executing any task here, confirm which branch you are on; tasks written against
 **Tasks**:
 
 1. **创建项目文件**
-   - [ ] 创建 `cc/cclab/AGENTS.md`
+   - [ ] 复核 `cc/cclab/AGENTS.md`（文件已存在；内容与质量需按当前实现核对）
      - 项目概述：C++实验室核心代码
      - 构建命令：`./build.sh [DEBUG|RELEASE|ASAN|LSAN]`
      - 测试命令：`cd build_ASAN && ctest`
      - 代码风格：.clang-format, .clang-tidy
-   - [ ] 创建 `cc/cclab/RULES.md`
+   - [ ] 复核 `cc/cclab/RULES.md`（文件已存在；内容与质量需按当前实现核对）
      - C++20/23标准
      - Google Test测试框架
      - Sanitizer使用（ASAN, LSAN, UBSAN）
-   - [ ] 创建 `cc/cclab/CHANGELOG.md`
+   - [ ] 复核 `cc/cclab/CHANGELOG.md`（文件已存在；内容与质量需按当前实现核对）
    - [ ] 创建 `cc/cclab/docs/`
      - architecture/ - 架构图
      - api/ - API参考
@@ -301,15 +315,15 @@ executing any task here, confirm which branch you are on; tasks written against
 **Tasks**:
 
 1. **创建项目文件**
-   - [ ] 创建 `cc/algo/AGENTS.md`
+   - [ ] 复核 `cc/algo/AGENTS.md`（文件已存在；内容与质量需按当前实现核对）
      - LeetCode解决方案集合
      - 构建系统：Makefile
      - 运行命令：`make leetcode_<number>`
-   - [ ] 创建 `cc/algo/RULES.md`
+   - [ ] 复核 `cc/algo/RULES.md`（文件已存在；内容与质量需按当前实现核对）
      - 每个算法文件头部注释：问题描述、复杂度分析
-   - [ ] 创建 `cc/algo/README.md`
+   - [ ] 复核 `cc/algo/README.md`（文件已存在；内容与质量需按当前实现核对）
      - 按类别组织的算法列表
-   - [ ] 创建 `cc/algo/CHANGELOG.md`
+   - [ ] 复核 `cc/algo/CHANGELOG.md`（文件已存在；内容与质量需按当前实现核对）
 
 2. **丰富单元测试**
    - [ ] 为LeetCode解决方案添加测试框架
@@ -348,7 +362,7 @@ executing any task here, confirm which branch you are on; tasks written against
 1. **创建项目文件**
    - [ ] 创建 `cc/srlab/AGENTS.md`
    - [ ] 创建 `cc/srlab/RULES.md`
-   - [ ] 创建 `cc/srlab/README.md`
+   - [ ] 复核 `cc/srlab/README.md`（文件已存在；内容与质量需按当前实现核对）
    - [ ] 创建 `cc/srlab/CHANGELOG.md`
 
 2. **丰富单元测试**
@@ -384,7 +398,7 @@ executing any task here, confirm which branch you are on; tasks written against
 1. **创建项目文件**
    - [ ] 创建 `cc/projects/cpython/AGENTS.md`
    - [ ] 创建 `cc/projects/cpython/RULES.md`
-   - [ ] 创建 `cc/projects/cpython/README.md`
+   - [ ] 复核 `cc/projects/cpython/README.md`（文件已存在；内容与质量需按当前实现核对）
    - [ ] 创建 `cc/projects/cpython/CHANGELOG.md`
 
 2. **丰富测试**
@@ -402,7 +416,7 @@ executing any task here, confirm which branch you are on; tasks written against
 1. **创建项目文件**
    - [ ] 创建 `cc/projects/interpreter/AGENTS.md`
    - [ ] 创建 `cc/projects/interpreter/RULES.md`
-   - [ ] 创建 `cc/projects/interpreter/README.md`
+   - [ ] 复核 `cc/projects/interpreter/README.md`（文件已存在；内容与质量需按当前实现核对）
    - [ ] 创建 `cc/projects/interpreter/CHANGELOG.md`
 
 2. **丰富单元测试**
@@ -421,7 +435,7 @@ executing any task here, confirm which branch you are on; tasks written against
 1. **创建项目文件**
    - [ ] 创建 `cc/projects/io-uring/AGENTS.md`
    - [ ] 创建 `cc/projects/io-uring/RULES.md`
-   - [ ] 创建 `cc/projects/io-uring/README.md`
+   - [ ] 复核 `cc/projects/io-uring/README.md`（文件已存在；内容与质量需按当前实现核对）
    - [ ] 创建 `cc/projects/io-uring/CHANGELOG.md`
 
 2. **丰富单元测试**
@@ -479,10 +493,10 @@ executing any task here, confirm which branch you are on; tasks written against
 **Tasks**:
 
 1. **创建项目文件**
-   - [ ] 创建 `cc/projects/mini-seastar/AGENTS.md`
-   - [ ] 创建 `cc/projects/mini-seastar/RULES.md`
-   - [ ] 创建 `cc/projects/mini-seastar/README.md`
-   - [ ] 创建 `cc/projects/mini-seastar/CHANGELOG.md`
+   - [ ] 复核 `cc/projects/mini-seastar/AGENTS.md`（文件已存在；内容与质量需按当前实现核对）
+   - [ ] 复核 `cc/projects/mini-seastar/RULES.md`（文件已存在；内容与质量需按当前实现核对）
+   - [ ] 复核 `cc/projects/mini-seastar/README.md`（文件已存在；内容与质量需按当前实现核对）
+   - [ ] 复核 `cc/projects/mini-seastar/CHANGELOG.md`（文件已存在；内容与质量需按当前实现核对）
 
 2. **丰富单元测试**
    - [ ] 为future/promise添加测试
@@ -522,10 +536,10 @@ executing any task here, confirm which branch you are on; tasks written against
 **Tasks**:
 
 1. **创建项目文件**
-   - [ ] 创建 `cc/projects/thread-pool/AGENTS.md`
-   - [ ] 创建 `cc/projects/thread-pool/RULES.md`
-   - [ ] 创建 `cc/projects/thread-pool/README.md`
-   - [ ] 创建 `cc/projects/thread-pool/CHANGELOG.md`
+   - [ ] 复核 `cc/projects/thread-pool/AGENTS.md`（文件已存在；内容与质量需按当前实现核对）
+   - [ ] 复核 `cc/projects/thread-pool/RULES.md`（文件已存在；内容与质量需按当前实现核对）
+   - [ ] 复核 `cc/projects/thread-pool/README.md`（文件已存在；内容与质量需按当前实现核对）
+   - [ ] 复核 `cc/projects/thread-pool/CHANGELOG.md`（文件已存在；内容与质量需按当前实现核对）
 
 2. **丰富单元测试**
    - [ ] 为线程池添加并发测试
@@ -540,10 +554,10 @@ executing any task here, confirm which branch you are on; tasks written against
 **Tasks**:
 
 1. **创建项目文件**
-   - [ ] 创建 `cc/projects/web-server/AGENTS.md`
-   - [ ] 创建 `cc/projects/web-server/RULES.md`
-   - [ ] 创建 `cc/projects/web-server/README.md`
-   - [ ] 创建 `cc/projects/web-server/CHANGELOG.md`
+   - [ ] 复核 `cc/projects/web-server/AGENTS.md`（文件已存在；内容与质量需按当前实现核对）
+   - [ ] 复核 `cc/projects/web-server/RULES.md`（文件已存在；内容与质量需按当前实现核对）
+   - [ ] 复核 `cc/projects/web-server/README.md`（文件已存在；内容与质量需按当前实现核对）
+   - [ ] 复核 `cc/projects/web-server/CHANGELOG.md`（文件已存在；内容与质量需按当前实现核对）
 
 2. **丰富单元测试**
    - [ ] 为HTTP解析添加测试
@@ -561,15 +575,15 @@ executing any task here, confirm which branch you are on; tasks written against
 **Tasks**:
 
 1. **创建项目文件**
-   - [ ] 创建 `rust/rlab/AGENTS.md`
+   - [ ] 复核 `rust/rlab/AGENTS.md`（文件已存在；内容与质量需按当前实现核对）
      - Cargo workspace结构
      - 子crate: bloom_filter, leetcode, lockfree-queue, rlab-tools, thread-pool
-   - [ ] 创建 `rust/rlab/RULES.md`
+   - [ ] 复核 `rust/rlab/RULES.md`（文件已存在；内容与质量需按当前实现核对）
      - Rust 2021 edition
      - cargo fmt, cargo clippy
      - Error handling with Result
-   - [ ] 创建 `rust/rlab/README.md`
-   - [ ] 创建 `rust/rlab/CHANGELOG.md`
+   - [ ] 复核 `rust/rlab/README.md`（文件已存在；内容与质量需按当前实现核对）
+   - [ ] 复核 `rust/rlab/CHANGELOG.md`（文件已存在；内容与质量需按当前实现核对）
 
 2. **丰富单元测试**
    - [ ] 为bloom_filter添加测试
@@ -597,10 +611,10 @@ executing any task here, confirm which branch you are on; tasks written against
 **Tasks**:
 
 1. **创建项目文件**
-   - [ ] 创建 `rust/rdb/AGENTS.md`
-   - [ ] 创建 `rust/rdb/RULES.md`
-   - [ ] 创建 `rust/rdb/README.md`
-   - [ ] 创建 `rust/rdb/CHANGELOG.md`
+   - [ ] 复核 `rust/rdb/AGENTS.md`（文件已存在；内容与质量需按当前实现核对）
+   - [ ] 复核 `rust/rdb/RULES.md`（文件已存在；内容与质量需按当前实现核对）
+   - [ ] 复核 `rust/rdb/README.md`（文件已存在；内容与质量需按当前实现核对）
+   - [ ] 复核 `rust/rdb/CHANGELOG.md`（文件已存在；内容与质量需按当前实现核对）
    - [ ] 创建 `rust/rdb/docs/architecture/`
 
 2. **丰富单元测试**
@@ -621,7 +635,7 @@ executing any task here, confirm which branch you are on; tasks written against
 1. **创建项目文件**
    - [ ] 创建 `rust/projects/umbra/AGENTS.md`
    - [ ] 创建 `rust/projects/umbra/RULES.md`
-   - [ ] 创建 `rust/projects/umbra/README.md`
+   - [ ] 复核 `rust/projects/umbra/README.md`（文件已存在；内容与质量需按当前实现核对）
    - [ ] 创建 `rust/projects/umbra/CHANGELOG.md`
 
 2. **丰富单元测试**
@@ -638,16 +652,16 @@ executing any task here, confirm which branch you are on; tasks written against
 **Tasks**:
 
 1. **创建项目文件**
-   - [ ] 创建 `python/pylab/AGENTS.md`
+   - [ ] 复核 `python/pylab/AGENTS.md`（文件已存在；内容与质量需按当前实现核对）
      - Python 3.13+
      - pytest测试框架
      - 依赖管理：requirements.txt
-   - [ ] 创建 `python/pylab/RULES.md`
+   - [ ] 复核 `python/pylab/RULES.md`（文件已存在；内容与质量需按当前实现核对）
      - PEP 8规范
      - Type hints要求
      - black, isort, ruff配置
-   - [ ] 创建 `python/pylab/README.md`
-   - [ ] 创建 `python/pylab/CHANGELOG.md`
+   - [ ] 复核 `python/pylab/README.md`（文件已存在；内容与质量需按当前实现核对）
+   - [ ] 复核 `python/pylab/CHANGELOG.md`（文件已存在；内容与质量需按当前实现核对）
 
 2. **丰富单元测试**
    - [ ] 分析test/目录现有测试
@@ -721,10 +735,10 @@ Current code, safety boundaries and tests live in [email-digest](https://github.
 **Tasks**:
 
 1. **创建项目文件**
-   - [ ] 创建 `python/projects/py-toydb/AGENTS.md`
-   - [ ] 创建 `python/projects/py-toydb/RULES.md`
-   - [ ] 创建 `python/projects/py-toydb/README.md`
-   - [ ] 创建 `python/projects/py-toydb/CHANGELOG.md`
+   - [ ] 复核 `python/projects/py-toydb/AGENTS.md`（文件已存在；内容与质量需按当前实现核对）
+   - [ ] 复核 `python/projects/py-toydb/RULES.md`（文件已存在；内容与质量需按当前实现核对）
+   - [ ] 复核 `python/projects/py-toydb/README.md`（文件已存在；内容与质量需按当前实现核对）
+   - [ ] 复核 `python/projects/py-toydb/CHANGELOG.md`（文件已存在；内容与质量需按当前实现核对）
 
 2. **丰富单元测试**
    - [ ] 为toydb模块添加测试
@@ -740,7 +754,7 @@ Current code, safety boundaries and tests live in [email-digest](https://github.
 1. **创建项目文件**
    - [ ] 创建 `python/projects/py-ego/AGENTS.md`
    - [ ] 创建 `python/projects/py-ego/RULES.md`
-   - [ ] 创建 `python/projects/py-ego/README.md`
+   - [ ] 复核 `python/projects/py-ego/README.md`（文件已存在；内容与质量需按当前实现核对）
    - [ ] 创建 `python/projects/py-ego/CHANGELOG.md`
 
 2. **丰富单元测试**
@@ -755,9 +769,9 @@ Current code, safety boundaries and tests live in [email-digest](https://github.
 **Tasks**:
 
 1. **创建项目文件**
-   - [ ] 创建 `python/projects/py-academic/AGENTS.md`
+   - [ ] 复核 `python/projects/py-academic/AGENTS.md`（文件已存在；内容与质量需按当前实现核对）
    - [ ] 创建 `python/projects/py-academic/RULES.md`
-   - [ ] 创建 `python/projects/py-academic/README.md`
+   - [ ] 复核 `python/projects/py-academic/README.md`（文件已存在；内容与质量需按当前实现核对）
    - [ ] 创建 `python/projects/py-academic/CHANGELOG.md`
 
 2. **丰富单元测试**
@@ -772,9 +786,9 @@ Current code, safety boundaries and tests live in [email-digest](https://github.
 **Tasks**:
 
 1. **创建项目文件**
-   - [ ] 创建 `python/projects/py-lab/AGENTS.md`
+   - [ ] 复核 `python/projects/py-lab/AGENTS.md`（文件已存在；内容与质量需按当前实现核对）
    - [ ] 创建 `python/projects/py-lab/RULES.md`
-   - [ ] 创建 `python/projects/py-lab/README.md`
+   - [ ] 复核 `python/projects/py-lab/README.md`（文件已存在；内容与质量需按当前实现核对）
    - [ ] 创建 `python/projects/py-lab/CHANGELOG.md`
 
 2. **丰富单元测试**
@@ -789,9 +803,9 @@ Current code, safety boundaries and tests live in [email-digest](https://github.
 **Tasks**:
 
 1. **创建项目文件**
-   - [ ] 创建 `python/projects/py-stock/AGENTS.md`
+   - [ ] 复核 `python/projects/py-stock/AGENTS.md`（文件已存在；内容与质量需按当前实现核对）
    - [ ] 创建 `python/projects/py-stock/RULES.md`
-   - [ ] 创建 `python/projects/py-stock/README.md`
+   - [ ] 复核 `python/projects/py-stock/README.md`（文件已存在；内容与质量需按当前实现核对）
    - [ ] 创建 `python/projects/py-stock/CHANGELOG.md`
 
 ---
@@ -809,7 +823,7 @@ Current code, safety boundaries and tests live in [email-digest](https://github.
      - Gradle构建
      - Java版本
    - [ ] 创建 `java/xlab-iceberg/RULES.md`
-   - [ ] 创建 `java/xlab-iceberg/README.md`
+   - [ ] 复核 `java/xlab-iceberg/README.md`（文件已存在；内容与质量需按当前实现核对）
    - [ ] 创建 `java/xlab-iceberg/CHANGELOG.md`
 
 2. **丰富单元测试**
@@ -824,12 +838,12 @@ Current code, safety boundaries and tests live in [email-digest](https://github.
 **Tasks**:
 
 1. **创建项目文件**
-   - [ ] 创建 `java/xlab-itest/AGENTS.md`
+   - [ ] 复核 `java/xlab-itest/AGENTS.md`（文件已存在；内容与质量需按当前实现核对）
      - 多模块项目结构
      - 子项目: benchmark, framework, groovy, interview, itest, jlib, scala, spark, spring
-   - [ ] 创建 `java/xlab-itest/RULES.md`
-   - [ ] 创建 `java/xlab-itest/README.md`
-   - [ ] 创建 `java/xlab-itest/CHANGELOG.md`
+   - [ ] 复核 `java/xlab-itest/RULES.md`（文件已存在；内容与质量需按当前实现核对）
+   - [ ] 复核 `java/xlab-itest/README.md`（文件已存在；内容与质量需按当前实现核对）
+   - [ ] 复核 `java/xlab-itest/CHANGELOG.md`（文件已存在；内容与质量需按当前实现核对）
 
 2. **丰富单元测试**
    - [ ] 为各子项目添加测试
@@ -862,7 +876,7 @@ Current code, safety boundaries and tests live in [email-digest](https://github.
 1. **创建项目文件**
    - [ ] 创建 `haskell/projects/sql-parser/AGENTS.md`
    - [ ] 创建 `haskell/projects/sql-parser/RULES.md`
-   - [ ] 创建 `haskell/projects/sql-parser/README.md`
+   - [ ] 复核 `haskell/projects/sql-parser/README.md`（文件已存在；内容与质量需按当前实现核对）
    - [ ] 创建 `haskell/projects/sql-parser/CHANGELOG.md`
 
 2. **丰富单元测试**
@@ -893,8 +907,8 @@ Current code, safety boundaries and tests live in [email-digest](https://github.
 1. **创建项目文件**
    - [ ] 创建 `haskell/projects/stm-engine/AGENTS.md`
    - [ ] 创建 `haskell/projects/stm-engine/RULES.md`
-   - [ ] 创建 `haskell/projects/stm-engine/README.md`
-   - [ ] 创建 `haskell/projects/stm-engine/CHANGELOG.md`
+   - [ ] 复核 `haskell/projects/stm-engine/README.md`（文件已存在；内容与质量需按当前实现核对）
+   - [ ] 复核 `haskell/projects/stm-engine/CHANGELOG.md`（文件已存在；内容与质量需按当前实现核对）
 
 2. **丰富单元测试**
    - [ ] 为STM实现添加测试
@@ -944,7 +958,7 @@ kubelet 模拟器 / `cmd/demo`），全包测试覆盖率 82%~100%，`-race` 全
    - [ ] 创建 `shell/bin/RULES.md`
      - `set -euo pipefail`
      - 引用变量
-   - [ ] 创建 `shell/bin/README.md`
+   - [ ] 复核 `shell/bin/README.md`（文件已存在；内容与质量需按当前实现核对）
    - [ ] 创建 `shell/bin/CHANGELOG.md`
 
 2. **代码规范检查**
@@ -1002,7 +1016,7 @@ kubelet 模拟器 / `cmd/demo`），全包测试覆盖率 82%~100%，`-race` 全
 
 - [x] 提交上述改动（分支 `chore/repo-hygiene`，基于 `origin/main`）
 - [ ] 决定 `python/projects/py-academic`（283 文件 / 63k 行 vendored fork）是否改为 submodule
-- [ ] 清理空壳目录：顶层 `projects/`（0 文件）、`python/projects/py-numpy-pandas`（无 `.py`）
+- [x] 核对目录：顶层 `projects/` 不在 Git 树中；`python/projects/py-numpy-pandas` 有 8 个跟踪文件（含 notebook、数据和启动脚本），不能因无 `.py` 判为空壳。
 - [ ] 评估 `cc/srlab/data/v1.jstack`（1MB，代码中无引用）是否仍需入库
 - [x] 已迁移 Python 项目的旧抓取缓存与生成产物随源码目录退出当前树；不改写历史或用户运行目录。
 - 历史待办已转出：平台与优化器任务分别在 [Lyra](https://github.com/LiShuMing/lyra/tree/main) 和 [Vela optimizer](https://github.com/LiShuMing/vela/tree/main/optimizer) 中核对维护，不再补建 xlab 项目任务段。
@@ -1039,10 +1053,10 @@ kubelet 模拟器 / `cmd/demo`），全包测试覆盖率 82%~100%，`-race` 全
 22. **python/ivm** - 仅 2 个文件，但与增量视图维护研究方向直接相关，值得升级为正式项目
 23. 其余 C++ 项目（`cc/projects/{cpython, interpreter, io-uring, llvm-jit, learn-balel}`）
 24. **haskell/projects/{sql-parser, stm-engine, dsl-transform}**、`haskell/hslab`
-25. **rust/projects/{fragment-tutor, subway-game}**（subway-game 仅 26 行）
+25. **rust/projects/{fragment-tutor, subway-game}**（保留项目；规模与实现状态须按当前源码核对）
 26. **已迁出：[lyra/llm-wiki](https://github.com/LiShuMing/lyra/tree/main/llm-wiki)** - 原 `liminalis/llm-wiki`；历史排序保留，当前任务见目标仓库。
 27. **shell/{bin, docker, mysql, fio}**、**llm/cuda**、**tools**
-28. **docs/books** - 12 本书约 9.5 万行 Markdown，独立知识线
+28. **docs/books** - 当前保留 4 组待审稿件、76 个文件；已迁稿件在 Cygnus 维护，不能沿用旧总量。
 
 ---
 

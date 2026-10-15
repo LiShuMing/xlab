@@ -263,17 +263,18 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | [cmake/](cmake/) | 共享 CMake 依赖与编译选项 | [XlabDependencies.cmake](cmake/XlabDependencies.cmake) |
 | [docs/](docs/) | 知识库、技术报告、书籍笔记与技能 | [文档导航与归属](docs/README.md)、[books](docs/books/)、[reports](docs/reports/)、[skills](docs/skills/) |
 
-## 第三方子模块完整列表
+## 第三方依赖与历史参考目录
 
-下面的路径来自 [.gitmodules](.gitmodules)，不能仅凭声明判断源码已恢复。
-目前 **69 个声明、2 个 mode 160000 gitlink、67 个孤立声明**：仅 googletest 与
-benchmark 已按既有版本恢复，可定向初始化。其余保留逐项确认，不批量下载或删除。
-根便携 C++ 同时保留锁定版本的 FetchContent 回退；其他模块依赖仍分别处理。
-见 [依赖版本与验证](docs/meta/cpp-test-dependencies.md) 和 [README 构建范围](README.md#build-and-ci-scope)。
+下面的路径保留原有参考目录，不能仅凭列表判断源码已恢复。归档决定和消费证据见 [逐项依赖审计](docs/meta/dependency-declarations.md)。
+当前 `.gitmodules` 有 **40 个声明、2 个 mode 160000 gitlink、38 个未解决孤立声明**。
+29 个经逐项审查的参考/独立包声明已移入完整审计清单，下面仍保留全部历史目录供检索。
+其中 5 个孤立路径涉及遗留构建/手工 bootstrap，33 个用途尚未确定；健康检查继续报告失败。
+仅 googletest 与 benchmark 可按已固定版本定向初始化；不得批量下载、删除或猜测版本。
+见 [依赖消费审计](docs/meta/dependency-declarations.md) 和 [便携依赖](docs/meta/cpp-test-dependencies.md)。
 
 ### C 参考项目
 
-共 2 个声明子模块。
+历史目录条目共 2 个。
 
 | 名称 | 声明路径 |
 | --- | --- |
@@ -282,7 +283,7 @@ benchmark 已按既有版本恢复，可定向初始化。其余保留逐项确�
 
 ### C++ 依赖与参考项目
 
-共 49 个声明子模块。
+历史目录条目共 49 个。
 
 | 名称 | 声明路径 |
 | --- | --- |
@@ -338,7 +339,7 @@ benchmark 已按既有版本恢复，可定向初始化。其余保留逐项确�
 
 ### Rust 参考项目
 
-共 14 个声明子模块。
+历史目录条目共 14 个。
 
 | 名称 | 声明路径 |
 | --- | --- |
@@ -359,7 +360,7 @@ benchmark 已按既有版本恢复，可定向初始化。其余保留逐项确�
 
 ### Python 参考项目
 
-共 4 个声明子模块。
+历史目录条目共 4 个。
 
 | 名称 | 声明路径 |
 | --- | --- |
@@ -375,6 +376,8 @@ benchmark 已按既有版本恢复，可定向初始化。其余保留逐项确�
 - Python 项目不能只靠 `pyproject.toml` 发现：无打包清单的脚本项目也应保留。
 - 有独立业务用途或清单的嵌套项目单独列出；`src/`、`tests/`、`docs/`、
   构建产物、虚拟环境、数据输出通常不是独立项目。
-- 第三方列表与 `.gitmodules` 同步；状态必须实际检查，不把声明路径视为已下载。
+- 第三方目录与依赖审计清单同步；仅需保留的声明在 `.gitmodules` 中。状态必须实际检查，不把参考路径视为已下载。
 - 本文件承担项目路由；仓库规则仍以 [AGENTS.md](AGENTS.md) 为准，
   当前工作计划仍以 [TASKS.md](TASKS.md) 为准。
+
+Current retained-project decisions and cleanup boundaries: [classification](docs/meta/retained-projects.md), [consolidated cleanup](docs/meta/repository-cleanup.md).

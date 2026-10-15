@@ -65,7 +65,8 @@ class PythonRetirementTests(unittest.TestCase):
     def test_retained_neighbors_and_recovery(self):
         for name in ('py-academic', 'py-lab', 'py-toydb'):
             self.assertTrue((ROOT / 'python/projects' / name).is_dir())
-        self.assertTrue((ROOT / 'python/projects/cron.sh').is_file())
+        # Consolidated cleanup later removes the legacy scheduler without a stub.
+        self.assertFalse((ROOT / 'python/projects/cron.sh').exists())
         text = (RECORD.with_suffix('.md')).read_text()
         self.assertIn('git revert', text)
         self.assertIn('67', text)

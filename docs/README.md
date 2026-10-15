@@ -60,3 +60,5 @@ Python 工具与研究模块的去向、验证和恢复方式见
 - [邮件摘要](https://github.com/LiShuMing/lyra/tree/main/modules/email-digest)与[每日学习](https://github.com/LiShuMing/lyra/tree/main/modules/daily-learning)在 Lyra 维护。
 
 本批 174 个源路径全部登记：161 个归档或适配，13 个历史文档/生成输出仅保留于 Git 历史和备份，未迁入目标。详情、排除清单和恢复方式见[退役记录](migrations/2026-10-14-books-email-learning-retirement.md)。Calcite、RisingWave、Claude、Feynman 资料不在本批范围。
+
+Current retained-project decisions and cleanup boundaries: [classification](meta/retained-projects.md), [consolidated cleanup](meta/repository-cleanup.md).

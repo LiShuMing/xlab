@@ -96,12 +96,15 @@ cd xlab
 bash tools/healthcheck.sh
 ```
 
-Dependency status: `.gitmodules` retains 69 declarations. Two are now real pinned
-gitlinks: GoogleTest 1.15.2 and Google Benchmark 1.9.1. Initialize only those with
+Dependency status: `.gitmodules` now has 40 declarations: two pinned gitlinks
+(GoogleTest 1.15.2 and Google Benchmark 1.9.1) plus 38 unresolved orphan declarations.
+Initialize only the two real gitlinks with
 `git submodule update --init -- cc/thirdparty/googletest cc/thirdparty/benchmark`.
-The other 67 remain orphan declarations, not uninitialized submodules; the
-healthcheck still reports that existing debt as a failure. No other reference is
-removed or downloaded. See [dependency versions and verification](docs/meta/cpp-test-dependencies.md)
+29 reference/external-package declarations are preserved in the [dependency inventory](docs/meta/dependency-declarations.json)
+instead of `.gitmodules`; no dependency source or package consumer was deleted.
+The remaining 38 include five direct/manual legacy inputs and 33 unresolved cases.
+The healthcheck deliberately continues to report those 38 failures.
+See [consumer evidence](docs/meta/dependency-declarations.md), [pinned versions](docs/meta/cpp-test-dependencies.md)
 and [build scope](#build-and-ci-scope).
 
 Common project commands (run each example separately from the xlab checkout root):
@@ -140,7 +143,7 @@ There is no whole-repository build. Root CMake builds only portable `cc/cclab`
 and `cc/projects/thread-pool`; its default dependency download setting is OFF.
 Without an installed/cached GoogleTest, default configure fails. Opt-in
 `XLAB_FETCH_DEPENDENCIES=ON` fetches pinned test dependencies (and Benchmark
-when requested), not the 69 declared research references. The legacy standalone
+when requested), not the historical research reference catalog. The legacy standalone
 `cc/cclab/build.sh` has broader third-party requirements and is not equivalent.
 
 [Native CI](.github/workflows/native-build.yml) tests this C++ subset on
@@ -178,3 +181,5 @@ experiments continue to use WSL.
 
 Codex/Linux 研究稿、邮件摘要及每日学习模块的当前归属、排除项与恢复入口见
 [本批迁移记录](docs/migrations/2026-10-14-books-email-learning-retirement.md)。
+
+Current retained-project decisions and cleanup boundaries: [classification](docs/meta/retained-projects.md), [consolidated cleanup](docs/meta/repository-cleanup.md).

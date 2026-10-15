@@ -1,0 +1,304 @@
+{
+  "source_commit": "bf3e2ed45c12cc551fd44ef3cb89366970cd92ba",
+  "scope": "classified retained project roots; no claim of build or runtime acceptance",
+  "projects": [
+    {
+      "path": "cc/algo",
+      "tracked_entries": 300,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "cc/ccbench",
+      "tracked_entries": 15,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "cc/cclab",
+      "tracked_entries": 116,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "cc/nasm",
+      "tracked_entries": 19,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "cc/projects/cpython",
+      "tracked_entries": 30,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "cc/projects/interpreter",
+      "tracked_entries": 16,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "cc/projects/io-uring",
+      "tracked_entries": 11,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "cc/projects/learn-balel",
+      "tracked_entries": 10,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "cc/projects/llvm-jit",
+      "tracked_entries": 17,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "cc/projects/mini-seastar",
+      "tracked_entries": 22,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "cc/projects/thread-pool",
+      "tracked_entries": 19,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "cc/projects/web-server",
+      "tracked_entries": 37,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "cc/projects/write-a-C-interpreter",
+      "tracked_entries": 15,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "cc/simd",
+      "tracked_entries": 9,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "cc/srlab",
+      "tracked_entries": 14,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "go/k8s-lab",
+      "tracked_entries": 24,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "haskell/hslab",
+      "tracked_entries": 1,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "haskell/projects/dsl-transform",
+      "tracked_entries": 7,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "haskell/projects/sql-parser",
+      "tracked_entries": 11,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "haskell/projects/stm-engine",
+      "tracked_entries": 7,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "java/xlab-iceberg",
+      "tracked_entries": 17,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "java/xlab-itest",
+      "tracked_entries": 623,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "llm/cuda",
+      "tracked_entries": 15,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "python/ivm",
+      "tracked_entries": 2,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "python/llm_benchmark",
+      "tracked_entries": 39,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "python/projects/llm-lab",
+      "tracked_entries": 30,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "python/projects/py-academic",
+      "tracked_entries": 374,
+      "classification": "vendored third-party fork; preserve attribution; packaging decision open",
+      "disposition": "retain"
+    },
+    {
+      "path": "python/projects/py-cycle-lab",
+      "tracked_entries": 27,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "python/projects/py-ego",
+      "tracked_entries": 136,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "python/projects/py-lab",
+      "tracked_entries": 38,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "python/projects/py-numpy-pandas",
+      "tracked_entries": 8,
+      "classification": "notebook/data learning project; not an empty shell",
+      "disposition": "retain"
+    },
+    {
+      "path": "python/projects/py-stock",
+      "tracked_entries": 21,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "python/projects/py-torch",
+      "tracked_entries": 27,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "python/projects/py-toydb",
+      "tracked_entries": 19,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "python/projects/strata-review",
+      "tracked_entries": 8,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "python/pylab",
+      "tracked_entries": 57,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "rust/projects/fragment-tutor",
+      "tracked_entries": 63,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "rust/projects/llm-runtime",
+      "tracked_entries": 12,
+      "classification": "design/scaffold; implementation maturity unverified",
+      "disposition": "retain"
+    },
+    {
+      "path": "rust/projects/subway-game",
+      "tracked_entries": 57,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "rust/projects/umbra",
+      "tracked_entries": 37,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "rust/rdb",
+      "tracked_entries": 23,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "rust/rlab",
+      "tracked_entries": 78,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "shell/bin",
+      "tracked_entries": 7,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "shell/docker",
+      "tracked_entries": 3,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "shell/fio",
+      "tracked_entries": 2,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "shell/mysql",
+      "tracked_entries": 3,
+      "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    }
+  ],
+  "held_books": [
+    {
+      "path": "docs/books/calcite-code-book",
+      "files": 22,
+      "disposition": "retain pending accepted target migration"
+    },
+    {
+      "path": "docs/books/risingwave-book",
+      "files": 12,
+      "disposition": "retain pending accepted target migration"
+    },
+    {
+      "path": "docs/books/claude-code-internals",
+      "files": 21,
+      "disposition": "retain pending accepted target migration"
+    },
+    {
+      "path": "docs/books/feiman-book",
+      "files": 21,
+      "disposition": "retain pending accepted target migration"
+    }
+  ]
+}
