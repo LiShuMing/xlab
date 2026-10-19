@@ -1,5 +1,12 @@
 # cc/cclab - C++ Laboratory
 
+The default standalone and root builds cover only the portable subset.
+`build.sh` accepts DEBUG/RELEASE/ASAN/UBSAN/LSAN and runs tests. Use
+`CCLAB_PORTABLE_ONLY=OFF` only for the legacy full laboratory described below.
+Initialize the pinned GoogleTest gitlink, or set `XLAB_FETCH_DEPENDENCIES=ON`.
+See [current dependencies](../../docs/meta/dependencies-current.md) and
+[verification scope](../../docs/meta/validation-matrix.md).
+
 [![C++20](https://img.shields.io/badge/C%2B%2B-20-blue.svg)](https://en.cppreference.com/w/cpp/20)
 [![CMake](https://img.shields.io/badge/CMake-3.22+-green.svg)](https://cmake.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)

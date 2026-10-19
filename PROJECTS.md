@@ -1,12 +1,17 @@
 # xlab 项目路由索引
 
-更新日期：2026-10-14。相对路径属于 xlab；外部链接指向已迁移项目的当前仓库。
+更新日期：2026-10-19。相对路径属于 xlab；外部链接指向已迁移项目的当前仓库。
 
 本表按当前目录、实际源码和构建清单整理，包含语言实验室、独立项目、
 工作区成员、跨语言应用及第三方子模块。目录存在不代表已验证构建成功；
 Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 
 ## 使用方式
+
+核心项目的类型、研究主题、环境、最小验证命令和实际结果见
+[验证矩阵](docs/meta/validation-matrix.md)。本索引不将“目录存在”视为测试通过。
+`pylab` 是语言/算法/数据库学习实验，`py-lab` 是 AI 应用实验；
+`llm/cuda`、`llm-lab`、`llm_benchmark` 分别负责环境、训练实验和评测。
 
 1. 已知项目名：搜索项目名或路径，例如 `query-engine`、`py-email`。
 2. 已知需求：先查下面的“按任务路由”，再进入对应语言表。
@@ -110,7 +115,6 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | [cc/projects/web-server/](cc/projects/web-server/) | Linux/macOS 网络与 I/O 后端实验 | [README](cc/projects/web-server/README.md)、[CMakeLists](cc/projects/web-server/CMakeLists.txt) |
 | [cc/projects/write-a-C-interpreter/](cc/projects/write-a-C-interpreter/) | C 编写的自解释 C interpreter | [README](cc/projects/write-a-C-interpreter/README.md)、[xc.c](cc/projects/write-a-C-interpreter/xc.c) |
 | [cc/extentions/gdb-extension/](cc/extentions/gdb-extension/) | GDB/StarRocks 调试脚本 | [sr_gdbinit.py](cc/extentions/gdb-extension/sr_gdbinit.py) |
-| [cc/extentions/gpt-extension/](cc/extentions/gpt-extension/) | JavaScript/HTML Chrome AI 侧边栏扩展 | [README](cc/extentions/gpt-extension/README.md)、[AGENTS](cc/extentions/gpt-extension/AGENTS.md) |
 | [cc/tools/duckdb/](cc/tools/duckdb/) | DuckDB/DuckLake SQL 实验脚本 | [duckdb.sql](cc/tools/duckdb/duckdb.sql) |
 
 算法集合的进一步路由：
@@ -232,7 +236,6 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | [lyra/backend/wechat/](https://github.com/LiShuMing/lyra/tree/main/backend/wechat/) | 微信集成业务模块 | [目录](https://github.com/LiShuMing/lyra/tree/main/backend/wechat/) |
 | [lyra/llm-wiki/](https://github.com/LiShuMing/lyra/tree/main/llm-wiki/) | Go 个人上下文维护子项目 | [README](https://github.com/LiShuMing/lyra/blob/main/llm-wiki/README.md) |
 | [python/projects/py-ego/miniprogram/](python/projects/py-ego/miniprogram/) | 微信小程序前端 | [package.json](python/projects/py-ego/miniprogram/package.json) |
-| [cc/extentions/gpt-extension/](cc/extentions/gpt-extension/) | Chrome AI side panel 扩展 | [README](cc/extentions/gpt-extension/README.md) |
 
 ## Shell、GPU 与仓库辅助入口
 
@@ -250,11 +253,11 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 ## 第三方依赖与历史参考目录
 
 下面的路径保留原有参考目录，不能仅凭列表判断源码已恢复。归档决定和消费证据见 [逐项依赖审计](docs/meta/dependency-declarations.md)。
-当前 `.gitmodules` 有 **40 个声明、2 个 mode 160000 gitlink、38 个未解决孤立声明**。
-29 个经逐项审查的参考/独立包声明已移入完整审计清单，下面仍保留全部历史目录供检索。
-其中 5 个孤立路径涉及遗留构建/手工 bootstrap，33 个用途尚未确定；健康检查继续报告失败。
-仅 googletest 与 benchmark 可按已固定版本定向初始化；不得批量下载、删除或猜测版本。
-见 [依赖消费审计](docs/meta/dependency-declarations.md) 和 [便携依赖](docs/meta/cpp-test-dependencies.md)。
+当前 `.gitmodules` 仅包含 **2 个固定 gitlink**（GoogleTest 和 Benchmark）。
+全部 69 条历史声明及原始消费证据保留在审计清单；其他条目是包/显式源码依赖
+或参考目录，不应当作为已恢复的子模块。未知用途仍按未知记录。
+见 [当前依赖契约](docs/meta/dependencies-current.md)、
+[历史消费审计](docs/meta/dependency-declarations.md)。
 
 ### C 参考项目
 

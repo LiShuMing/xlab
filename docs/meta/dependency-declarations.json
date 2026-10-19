@@ -69,7 +69,9 @@
         "c58e6d0710581e3a08d65c349664128a8d9a2461"
       ],
       "raw_token_match_count": 527,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "pinned-submodule",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/glog\"",
@@ -110,7 +112,9 @@
       ],
       "confidence": "high",
       "raw_token_match_count": 7,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "installed-package-or-explicit-source",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/googletest\"",
@@ -162,7 +166,9 @@
         "b514bdc898e2951020cbdca1304b75f5950d1f59"
       ],
       "raw_token_match_count": 216,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "pinned-submodule",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/robin-hood-hashing\"",
@@ -227,7 +233,9 @@
         "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
         "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
         "Re-run targeted static checks and confirm no gitlinks or executable files changed."
-      ]
+      ],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/abseil-cpp\"",
@@ -284,7 +292,9 @@
       ],
       "confidence": "high",
       "raw_token_match_count": 40,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "installed-package-or-explicit-source",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"c/minilisp\"",
@@ -308,7 +318,9 @@
       "evidence": [],
       "confidence": "low",
       "raw_token_match_count": 1,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"c/chibicc\"",
@@ -332,7 +344,9 @@
       "evidence": [],
       "confidence": "low",
       "raw_token_match_count": 1,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/gperftools\"",
@@ -365,7 +379,9 @@
       ],
       "confidence": "low",
       "raw_token_match_count": 2,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/concurrentqueue\"",
@@ -411,7 +427,9 @@
         "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
         "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
         "Re-run targeted static checks and confirm no gitlinks or executable files changed."
-      ]
+      ],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/x86-simd-sort\"",
@@ -435,7 +453,9 @@
       "evidence": [],
       "confidence": "low",
       "raw_token_match_count": 1,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/clang_combined_time_trace\"",
@@ -459,7 +479,9 @@
       "evidence": [],
       "confidence": "low",
       "raw_token_match_count": 1,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/ClangBuildAnalyzer\"",
@@ -483,7 +505,9 @@
       "evidence": [],
       "confidence": "low",
       "raw_token_match_count": 1,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/C-Plus-Plus\"",
@@ -521,7 +545,9 @@
         "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
         "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
         "Re-run targeted static checks and confirm no gitlinks or executable files changed."
-      ]
+      ],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/wren\"",
@@ -545,7 +571,9 @@
       "evidence": [],
       "confidence": "low",
       "raw_token_match_count": 1,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/libcoro\"",
@@ -569,7 +597,9 @@
       "evidence": [],
       "confidence": "low",
       "raw_token_match_count": 1,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/sqlite\"",
@@ -615,7 +645,9 @@
         "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
         "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
         "Re-run targeted static checks and confirm no gitlinks or executable files changed."
-      ]
+      ],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/hardware-effects\"",
@@ -639,7 +671,9 @@
       "evidence": [],
       "confidence": "low",
       "raw_token_match_count": 1,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/liburing4cpp\"",
@@ -672,7 +706,9 @@
       ],
       "confidence": "low",
       "raw_token_match_count": 1,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/Radix-Hash-Join\"",
@@ -696,7 +732,9 @@
       "evidence": [],
       "confidence": "low",
       "raw_token_match_count": 1,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/simde\"",
@@ -734,7 +772,9 @@
         "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
         "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
         "Re-run targeted static checks and confirm no gitlinks or executable files changed."
-      ]
+      ],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/seastar\"",
@@ -780,7 +820,9 @@
         "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
         "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
         "Re-run targeted static checks and confirm no gitlinks or executable files changed."
-      ]
+      ],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/noisepage\"",
@@ -804,7 +846,9 @@
       "evidence": [],
       "confidence": "low",
       "raw_token_match_count": 1,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/fmt\"",
@@ -865,7 +909,9 @@
         "io-uring master is mutable, not pinned"
       ],
       "raw_token_match_count": 161,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "installed-package-or-explicit-source",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/babylon\"",
@@ -903,7 +949,9 @@
         "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
         "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
         "Re-run targeted static checks and confirm no gitlinks or executable files changed."
-      ]
+      ],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/boost\"",
@@ -968,7 +1016,9 @@
         "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
         "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
         "Re-run targeted static checks and confirm no gitlinks or executable files changed."
-      ]
+      ],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/flight-benchmark\"",
@@ -992,7 +1042,9 @@
       "evidence": [],
       "confidence": "low",
       "raw_token_match_count": 1,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/junction\"",
@@ -1016,7 +1068,9 @@
       "evidence": [],
       "confidence": "low",
       "raw_token_match_count": 4,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/libchef\"",
@@ -1054,7 +1108,9 @@
         "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
         "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
         "Re-run targeted static checks and confirm no gitlinks or executable files changed."
-      ]
+      ],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/simple-sqlite\"",
@@ -1078,7 +1134,9 @@
       "evidence": [],
       "confidence": "low",
       "raw_token_match_count": 1,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/templight-tools\"",
@@ -1102,7 +1160,9 @@
       "evidence": [],
       "confidence": "low",
       "raw_token_match_count": 1,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/rocksdb\"",
@@ -1140,7 +1200,9 @@
         "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
         "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
         "Re-run targeted static checks and confirm no gitlinks or executable files changed."
-      ]
+      ],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/mimalloc\"",
@@ -1164,7 +1226,9 @@
       "evidence": [],
       "confidence": "low",
       "raw_token_match_count": 1,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/lua\"",
@@ -1205,7 +1269,9 @@
       ],
       "confidence": "low",
       "raw_token_match_count": 21,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/brpc\"",
@@ -1251,7 +1317,9 @@
         "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
         "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
         "Re-run targeted static checks and confirm no gitlinks or executable files changed."
-      ]
+      ],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/velox\"",
@@ -1297,7 +1365,9 @@
         "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
         "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
         "Re-run targeted static checks and confirm no gitlinks or executable files changed."
-      ]
+      ],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/muduo\"",
@@ -1335,7 +1405,9 @@
         "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
         "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
         "Re-run targeted static checks and confirm no gitlinks or executable files changed."
-      ]
+      ],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/dlmalloc\"",
@@ -1359,7 +1431,9 @@
       "evidence": [],
       "confidence": "low",
       "raw_token_match_count": 1,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"rust/thirdparty/dbeel\"",
@@ -1397,7 +1471,9 @@
         "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
         "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
         "Re-run targeted static checks and confirm no gitlinks or executable files changed."
-      ]
+      ],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"rust/thirdparty/feldera\"",
@@ -1435,7 +1511,9 @@
         "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
         "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
         "Re-run targeted static checks and confirm no gitlinks or executable files changed."
-      ]
+      ],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"rust/thirdparty/timely-dataflow\"",
@@ -1473,7 +1551,9 @@
         "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
         "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
         "Re-run targeted static checks and confirm no gitlinks or executable files changed."
-      ]
+      ],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"rust/thirdparty/arroyo\"",
@@ -1497,7 +1577,9 @@
       "evidence": [],
       "confidence": "low",
       "raw_token_match_count": 1,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"rust/thirdparty/optd\"",
@@ -1521,7 +1603,9 @@
       "evidence": [],
       "confidence": "low",
       "raw_token_match_count": 1,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"rust/thirdparty/sqleibniz\"",
@@ -1545,7 +1629,9 @@
       "evidence": [],
       "confidence": "low",
       "raw_token_match_count": 1,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"rust/thirdparty/differential-dataflow\"",
@@ -1583,7 +1669,9 @@
         "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
         "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
         "Re-run targeted static checks and confirm no gitlinks or executable files changed."
-      ]
+      ],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"rust/thirdparty/osblog\"",
@@ -1621,7 +1709,9 @@
         "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
         "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
         "Re-run targeted static checks and confirm no gitlinks or executable files changed."
-      ]
+      ],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"rust/thirdparty/toydb\"",
@@ -1654,7 +1744,9 @@
       ],
       "confidence": "low",
       "raw_token_match_count": 169,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"rust/thirdparty/risingwave\"",
@@ -1700,7 +1792,9 @@
         "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
         "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
         "Re-run targeted static checks and confirm no gitlinks or executable files changed."
-      ]
+      ],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"rust/thirdparty/materialize\"",
@@ -1738,7 +1832,9 @@
         "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
         "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
         "Re-run targeted static checks and confirm no gitlinks or executable files changed."
-      ]
+      ],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"rust/thirdparty/datafusion\"",
@@ -1795,7 +1891,9 @@
         "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
         "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
         "Re-run targeted static checks and confirm no gitlinks or executable files changed."
-      ]
+      ],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"python/thirdparty/tinydb\"",
@@ -1849,7 +1947,9 @@
         "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
         "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
         "Re-run targeted static checks and confirm no gitlinks or executable files changed."
-      ]
+      ],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"python/thirdparty/pydbsp\"",
@@ -1873,7 +1973,9 @@
       "evidence": [],
       "confidence": "low",
       "raw_token_match_count": 2,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"python/thirdparty/Python\"",
@@ -1897,7 +1999,9 @@
       "evidence": [],
       "confidence": "low",
       "raw_token_match_count": 1787,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/duckdb\"",
@@ -1954,7 +2058,9 @@
         "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
         "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
         "Re-run targeted static checks and confirm no gitlinks or executable files changed."
-      ]
+      ],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/duckdb_ivm\"",
@@ -1978,7 +2084,9 @@
       "evidence": [],
       "confidence": "low",
       "raw_token_match_count": 1,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/perf-tools\"",
@@ -2002,7 +2110,9 @@
       "evidence": [],
       "confidence": "low",
       "raw_token_match_count": 1,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"rust/thirdparty/denormalized\"",
@@ -2026,7 +2136,9 @@
       "evidence": [],
       "confidence": "low",
       "raw_token_match_count": 1,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/datasketch-cpp\"",
@@ -2072,7 +2184,9 @@
         "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
         "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
         "Re-run targeted static checks and confirm no gitlinks or executable files changed."
-      ]
+      ],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/doris\"",
@@ -2118,7 +2232,9 @@
         "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
         "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
         "Re-run targeted static checks and confirm no gitlinks or executable files changed."
-      ]
+      ],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/json\"",
@@ -2142,7 +2258,9 @@
       "evidence": [],
       "confidence": "low",
       "raw_token_match_count": 1115,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"python/thirdparty/parquet-python\"",
@@ -2166,7 +2284,9 @@
       "evidence": [],
       "confidence": "low",
       "raw_token_match_count": 1,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/parquet-format\"",
@@ -2190,7 +2310,9 @@
       "evidence": [],
       "confidence": "low",
       "raw_token_match_count": 1,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/arrow\"",
@@ -2249,7 +2371,9 @@
         "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
         "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
         "Re-run targeted static checks and confirm no gitlinks or executable files changed."
-      ]
+      ],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/Clickhouse\"",
@@ -2295,7 +2419,9 @@
         "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
         "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
         "Re-run targeted static checks and confirm no gitlinks or executable files changed."
-      ]
+      ],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/btop\"",
@@ -2319,7 +2445,9 @@
       "evidence": [],
       "confidence": "low",
       "raw_token_match_count": 1,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/leveldb\"",
@@ -2365,7 +2493,9 @@
         "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
         "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
         "Re-run targeted static checks and confirm no gitlinks or executable files changed."
-      ]
+      ],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"rust/thirdparty/tantivy\"",
@@ -2414,7 +2544,9 @@
         "Remove only this orphan .gitmodules block; preserve package manifests, lockfiles, local implementations, attribution and research.",
         "Update navigation/inventory and exact healthcheck debt assertions; do not suppress remaining orphan failures.",
         "Re-run targeted static checks and confirm no gitlinks or executable files changed."
-      ]
+      ],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/fastgrind\"",
@@ -2438,7 +2570,9 @@
       "evidence": [],
       "confidence": "low",
       "raw_token_match_count": 1,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "catalog-only",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/folly\"",
@@ -2487,7 +2621,9 @@
       ],
       "confidence": "high",
       "raw_token_match_count": 53,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "installed-package-or-explicit-source",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     },
     {
       "section_name": "submodule \"cc/thirdparty/fast_float\"",
@@ -2520,7 +2656,9 @@
       ],
       "confidence": "high",
       "raw_token_match_count": 6,
-      "declaration_removal_preconditions": []
+      "declaration_removal_preconditions": [],
+      "current_disposition": "installed-package-for-manual-folly-build",
+      "current_review_note": "Historical classification, recommendation, URL and evidence above are preserved; current disposition supersedes .gitmodules retention only."
     }
   ],
   "methodology": [
@@ -2537,5 +2675,11 @@
     "Only a bounded static audit; dynamically constructed or out-of-repository consumers may exist.",
     "Archived declaration means preserve metadata then remove the orphan block, not delete dependency code or data."
   ],
-  "disposition": "29 orphan declaration blocks archived into this inventory; 38 unresolved orphan blocks and two gitlinks retained."
+  "disposition": "29 orphan declaration blocks archived into this inventory; 38 unresolved orphan blocks and two gitlinks retained.",
+  "current_review": {
+    "date": "2026-10-19",
+    "source_commit": "af9a828",
+    "authorization": "Owner requested fixes for all P0/P1 findings.",
+    "policy": "Only tracked pinned gitlinks belong in .gitmodules. Keep unversioned references in this catalog; this does not certify absent source builds or resolve historical intent."
+  }
 }

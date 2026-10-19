@@ -42,23 +42,12 @@ jobs:
           python3 tools/check_formatting.py --base "$BASE_SHA" --head "$HEAD_SHA"
       - name: Offline regression fixtures and maintained navigation
         run: python3 -m unittest discover -s tools -p 'test_*.py' -v
-      - name: Report current dependency debt separately
-        # The repository intentionally retains orphan declarations for review.
-        # Do not turn an expected diagnostic failure into a whole-repo pass.
+      - name: Validate dependency metadata and report checkout health
         run: |
-          set +e
+          python3 tools/check_dependencies.py
           bash tools/healthcheck.sh > healthcheck-report.txt 2>&1
-          result=$?
           cat healthcheck-report.txt
-          printf '\nFull checkout healthcheck exit code: %s\n' "$result" >> "$GITHUB_STEP_SUMMARY"
-          printf 'Fixture success is not a full repository health/build pass.\n' >> "$GITHUB_STEP_SUMMARY"
-          # Keep the known 38 orphan declarations visible; fail any other error.
-          failures=$(grep -c '^FAIL:' healthcheck-report.txt || true)
-          orphans=$(grep -c '^FAIL: declaration without gitlink:' healthcheck-report.txt || true)
-          if [ "$result" -ne 1 ] || [ "$failures" -ne 38 ] || [ "$orphans" -ne 38 ]; then
-            echo 'Dependency diagnostics differ from the explicitly recorded baseline.' >&2
-            exit 1
-          fi
+          printf 'Metadata health is not whole-repository build certification.\n' >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         with:
           name: healthcheck-${{ matrix.os }}

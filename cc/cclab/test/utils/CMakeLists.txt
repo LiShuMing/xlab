@@ -13,7 +13,7 @@ message(STATUS "link_libs=${link_libs}")
 #     get_filename_component(exe utils_${src} NAME_WE)
 #     add_executable(${exe} ${src} )
 #     target_include_directories(${exe} PRIVATE "../../thirdparty")
-#     target_link_libraries(${exe} ${link_libs} PRIVATE common pthread gtest absl::node_hash_map Threads::Threads)
+#     target_link_libraries(${exe} PRIVATE ${link_libs} common pthread gtest absl::node_hash_map Threads::Threads)
 #     list(APPEND unittest_deps ${exe})
 # endforeach ()
 

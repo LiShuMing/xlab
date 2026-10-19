@@ -6,6 +6,8 @@ add_library(common
    btree/bplustree.cc
 )
 
+target_link_libraries(common PRIVATE ${link_libs})
+
 set(ALL_OBJECT_FILES
     ${ALL_OBJECT_FILES} $<TARGET_OBJECTS:common>
     PARENT_SCOPE)

@@ -1,5 +1,9 @@
 # Consolidated repository cleanup
 
+Current operational contracts supersede the historical declaration counts below:
+see [2026-10-19 dependency contracts](dependencies-current.md). Historical evidence
+and recommendations below remain tied to their original baseline.
+
 Base: xlab `bf3e2ed45c12cc551fd44ef3cb89366970cd92ba`.
 Consolidated cleanup [PR #28](https://github.com/LiShuMing/xlab/pull/28) merged at
 `dfcd093c1888fddcb043c2cbb68919c26a3413b9`. Its exact main inventory and post-merge

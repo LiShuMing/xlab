@@ -102,7 +102,8 @@ class TestLeftAntiSemiJoin(unittest.TestCase):
         R = {(1, 'int'), (1.5, 'float'), ('string', 'str'), (True, 'bool')}
         S = {(1, 'int_match'), ('string', 'str_match')}
         result = left_anti_semi_join(R, S)
-        expected = {(1.5, 'float'), (True, 'bool')}  # 1 and 'string' exist in S
+        # Python sets treat True and 1 as equal keys, so both left rows match.
+        expected = {(1.5, 'float')}
         self.assertEqual(result, expected)
 
     def test_none_as_key(self):
@@ -221,44 +222,34 @@ class TestLeftAntiSemiJoin(unittest.TestCase):
 class TestLeftAntiSemiJoinPerformance(unittest.TestCase):
     """Performance-related tests for left_anti_semi_join."""
 
-    def test_time_complexity(self):
-        """Test that the function has reasonable time complexity."""
-        import time
-        
-        # Create test data
-        sizes = [100, 1000, 5000]
-        times = []
-        
-        for size in sizes:
-            R = {(i, f'val_{i}') for i in range(size)}
-            S = {(i, f's_val_{i}') for i in range(size // 2, size + size // 2)}
-            
-            start_time = time.time()
-            result = left_anti_semi_join(R, S)
-            end_time = time.time()
-            
-            times.append(end_time - start_time)
-            
-            # Verify correctness
-            expected_size = size // 2
-            self.assertEqual(len(result), expected_size)
-        
-        # Time should grow roughly linearly (allowing for some variance)
-        # This is a rough check - exact timing depends on the system
-        self.assertLess(times[2], times[0] * 100)  # Shouldn't be 100x slower for 50x data
+    def test_linear_key_operations(self):
+        """Catch quadratic scans without depending on wall-clock scheduling."""
+        class Key:
+            operations = 0
+
+            def __init__(self, value):
+                self.value = value
+
+            def __hash__(self):
+                Key.operations += 1
+                return hash(self.value)
+
+            def __eq__(self, other):
+                Key.operations += 1
+                if not isinstance(other, Key):
+                    return NotImplemented
+                return self.value == other.value
+
+        for size in (100, 1000, 5000):
+            with self.subTest(size=size):
+                R = {(Key(i), f'val_{i}') for i in range(size)}
+                S = {(Key(i), 'right') for i in range(size // 2, size + size // 2)}
+                Key.operations = 0
+                result = left_anti_semi_join(R, S)
+                operations = Key.operations
+                self.assertEqual({key.value for key, _ in result}, set(range(size // 2)))
+                self.assertLessEqual(operations, 10 * size)
 
 
 if __name__ == '__main__':
-    # Create a test suite
-    test_suite = unittest.TestSuite()
-    
-    # Add all test cases
-    test_suite.addTest(unittest.makeSuite(TestLeftAntiSemiJoin))
-    test_suite.addTest(unittest.makeSuite(TestLeftAntiSemiJoinPerformance))
-    
-    # Run the tests
-    runner = unittest.TextTestRunner(verbosity=2)
-    result = runner.run(test_suite)
-    
-    # Exit with appropriate code
-    sys.exit(0 if result.wasSuccessful() else 1)
+    unittest.main()

@@ -7,7 +7,7 @@ Main C++ laboratory with focus on systems programming, data structures, and algo
 - **Build Tool**: CMake
 - **Build Types**: DEBUG, RELEASE, ASAN, LSAN
 - **Compiler standard**: C++20 for cclab; read each target’s CMake before changing it.
-- Root portable CMake and legacy standalone cclab have different dependency scopes; see [root build scope](../README.md#build-and-ci-scope).
+- Root CMake and standalone cclab default to the portable subset; explicit legacy mode has broader dependencies; see [root build scope](../README.md#build-and-ci-scope).
 - **Build Command**: `cd cc/cclab && ./build.sh`
 - **Test Command**: `cd cc/cclab/build_* && ctest`
 

@@ -10,6 +10,7 @@ GUIDES = [
     "README.md", "PROJECTS.md", "AGENTS.md", "SKILL.md", "TASKS.md",
     "cc/cclab/docs/api/README.md", "cc/cclab/docs/architecture/README.md",
     "docs/README.md", "docs/meta/migration-guide.md",
+    "docs/meta/dependencies-current.md", "docs/meta/validation-matrix.md",
     "docs/migrations/2026-10-13-constellation.md",
     "docs/skills/personal-knowledge-base.md",
     "docs/migrations/2026-10-14-cygnus-source-retirement.md",

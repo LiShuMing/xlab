@@ -1,5 +1,9 @@
 # Dependency consumer audit: xlab main bf3e2ed45c12cc551fd44ef3cb89366970cd92ba
 
+Current operational contracts supersede the historical declaration counts below:
+see [2026-10-19 dependency contracts](dependencies-current.md). Historical evidence
+and recommendations below remain tied to their original baseline.
+
 Snapshot note: the five-project owner decision on 2026-10-15 supersedes earlier
 retention statements for FragmentTutor, Umbra, subway-game, llm-runtime and
 py-academic. Historical evidence below remains tied to its stated commit; see
