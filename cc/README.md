@@ -13,7 +13,6 @@ A collection of C++ projects, experiments, and reference implementations coverin
 - **[io_uring/](io_uring/README.md)** - C++20 wrapper for Linux io_uring with coroutines support
 - **[srlab/](srlab/README.md)** - CMake-based C++ project scaffold with third-party dependencies
 - **[write-a-C-interpreter/](write-a-C-interpreter/README.md)** - C interpreter that interprets itself (tutorial project)
-- **[gpt-extension/](gpt-extension/README.md)** - Chrome extension for AI side panel
 
 ### Third-Party Dependencies
 
@@ -42,7 +41,6 @@ cc/
 ├── algo/              # Algorithm implementations
 ├── cclab/             # C++ lab experiments
 ├── cpython/           # Python C extensions
-├── gpt-extension/     # Chrome extension
 ├── interpreter/       # Custom interpreter
 ├── io_uring/          # io_uring wrapper
 ├── srlab/             # CMake scaffold project

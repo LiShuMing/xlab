@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12.0)
+cmake_minimum_required(VERSION 3.22)
 project(ccbench)
 
 # set(CMAKE_CXX_STANDARD 23)
@@ -126,14 +126,17 @@ message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 # include_directories(src)
 # include_directories(SYSTEM ${PROJECT_SOURCE_DIR}/third-party/gtest-1.7.0/fused-cpp)
 
-set(PARENT_BUILD_TYPE ${CMAKE_BUILD_TYPE})
-set(CMAKE_BUILD_TYPE RELEASE)
+include(../../cmake/XlabDependencies.cmake)
 
 # thirdparty
 # add_subdirectory(../thirdparty/fmt fmt)
-add_subdirectory(../thirdparty/glog glog)
-add_subdirectory(../thirdparty/googletest googletest)
+xlab_require_legacy_dependency(glog glog glog::glog)
+xlab_require_googletest()
+set(link_libs glog::glog)
 # Disable benchmark tests to avoid C++17 attribute compilation issues
 set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
-add_subdirectory(../thirdparty/benchmark benchmark)
+xlab_require_benchmark()
+if(NOT TARGET benchmark)
+    add_library(benchmark ALIAS benchmark::benchmark)
+endif()
 add_subdirectory(bench)

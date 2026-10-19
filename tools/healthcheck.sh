@@ -251,6 +251,15 @@ main() {
     check_bad_symlinks
     check_gitmodules
     check_env_tracking
+    if [[ -f tools/check_dependencies.py && -f docs/meta/dependency-declarations.json ]]; then
+        section "Dependency Catalog"
+        if command -v python3 >/dev/null; then
+            python3 tools/check_dependencies.py || fail "dependency catalog validation failed"
+            warn "legacy experiments require separate package/source validation; metadata health is not a full build pass"
+        else
+            fail "python3 is required to validate the dependency catalog"
+        fi
+    fi
     print_git_status_summary
 
     section "Summary"

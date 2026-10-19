@@ -9,6 +9,7 @@ on:
       - cc/thirdparty/googletest
       - cc/thirdparty/benchmark
       - cmake/**
+      - tools/cpp_smoke.cc
       - tools/build-windows.ps1
       - cc/cclab/**
       - cc/projects/thread-pool/**
@@ -23,6 +24,7 @@ on:
       - cc/thirdparty/googletest
       - cc/thirdparty/benchmark
       - cmake/**
+      - tools/cpp_smoke.cc
       - tools/build-windows.ps1
       - cc/cclab/**
       - cc/projects/thread-pool/**
@@ -114,20 +116,34 @@ jobs:
 
   rust:
     needs: windows-source
-    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
     steps:
+      - uses: actions/checkout@v4
+        if: runner.os != 'Windows'
       - uses: actions/download-artifact@v4
+        if: runner.os == 'Windows'
         with:
           name: native-windows-source
           path: ${{ runner.temp }}/native-source
       - name: Extract exact-checkout Windows sources
+        if: runner.os == 'Windows'
         shell: pwsh
         run: tar -xf "${{ runner.temp }}/native-source/windows-source.tar" -C "$env:GITHUB_WORKSPACE"
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
       - name: Workspace tests including doctests
         run: cargo test --manifest-path rust/rlab/Cargo.toml --workspace --locked --release
       - name: RDB tests
         run: cargo test --manifest-path rust/rdb/Cargo.toml --locked
+      - name: Workspace Clippy
+        run: cargo clippy --manifest-path rust/rlab/Cargo.toml --workspace --all-targets --locked
+      - name: RDB Clippy
+        run: cargo clippy --manifest-path rust/rdb/Cargo.toml --all-targets --locked
 
   python:
     needs: windows-source

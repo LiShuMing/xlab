@@ -5,7 +5,10 @@ add_subdirectory(common)
 
 # only build benchmark in release mode
 if (${CMAKE_BUILD_TYPE} STREQUAL "RELEASE")
-    add_subdirectory(../../thirdparty/benchmark benchmark)
+    xlab_require_benchmark()
+    if(NOT TARGET benchmark)
+        add_library(benchmark ALIAS benchmark::benchmark)
+    endif()
     add_subdirectory(bench)
 endif()
 

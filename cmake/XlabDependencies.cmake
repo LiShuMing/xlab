@@ -7,6 +7,14 @@ endif()
 
 option(XLAB_FETCH_DEPENDENCIES "Download missing C++ test/benchmark dependencies" OFF)
 option(XLAB_BUILD_BENCHMARKS "Build C++ benchmarks" OFF)
+set(XLAB_SANITIZER "none" CACHE STRING "Portable C++ sanitizer: none, address, undefined, leak")
+set_property(CACHE XLAB_SANITIZER PROPERTY STRINGS none address undefined leak)
+if(NOT XLAB_SANITIZER MATCHES "^(none|address|undefined|leak)$")
+    message(FATAL_ERROR "Unsupported XLAB_SANITIZER=${XLAB_SANITIZER}")
+endif()
+if(MSVC AND NOT XLAB_SANITIZER STREQUAL "none")
+    message(FATAL_ERROR "XLAB_SANITIZER currently requires GCC or Clang")
+endif()
 get_filename_component(XLAB_THIRDPARTY_DIR "${CMAKE_CURRENT_LIST_DIR}/../cc/thirdparty" ABSOLUTE)
 
 function(xlab_require_dependency name target revision)
@@ -56,5 +64,30 @@ function(xlab_target_defaults target)
     else()
         target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic
             -Werror=return-type -Werror=uninitialized)
+        if(NOT XLAB_SANITIZER STREQUAL "none")
+            target_compile_options(${target} PUBLIC -fsanitize=${XLAB_SANITIZER}
+                -fno-omit-frame-pointer -fno-sanitize-recover=all)
+            target_link_options(${target} PUBLIC -fsanitize=${XLAB_SANITIZER})
+        endif()
+    endif()
+endfunction()
+
+# Legacy experiments use installed CMake packages or explicit local sources.
+# An old reference URL is not a pinned/buildable submodule.
+function(xlab_require_legacy_dependency name package target)
+    if(TARGET ${target})
+        return()
+    endif()
+    if(EXISTS "${XLAB_THIRDPARTY_DIR}/${name}/CMakeLists.txt")
+        add_subdirectory("${XLAB_THIRDPARTY_DIR}/${name}"
+            "${CMAKE_BINARY_DIR}/thirdparty/${name}" EXCLUDE_FROM_ALL)
+    else()
+        find_package(${package} CONFIG QUIET)
+    endif()
+    if(NOT TARGET ${target})
+        message(FATAL_ERROR
+            "Legacy experiment requires ${package} (${target}). Install its development package "
+            "and set CMAKE_PREFIX_PATH, or supply cc/thirdparty/${name}/CMakeLists.txt. "
+            "No source version is selected automatically. For supported tests use root CMake.")
     endif()
 endfunction()

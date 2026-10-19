@@ -1,31 +1,22 @@
-apt-get update
-apt-get install -y \
-  g++ cmake pkg-config \
-  libfmt-dev libdouble-conversion-dev libevent-dev \
-  libgoogle-glog-dev libgflags-dev \
-  zlib1g-dev liblz4-dev libzstd-dev libsnappy-dev liblzma-dev \
-  libunwind-dev binutils-dev libdw-dev \
-  libssl-dev libjemalloc-dev
+#!/usr/bin/env bash
+set -euo pipefail
 
-apt-get install -y \
-  libboost-context-dev \
-  libboost-filesystem-dev \
-  libboost-program-options-dev \
-  libboost-regex-dev \
-  libboost-thread-dev
-#（可选）兜底整个 Boost 开发包
-apt-get install -y libboost-all-dev
-apt-get install -y libfast-float-dev
+# Build an explicitly selected Folly checkout against installed development
+# packages. Never install packages or mutate xlab's Git metadata here.
+if [[ $# -lt 1 || $# -gt 2 ]]; then
+    echo "Usage: $0 /path/to/folly-source [/path/to/build-directory]" >&2
+    exit 2
+fi
+folly_source=$(cd "$1" && pwd)
+folly_build=${2:-"$folly_source/build"}
+if [[ ! -f "$folly_source/folly/FBString.h" || ! -f "$folly_source/CMakeLists.txt" ]]; then
+    echo "Expected a Folly source checkout; no build was attempted." >&2
+    exit 2
+fi
+command -v cmake >/dev/null || { echo "CMake is required." >&2; exit 2; }
 
-# copy fast_float to /opt/fast_float/include
-git submodule add git@github.com:fastfloat/fast_float.git cc/thirdparty/fast_float
-mkdir -p /opt/fast_float/include
-cp -r fast_float/include/fast_float /opt/fast_float/include/
-
-# build folly
-cmake .. \
-  -DBUILD_SHARED_LIBS=ON \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DFOLLY_USE_JEMALLOC=ON \
-  -DFASTFLOAT_INCLUDE_DIR=/opt/fast_float/include
-cmake --build . -j$(nproc)
+# Install platform development packages separately, including fast_float.
+# CMAKE_PREFIX_PATH and Folly's package discovery select installed inputs.
+cmake -S "$folly_source" -B "$folly_build" \
+    -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release
+cmake --build "$folly_build" --parallel "${BUILD_JOBS:-4}"

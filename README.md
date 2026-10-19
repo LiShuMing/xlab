@@ -41,7 +41,7 @@ xlab/
 |-- llm/                GPU/ROCm environment setup notes and scripts
 |-- shell/              Shell utilities, Docker/MySQL/FIO helpers
 |-- tools/              Repository-level maintenance scripts
-`-- docs/               Obsidian vault: notes, reports, and book-length studies
+`-- docs/               Retained notes/reports; book sources maintained in Cygnus
 ```
 
 ### Migrated Projects
@@ -85,8 +85,8 @@ their build systems; a scaffold is explicitly marked and has no build command.
 
 ## Quick Start
 
-Clone the repository normally. Do not initialize every submodule by default; many
-third-party trees are large research references.
+Clone normally. Initialize only the two pinned test dependencies when building C++;
+historical third-party references live in the dependency catalog.
 
 ```bash
 git clone https://github.com/LiShuMing/xlab.git
@@ -96,16 +96,13 @@ cd xlab
 bash tools/healthcheck.sh
 ```
 
-Dependency status: `.gitmodules` now has 40 declarations: two pinned gitlinks
-(GoogleTest 1.15.2 and Google Benchmark 1.9.1) plus 38 unresolved orphan declarations.
-Initialize only the two real gitlinks with
+Dependency status: `.gitmodules` contains exactly two pinned gitlinks
+(GoogleTest 1.15.2 and Google Benchmark 1.9.1). Initialize them with
 `git submodule update --init -- cc/thirdparty/googletest cc/thirdparty/benchmark`.
-29 reference/external-package declarations are preserved in the [dependency inventory](docs/meta/dependency-declarations.json)
-instead of `.gitmodules`; no dependency source or package consumer was deleted.
-The remaining 38 include five direct/manual legacy inputs and 33 unresolved cases.
-The healthcheck deliberately continues to report those 38 failures.
-See [consumer evidence](docs/meta/dependency-declarations.md), [pinned versions](docs/meta/cpp-test-dependencies.md)
-and [build scope](#build-and-ci-scope).
+All 69 original records remain in the [dependency inventory](docs/meta/dependency-declarations.json).
+The former orphan references are catalog entries; legacy CMake accepts installed
+packages or explicit local sources. See [current dependency contracts](docs/meta/dependencies-current.md).
+Run `python3 tools/check_dependencies.py` to check the current metadata.
 
 Common project commands (run each example separately from the xlab checkout root):
 
@@ -143,17 +140,22 @@ There is no whole-repository build. Root CMake builds only portable `cc/cclab`
 and `cc/projects/thread-pool`; its default dependency download setting is OFF.
 Without an installed/cached GoogleTest, default configure fails. Opt-in
 `XLAB_FETCH_DEPENDENCIES=ON` fetches pinned test dependencies (and Benchmark
-when requested), not the historical research reference catalog. The legacy standalone
-`cc/cclab/build.sh` has broader third-party requirements and is not equivalent.
+when requested), not the historical research reference catalog. Standalone
+`cc/cclab/build.sh` also defaults to the portable subset and runs its tests;
+`CCLAB_PORTABLE_ONLY=OFF` explicitly selects the legacy full laboratory.
 
-[Native CI](.github/workflows/native-build.yml) tests this C++ subset on
-Linux/Windows, plus `rust/rlab`, `rust/rdb`, and Python ToyDB on Windows.
-Its path filters do not cover every lab or documentation-only change.
-[Repository checks](.github/workflows/repository-checks.yml) run offline
-healthcheck fixtures and navigation checks. A passing fixture suite does not
-mean the full checkout healthcheck passes or every project builds.
-Go, Haskell, JVM and other independent projects require their own local guides
-and toolchains. DayLog build/test ownership is now in Carina.
+[Native CI](.github/workflows/native-build.yml) covers portable C++ on
+Linux/Windows, Rust rlab/rdb tests and Clippy on Linux/Windows, and ToyDB on Windows.
+[Core quality](.github/workflows/core-quality.yml) adds Go vet/race/demo,
+IVM, LLM Benchmark, Linux ToyDB, DuckDB smoke, and portable C++ ASAN/UBSAN.
+[Repository checks](.github/workflows/repository-checks.yml) validate dependency
+metadata, offline fixtures and maintained navigation without an orphan-failure exception.
+CI configuration is not evidence that a run has completed. Actual local execution,
+commands, environments and unverified modules are in the
+[validation matrix](docs/meta/validation-matrix.md).
+
+JVM, Haskell, GPU and other independent projects still require their local guides
+and toolchains. DayLog build/test ownership is in Carina.
 
 ## Windows Builds
 

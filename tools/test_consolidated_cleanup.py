@@ -34,23 +34,26 @@ class ConsolidatedCleanupTests(unittest.TestCase):
         self.assertEqual(len({r['path'] for r in entries}), 69)
         config = configparser.ConfigParser()
         config.read(ROOT / '.gitmodules')
-        self.assertEqual(len(config.sections()), 40)
+        from check_dependencies import validate
+        self.assertEqual(validate(), [])
+        self.assertEqual(len(config.sections()), 2)
         for row in entries:
             section = row['section_name']
-            if row['recommendation'] == 'archive-declaration':
-                self.assertNotIn(section, config)
-                self.assertIsNone(row['gitlink_sha'])
-            else:
+            if row['gitlink_sha']:
                 self.assertEqual(config[section]['path'], row['path'])
                 self.assertEqual(config[section]['url'], row['original_url'])
+            else:
+                self.assertNotIn(section, config)
+        # Preserve the original audit; current disposition is a separate decision.
         self.assertEqual(sum(r['recommendation'] == 'archive-declaration' for r in entries), 29)
         self.assertEqual(sum(r['orphan'] and r['recommendation'] == 'retain' for r in entries), 38)
         for path in ('cc/thirdparty/glog', 'cc/thirdparty/abseil-cpp', 'cc/thirdparty/fmt',
-                     'cc/thirdparty/folly', 'cc/thirdparty/fast_float'):
-            self.assertEqual(next(r['recommendation'] for r in entries if r['path'] == path), 'retain')
+                     'cc/thirdparty/folly'):
+            row = next(r for r in entries if r['path'] == path)
+            self.assertEqual(row['current_disposition'], 'installed-package-or-explicit-source')
         ci = (ROOT / '.github/workflows/repository-checks.yml').read_text()
-        self.assertIn('"$failures" -ne 38', ci)
-        self.assertIn('"$orphans" -ne 38', ci)
+        self.assertNotIn('"$failures" -ne 38', ci)
+        self.assertIn('python3 tools/check_dependencies.py', ci)
         # All paths, including retired entry points, must trigger these checks.
         triggers = ci.split('permissions:', 1)[0]
         self.assertIn('  pull_request:', triggers)
@@ -75,7 +78,7 @@ class ConsolidatedCleanupTests(unittest.TestCase):
         text = (ROOT / 'TASKS.md').read_text()
         self.assertNotIn('12 本书约 9.5 万行', text)
         self.assertNotIn('subway-game 仅 26 行', text)
-        self.assertIn('py-numpy-pandas` 有 8 个跟踪文件', text)
+        self.assertIn('tasks-history-2026-10-19.md', text)
 
 
 if __name__ == '__main__':

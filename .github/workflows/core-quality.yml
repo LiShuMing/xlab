@@ -1,0 +1,120 @@
+name: core-quality
+
+on:
+  push:
+    paths:
+      - 'go/k8s-lab/**'
+      - 'python/ivm/**'
+      - 'python/llm_benchmark/**'
+      - 'python/pylab/**'
+      - 'python/projects/py-toydb/**'
+      - 'tools/cpp_smoke.cc'
+      - '.gitmodules'
+      - 'cc/thirdparty/googletest'
+      - 'CMakeLists.txt'
+      - 'cmake/**'
+      - 'cc/cclab/**'
+      - 'cc/projects/thread-pool/**'
+      - '.github/workflows/core-quality.yml'
+  pull_request:
+    paths:
+      - 'go/k8s-lab/**'
+      - 'python/ivm/**'
+      - 'python/llm_benchmark/**'
+      - 'python/pylab/**'
+      - 'python/projects/py-toydb/**'
+      - 'tools/cpp_smoke.cc'
+      - '.gitmodules'
+      - 'cc/thirdparty/googletest'
+      - 'CMakeLists.txt'
+      - 'cmake/**'
+      - 'cc/cclab/**'
+      - 'cc/projects/thread-pool/**'
+      - '.github/workflows/core-quality.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  go:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: go/k8s-lab
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go/k8s-lab/go.mod
+          cache: false
+      - name: Format, vet, race and coverage
+        run: |
+          test -z "$(gofmt -l .)"
+          go vet ./...
+          go test -race -count=1 -coverprofile=coverage.out ./...
+          go run ./cmd/demo
+      - uses: actions/upload-artifact@v4
+        with:
+          name: k8s-lab-coverage
+          path: go/k8s-lab/coverage.out
+
+  python:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [ivm, llm-benchmark, toydb, pylab-smoke]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test selected offline core
+        env:
+          PROJECT: ${{ matrix.project }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "$PROJECT" in
+            ivm)
+              python -m unittest discover -s python/ivm -p 'test_*.py' -v
+              ;;
+            llm-benchmark)
+              python -m pip install -e 'python/llm_benchmark[dev]'
+              cd python/llm_benchmark
+              python -m pytest tests -q
+              ;;
+            toydb)
+              python -m pip install -e python/projects/py-toydb pytest
+              cd python/projects/py-toydb
+              python -m pytest tests -q
+              ;;
+            pylab-smoke)
+              python -m pip install pytest duckdb==1.1.3
+              cd python/pylab
+              python -m pytest test/test_duckdb.py -q
+              ;;
+          esac
+
+  cpp-sanitizers:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        sanitizer: [address, undefined]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Initialize pinned test dependency
+        run: git submodule update --init -- cc/thirdparty/googletest
+      - name: Configure
+        run: >-
+          cmake -S . -B build-sanitizer -DCMAKE_BUILD_TYPE=Debug
+          -DXLAB_SANITIZER=${{ matrix.sanitizer }} -DXLAB_FETCH_DEPENDENCIES=OFF
+      - name: Build
+        run: cmake --build build-sanitizer --parallel 4
+      - name: Tests with fatal sanitizer findings
+        env:
+          ASAN_OPTIONS: detect_leaks=1:halt_on_error=1
+          UBSAN_OPTIONS: halt_on_error=1:print_stacktrace=1
+        run: ctest --test-dir build-sanitizer --output-on-failure --no-tests=error --timeout 60

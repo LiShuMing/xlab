@@ -17,7 +17,11 @@ def left_semi_join(R, S, on_key_index=0):
     return {r_row for r_row in R if r_row[on_key_index] in s_keys}
 
 def left_anti_semi_join(R, S, on_key_index=0):
-    """Performs a left anti-semi-join."""
+    """Return unmatched left rows using Python equality and hashing for keys.
+
+    As with the other set-based joins here, True, 1 and 1.0 are equal keys.
+    This prototype does not implement SQL type coercion or NULL semantics.
+    """
     if not R:  # Early return for empty left table
         return set()
     if not S:  # If right table empty, return all left rows

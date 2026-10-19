@@ -1,5 +1,4 @@
 """Offline placeholder and missing-prerequisite guards; no deployment/browser use."""
-import ast
 import os
 from pathlib import Path
 import shutil
@@ -33,23 +32,49 @@ class EntryPointTests(unittest.TestCase):
             self.assertIn('make leetcode_433', help_result.stdout)
             self.assertNotIn('tidy', help_result.stdout)
 
-    def test_extension_preflight_fails_before_writes(self):
-        source = ROOT / 'cc/extentions/gpt-extension/tools/build.py'
+    def test_portable_build_script_selects_sanitizer_and_runs_tests(self):
+        script = ROOT / 'cc/cclab/build.sh'
+        modes = {'ASAN': 'address', 'UBSAN': 'undefined', 'LSAN': 'leak', 'RELEASE': 'none'}
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
-            (root / 'tools').mkdir()
-            shutil.copy2(source, root / 'tools/build.py')
-            result = subprocess.run([sys.executable, str(root / 'tools/build.py')], cwd=root,
+            log = root / 'commands'
+            # Capture CLI arguments without a compiler, network or source writes.
+            for name in ('cmake', 'ctest'):
+                tool = root / name
+                tool.write_text(f'#!{sys.executable}\n'
+                                'import os, sys\n'
+                                'with open(os.environ["XLAB_TEST_LOG"], "a") as f:\n'
+                                '    f.write(repr(sys.argv) + "\\n")\n')
+                tool.chmod(0o755)
+            for mode, sanitizer in modes.items():
+                with self.subTest(mode=mode):
+                    log.write_text('')
+                    result = subprocess.run(['bash', str(script), mode], capture_output=True,
+                                            text=True, timeout=5, env={
+                                                **os.environ, 'CMAKE_BIN': str(root / 'cmake'),
+                                                'CTEST_BIN': str(root / 'ctest'),
+                                                'BUILD_DIR': str(root / 'build'),
+                                                'CCLAB_PORTABLE_ONLY': 'ON', 'GCC_HOME': '',
+                                                'XLAB_TEST_LOG': str(log),
+                                            })
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    commands = log.read_text().splitlines()
+                    self.assertEqual(len(commands), 3)
+                    self.assertIn('-DXLAB_SANITIZER=' + sanitizer, commands[0])
+                    self.assertIn('--build', commands[1])
+                    self.assertIn('--no-tests=error', commands[2])
+
+    def test_portable_build_script_stops_on_configure_failure(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            tool = root / 'cmake'
+            tool.write_text('#!/bin/sh\nexit 7\n')
+            tool.chmod(0o755)
+            result = subprocess.run(['bash', str(ROOT / 'cc/cclab/build.sh'), 'UBSAN'],
+                                    env={**os.environ, 'CMAKE_BIN': str(tool), 'GCC_HOME': '',
+                                         'CTEST_BIN': str(root / 'must-not-run')},
                                     capture_output=True, text=True, timeout=5)
-            self.assertNotEqual(result.returncode, 0)
-            self.assertIn('manifest.json', result.stderr)
-            self.assertIn('rules.json', result.stderr)
-            self.assertIn('No output was written', result.stderr)
-            self.assertEqual(sorted(p.name for p in root.iterdir()), ['tools'])
-        assignments = [n for n in ast.parse(source.read_text()).body if isinstance(n, ast.Assign)]
-        files = next(ast.literal_eval(n.value) for n in assignments
-                     if any(isinstance(t, ast.Name) and t.id == 'SRC_FILES' for t in n.targets))
-        self.assertIn('defaults.js', files)
+            self.assertEqual(result.returncode, 7, result.stderr)
 
     def test_deployment_missing_migrations_fails_before_docker(self):
         source = ROOT / 'python/projects/py-ego/py-ego-miniapp/deploy/scripts/deploy.sh'
