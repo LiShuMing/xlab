@@ -209,9 +209,9 @@ pub fn heap_sort_std<T: Ord + Clone>(arr: &mut [T]) {
     let mut heap: BinaryHeap<Reverse<T>> = arr.iter().cloned().map(Reverse).collect();
 
     // Extract elements in sorted order
-    for i in 0..n {
+    for slot in arr.iter_mut().take(n) {
         if let Some(Reverse(val)) = heap.pop() {
-            arr[i] = val;
+            *slot = val;
         }
     }
 }

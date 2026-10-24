@@ -269,8 +269,8 @@ fn radix_sort_msd_helper(arr: &mut [i64], digit: i64) {
     let next_digit = digit / 256;
     if next_digit > 0 {
         let mut start = 0;
-        for i in 0..BASE {
-            let bucket_end = start + count[i];
+        for &c in count.iter().take(BASE) {
+            let bucket_end = start + c;
             if bucket_end > start {
                 radix_sort_msd_helper(&mut arr[start..bucket_end], next_digit);
             }

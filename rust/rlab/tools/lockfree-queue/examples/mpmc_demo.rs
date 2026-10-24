@@ -31,7 +31,7 @@ fn main() {
         let handle = thread::spawn(move || {
             let start_item = i * items_per_producer;
             for j in 0..items_per_producer {
-                q.push((start_item + j) as i32).unwrap();
+                q.push(start_item + j).unwrap();
             }
         });
         producer_handles.push(handle);

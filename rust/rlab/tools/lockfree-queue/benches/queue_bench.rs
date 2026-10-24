@@ -36,14 +36,14 @@ fn bench_mpmc_multi_thread(c: &mut Criterion) {
             let q1 = Arc::clone(&queue);
             let p1 = thread::spawn(move || {
                 for i in 0..5000 {
-                    q1.push(i as i32).unwrap();
+                    q1.push(i).unwrap();
                 }
             });
 
             let q2 = Arc::clone(&queue);
             let p2 = thread::spawn(move || {
                 for i in 0..5000 {
-                    q2.push(i as i32).unwrap();
+                    q2.push(i).unwrap();
                 }
             });
 
@@ -76,14 +76,14 @@ fn bench_mpsc_multi_thread(c: &mut Criterion) {
             let q1 = Arc::clone(&queue);
             let p1 = thread::spawn(move || {
                 for i in 0..5000 {
-                    q1.push(i as i32).unwrap();
+                    q1.push(i).unwrap();
                 }
             });
 
             let q2 = Arc::clone(&queue);
             let p2 = thread::spawn(move || {
                 for i in 0..5000 {
-                    q2.push(i as i32).unwrap();
+                    q2.push(i).unwrap();
                 }
             });
 
@@ -118,14 +118,14 @@ fn bench_std_mpsc(c: &mut Criterion) {
             let tx1 = tx.clone();
             let p1 = thread::spawn(move || {
                 for i in 0..5000 {
-                    tx1.send(i as i32).unwrap();
+                    tx1.send(i).unwrap();
                 }
             });
 
             let tx2 = tx.clone();
             let p2 = thread::spawn(move || {
                 for i in 0..5000 {
-                    tx2.send(i as i32).unwrap();
+                    tx2.send(i).unwrap();
                 }
             });
 

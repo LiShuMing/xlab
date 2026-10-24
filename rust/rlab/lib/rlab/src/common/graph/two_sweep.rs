@@ -241,8 +241,8 @@ mod tests {
         // naive recursive one would blow the call stack.
         let n = 200_000;
         let mut children = vec![Vec::new(); n];
-        for v in 0..n - 1 {
-            children[v].push(v + 1);
+        for (v, ch) in children.iter_mut().enumerate().take(n - 1) {
+            ch.push(v + 1);
         }
         let tree = Tree::from_children(&children);
         assert_eq!(tree_diameter(&tree), (n - 1) as i64);
