@@ -3,4 +3,5 @@
 //! This module contains shared functionality used across the crate,
 //! organized into submodules by purpose.
 
+pub mod graph;
 pub mod sort;
