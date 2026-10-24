@@ -15,17 +15,26 @@
 #![warn(missing_docs)]
 #![allow(dead_code)]
 
+/// Shared helper types (linked list, tree, point, string literals).
 #[macro_use]
 pub mod util;
 
+/// Problem statement modules laid out by the `leetcode` tool.
 pub mod problem;
+/// One module per solved problem.
 pub mod solution;
 
+/// Array and string problems.
 pub mod array;
+/// Dynamic programming problems.
 pub mod dp;
+/// Linked list problems.
 pub mod linked_list;
+/// Miscellaneous problems.
 pub mod misc;
+/// Sorting and searching problems.
 pub mod sorting;
+/// Tree and graph problems.
 pub mod tree;
 
 /// Utility function to run tests for a specific problem

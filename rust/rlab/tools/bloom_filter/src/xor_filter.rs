@@ -29,6 +29,7 @@ pub struct XorFilter {
     /// Number of slots (typically 1.23x the number of items)
     num_slots: usize,
     /// Number of items
+    #[allow(dead_code)]
     num_items: usize,
     /// Seed for hashing
     seed: u64,
@@ -42,6 +43,8 @@ struct HashPositions {
     h2: usize,
 }
 
+// Kept for API completeness in this learning crate; the demo binary does not use every accessor.
+#[allow(dead_code)]
 impl XorFilter {
     /// Build a new XOR Filter from a collection of items
     ///
@@ -237,11 +240,15 @@ impl XorFilter {
     }
 }
 
-/// Builder for XorFilter to handle construction more flexibly
+/// Builder for XorFilter to handle construction more flexibly.
+///
+/// Kept for API completeness; the demo binary builds filters via `XorFilter::build`.
+#[allow(dead_code)]
 pub struct XorFilterBuilder<T: Hash> {
     items: Vec<T>,
 }
 
+#[allow(dead_code)]
 impl<T: Hash> XorFilterBuilder<T> {
     pub fn new() -> Self {
         Self { items: vec![] }

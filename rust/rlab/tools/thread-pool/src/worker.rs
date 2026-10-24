@@ -16,7 +16,7 @@ impl Worker {
     /// Spawn a new worker thread
     ///
     /// The worker will wait for tasks on the given receiver and execute them
-    pub fn spawn(
+    pub(crate) fn spawn(
         id: usize,
         receiver: Arc<Mutex<mpsc::Receiver<Message>>>,
         name_prefix: &str,

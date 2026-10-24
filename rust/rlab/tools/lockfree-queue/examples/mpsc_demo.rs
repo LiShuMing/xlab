@@ -5,7 +5,7 @@
 
 use std::sync::Arc;
 use std::thread;
-use std::time::{Duration, Instant};
+use std::time::Instant;
 
 fn main() {
     println!("=== MPSC Queue Demo ===\n");
@@ -38,7 +38,6 @@ fn main() {
 
     // Single consumer
     let q = Arc::clone(&queue);
-    let consumer_start = Instant::now();
     let consumer_handle = thread::spawn(move || {
         let mut count = 0;
         let mut empty_count = 0;

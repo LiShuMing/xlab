@@ -1,14 +1,19 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
+/// A binary tree node, as used by the LeetCode problem definitions.
 #[derive(Debug, PartialEq, Eq)]
 pub struct TreeNode {
+    /// Value stored in this node.
     pub val: i32,
+    /// Left child, if any.
     pub left: Option<Rc<RefCell<TreeNode>>>,
+    /// Right child, if any.
     pub right: Option<Rc<RefCell<TreeNode>>>,
 }
 
 impl TreeNode {
+    /// Create a leaf node holding `val`.
     #[inline]
     pub fn new(val: i32) -> Self {
         TreeNode {
@@ -19,6 +24,8 @@ impl TreeNode {
     }
 }
 
+/// Build a tree from a level-order slice (LeetCode's own encoding), `None` = absent.
+/// Used to write test inputs.
 pub fn to_tree(vec: Vec<Option<i32>>) -> Option<Rc<RefCell<TreeNode>>> {
     use std::collections::VecDeque;
     let head = Some(Rc::new(RefCell::new(TreeNode::new(vec[0].unwrap()))));
@@ -41,6 +48,7 @@ pub fn to_tree(vec: Vec<Option<i32>>) -> Option<Rc<RefCell<TreeNode>>> {
     head
 }
 
+/// Build a `TreeNode` tree from a nested literal, e.g. `tree!(1, tree!(2), tree!(3))`.
 #[macro_export]
 macro_rules! tree {
     () => {

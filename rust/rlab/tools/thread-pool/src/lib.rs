@@ -7,7 +7,6 @@
 //! - Basic error handling
 
 use std::sync::{mpsc, Arc, Mutex};
-use std::thread::{self, JoinHandle};
 
 pub mod builder;
 pub mod worker;
@@ -49,7 +48,11 @@ type Task = Box<dyn FnOnce() + Send + 'static>;
 enum Message {
     /// Execute this task
     Work(Task),
-    /// Stop the worker
+    /// Stop the worker.
+    ///
+    /// Not sent by the pool itself: `ThreadPool::shutdown_internal` closes the channel by
+    /// dropping the sender instead. Kept because the worker's unit tests drive this path.
+    #[allow(dead_code)]
     Terminate,
 }
 

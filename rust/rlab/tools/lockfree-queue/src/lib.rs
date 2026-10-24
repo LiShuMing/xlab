@@ -43,7 +43,11 @@ impl std::fmt::Display for QueueError {
 
 impl std::error::Error for QueueError {}
 
-/// A node in the linked-list based queue
+/// A node in the linked-list based queue.
+///
+/// Scaffolding for the queue implementations: `mpmc`/`mpsc` currently define their own
+/// node types, so these fields are written but never read here yet.
+#[allow(dead_code)]
 #[repr(align(64))] // Prevent false sharing
 pub struct Node<T> {
     /// The data stored in this node

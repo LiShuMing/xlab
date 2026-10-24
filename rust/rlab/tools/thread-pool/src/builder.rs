@@ -1,6 +1,6 @@
 //! Thread pool builder for configurable pool creation
 
-use crate::{create_workers, Message, PoolConfig, PoolError, ThreadPool};
+use crate::{create_workers, PoolConfig, PoolError, ThreadPool};
 use std::sync::{mpsc, Arc, Mutex};
 
 /// Builder for constructing a [`ThreadPool`](crate::ThreadPool) with custom configuration

@@ -153,8 +153,8 @@ fn test_self_referential() {
     // Use the reference
     let _ = format!("{:?}", mut_foo);
     
-    // After mut_foo is dropped, we can borrow foo again
-    drop(mut_foo);
+    // Last use of `mut_foo`: `drop()` is a no-op on a reference, so end the borrow explicitly.
+    let _ = mut_foo;
     let _shared = foo.share();
     let _ = _shared;
 }

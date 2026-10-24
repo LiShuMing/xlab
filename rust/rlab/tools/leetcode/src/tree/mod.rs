@@ -8,8 +8,11 @@ use std::rc::Rc;
 /// Definition for a binary tree node
 #[derive(Debug, PartialEq, Eq)]
 pub struct TreeNode {
+    /// Value stored in this node.
     pub val: i32,
+    /// Left child, if any.
     pub left: Option<Rc<RefCell<TreeNode>>>,
+    /// Right child, if any.
     pub right: Option<Rc<RefCell<TreeNode>>>,
 }
 

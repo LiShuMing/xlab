@@ -5,7 +5,9 @@
 /// Definition for singly-linked list node
 #[derive(PartialEq, Eq, Clone, Debug)]
 pub struct ListNode {
+    /// Value stored in this node.
     pub val: i32,
+    /// Rest of the list, if any.
     pub next: Option<Box<ListNode>>,
 }
 

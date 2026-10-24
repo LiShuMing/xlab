@@ -25,6 +25,8 @@ pub struct SplitBlockBloomFilter {
     num_hashes_per_block: usize, // Typically 8 for 256-bit blocks
 }
 
+// Kept for API completeness in this learning crate; the demo binary does not use every method.
+#[allow(dead_code)]
 impl SplitBlockBloomFilter {
     /// Create a new SBBF with target capacity and false positive rate
     pub fn new(capacity: usize, fp_rate: f64) -> Self {

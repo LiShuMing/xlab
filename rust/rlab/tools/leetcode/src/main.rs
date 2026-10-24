@@ -7,7 +7,6 @@ mod fetcher;
 
 use crate::fetcher::{CodeDefinition, Problem};
 use regex::Regex;
-use std::env;
 use std::fs;
 use std::fs::File;
 use std::io;
@@ -17,7 +16,6 @@ use std::path::Path;
 use futures::executor::block_on;
 use futures::executor::ThreadPool;
 use futures::future::join_all;
-use futures::stream::StreamExt;
 use futures::task::SpawnExt;
 use std::sync::{Arc, Mutex};
 
@@ -32,9 +30,7 @@ fn main() {
             or \"solve $i\" to move problem to solution/, \n\
             or \"all\" to initialize all problems \n"
         );
-        let mut is_random = false;
-        let mut is_solving = false;
-        let mut id: u32 = 0;
+        let id: u32;
         let mut id_arg = String::new();
         io::stdin()
             .read_line(&mut id_arg)
@@ -48,12 +44,10 @@ fn main() {
         if random_pattern.is_match(id_arg) {
             println!("You select random mode.");
             id = generate_random_id(&initialized_ids);
-            is_random = true;
             println!("Generate random problem: {}", &id);
         } else if solving_pattern.is_match(id_arg) {
             // solve a problem
             // move it from problem/ to solution/
-            is_solving = true;
             id = solving_pattern
                 .captures(id_arg)
                 .unwrap()
@@ -69,7 +63,7 @@ fn main() {
             let pool = ThreadPool::new().unwrap();
             let mut tasks = vec![];
             let problems = fetcher::get_problems().unwrap();
-            let mut mod_file_addon = Arc::new(Mutex::new(vec![]));
+            let mod_file_addon = Arc::new(Mutex::new(vec![]));
             for problem_stat in problems.stat_status_pairs {
                 if initialized_ids.contains(&problem_stat.stat.frontend_question_id) {
                     continue;
@@ -113,7 +107,7 @@ fn main() {
                 .append(true)
                 .open("./src/problem/mod.rs")
                 .unwrap();
-            writeln!(lib_file, "{}", mod_file_addon.lock().unwrap().join("\n"));
+            let _ = writeln!(lib_file, "{}", mod_file_addon.lock().unwrap().join("\n"));
             break;
         } else {
             id = id_arg
@@ -149,7 +143,7 @@ fn main() {
 
 fn generate_random_id(except_ids: &[u32]) -> u32 {
     use rand::Rng;
-    use std::fs;
+    
     let mut rng = rand::thread_rng();
     loop {
         let res: u32 = rng.gen_range(1, 1106);
@@ -308,13 +302,13 @@ fn deal_solving(id: &u32) {
         .map(|x| x.unwrap())
         .filter(|x| *x != target_line)
         .collect();
-    fs::write(mod_file, lines.join("\n"));
+    let _ = fs::write(mod_file, lines.join("\n"));
     // insert into solution/mod.rs
     let mut lib_file = fs::OpenOptions::new()
         .append(true)
         .open("./src/solution/mod.rs")
         .unwrap();
-    writeln!(lib_file, "mod {};", solution_name);
+    let _ = writeln!(lib_file, "mod {};", solution_name);
 }
 
 fn deal_problem(problem: &Problem, code: &CodeDefinition, write_mod_file: bool) {
@@ -357,6 +351,6 @@ fn deal_problem(problem: &Problem, code: &CodeDefinition, write_mod_file: bool) 
             .append(true)
             .open("./src/problem/mod.rs")
             .unwrap();
-        writeln!(lib_file, "mod {};", file_name);
+        let _ = writeln!(lib_file, "mod {};", file_name);
     }
 }

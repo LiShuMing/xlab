@@ -33,7 +33,7 @@
  * 	At most 10^4 calls will be made to insert and get_root.
  *
  */
-use crate::util::tree::{to_tree, TreeNode};
+use crate::util::tree::TreeNode;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -130,6 +130,7 @@ impl CBTInserter {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::util::tree::to_tree;
 
     #[test]
     fn test_919() {

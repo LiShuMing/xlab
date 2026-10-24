@@ -18,6 +18,8 @@ pub struct BloomFilter {
     num_items: usize,
 }
 
+// Kept for API completeness in this learning crate; the demo binary does not use every accessor.
+#[allow(dead_code)]
 impl BloomFilter {
     /// Create a new Bloom Filter with target capacity and false positive rate
     ///
