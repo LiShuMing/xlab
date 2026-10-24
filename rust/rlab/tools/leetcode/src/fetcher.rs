@@ -62,25 +62,27 @@ pub async fn get_problem_async(problem_stat: StatWithStatus) -> Option<Problem> 
         );
         return None;
     }
-    let resp = surf::post(GRAPHQL_URL).body_json(&Query::question_query(
-        problem_stat.stat.question_title_slug.as_ref().unwrap(),
-    ));
-    if resp.is_err() {
-        println!(
-            "Problem {} not initialized due to some error",
-            &problem_stat.stat.frontend_question_id
-        );
-        return None;
-    }
-    let resp = resp.unwrap().recv_json().await;
-    if resp.is_err() {
-        println!(
-            "Problem {} not initialized due to some error",
-            &problem_stat.stat.frontend_question_id
-        );
-        return None;
-    }
-    let resp: RawProblem = resp.unwrap();
+    // Uses the blocking `reqwest` client, which is already a dependency, instead of `surf`.
+    // `surf` pulls in isahc -> curl -> curl-sys, and the curl-sys vendored curl requires
+    // OpenSSL >= 3.0 while this host only ships 1.0.2, which made the whole workspace
+    // unbuildable. The `async` signature is kept so the caller's thread-pool tasks are unchanged.
+    let resp = reqwest::Client::new()
+        .post(GRAPHQL_URL)
+        .json(&Query::question_query(
+            problem_stat.stat.question_title_slug.as_ref().unwrap(),
+        ))
+        .send()
+        .and_then(|mut r| r.json::<RawProblem>());
+    let resp: RawProblem = match resp {
+        Ok(r) => r,
+        Err(_) => {
+            println!(
+                "Problem {} not initialized due to some error",
+                &problem_stat.stat.frontend_question_id
+            );
+            return None;
+        }
+    };
     return Some(Problem {
         title: problem_stat.stat.question_title.clone().unwrap(),
         title_slug: problem_stat.stat.question_title_slug.clone().unwrap(),
