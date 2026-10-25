@@ -220,7 +220,7 @@
     },
     {
       "path": "rust/rlab",
-      "tracked_entries": 78,
+      "tracked_entries": 83,
       "classification": "retained experiment; no accepted migration mapping",
       "disposition": "retain"
     },
