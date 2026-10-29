@@ -57,9 +57,15 @@ CI 仍开启 `detect_leaks=1`。该 smoke 不替代完整 CMake/GTest 套件。
 ## 尚未纳入自动验收的范围
 
 mini-seastar、web-server、io-uring、完整 legacy cclab、其他 Python 应用、JVM、
-Haskell 和 GPU 实验仍按各自说明维护。它们有平台/服务/硬件或独立工具链要求，
+GPU 实验仍按各自说明维护。它们有平台/服务/硬件或独立工具链要求，
 不能从上述结果推导其可运行性。全仓不存在一条保证所有实验都通过的构建命令。
 
 依赖安装契约见 [当前依赖](dependencies-current.md)，原始消费证据见
 [历史审计](dependency-declarations.md)。目录索引见 [PROJECTS](../../PROJECTS.md)，
 后续运行验收见 [TASKS](../../TASKS.md)。
+
+## OCaml / Lean 4 学习项目（2026-10-29）
+
+这两套项目使用独立 Dune/Lake 构建，不属于根 CMake 的验收范围。
+版本、安装位置、实际运行结果见
+[本次环境与验证记录](../migrations/2026-10-29-functional-learning.md)。

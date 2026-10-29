@@ -138,7 +138,7 @@ destroying a live object. Regression tests cover these paths in Release too.
 
 `io-uring`, `mini-seastar`, POSIX socket/web-server experiments, and the full
 Linux system lab require Linux APIs and should run under WSL. LLVM/ANTLR,
-Python native extensions, Tauri applications, Java/Go/Haskell projects, and
+Python native extensions, Tauri applications, Java/Go/OCaml/Lean 4 projects, and
 service-dependent applications need separate toolchains or dependencies and
 are not part of this verified Windows group. Their existing build commands
 have not been replaced.

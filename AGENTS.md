@@ -21,7 +21,7 @@ or removing a project, update its entry and routing in `PROJECTS.md`.
 ### Repository Information
 - **Origin**: https://github.com/LiShuMing/xlab
 - **Type**: Personal R&D laboratory / Code experiments collection
-- **Language Distribution**: C++ (primary), Python, Rust, Go, Java, Haskell, Shell
+- **Language Distribution**: C++ (primary), Python, Rust, Go, Java, OCaml, Lean 4, Shell
 - **Documentation**: Chinese (Markdown, Obsidian vault in `docs/`), Code comments: Mixed
 
 ## Project Structure
@@ -54,7 +54,8 @@ xlab/
 ├── java/                 # Java laboratory
 │   ├── xlab-iceberg/     # Apache Iceberg related
 │   └── xlab-itest/       # Interview/test projects
-├── haskell/              # Haskell functional programming lab
+├── ocaml/                # OCaml language, interpreter and constant-folding lab
+├── lean4/                # Lean 4 programming and proof lab
 ├── llm/                  # GPU / ROCm environment setup notes
 ├── shell/                # Shell scripting utilities
 │   ├── bin/              # Executable scripts
@@ -138,9 +139,22 @@ instructions and build manifests before working there.
 - **Build Tools**: Gradle (primary), Maven
 - **Projects**: xlab-iceberg, xlab-itest (interview prep)
 
-### Haskell (haskell/)
-- **Build Tools**: cabal or stack
-- **Project**: hslab (functional programming experiments)
+### OCaml (ocaml/)
+- **Version**: 5.5.2, pinned in `.ocaml-version`
+- **Build Tool**: Dune 3.24.2; standard library only
+- **Commands**: `dune build`, `dune runtest`, `dune exec ocaml-lab`
+- **Guide**: `ocaml/README.md` and `ocaml/TUTORIAL.md`
+
+### Lean 4 (lean4/)
+- **Version**: 4.35.0, pinned in `lean-toolchain`
+- **Build Tool**: Lake; toolchain-provided Std, no Mathlib
+- **Commands**: `lake build xlab-lean xlab-tests`, `lake exe xlab-tests`
+- **Proof policy**: no `sorry`, `admit`, or custom axioms; warnings fail builds
+- **Guide**: `lean4/README.md` and `lean4/TUTORIAL.md`
+
+Activate these isolated user tools with `source tools/learning-env.sh`.
+Their build outputs (`ocaml/_build`, `lean4/.lake`) are not source files.
+Haskell was owner-retired; do not restore its roots to satisfy historical links.
 
 ### Shell (shell/)
 - **Shell**: Bash/Zsh
@@ -385,7 +399,7 @@ When generating code for this repository:
 - `.clang-tidy` — C++ linting configuration  
 - `CLAUDE.md` — Claude Code compatibility pointer to this file
 - `QWEN.md` — Qwen Code compatibility pointer (mirrors `CLAUDE.md`)
-- `**/SKILL.md` — Language/module specific guidelines (root, cc, go, haskell, java, python, rust, shell)
+- `**/SKILL.md` — Language/module specific guidelines (root, cc, go, java, python, rust, shell)
 - `**/AGENTS.md`, `**/RULES.md`, `**/TODOS.md` — Subtree-specific agent rules; these override root guidance for their directory
 
 ## Contact & Context

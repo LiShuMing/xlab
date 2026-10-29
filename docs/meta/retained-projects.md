@@ -25,10 +25,8 @@ No project below has an accepted source-to-target mapping for retirement.
 | `cc/simd` | 9 | retained experiment; no accepted migration mapping |
 | `cc/srlab` | 14 | retained experiment; no accepted migration mapping |
 | `go/k8s-lab` | 24 | retained experiment; no accepted migration mapping |
-| `haskell/hslab` | 1 | retained experiment; no accepted migration mapping |
-| `haskell/projects/dsl-transform` | 7 | retained experiment; no accepted migration mapping |
-| `haskell/projects/sql-parser` | 11 | retained experiment; no accepted migration mapping |
-| `haskell/projects/stm-engine` | 7 | retained experiment; no accepted migration mapping |
+| `ocaml` | 14 | functional programming and interpreter learning lab |
+| `lean4` | 11 | functional programming and proof learning lab |
 | `java/xlab-iceberg` | 17 | retained experiment; no accepted migration mapping |
 | `java/xlab-itest` | 622 | retained experiment; no accepted migration mapping |
 | `llm/cuda` | 15 | retained experiment; no accepted migration mapping |
@@ -63,3 +61,7 @@ The large `cc/srlab/data/v1.jstack` remains an owner decision. No equivalence
 is inferred from similarly named projects in other repositories.
 
 Machine-readable snapshot: [retained-projects.json](retained-projects.json).
+
+2026-10-29: the owner requested full Haskell source removal and new OCaml/Lean 4
+learning projects. Those new projects do not claim feature equivalence with the
+removed prototypes. See [scope and recovery](../migrations/2026-10-29-functional-learning.md).

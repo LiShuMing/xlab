@@ -4,7 +4,7 @@
 database internals, algorithms, and AI-assisted development workflows.
 
 The repository is intentionally multi-language. C++ is the main systems lab, while
-Rust, Python, Java, Go, Haskell, Shell, and documentation projects capture focused
+Rust, Python, Java, Go, OCaml, Lean 4, Shell, and documentation projects capture focused
 experiments, prototypes, reading notes, and tools.
 
 ## Documentation Entry Points
@@ -37,7 +37,8 @@ xlab/
 |-- python/             Python lab, AI/data tooling, research prototypes
 |-- java/               Java projects, Iceberg and interview/test labs
 |-- go/                 Go lab: k8s-lab (mini Kubernetes control plane from scratch)
-|-- haskell/            Functional programming experiments
+|-- ocaml/              Functional programming, expression interpreter and constant folding
+|-- lean4/              Functional programming and machine-checked correctness proofs
 |-- llm/                GPU/ROCm environment setup notes and scripts
 |-- shell/              Shell utilities, Docker/MySQL/FIO helpers
 |-- tools/              Repository-level maintenance scripts
@@ -79,6 +80,8 @@ their build systems; a scaffold is explicitly marked and has no build command.
 | Project | Path | Stack | Notes |
 | --- | --- | --- | --- |
 | MiniSeastar | `cc/projects/mini-seastar/` | C++20, CMake | Coroutine scheduler, per-thread reactor. |
+| OCaml Lab | [ocaml/](ocaml/) | OCaml, Dune | Language basics, expression interpreter and constant folding; [中文教程](ocaml/TUTORIAL.md). |
+| Lean 4 Lab | [lean4/](lean4/) | Lean 4, Lake | Structural induction and constant-folding correctness; [中文教程](lean4/TUTORIAL.md). |
 | K8s Lab | `go/k8s-lab/` | Go (stdlib only) | Mini Kubernetes control plane: MVCC store, apiserver, informers, workqueue, ReplicaSet controller, kubelet sim. |
 | LLM Lab | [python/projects/llm-lab/](python/projects/llm-lab/) | Python | Model training/reference experiments. |
 | LLM Benchmark | `python/llm_benchmark/` | Python | Quantified LLM evaluation framework. |
@@ -154,7 +157,13 @@ CI configuration is not evidence that a run has completed. Actual local executio
 commands, environments and unverified modules are in the
 [validation matrix](docs/meta/validation-matrix.md).
 
-JVM, Haskell, GPU and other independent projects still require their local guides
+OCaml and Lean 4 use independent Dune/Lake builds. From the checkout root, run
+`bash tools/setup-learning.sh all`, then `source tools/learning-env.sh`.
+Continue with [OCaml](ocaml/README.md) or [Lean 4](lean4/README.md).
+Haskell sources were removed by owner decision; see the
+[scope and recovery record](docs/migrations/2026-10-29-functional-learning.md).
+
+JVM, GPU and other independent projects still require their local guides
 and toolchains. DayLog build/test ownership is in Carina.
 
 ## Windows Builds

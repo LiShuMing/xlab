@@ -1,6 +1,6 @@
 {
   "source_commit": "f20485e3b278e34df0b927c89dba1591d65ba6ba",
-  "scope": "Current retained project inventory after owner-authorized five-project retirement; no build/runtime acceptance claim",
+  "scope": "Current retained project inventory including owner-authorized Haskell retirement and OCaml/Lean 4 learning labs; no build/runtime acceptance claim",
   "projects": [
     {
       "path": "cc/algo",
@@ -99,27 +99,15 @@
       "disposition": "retain"
     },
     {
-      "path": "haskell/hslab",
-      "tracked_entries": 1,
-      "classification": "retained experiment; no accepted migration mapping",
+      "path": "ocaml",
+      "tracked_entries": 14,
+      "classification": "functional programming and interpreter learning lab",
       "disposition": "retain"
     },
     {
-      "path": "haskell/projects/dsl-transform",
-      "tracked_entries": 7,
-      "classification": "retained experiment; no accepted migration mapping",
-      "disposition": "retain"
-    },
-    {
-      "path": "haskell/projects/sql-parser",
+      "path": "lean4",
       "tracked_entries": 11,
-      "classification": "retained experiment; no accepted migration mapping",
-      "disposition": "retain"
-    },
-    {
-      "path": "haskell/projects/stm-engine",
-      "tracked_entries": 7,
-      "classification": "retained experiment; no accepted migration mapping",
+      "classification": "functional programming and proof learning lab",
       "disposition": "retain"
     },
     {

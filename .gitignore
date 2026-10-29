@@ -142,7 +142,7 @@ npm-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Haskell
+# Retired Haskell paths: keep protections for historical local artifacts.
 /haskell/**/dist-newstyle/
 /haskell/**/.stack-work/
 /haskell/**/.HTF/
@@ -157,6 +157,17 @@ pnpm-debug.log*
 /haskell/**/*.hp
 /haskell/**/*.eventlog
 /haskell/**/*.tix
+
+# OCaml / Dune and Lean / Lake generated outputs
+/ocaml/_build/
+/ocaml/_opam/
+/ocaml/**/*.cmi
+/ocaml/**/*.cmo
+/ocaml/**/*.cmx
+/ocaml/**/*.cmxa
+/ocaml/**/*.cma
+/ocaml/**/*.cmxs
+/lean4/.lake/
 
 # Java / Gradle / IDE metadata
 /java/**/.gradle/

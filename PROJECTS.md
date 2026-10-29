@@ -1,6 +1,6 @@
 # xlab 项目路由索引
 
-更新日期：2026-10-19。相对路径属于 xlab；外部链接指向已迁移项目的当前仓库。
+更新日期：2026-10-29。相对路径属于 xlab；外部链接指向已迁移项目的当前仓库。
 
 本表按当前目录、实际源码和构建清单整理，包含语言实验室、独立项目、
 工作区成员、跨语言应用及第三方子模块。目录存在不代表已验证构建成功；
@@ -60,9 +60,8 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | Volcano、Cascades、优化器算法对照 | [vela/optimizer/](https://github.com/LiShuMing/vela/tree/main/optimizer/) |
 | 多数据库优化器源码分析 | [vela/research/optimizer-evidence](https://github.com/LiShuMing/vela/tree/main/research/optimizer-evidence)、[vela/research/optimizer-scanner](https://github.com/LiShuMing/vela/tree/main/research/optimizer-scanner) |
 | LLVM、JIT、表达式编译 | [cc/projects/llvm-jit/](cc/projects/llvm-jit/) |
-| SQL Parser、Haskell、规则优化 | [haskell/projects/sql-parser/](haskell/projects/sql-parser/) |
-| DSL、Monad Transformers | [haskell/projects/dsl-transform/](haskell/projects/dsl-transform/) |
-| STM、并发 KV、事务组合 | [haskell/projects/stm-engine/](haskell/projects/stm-engine/) |
+| OCaml、函数式编程、AST、解释器、常量折叠 | [ocaml/](ocaml/)、[学习教程](ocaml/TUTORIAL.md) |
+| Lean 4、归纳证明、优化正确性、定理证明 | [lean4/](lean4/)、[学习教程](lean4/TUTORIAL.md) |
 | 增量计算、IVM、DBSP、差分数据流 | [python/ivm/](python/ivm/)、[python/pylab/dbsp/](python/pylab/dbsp/)，第三方见 `rust/thirdparty/` |
 | Linux io_uring、异步 I/O、Reactor | [cc/projects/io-uring/](cc/projects/io-uring/)、[cc/projects/mini-seastar/](cc/projects/mini-seastar/)、[cc/projects/web-server/](cc/projects/web-server/) |
 | Python C API、Cython、嵌入式 Python | [cc/projects/cpython/](cc/projects/cpython/) |
@@ -212,14 +211,16 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 
 [go/SKILL.md](go/SKILL.md) 是语言指南；`go/k8s-lab` 的并发测试应运行 `go test -race ./...`。旧 `go/hello/` 不存在。
 
-## Haskell
+## OCaml 与 Lean 4
 
 | 项目目录 | 用途 | 入口 |
 | --- | --- | --- |
-| [haskell/hslab/](haskell/hslab/) | Haskell 基础 hello 实验 | [hello.hs](haskell/hslab/hello.hs) |
-| [haskell/projects/dsl-transform/](haskell/projects/dsl-transform/) | 数据处理 DSL、Monad Transformers | [dsl-transform.cabal](haskell/projects/dsl-transform/dsl-transform.cabal)、[设计与测试](haskell/projects/dsl-transform/DESIGN_BUILD_TEST_DOC.md) |
-| [haskell/projects/sql-parser/](haskell/projects/sql-parser/) | SQL AST、parser 与规则优化实验 | [sql-parser.cabal](haskell/projects/sql-parser/sql-parser.cabal)、[IMPLEMENTATION](haskell/projects/sql-parser/IMPLEMENTATION.md) |
-| [haskell/projects/stm-engine/](haskell/projects/stm-engine/) | STM 并发 KV 与聚合引擎 | [README](haskell/projects/stm-engine/README.md)、[stm-engine.cabal](haskell/projects/stm-engine/stm-engine.cabal) |
+| [ocaml/](ocaml/) | 类型、模式匹配、Map、带显式错误的解释器和常量折叠 | [README](ocaml/README.md)、[教程](ocaml/TUTORIAL.md)、[Dune](ocaml/dune-project) |
+| [lean4/](lean4/) | 列表归纳、自然数 AST 和常量折叠正确性证明 | [README](lean4/README.md)、[教程](lean4/TUTORIAL.md)、[Lake](lean4/lakefile.lean) |
+
+Haskell 的四个旧项目及语言指南已按所有者要求移除，不再作为开发入口。
+它们不是新项目的等价迁移；原始文件及恢复提交见
+[退役与新增记录](docs/migrations/2026-10-29-functional-learning.md)。
 
 ## JavaScript、TypeScript 与跨语言应用
 

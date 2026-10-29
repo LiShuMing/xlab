@@ -1,0 +1,16 @@
+--- a/stage0/src/runtime/io.cpp
++++ b/stage0/src/runtime/io.cpp
+@@ -25 +24,0 @@
+-#ifndef LEAN_EMSCRIPTEN
+@@ -26 +24,0 @@
+-#include <sys/random.h>
+@@ -27 +24,0 @@
+-#endif
+--- a/src/runtime/io.cpp
++++ b/src/runtime/io.cpp
+@@ -25 +24,0 @@
+-#ifndef LEAN_EMSCRIPTEN
+@@ -26 +24,0 @@
+-#include <sys/random.h>
+@@ -27 +24,0 @@
+-#endif

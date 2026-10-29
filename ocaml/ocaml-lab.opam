@@ -1,0 +1,12 @@
+opam-version: "2.0"
+synopsis: "Dependency-free OCaml language and expression interpreter lab"
+maintainer: "ming.moriarty@gmail.com"
+authors: "shuming.li"
+build: [
+  ["dune" "build" "-p" name "-j" jobs]
+  ["dune" "runtest" "-p" name "-j" jobs] {with-test}
+]
+depends: [
+  "ocaml" {= "5.5.2"}
+  "dune" {= "3.24.2"}
+]

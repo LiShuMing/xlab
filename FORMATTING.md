@@ -28,6 +28,8 @@ points and accurate navigation do not require one formatter for every language.
 C/C++: use the nearest `.clang-format`; root and cclab styles intentionally differ.
 Rust: `cargo fmt --check` in the owning Cargo workspace.
 Go: `gofmt -l` on the changed Go files; preserve tabs.
+OCaml: follow the owning Dune library/interface split; `dune build` and `dune runtest`.
+Lean 4: use the pinned Lake toolchain; proofs compile with warnings treated as errors.
 Python: use module Ruff/Black/isort settings as configured, without running competing
 formatters blindly. LLM Lab uses its own pyproject settings and 100-column limit.
 Java/Kotlin: preserve existing module style; do not introduce a global formatter.
