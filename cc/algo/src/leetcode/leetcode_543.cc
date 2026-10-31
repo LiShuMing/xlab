@@ -16,27 +16,47 @@
  *       4
  * The diameter of the tree is 3, which is the path [4,2,1,3] (4 edges: 4->2->1->3)
  */
+// class Solution {
+// private:
+//     int maxDiameter;
+
+//     int dfs(TreeNode* node) {
+//         if (!node) {
+//             return 0;
+//         }
+//         int leftDepth = dfs(node->left);
+//         int rightDepth = dfs(node->right);
+//         // Update the maximum diameter (path through this node)
+//         maxDiameter = max(maxDiameter, leftDepth + rightDepth);
+//         // Return the depth of this subtree
+//         return max(leftDepth, rightDepth) + 1;
+//     }
+
+// public:
+//     int diameterOfBinaryTree(TreeNode* root) {
+//         maxDiameter = 0;
+//         dfs(root);
+//         return maxDiameter;
+//     }
+// };
+
 class Solution {
-private:
-    int maxDiameter;
-
-    int dfs(TreeNode* node) {
-        if (!node) {
-            return 0;
-        }
-        int leftDepth = dfs(node->left);
-        int rightDepth = dfs(node->right);
-        // Update the maximum diameter (path through this node)
-        maxDiameter = max(maxDiameter, leftDepth + rightDepth);
-        // Return the depth of this subtree
-        return max(leftDepth, rightDepth) + 1;
-    }
-
 public:
     int diameterOfBinaryTree(TreeNode* root) {
-        maxDiameter = 0;
-        dfs(root);
-        return maxDiameter;
+        int ans = 0;
+        dfs(root, ans);
+        return ans;
+    }
+
+    int dfs(TreeNode* r, int& ans) {
+        if (!r) {
+            return 0;
+        }
+        int l_d = dfs(r->left, ans);
+        int r_d = dfs(r->right, ans);
+        ans = max(ans, l_d + r_d);
+        return max(l_d, r_d) + 1;
+
     }
 };
 

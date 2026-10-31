@@ -1,31 +1,72 @@
 #include "../include/fwd.h"
 
+// class Solution {
+// public:
+//     bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
+//         if (prerequisites.empty()) return true;
+//         vector<int> inDegree(numCourses, 0);
+//         unordered_map<int, vector<int>> graph;
+//         for (auto& prerequisite : prerequisites) {
+//             graph[prerequisite[1]].push_back(prerequisite[0]);
+//             inDegree[prerequisite[0]]++;
+//         }
+//         queue<int> q;
+//         for (int i = 0; i < numCourses; i++) {
+//             if (inDegree[i] == 0) q.push(i);
+//         }
+//         while (!q.empty()) {
+//             int course = q.front();
+//             q.pop();
+//             for (auto& neighbor : graph[course]) {
+//                 inDegree[neighbor]--;
+//                 if (inDegree[neighbor] == 0) q.push(neighbor);
+//             }
+//         }
+//         for (int i = 0; i < numCourses; i++) {
+//             if (inDegree[i] != 0) return false;
+//         }
+//         return true;
+//     }
+// };
+
 class Solution {
 public:
     bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
-        if (prerequisites.empty()) return true;
-        vector<int> inDegree(numCourses, 0);
+        if (prerequisites.empty()) {
+            return true;
+        }
+
+        // use in degree to detect cycle
+        vector<int> ind(numCourses, 0);
+        // construct graph
         unordered_map<int, vector<int>> graph;
         for (auto& prerequisite : prerequisites) {
             graph[prerequisite[1]].push_back(prerequisite[0]);
-            inDegree[prerequisite[0]]++;
+            ind[prerequisite[0]]++;
         }
+        // traverse graph
         queue<int> q;
         for (int i = 0; i < numCourses; i++) {
-            if (inDegree[i] == 0) q.push(i);
+            if (ind[i] == 0) {
+                q.push(i);
+            }
         }
+
+        int count = 0;
         while (!q.empty()) {
             int course = q.front();
             q.pop();
+            count++;
+
             for (auto& neighbor : graph[course]) {
-                inDegree[neighbor]--;
-                if (inDegree[neighbor] == 0) q.push(neighbor);
+                ind[neighbor]--;
+
+                if (ind[neighbor] == 0) {
+                    q.push(neighbor);
+                }
             }
         }
-        for (int i = 0; i < numCourses; i++) {
-            if (inDegree[i] != 0) return false;
-        }
-        return true;
+        return count == numCourses;
     }
 };
 

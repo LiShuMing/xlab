@@ -9,7 +9,7 @@ No project below has an accepted source-to-target mapping for retirement.
 
 | Root | Tracked entries | Classification |
 | --- | ---: | --- |
-| `cc/algo` | 300 | retained experiment; no accepted migration mapping |
+| `cc/algo` | 320 | retained experiment; no accepted migration mapping |
 | `cc/ccbench` | 15 | retained experiment; no accepted migration mapping |
 | `cc/cclab` | 118 | retained experiment; no accepted migration mapping |
 | `cc/nasm` | 19 | retained experiment; no accepted migration mapping |
@@ -42,7 +42,7 @@ No project below has an accepted source-to-target mapping for retirement.
 | `python/projects/py-torch` | 27 | retained experiment; no accepted migration mapping |
 | `python/projects/py-toydb` | 19 | retained experiment; no accepted migration mapping |
 | `python/projects/strata-review` | 8 | retained experiment; no accepted migration mapping |
-| `python/pylab` | 57 | retained experiment; no accepted migration mapping |
+| `python/pylab` | 72 | retained experiment; no accepted migration mapping |
 | `rust/rdb` | 23 | retained experiment; no accepted migration mapping |
 | `rust/rlab` | 78 | retained experiment; no accepted migration mapping |
 | `shell/bin` | 7 | retained experiment; no accepted migration mapping |

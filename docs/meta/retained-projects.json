@@ -4,7 +4,7 @@
   "projects": [
     {
       "path": "cc/algo",
-      "tracked_entries": 300,
+      "tracked_entries": 320,
       "classification": "retained experiment; no accepted migration mapping",
       "disposition": "retain"
     },
@@ -202,7 +202,7 @@
     },
     {
       "path": "python/pylab",
-      "tracked_entries": 57,
+      "tracked_entries": 72,
       "classification": "retained experiment; no accepted migration mapping",
       "disposition": "retain"
     },

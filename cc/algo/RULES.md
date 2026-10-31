@@ -151,6 +151,25 @@ Every solution must document:
 - Collision resolution
 - Resize strategies
 
+### Data Structures (`src/algo/algo_<name>.cc`)
+
+Core structures, each with a brute-force cross-check in `main()`:
+
+| File | Structure | Engine-side analogy |
+| --- | --- | --- |
+| `algo_dsu.cc` | Disjoint set union | Predicate equivalence classes, join graph |
+| `algo_fenwick.cc` | Fenwick tree / BIT | Prefix aggregates, incremental view maintenance |
+| `algo_sparse_table.cc` | Sparse table (RMQ) | Block-level min/max index, static lookup |
+| `algo_monotonic_queue.cc` | Monotonic queue / stack | Window aggregate increment, next-greater boundary |
+| `algo_skiplist.cc` | Skip list | Memtable (RocksDB/LevelDB) |
+| `algo_segment_tree.cc` | Segment tree (basics) | Range aggregate |
+| `algo_segment_tree_beats.cc` | Segment tree beats | Running max / TopN bound shrinkage |
+| `algo_segment_tree_merge_split.cc` | Merge & split segment tree | Partition/rowset merge, compaction |
+| `algo_persistent_segment_tree.cc` | Persistent segment tree | MVCC snapshot, as-of join, flashback |
+| `algo_li_chao_tree.cc` | Li Chao tree | Piecewise-linear cost model |
+| `algo_kd_tree.cc` | K-D tree | Spatial index, partition pruning |
+| `algo_block_decompose.cc` | Sqrt decomposition | Zone map, block skipping |
+
 ### Caches (`src/algo/algo_cache.cc`)
 - LRU (Least Recently Used)
 - LFU (Least Frequently Used)
