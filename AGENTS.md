@@ -2,9 +2,19 @@
 
 This document provides essential information for AI coding agents working with the `xlab` repository.
 
+## Mandatory Repository Rules
+
+Before starting any task, read [RULES.md](RULES.md). Its Gmail-only commit identity
+and public-content/credential safety requirements apply to every agent, delegated
+agent, and subtree. Read it again before creating or rewriting commits or pushing.
+Subdirectory instructions may strengthen these requirements but must not relax them.
+Delegating agents must pass these requirements to their workers; an already-running
+session must reload the rules before its next Git write operation.
+
 ## Document Role
 
-This is the canonical root instruction file for coding agents. Keep durable
+This is the canonical root instruction entry point for coding agents. Keep commit
+identity and public-content safety policy in `RULES.md`; keep other durable
 repository rules, build/test commands, style conventions, and safety notes here.
 For human-facing project navigation, use `README.md`. For personal
 knowledge-management workflows, use `SKILL.md`. For active backlog items, use
@@ -371,6 +381,10 @@ When generating code for this repository:
 
 ## Security Considerations
 
+- Follow [RULES.md](RULES.md) for Gmail-only Author/Committer identity and mandatory
+  checks against non-public corporate content and credentials. Inspect actual
+  staged Git objects before committing and every outgoing commit before pushing;
+  a clean final working tree or keyword-only scan is not sufficient evidence.
 - Environment variables loaded via `env.sh` scripts
 - Database connection strings and credentials stored separately
 - `.secrect_key` (intentionally misspelled) and `.env` / `.env.*` are gitignored.
@@ -395,12 +409,13 @@ When generating code for this repository:
 
 ## Important Files
 
+- `RULES.md` — Mandatory Gmail commit identity and public-content/credential safety policy
 - `.clang-format` — C++ code formatting rules
 - `.clang-tidy` — C++ linting configuration  
 - `CLAUDE.md` — Claude Code compatibility pointer to this file
 - `QWEN.md` — Qwen Code compatibility pointer (mirrors `CLAUDE.md`)
 - `**/SKILL.md` — Language/module specific guidelines (root, cc, go, java, python, rust, shell)
-- `**/AGENTS.md`, `**/RULES.md`, `**/TODOS.md` — Subtree-specific agent rules; these override root guidance for their directory
+- `**/AGENTS.md`, `**/RULES.md`, `**/TODOS.md` — Subtree-specific guidance; may refine local workflows but must not relax root `RULES.md` identity and safety requirements
 
 ## Contact & Context
 
