@@ -11,7 +11,7 @@ No project below has an accepted source-to-target mapping for retirement.
 | --- | ---: | --- |
 | `cc/algo` | 300 | retained experiment; no accepted migration mapping |
 | `cc/ccbench` | 15 | retained experiment; no accepted migration mapping |
-| `cc/cclab` | 116 | retained experiment; no accepted migration mapping |
+| `cc/cclab` | 118 | retained experiment; no accepted migration mapping |
 | `cc/nasm` | 19 | retained experiment; no accepted migration mapping |
 | `cc/projects/cpython` | 30 | retained experiment; no accepted migration mapping |
 | `cc/projects/interpreter` | 16 | retained experiment; no accepted migration mapping |
@@ -32,6 +32,7 @@ No project below has an accepted source-to-target mapping for retirement.
 | `llm/cuda` | 15 | retained experiment; no accepted migration mapping |
 | `python/ivm` | 2 | retained experiment; no accepted migration mapping |
 | `python/llm_benchmark` | 38 | retained experiment; no accepted migration mapping |
+| `python/projects/daft-lab` | 11 | reproducible native execution learning lab |
 | `python/projects/llm-lab` | 27 | retained experiment; no accepted migration mapping |
 | `python/projects/py-cycle-lab` | 27 | retained experiment; no accepted migration mapping |
 | `python/projects/py-ego` | 135 | retained experiment; no accepted migration mapping |

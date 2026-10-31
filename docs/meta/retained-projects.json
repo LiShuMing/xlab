@@ -1,6 +1,6 @@
 {
   "source_commit": "f20485e3b278e34df0b927c89dba1591d65ba6ba",
-  "scope": "Current retained project inventory including owner-authorized Haskell retirement and OCaml/Lean 4 learning labs; no build/runtime acceptance claim",
+  "scope": "Current retained project inventory including OCaml/Lean 4 learning labs, singleton exercises and Daft native experiments; no whole-repository build/runtime acceptance claim",
   "projects": [
     {
       "path": "cc/algo",
@@ -16,7 +16,7 @@
     },
     {
       "path": "cc/cclab",
-      "tracked_entries": 116,
+      "tracked_entries": 118,
       "classification": "retained experiment; no accepted migration mapping",
       "disposition": "retain"
     },
@@ -138,6 +138,12 @@
       "path": "python/llm_benchmark",
       "tracked_entries": 38,
       "classification": "retained experiment; no accepted migration mapping",
+      "disposition": "retain"
+    },
+    {
+      "path": "python/projects/daft-lab",
+      "tracked_entries": 11,
+      "classification": "reproducible native execution learning lab",
       "disposition": "retain"
     },
     {

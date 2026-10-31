@@ -150,6 +150,7 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 
 | 项目目录 | 用途 | 入口 |
 | --- | --- | --- |
+| [python/projects/daft-lab/](python/projects/daft-lab/) | Daft native 列式执行、batch 与 UDF 可复现实验 | [README](python/projects/daft-lab/README.md)、[实验入口](python/projects/daft-lab/lab.py) |
 | [python/projects/llm-lab/](python/projects/llm-lab/) | LLM 训练与参考实现 | [README](python/projects/llm-lab/README.md)、[pyproject.toml](python/projects/llm-lab/pyproject.toml) |
 | [python/pylab/](python/pylab/) | 核心 Python 实验室、算法、数据库及 benchmark 工具 | [README](python/pylab/README.md)、[AGENTS](python/pylab/AGENTS.md) |
 | [python/pylab/dbsp/](python/pylab/dbsp/) | DBSP 增量计算子实验 | [dbsp.py](python/pylab/dbsp/dbsp.py) |

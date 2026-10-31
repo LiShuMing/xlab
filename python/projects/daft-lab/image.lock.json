@@ -1,0 +1,28 @@
+{
+  "registry": "https://public.ecr.aws",
+  "repository": "docker/library/python",
+  "tag": "3.11-slim-bookworm",
+  "manifest_digest": "sha256:061c190f3d5815b341a18dfe8a45771f8ba68c15a607ea56997fde3009ac4eec",
+  "layers": [
+    {
+      "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+      "digest": "sha256:3c5439d0ae62993af4cc4e21b8c777297e81bc40e200d4633c85a3e0f977a3bc",
+      "size": 28247437
+    },
+    {
+      "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+      "digest": "sha256:7d94a600ec4db9376baf5256fe8930655328c1f5e0d170179a0180dcecf69098",
+      "size": 3341499
+    },
+    {
+      "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+      "digest": "sha256:8f7c262eb376d9d177f52c91b6a03c3b4996055a9e84ca2b7e92412ddd29d5ae",
+      "size": 16031646
+    },
+    {
+      "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+      "digest": "sha256:1f235d1b4734e9d629d1705e7caf2db4ffc7775086658cc46a22b6eb2c7a726f",
+      "size": 250
+    }
+  ]
+}
