@@ -353,3 +353,6 @@ gpt2-124M.ckpt
 
 # Daft experiments: private rootfs, environments, data and evidence
 /python/projects/daft-lab/.local/
+
+# K-means synthetic runs and per-round evidence (not source)
+/python/pylab/.local/

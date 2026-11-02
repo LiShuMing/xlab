@@ -67,6 +67,29 @@ python leetcode/300.py
 python -c "from leetcode.offer.47 import solve; print(solve([1,2,3]))"
 ```
 
+### Distributed K-means learning experiment
+
+Read [the overall design and experiment contract](DISTRIBUTED_KMEANS.md) first.
+[distributed_kmeans.py](distributed_kmeans.py) compares a serial reference with
+persistent spawn workers, unequal shards, a straggler and explicit failures.
+It simulates synchronous distributed computation on one host, not network or
+cluster performance. No Ray, Spark, service or account is required.
+
+From the repository root, use a project-local environment:
+
+```sh
+python3 -m venv python/pylab/.venv
+uv pip install --python python/pylab/.venv/bin/python numpy==2.1.0 pytest==8.3.5
+OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python/pylab/.venv/bin/python -m pytest python/pylab/test/test_distributed_kmeans.py -q
+OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python/pylab/.venv/bin/python python/pylab/distributed_kmeans.py
+```
+
+The CLI executes the complete matrix on 10,000 synthetic points. Use `--rows 1000`
+for a smaller run. JSON and Markdown evidence go to a new, ignored
+`.local/kmeans/<run-id>/` directory; `--output` must name a new directory.
+Every comparison uses the same input and initial centers. Timing includes startup
+and cleanup; a small parallel run may be slower than serial.
+
 ## Project Structure
 
 ```
