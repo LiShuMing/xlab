@@ -1,64 +1,54 @@
-# 文档导航与维护归属
+# 文档导航
 
-`docs/` 是保留在 xlab 的 Markdown / Obsidian 资料，不是根站点的构建输入。
-项目运行与开发入口见 [PROJECTS.md](../PROJECTS.md)；知识捕获工作流见
-[SKILL.md](../SKILL.md)，写作参考见 [skills/](skills/)。
+`docs/` 是 xlab 的 Markdown / Obsidian 资料库，不参与站点构建。项目运行与开发入口见
+[PROJECTS.md](../PROJECTS.md)，知识捕获工作流见 [SKILL.md](../SKILL.md)。
 
-## 已迁入 Cygnus 的知识资料
+## 六个入口
 
-两批共 **184 份**源文档已提取到私有知识仓库
-[Cygnus](https://github.com/LiShuMing/cygnus)。该数量依据两批迁移清单，
-不代表全部 xlab 文档，也不代表技术内容已经审核。迁移资料仍为 `needs-review`；
-来源与逐文件校验以 Cygnus 的迁移记录为准。阅读私有链接需要已有仓库权限。
+| 想做什么 | 入口 | 说明 |
+| --- | --- | --- |
+| 设计一个系统 | [design/](design/) | 自建方案：约束拆解、选型决策树、取舍与验证 |
+| 了解某个系统怎么做的 | [systems/](systems/) | 23 个系统的架构剖析与源码阅读笔记 |
+| 知道某件事该怎么做 | [playbooks/](playbooks/) | 面试、学习方法、性能、评审、写作、可执行技能包 |
+| 看当前在学什么 | [notes/](notes/) | AI 与计算系统的学习计划、进度、LLM/RAG 笔记 |
+| 查仓库级契约 | [contracts/](contracts/) | 依赖声明、验证矩阵、保留项目、清理边界 |
+| 查历史发生了什么 | [archive/](archive/) | 迁移记录、审计快照、周期性产出 |
 
-以下资料统一在 Cygnus 维护。2026-10-14 完成逐文件校验后，xlab 中对应的
-184 份源正文及对应旧目录已退役，不保留跳转文件；其他资料仍保留。历史原件可从
-备份分支恢复，详见 [退役记录](migrations/2026-10-14-cygnus-source-retirement.md)。
+前五个是活文档，随使用更新；`archive/` 是只读快照，只追加、不改写。
 
-| 原 xlab 路径（已移除） | Cygnus 维护入口 |
-| --- | --- |
-| [ClickHouse](https://github.com/LiShuMing/cygnus/tree/main/books/clickhouse-book) | [books/clickhouse-book](https://github.com/LiShuMing/cygnus/tree/main/books/clickhouse-book) |
-| [JDK](https://github.com/LiShuMing/cygnus/tree/main/books/deep-jdk-book) | [books/deep-jdk-book](https://github.com/LiShuMing/cygnus/tree/main/books/deep-jdk-book) |
-| [LLVM](https://github.com/LiShuMing/cygnus/tree/main/books/Deep_Understanding_LLVM) | [books/Deep_Understanding_LLVM](https://github.com/LiShuMing/cygnus/tree/main/books/Deep_Understanding_LLVM) |
-| [DuckDB](https://github.com/LiShuMing/cygnus/tree/main/books/duckdb-internals) | [books/duckdb-internals](https://github.com/LiShuMing/cygnus/tree/main/books/duckdb-internals) |
-| [Flink](https://github.com/LiShuMing/cygnus/tree/main/books/flink-code-book) | [books/flink-code-book](https://github.com/LiShuMing/cygnus/tree/main/books/flink-code-book) |
-| [Spark](https://github.com/LiShuMing/cygnus/tree/main/books/spark-internals) | [books/spark-internals](https://github.com/LiShuMing/cygnus/tree/main/books/spark-internals) |
-| [DataFusion](https://github.com/LiShuMing/cygnus/tree/main/research/datafusion) | [research/datafusion](https://github.com/LiShuMing/cygnus/tree/main/research/datafusion) |
-| [Umbra](https://github.com/LiShuMing/cygnus/tree/main/research/umbra) | [research/umbra](https://github.com/LiShuMing/cygnus/tree/main/research/umbra) |
-| [Velox](https://github.com/LiShuMing/cygnus/tree/main/research/velox) | [research/velox](https://github.com/LiShuMing/cygnus/tree/main/research/velox) |
+## 新文档该放哪
 
-## 仍在 xlab 的资料
+按此顺序判断，任一命中即停：
 
-- 书稿现统一在 [Cygnus books](https://github.com/LiShuMing/cygnus/tree/main/books) 维护；最后四组、76 个源文件的验收与恢复见 [本次退役记录](migrations/2026-10-15-remaining-books-retirement.md)。
-- [reading-open-source/](reading-open-source/)、[about-llm/](about-llm/)：其余源码阅读与 LLM 笔记
-- [learn/](learn/)：学习计划；未写的关联笔记标为计划项，不伪造空文件
-- [reports/](reports/)、[build-projects/](build-projects/)：历史研究与项目资料
-- [meta/](meta/)、[migrations/](migrations/)：审计、规划及迁移历史
-- [skills/](skills/)：可复用写作与工具指南
+1. 描述**自己设计的系统**（有约束、方案、取舍、验证）→ `design/`
+2. 研究**某个已有系统**（架构剖析、源码路径、变更跟踪）→ `systems/<系统名>/`
+3. 属于**做事的方法**（面试怎么准备、代码怎么评审、笔记怎么写）→ `playbooks/`
+4. 记录**正在推进的学习计划**或进度 → `notes/`
+5. 是**仓库必须遵守的契约**（依赖、验证、保留/清理决策）→ `contracts/`
+6. 是**已完成的记录**（迁移、审计、日报、通知摘要、站点速记）→ `archive/`
 
-实际项目的 README、设计与测试说明跟随所属源码目录。迁出应用见
-[Constellation 迁移记录](migrations/2026-10-13-constellation.md)及
-[DayLog 源码退役记录](migrations/2026-10-14-daylog-source-retirement.md)；
-DayLog 已迁入 Carina；FragmentTutor 等五个项目按所有者决定从 xlab 完整移除，见[退役记录](migrations/2026-10-15-five-project-retirement.md)。目录存在或有 README 不表示构建与测试已通过。
+都放不进去，通常是分类维度混了：主题（`systems/`）、产出（`design/`）、
+历史（`archive/`）三者不要重叠。
+
+## 维护约定
+
+- **不建单文件目录**：单篇并入语义最近的上级目录，避免目录数量随主题增长而膨胀。
+- **目录即索引**：每个一级目录的 `README.md` 是该目录入口；新增文档时同步更新。
+- **归档只读**：`archive/` 下是历史快照，只允许修正失效的导航链接，不允许改写结论、
+  补写新证据或删除记录。
+- **归档靠文件名检索**：`archive/` 内统一 `YYYY-MM-DD-<来源>-<主题>.md`，
+  不依赖目录层级表达时间。
+- **跨层链接写相对路径**：移动文档时用 `git mv` 保留历史，并同步修正入链。
 
 ## 保留与隐私边界
 
-根知识库不整体清空。私人记录、运维资料、运行数据、配置及历史排除项
-必须单独审查，不能当作普通残余目录清理、公开复制或重新发布其内容。
-不要为了修复旧链接恢复凭据、私人日志或数据快照；只更新安全的导航说明。
-[旧知识库规划](meta/migration-guide.md) 中的 `_index`、`read`、`build`、
-`_templates` 是未落地的方案，不是当前存在的目录或已完成迁移。
+根知识库不整体清空。私人记录、运维资料、运行数据、配置及历史排除项必须单独审查，
+不能当作普通残余目录清理、公开复制或重新发布其内容。不要为了修复旧链接恢复凭据、
+私人日志或数据快照；只更新安全的导航说明。
 
-Python 工具与研究模块的去向、验证和恢复方式见
-[Python 源码退役记录](migrations/2026-10-14-python-source-retirement.md)。
+书稿、邮件摘要与每日学习已迁出 xlab，去向（Cygnus / Lyra）与恢复方式见
+[archive/](archive/)；当前仍保留哪些项目以
+[contracts/retained-projects.md](contracts/retained-projects.md) 为准。
 
-## Codex / Linux 与邮件、学习模块
-
-另有 96 份 Codex/Linux 源稿归档至 Cygnus，总计 280 份迁出源文档；仍为 needs-review，非技术正确性认证。
-- [Codex 源码书](https://github.com/LiShuMing/cygnus/tree/main/books/codex-code-book)
-- [Linux 内核书](https://github.com/LiShuMing/cygnus/tree/main/books/deep-linux-book)
-- [邮件摘要](https://github.com/LiShuMing/lyra/tree/main/modules/email-digest)与[每日学习](https://github.com/LiShuMing/lyra/tree/main/modules/daily-learning)在 Lyra 维护。
-
-本批 174 个源路径全部登记：161 个归档或适配，13 个历史文档/生成输出仅保留于 Git 历史和备份，未迁入目标。详情、排除清单和恢复方式见[退役记录](migrations/2026-10-14-books-email-learning-retirement.md)。Calcite、RisingWave、Claude、Feynman 资料不在本批范围。
-
-Current retained-project decisions and cleanup boundaries: [classification](meta/retained-projects.md), [consolidated cleanup](meta/repository-cleanup.md).
+实际项目的 README、设计与测试说明跟随所属源码目录，不放这里；本目录只收跨项目的
+知识与方法。

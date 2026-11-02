@@ -73,7 +73,7 @@ xlab/
 │   ├── fio/              # FIO benchmark scripts
 │   └── mysql/            # MySQL utilities
 ├── tools/                # Repository maintenance scripts (healthcheck.sh)
-└── docs/                 # Obsidian vault: retained notes/reports; books maintained in Cygnus
+└── docs/                 # Six sections: design/ systems/ playbooks/ notes/ contracts/ archive/
 ```
 
 ## Migrated Project Routing
@@ -317,15 +317,15 @@ Research-report documentation and commands now live in
 
 `.gitmodules` contains exactly two pinned gitlinks, GoogleTest and Google
 Benchmark. Preserve their hashes and URLs. All 69 original declarations and the
-historical audit remain in [the catalog](docs/meta/dependency-declarations.json).
+historical audit remain in [the catalog](docs/contracts/dependency-declarations.json).
 Current dispositions separate installed-package/explicit-source dependencies
 from unversioned catalog references; historical unknown intent remains unknown.
 Do not invent source revisions or restore orphan declarations. See
-[current contracts](docs/meta/dependencies-current.md). Legacy consumers must
+[current contracts](docs/contracts/dependencies-current.md). Legacy consumers must
 use explicit package/source inputs and fail clearly when prerequisites are absent.
 Validate with `python3 tools/check_dependencies.py` and `bash tools/healthcheck.sh`.
 A metadata pass is not whole-repository build certification. Actual verification
-status and core commands live in [the matrix](docs/meta/validation-matrix.md).
+status and core commands live in [the matrix](docs/contracts/validation-matrix.md).
 
 ### Historical Reference Categories
 - **C++ reference catalog**: DuckDB, RocksDB, Folly, Arrow and other historical references
@@ -338,9 +338,9 @@ Compare declarations and tracked gitlinks before discussing initialization.
 ## Development Conventions
 
 ### Documentation Standards
-Use [docs/README.md](docs/README.md) for documentation ownership and Cygnus routes,
+Use [docs/README.md](docs/README.md) for the six-section routing and Cygnus routes,
 [SKILL.md](SKILL.md) for knowledge workflow, and
-[writing-companion](docs/skills/writing-companion/SKILL.md) for writing guidance:
+[writing-companion](docs/playbooks/skills/writing-companion/SKILL.md) for writing guidance:
 
 - **Persona**: Senior database kernel engineer
 - **Report Types**:
@@ -424,6 +424,6 @@ When generating code for this repository:
 - **Open Source**: Committer on StarRocks
 - **Research Interests**: Incremental view maintenance (IVM), streaming systems, query optimizers
 
-All former `docs/books/` source roots are retired without stubs. Use the [accepted book routes](docs/migrations/2026-10-15-remaining-books-retirement.md); do not recreate them in xlab.
+All former `docs/books/` source roots are retired without stubs. Use the [accepted book routes](docs/archive/migrations/2026-10-15-remaining-books-retirement.md); do not recreate them in xlab.
 
 Path, placeholder and formatting conventions: [FORMATTING.md](FORMATTING.md).

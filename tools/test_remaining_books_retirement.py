@@ -4,7 +4,7 @@ from pathlib import Path
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
-RECORD = ROOT / 'docs/migrations/2026-10-15-remaining-books-retirement.json'
+RECORD = ROOT / 'docs/archive/migrations/2026-10-15-remaining-books-retirement.json'
 
 
 class RemainingBooksRetirementTests(unittest.TestCase):
@@ -45,8 +45,8 @@ class RemainingBooksRetirementTests(unittest.TestCase):
         import re
         from urllib.parse import urlsplit, unquote
         for name in ('README.md', 'PROJECTS.md', 'AGENTS.md', 'TASKS.md', 'docs/README.md',
-                     'docs/meta/repository-cleanup.md', 'docs/meta/retained-projects.md',
-                     'docs/migrations/2026-10-15-remaining-books-retirement.md'):
+                     'docs/contracts/repository-cleanup.md', 'docs/contracts/retained-projects.md',
+                     'docs/archive/migrations/2026-10-15-remaining-books-retirement.md'):
             path = ROOT / name
             for target in re.findall(r'\]\(([^)]+)\)', path.read_text()):
                 parsed = urlsplit(target)

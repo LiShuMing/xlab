@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class DocumentRetirementTests(unittest.TestCase):
     def test_only_manifested_bodies_are_retired(self):
-        record = json.loads((ROOT / "docs/migrations/2026-10-14-cygnus-source-retirement.json").read_text())
+        record = json.loads((ROOT / "docs/archive/migrations/2026-10-14-cygnus-source-retirement.json").read_text())
         files = record["files"]
         self.assertEqual(len(files), 184)
         self.assertEqual(len({item["source"] for item in files}), 184)

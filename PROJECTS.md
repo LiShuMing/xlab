@@ -9,7 +9,7 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 ## 使用方式
 
 核心项目的类型、研究主题、环境、最小验证命令和实际结果见
-[验证矩阵](docs/meta/validation-matrix.md)。本索引不将“目录存在”视为测试通过。
+[验证矩阵](docs/contracts/validation-matrix.md)。本索引不将“目录存在”视为测试通过。
 `pylab` 是语言/算法/数据库学习实验，`py-lab` 是 AI 应用实验；
 `llm/cuda`、`llm-lab`、`llm_benchmark` 分别负责环境、训练实验和评测。
 
@@ -19,28 +19,6 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
    README 中的历史设计不一定等于当前实现。
 4. “旧目录”保留用于定位，不应当作为可运行项目入口。
 5. 第三方声明不等于 gitlink；先查本文末尾的状态说明，不要默认递归下载全部依赖。
-
-## 已迁移项目
-
-以下旧路径仅供追溯；代码、构建与后续任务应在目标仓库进行。
-
-| Former xlab path | Current home |
-| --- | --- |
-| `liminalis/` | [lyra](https://github.com/LiShuMing/lyra/tree/main) |
-| `panming/` | [carina](https://github.com/LiShuMing/carina/tree/main) |
-| `python/projects/tech-radar/` | [carina/modules/tech-radar](https://github.com/LiShuMing/carina/tree/main/modules/tech-radar) |
-| `cc/projects/kv-store/` | [vela/storage](https://github.com/LiShuMing/vela/tree/main/storage) |
-| `cc/projects/query-engine/` | [vela/execution](https://github.com/LiShuMing/vela/tree/main/execution) |
-| `optimizer-learning/` | [vela/optimizer](https://github.com/LiShuMing/vela/tree/main/optimizer) |
-| `swift/projects/daylog/` | [carina/apps/daylog](https://github.com/LiShuMing/carina/tree/main/apps/daylog) |
-| `python/projects/py-cli/` | [lyra/modules/developer-tools](https://github.com/LiShuMing/lyra/tree/main/modules/developer-tools) |
-| `python/projects/py-tools/` | [lyra/modules/developer-tools](https://github.com/LiShuMing/lyra/tree/main/modules/developer-tools) |
-| `python/projects/py-optimizer1/` | [vela/research/optimizer-evidence](https://github.com/LiShuMing/vela/tree/main/research/optimizer-evidence) |
-| `python/projects/py-optimizer2/` | [vela/research/optimizer-scanner](https://github.com/LiShuMing/vela/tree/main/research/optimizer-scanner) |
-| `python/projects/py-pia/` | [carina/modules/product-intelligence](https://github.com/LiShuMing/carina/tree/main/modules/product-intelligence) |
-| `python/projects/py-report/` | [carina/modules/research-report](https://github.com/LiShuMing/carina/tree/main/modules/research-report) |
-
-知识资料的维护归属、Cygnus 184 份文档路由、源正文退役及保留边界见 [docs/README.md](docs/README.md)。
 
 ## 按任务路由
 
@@ -221,7 +199,7 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 
 Haskell 的四个旧项目及语言指南已按所有者要求移除，不再作为开发入口。
 它们不是新项目的等价迁移；原始文件及恢复提交见
-[退役与新增记录](docs/migrations/2026-10-29-functional-learning.md)。
+[退役与新增记录](docs/archive/migrations/2026-10-29-functional-learning.md)。
 
 ## JavaScript、TypeScript 与跨语言应用
 
@@ -250,16 +228,16 @@ Haskell 的四个旧项目及语言指南已按所有者要求移除，不再作
 | [llm/cuda/](llm/cuda/) | GPU 诊断、本地模型与 CUDA/ROCm 实验 | [PYTORCH_SETUP.md](llm/cuda/PYTORCH_SETUP.md)、[diagnose_gpu.sh](llm/cuda/diagnose_gpu.sh) |
 | [tools/](tools/) | 仓库级工具 | [build-windows.ps1](tools/build-windows.ps1)、[healthcheck.sh](tools/healthcheck.sh) |
 | [cmake/](cmake/) | 共享 CMake 依赖与编译选项 | [XlabDependencies.cmake](cmake/XlabDependencies.cmake) |
-| [docs/](docs/) | 知识库、技术报告、书籍笔记与技能 | [文档导航与归属](docs/README.md)、[Cygnus books](https://github.com/LiShuMing/cygnus/tree/main/books)、[reports](docs/reports/)、[skills](docs/skills/) |
+| [docs/](docs/) | 系统设计、系统剖析、方法与归档 | [文档导航](docs/README.md)、[Cygnus books](https://github.com/LiShuMing/cygnus/tree/main/books)、[systems](docs/systems/)、[playbooks](docs/playbooks/) |
 
 ## 第三方依赖与历史参考目录
 
-下面的路径保留原有参考目录，不能仅凭列表判断源码已恢复。归档决定和消费证据见 [逐项依赖审计](docs/meta/dependency-declarations.md)。
+下面的路径保留原有参考目录，不能仅凭列表判断源码已恢复。归档决定和消费证据见 [逐项依赖审计](docs/contracts/dependency-declarations.md)。
 当前 `.gitmodules` 仅包含 **2 个固定 gitlink**（GoogleTest 和 Benchmark）。
 全部 69 条历史声明及原始消费证据保留在审计清单；其他条目是包/显式源码依赖
 或参考目录，不应当作为已恢复的子模块。未知用途仍按未知记录。
-见 [当前依赖契约](docs/meta/dependencies-current.md)、
-[历史消费审计](docs/meta/dependency-declarations.md)。
+见 [当前依赖契约](docs/contracts/dependencies-current.md)、
+[历史消费审计](docs/contracts/dependency-declarations.md)。
 
 ### C 参考项目
 
@@ -369,4 +347,4 @@ Haskell 的四个旧项目及语言指南已按所有者要求移除，不再作
 - 本文件承担项目路由；仓库规则仍以 [AGENTS.md](AGENTS.md) 为准，
   当前工作计划仍以 [TASKS.md](TASKS.md) 为准。
 
-Current retained-project decisions and cleanup boundaries: [classification](docs/meta/retained-projects.md), [consolidated cleanup](docs/meta/repository-cleanup.md).
+Current retained-project decisions and cleanup boundaries: [classification](docs/contracts/retained-projects.md), [consolidated cleanup](docs/contracts/repository-cleanup.md).

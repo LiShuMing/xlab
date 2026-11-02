@@ -54,6 +54,11 @@ added-line whitespace plus UTF-8, final newline and line endings of changed text
 files. Deletions, binary blobs and gitlinks are ignored. CI supplies explicit
 base/head commits; a clean checkout alone does not make a committed diff clean.
 
+A pure move is not an edit. Paths whose blob is byte-identical to its previous
+location (`git mv`, scored `R100`) are skipped, so relocating a directory never
+forces whitespace fixes inside moved history. A rename carrying any content change
+scores below 100 and is still checked.
+
 Imported thirdparty/vendor sources, the vendored robin_hood header,
 generated build/dist/target directories, lockfiles and notebooks are excluded.
 Do not bulk-reformat them or historical files solely to satisfy a new convention.

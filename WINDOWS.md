@@ -166,4 +166,4 @@ MSVC 19.50, CMake 4.2.3, Rust 1.96, and Python 3.12:
 Ninja's dependency database was also checked for TinyKV's Arena and MemTable
 headers. Focused Rust formatting/Clippy checks completed; existing warnings in
 the laboratory examples remain. Those historical counts include extracted projects; current cleanup CI is recorded
-in the [migration report](docs/migrations/2026-10-13-constellation.md).
+in the [migration report](docs/archive/migrations/2026-10-13-constellation.md).

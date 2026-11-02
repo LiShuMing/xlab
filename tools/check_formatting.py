@@ -27,6 +27,20 @@ def excluded(path):
             or p.name in {'package-lock.json', 'yarn.lock', 'pnpm-lock.yaml', 'robin_hood_map.h'})
 
 
+def identical_renames(revisions):
+    """Destinations whose content is byte-identical to their previous path.
+
+    A pure move is not an edit: ``git mv`` preserves the blob, so ``R100`` proves
+    the text was not touched. Without this, relocating a directory would demand
+    whitespace fixes inside historical snapshots and import unrelated churn into
+    a structural change. Partially-edited renames score below 100 and stay checked.
+    """
+    out = git('diff', '-z', '--name-status', '-M100%', '--diff-filter=R',
+              *revisions, '--').decode()
+    parts = [part for part in out.split('\0') if part]
+    return {parts[i + 2] for i in range(0, len(parts), 3) if parts[i] == 'R100'}
+
+
 def check(base=None, head=None):
     if bool(base) != bool(head):
         raise ValueError('--base and --head must be supplied together')
@@ -38,6 +52,7 @@ def check(base=None, head=None):
         content_ref = ''
     common = ['--no-ext-diff', '--no-textconv', '--no-renames']
     paths = git('diff', *common, '--name-only', '-z', '--diff-filter=ACMT', *revisions, '--').decode().split('\0')
+    moved = identical_renames(revisions)
     entries = git('ls-tree', '-r', '-z', content_ref) if content_ref else git('ls-files', '-s', '-z')
     modes = {}
     for entry in entries.decode().rstrip('\0').split('\0'):
@@ -46,7 +61,7 @@ def check(base=None, head=None):
             modes[name] = metadata.split()[0]
     errors = []
     for path in filter(None, paths):
-        if excluded(path):
+        if excluded(path) or path in moved:
             continue
         obj = content_ref + ':' + path
         if modes.get(path) == '160000':

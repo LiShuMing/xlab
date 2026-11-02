@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class DayLogRetirementTests(unittest.TestCase):
     def test_retired_namespace_is_absent(self):
-        record = json.loads((ROOT / "docs/migrations/2026-10-14-daylog-source-retirement.json").read_text())
+        record = json.loads((ROOT / "docs/archive/migrations/2026-10-14-daylog-source-retirement.json").read_text())
         self.assertEqual(record["file_count"], 97)
         self.assertEqual(len(record["files"]), 97)
         self.assertEqual(len({f["source_path"] for f in record["files"]}), 97)
@@ -39,7 +39,7 @@ class DayLogRetirementTests(unittest.TestCase):
         for name in ("README.md", "PROJECTS.md", "AGENTS.md", "TASKS.md", "SKILL.md", "docs/README.md"):
             source = (ROOT / name).read_text()
             self.assertNotRegex(source, r"\]\([^)]*swift/projects/daylog")
-        record = (ROOT / "docs/migrations/2026-10-14-daylog-source-retirement.md").read_text()
+        record = (ROOT / "docs/archive/migrations/2026-10-14-daylog-source-retirement.md").read_text()
         self.assertIn("原生 UI 验收未运行", record)
         self.assertIn("git revert", record)
 

@@ -14,7 +14,7 @@ DISPOSITIONS = {
 
 
 def validate(root=ROOT):
-    record = json.loads((root / 'docs/meta/dependency-declarations.json').read_text())
+    record = json.loads((root / 'docs/contracts/dependency-declarations.json').read_text())
     rows = record['entries']
     errors = []
     paths = [row['path'] for row in rows]

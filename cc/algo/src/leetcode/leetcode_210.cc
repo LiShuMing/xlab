@@ -4,16 +4,18 @@ class Solution {
 public:
     vector<int> findOrder(int numCourses, vector<vector<int>>& prerequisites) {
         vector<int> ans;
-        vector<int> inDegree(numCourses, 0);
+        vector<int> in_degree(numCourses, 0);
         unordered_map<int, vector<int>> graph;
         for (auto& prerequisite : prerequisites) {
-            graph[prerequisite[1]].push_back(prerequisite[0]);
-            inDegree[prerequisite[0]]++;
+            int cur = prerequisite[0];
+            int next = prerequisite[1];
+            graph[next].push_back(cur);
+            in_degree[cur]++;
         }
 
         queue<int> q;
         for (int i = 0; i < numCourses; i++) {
-            if (inDegree[i] == 0) q.push(i);
+            if (in_degree[i] == 0) q.push(i);
         }
 
         while (!q.empty()) {
@@ -21,8 +23,8 @@ public:
             q.pop();
             ans.push_back(course);
             for (auto& neighbor : graph[course]) {
-                inDegree[neighbor]--;
-                if (inDegree[neighbor] == 0) q.push(neighbor);
+                in_degree[neighbor]--;
+                if (in_degree[neighbor] == 0) q.push(neighbor);
             }
         }
         if (ans.size() == numCourses) return ans;

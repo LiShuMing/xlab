@@ -9,19 +9,23 @@ ROOT = Path(__file__).resolve().parents[1]
 GUIDES = [
     "README.md", "PROJECTS.md", "AGENTS.md", "SKILL.md", "TASKS.md",
     "cc/cclab/docs/api/README.md", "cc/cclab/docs/architecture/README.md",
-    "docs/README.md", "docs/meta/migration-guide.md",
-    "docs/meta/dependencies-current.md", "docs/meta/validation-matrix.md",
-    "docs/migrations/2026-10-13-constellation.md",
-    "docs/skills/personal-knowledge-base.md",
-    "docs/migrations/2026-10-14-cygnus-source-retirement.md",
-    "docs/migrations/2026-10-14-daylog-source-retirement.md",
-    "docs/migrations/2026-10-14-python-source-retirement.md",
+    "docs/README.md", "docs/contracts/migration-guide.md",
+    "docs/contracts/dependencies-current.md", "docs/contracts/validation-matrix.md",
+    "docs/archive/migrations/2026-10-13-constellation.md",
+    "docs/playbooks/knowledge-base.md",
+    "docs/archive/migrations/2026-10-14-cygnus-source-retirement.md",
+    "docs/archive/migrations/2026-10-14-daylog-source-retirement.md",
+    "docs/archive/migrations/2026-10-14-python-source-retirement.md",
     *[f"{language}/SKILL.md" for language in
       ("cc", "go", "java", "python", "rust", "shell")],
     "ocaml/README.md", "ocaml/TUTORIAL.md",
     "lean4/README.md", "lean4/TUTORIAL.md",
-    "docs/migrations/2026-10-29-functional-learning.md",
-    *[str(path.relative_to(ROOT)) for path in (ROOT / "docs/learn").glob("*.md")],
+    "docs/archive/migrations/2026-10-29-functional-learning.md",
+    # Every docs section index is a maintained guide: adding a new top-level
+    # docs directory without a README, or breaking a link inside one, fails here.
+    *[str(path.relative_to(ROOT)) for path in (ROOT / "docs").glob("*/README.md")],
+    *[str(path.relative_to(ROOT)) for path in (ROOT / "docs/notes").glob("*.md")],
+    *[str(path.relative_to(ROOT)) for path in (ROOT / "docs/design").glob("*.md")],
 ]
 
 

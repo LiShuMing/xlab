@@ -42,7 +42,7 @@ xlab/
 |-- llm/                GPU/ROCm environment setup notes and scripts
 |-- shell/              Shell utilities, Docker/MySQL/FIO helpers
 |-- tools/              Repository-level maintenance scripts
-`-- docs/               Retained notes/reports; book sources maintained in Cygnus
+`-- docs/               Six sections: design/ systems/ playbooks/ notes/ contracts/ archive/
 ```
 
 ### Migrated Projects
@@ -66,11 +66,11 @@ builds, and issue tracking in the current homes; the old paths are historical.
 | `python/projects/py-pia/` | [carina/modules/product-intelligence](https://github.com/LiShuMing/carina/tree/main/modules/product-intelligence) |
 | `python/projects/py-report/` | [carina/modules/research-report](https://github.com/LiShuMing/carina/tree/main/modules/research-report) |
 
-Python source retirement: [verified migration record](docs/migrations/2026-10-14-python-source-retirement.md).
+Python source retirement: [verified migration record](docs/archive/migrations/2026-10-14-python-source-retirement.md).
 
-DayLog source retirement and recovery: [verification record](docs/migrations/2026-10-14-daylog-source-retirement.md). Native UI acceptance was not run; the owner waived it as a source-retirement prerequisite.
+DayLog source retirement and recovery: [verification record](docs/archive/migrations/2026-10-14-daylog-source-retirement.md). Native UI acceptance was not run; the owner waived it as a source-retirement prerequisite.
 
-Five named projects were retired by owner decision: [scope and recovery](docs/migrations/2026-10-15-five-project-retirement.md).
+Five named projects were retired by owner decision: [scope and recovery](docs/archive/migrations/2026-10-15-five-project-retirement.md).
 
 ### Standalone Projects in xlab
 
@@ -102,9 +102,9 @@ bash tools/healthcheck.sh
 Dependency status: `.gitmodules` contains exactly two pinned gitlinks
 (GoogleTest 1.15.2 and Google Benchmark 1.9.1). Initialize them with
 `git submodule update --init -- cc/thirdparty/googletest cc/thirdparty/benchmark`.
-All 69 original records remain in the [dependency inventory](docs/meta/dependency-declarations.json).
+All 69 original records remain in the [dependency inventory](docs/contracts/dependency-declarations.json).
 The former orphan references are catalog entries; legacy CMake accepts installed
-packages or explicit local sources. See [current dependency contracts](docs/meta/dependencies-current.md).
+packages or explicit local sources. See [current dependency contracts](docs/contracts/dependencies-current.md).
 Run `python3 tools/check_dependencies.py` to check the current metadata.
 
 Common project commands (run each example separately from the xlab checkout root):
@@ -155,13 +155,13 @@ IVM, LLM Benchmark, Linux ToyDB, DuckDB smoke, and portable C++ ASAN/UBSAN.
 metadata, offline fixtures and maintained navigation without an orphan-failure exception.
 CI configuration is not evidence that a run has completed. Actual local execution,
 commands, environments and unverified modules are in the
-[validation matrix](docs/meta/validation-matrix.md).
+[validation matrix](docs/contracts/validation-matrix.md).
 
 OCaml and Lean 4 use independent Dune/Lake builds. From the checkout root, run
 `bash tools/setup-learning.sh all`, then `source tools/learning-env.sh`.
 Continue with [OCaml](ocaml/README.md) or [Lean 4](lean4/README.md).
 Haskell sources were removed by owner decision; see the
-[scope and recovery record](docs/migrations/2026-10-29-functional-learning.md).
+[scope and recovery record](docs/archive/migrations/2026-10-29-functional-learning.md).
 
 JVM, GPU and other independent projects still require their local guides
 and toolchains. DayLog build/test ownership is in Carina.
@@ -191,10 +191,10 @@ experiments continue to use WSL.
   changelogs so future readers can understand what moved and why.
 
 Codex/Linux 研究稿、邮件摘要及每日学习模块的当前归属、排除项与恢复入口见
-[本批迁移记录](docs/migrations/2026-10-14-books-email-learning-retirement.md)。
+[本批迁移记录](docs/archive/migrations/2026-10-14-books-email-learning-retirement.md)。
 
-Current retained-project decisions and cleanup boundaries: [classification](docs/meta/retained-projects.md), [consolidated cleanup](docs/meta/repository-cleanup.md).
+Current retained-project decisions and cleanup boundaries: [classification](docs/contracts/retained-projects.md), [consolidated cleanup](docs/contracts/repository-cleanup.md).
 
-其余四组书稿共 76 个源文件的验收、维护归属与恢复见 [书稿退役记录](docs/migrations/2026-10-15-remaining-books-retirement.md)。
+其余四组书稿共 76 个源文件的验收、维护归属与恢复见 [书稿退役记录](docs/archive/migrations/2026-10-15-remaining-books-retirement.md)。
 
 Path, placeholder and formatting conventions: [FORMATTING.md](FORMATTING.md).

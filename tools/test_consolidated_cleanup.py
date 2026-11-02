@@ -13,14 +13,14 @@ ROOT = Path(__file__).resolve().parents[1]
 class ConsolidatedCleanupTests(unittest.TestCase):
     def test_legacy_cron_is_removed_without_a_stub(self):
         self.assertFalse((ROOT / 'python/projects/cron.sh').exists())
-        text = (ROOT / 'docs/meta/repository-cleanup.md').read_text()
+        text = (ROOT / 'docs/contracts/repository-cleanup.md').read_text()
         self.assertIn('removed without a replacement stub', text)
         self.assertIn('inspected or changed', text)
         self.assertIn('missing-file error', text)
         self.assertIn('5d9e779b2e63295a56d120b4cd63ee6489c135c9', text)
 
     def test_project_inventory_matches_retained_tree(self):
-        record = json.loads((ROOT / 'docs/meta/retained-projects.json').read_text())
+        record = json.loads((ROOT / 'docs/contracts/retained-projects.json').read_text())
         entries = subprocess.check_output(['git', 'ls-files', '-z'], cwd=ROOT).decode().split('\0')
         for row in record['projects']:
             with self.subTest(project=row['path']):
@@ -28,7 +28,7 @@ class ConsolidatedCleanupTests(unittest.TestCase):
                 self.assertEqual(sum(p.startswith(row['path'] + '/') for p in entries), row['tracked_entries'])
     def test_dependency_declarations_are_accounted_for(self):
         import configparser
-        record = json.loads((ROOT / 'docs/meta/dependency-declarations.json').read_text())
+        record = json.loads((ROOT / 'docs/contracts/dependency-declarations.json').read_text())
         entries = record['entries']
         self.assertEqual(len(entries), 69)
         self.assertEqual(len({r['path'] for r in entries}), 69)
@@ -64,7 +64,7 @@ class ConsolidatedCleanupTests(unittest.TestCase):
     def test_cleanup_document_links_resolve(self):
         from urllib.parse import urlsplit, unquote
         for name in ('repository-cleanup.md', 'retained-projects.md', 'dependency-declarations.md'):
-            path = ROOT / 'docs/meta' / name
+            path = ROOT / 'docs/contracts' / name
             for target in re.findall(r'\]\(([^)]+)\)', path.read_text()):
                 parsed = urlsplit(target)
                 if not parsed.scheme and parsed.path:
