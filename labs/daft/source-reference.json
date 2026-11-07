@@ -1,5 +1,5 @@
 {
-  "checkout": "/home/admin/xwork/Daft",
+  "checkout": "~/xwork/Daft",
   "commit": "1e7eef899f69f55bf0267edd5a5f075dbad57697",
   "role": "source-reading-reference; not the installed wheel build"
 }

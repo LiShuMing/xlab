@@ -5,7 +5,7 @@ on:
     paths:
       - 'go/k8s-lab/**'
       - 'python/ivm/**'
-      - 'python/llm_benchmark/**'
+      - 'labs/llm/bench/**'
       - 'python/pylab/**'
       - 'python/projects/py-toydb/**'
       - 'tools/cpp_smoke.cc'
@@ -20,7 +20,7 @@ on:
     paths:
       - 'go/k8s-lab/**'
       - 'python/ivm/**'
-      - 'python/llm_benchmark/**'
+      - 'labs/llm/bench/**'
       - 'python/pylab/**'
       - 'python/projects/py-toydb/**'
       - 'tools/cpp_smoke.cc'
@@ -81,8 +81,8 @@ jobs:
               python -m unittest discover -s python/ivm -p 'test_*.py' -v
               ;;
             llm-benchmark)
-              python -m pip install -e 'python/llm_benchmark[dev]'
-              cd python/llm_benchmark
+              python -m pip install -e 'labs/llm/bench[dev]'
+              cd labs/llm/bench
               python -m pytest tests -q
               ;;
             toydb)

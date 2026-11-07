@@ -122,6 +122,8 @@ pip-wheel-metadata/
 venv/
 env/
 ENV/
+# labs/llm/env holds GPU environment notes, not a virtual environment.
+!labs/llm/env/
 .ipynb_checkpoints/
 pip-log.txt
 pip-delete-this-directory.txt
@@ -274,15 +276,10 @@ pnpm-debug.log*
 /python/**/site/
 /python/**/reports/
 /python/**/uv.lock
-!/python/projects/daft-lab/uv.lock
+!/labs/daft/uv.lock
 /python/pylab/tools/articles/
-/python/llm_benchmark/results/*
-!/python/llm_benchmark/results/.gitkeep
-/python/projects/py-cli/**/*.md
-!/python/projects/py-cli/README.md
-!/python/projects/py-cli/CHANGELOG.md
-!/python/projects/py-cli/AGENTS.md
-!/python/projects/py-cli/RULES.md
+/labs/llm/bench/results/*
+!/labs/llm/bench/results/.gitkeep
 /python/projects/py-cycle-lab/**/data/
 /python/projects/py-cycle-lab/**/*.duckdb
 /python/projects/py-cycle-lab/**/*.db
@@ -295,26 +292,9 @@ pnpm-debug.log*
 /python/projects/py-ego/miniprogram/preview-*.png
 # Runtime SQLite database (created by app/config.py on first run)
 /python/projects/py-ego/py-ego-miniapp/pyego_local.db
-/python/projects/py-learn/**/data/*.db
-/python/projects/py-pia/**/data/*.db
 /python/projects/py-email/**/credentials/
 /python/projects/py-email/**/data/
 /python/projects/py-email/**/.worktrees/
-
-
-# Liminalis runtime and bundled llm-wiki output
-/liminalis/.vite/
-/liminalis/.dev/
-/liminalis/llm-wiki/bin/
-/liminalis/llm-wiki/.demo-data/
-/liminalis/llm-wiki/.web-demo-data/
-/liminalis/llm-wiki/data/
-/liminalis/llm-wiki/ctx-web
-/liminalis/llm-wiki/repository.test
-!/liminalis/llm-wiki/go.mod
-/liminalis/backend/ego/chat_logs/*.md
-/liminalis/backend/ego/data/
-/liminalis/src/hooks/
 
 # Rust/Tauri project-specific output
 # Runtime SQLite database (schema created in src-tauri/src/services/database.rs)
@@ -326,7 +306,6 @@ pnpm-debug.log*
 spark-warehouse/
 /rust/rdb/data/
 *.duckdb
-/python/projects/py-report/prompts/
 
 # Qwen Code config
 .qwen/
@@ -345,14 +324,12 @@ gpt2-124M.ckpt
 .kunsdd/
 
 # Owner-retired projects: keep stale local/runtime copies out of xlab.
-/rust/projects/fragment-tutor/
 /rust/projects/umbra/
-/rust/projects/subway-game/
 /rust/projects/llm-runtime/
 /python/projects/py-academic/
 
 # Daft experiments: private rootfs, environments, data and evidence
-/python/projects/daft-lab/.local/
+/labs/daft/.local/
 
 # K-means synthetic runs and per-round evidence (not source)
 /python/pylab/.local/

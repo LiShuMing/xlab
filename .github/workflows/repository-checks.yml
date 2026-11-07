@@ -42,9 +42,8 @@ jobs:
           python3 tools/check_formatting.py --base "$BASE_SHA" --head "$HEAD_SHA"
       - name: Offline regression fixtures and maintained navigation
         run: python3 -m unittest discover -s tools -p 'test_*.py' -v
-      - name: Validate dependency metadata and report checkout health
+      - name: Report checkout health
         run: |
-          python3 tools/check_dependencies.py
           bash tools/healthcheck.sh > healthcheck-report.txt 2>&1
           cat healthcheck-report.txt
           printf 'Metadata health is not whole-repository build certification.\n' >> "$GITHUB_STEP_SUMMARY"

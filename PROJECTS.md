@@ -8,10 +8,9 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 
 ## 使用方式
 
-核心项目的类型、研究主题、环境、最小验证命令和实际结果见
-[验证矩阵](docs/contracts/validation-matrix.md)。本索引不将“目录存在”视为测试通过。
+本索引不将“目录存在”视为测试通过；每个项目的环境与最小验证命令写在该项目自己的 README 里。
 `pylab` 是语言/算法/数据库学习实验，`py-lab` 是 AI 应用实验；
-`llm/cuda`、`llm-lab`、`llm_benchmark` 分别负责环境、训练实验和评测。
+`labs/llm/` 下 `env`、`train`、`bench` 分别负责环境、训练实验和评测。
 
 1. 已知项目名：搜索项目名或路径，例如 `query-engine`、`py-email`。
 2. 已知需求：先查下面的“按任务路由”，再进入对应语言表。
@@ -26,7 +25,7 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | --- | --- |
 | 工作日记、菜单栏、提醒、SwiftUI | [carina/apps/daylog](https://github.com/LiShuMing/carina/tree/main/apps/daylog)（刻白，已迁移） |
 | Kubernetes、控制面、MVCC、Informer | [go/k8s-lab/](go/k8s-lab/) |
-| LLM 训练与推理实验 | [python/projects/llm-lab/](python/projects/llm-lab/) |
+| LLM 训练与推理实验 | [labs/llm/train/](labs/llm/train/) |
 | C++ 数据结构、并发、协程、COW、一致性哈希 | [cc/cclab/](cc/cclab/) |
 | LeetCode、LCR、面试题、基础算法 | [cc/algo/](cc/algo/)、[rust/rlab/tools/leetcode/](rust/rlab/tools/leetcode/)、[python/pylab/](python/pylab/) |
 | KV、MemTable、SkipList、Arena | [vela/storage/](https://github.com/LiShuMing/vela/tree/main/storage/) |
@@ -42,9 +41,10 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | Lean 4、归纳证明、优化正确性、定理证明 | [lean4/](lean4/)、[学习教程](lean4/TUTORIAL.md) |
 | 增量计算、IVM、DBSP、差分数据流 | [python/ivm/](python/ivm/)、[python/pylab/dbsp/](python/pylab/dbsp/)，第三方见 `rust/thirdparty/` |
 | Linux io_uring、异步 I/O、Reactor | [cc/projects/io-uring/](cc/projects/io-uring/)、[cc/projects/mini-seastar/](cc/projects/mini-seastar/)、[cc/projects/web-server/](cc/projects/web-server/) |
+| 缺页、页表遍历、TLB、RCU 宽限期与 stall | [labs/linux/](labs/linux/)、[rcu 笔记](labs/linux/rcu/README.md) |
 | Python C API、Cython、嵌入式 Python | [cc/projects/cpython/](cc/projects/cpython/) |
 | Iceberg、Java/JVM、Spark、Scala、Groovy | [java/xlab-iceberg/](java/xlab-iceberg/)、[java/xlab-itest/](java/xlab-itest/) |
-| LLM 数学/代码评测、Strata benchmark | [python/llm_benchmark/](python/llm_benchmark/) |
+| LLM 数学/代码评测、Strata benchmark | [labs/llm/bench/](labs/llm/bench/) |
 | Strata 只读代码审查 | [python/projects/strata-review/](python/projects/strata-review/) |
 | AI 沙盒、Streamlit、LangChain | [python/projects/py-lab/](python/projects/py-lab/) |
 | 邮件、newsletter、Gmail 摘要 | [Lyra email-digest](https://github.com/LiShuMing/lyra/tree/main/modules/email-digest) |
@@ -57,10 +57,21 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | 个人知识工作台、采集、日报、博客与文库 | [carina](https://github.com/LiShuMing/carina/tree/main) |
 | 统一个人工作台、技术雷达、投资与对话 | [lyra/](https://github.com/LiShuMing/lyra/tree/main/) |
 | 个人上下文、llm-wiki、Go API | [lyra/llm-wiki/](https://github.com/LiShuMing/lyra/tree/main/llm-wiki/) |
-| PyTorch、micrograd、自动求导 | [python/projects/py-torch/](python/projects/py-torch/) |
-| NumPy、pandas、Jupyter | [python/projects/py-numpy-pandas/](python/projects/py-numpy-pandas/) |
-| GPU、CUDA/ROCm、本地模型 | [llm/cuda/](llm/cuda/) |
+| PyTorch、micrograd、自动求导 | [labs/llm/torch/](labs/llm/torch/) |
+| NumPy、pandas、Jupyter | [labs/llm/numpy-pandas/](labs/llm/numpy-pandas/) |
+| GPU、CUDA/ROCm、本地模型 | [labs/llm/env/](labs/llm/env/) |
 | Windows 构建、兼容性 | [tools/build-windows.ps1](tools/build-windows.ps1)、[WINDOWS.md](WINDOWS.md) |
+
+## 主题实验室（labs/）
+
+按机制组织、语言只是实现手段的实验。每个 lab 自包含（可在目录内直接构建/运行），
+放置规则与独立性约束见 [labs/README.md](labs/README.md)。
+
+| 项目目录 | 用途 | 入口 |
+| --- | --- | --- |
+| [labs/linux/](labs/linux/) | 内核机制的用户态镜像：缺页/RSS、页表遍历、TLB 微基准，以及 pthread 模拟 RCU 宽限期（自报 QS、强制 QS、stall 检测；对应 Linux 7.0.0 `kernel/rcu/tree.c`） | [README](labs/linux/README.md)、[Makefile](labs/linux/Makefile)、[rcu 笔记](labs/linux/rcu/README.md) |
+| [labs/llm/](labs/llm/) | 大模型三阶段：GPU 环境与诊断、Tiny Transformer 训练、量化评测 | [README](labs/llm/README.md)、[train](labs/llm/train/README.md)、[bench](labs/llm/bench/README.md) |
+| [labs/daft/](labs/daft/) | Daft native 列式执行、batch 与 UDF 可复现实验 | [README](labs/daft/README.md)、[实验入口](labs/daft/lab.py) |
 
 ## C、C++、汇编及扩展工具
 
@@ -105,9 +116,8 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | [cc/algo/src/highfun/](cc/algo/src/highfun/) | 当前本地新增实验目录；未纳入既有构建清单的可能性需检查 |
 | [cc/algo/src/lcr/](cc/algo/src/lcr/) | LCR |
 | [cc/algo/src/leetcode/](cc/algo/src/leetcode/) | LeetCode |
-| [cc/algo/src/linux/](cc/algo/src/linux/) | Linux 相关练习 |
 | [cc/algo/src/msjd/](cc/algo/src/msjd/) | 面试经典题目 |
-| [cc/algo/src/oi/](cc/algo/src/oi/) | 竞赛练习 |
+| [cc/algo/src/oi/](cc/algo/src/oi/) | 竞赛练习与带执行轨迹的教学例子；[时间线段树 + 可回滚并查集](cc/algo/src/oi/README.md) |
 
 `cc/algo/src/include/` 是共享头文件，不是独立项目。
 
@@ -128,12 +138,9 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 
 | 项目目录 | 用途 | 入口 |
 | --- | --- | --- |
-| [python/projects/daft-lab/](python/projects/daft-lab/) | Daft native 列式执行、batch 与 UDF 可复现实验 | [README](python/projects/daft-lab/README.md)、[实验入口](python/projects/daft-lab/lab.py) |
-| [python/projects/llm-lab/](python/projects/llm-lab/) | LLM 训练与参考实现 | [README](python/projects/llm-lab/README.md)、[pyproject.toml](python/projects/llm-lab/pyproject.toml) |
 | [python/pylab/](python/pylab/) | 核心 Python 实验室、算法、数据库及 benchmark 工具 | [README](python/pylab/README.md)、[AGENTS](python/pylab/AGENTS.md) |
 | [python/pylab/dbsp/](python/pylab/dbsp/) | DBSP 增量计算子实验 | [dbsp.py](python/pylab/dbsp/dbsp.py) |
 | [python/ivm/](python/ivm/) | 增量视图维护与 join 实验 | [ivm.py](python/ivm/ivm.py) |
-| [python/llm_benchmark/](python/llm_benchmark/) | LLM 数学/代码量化评测，含本地 Strata 入口 | [README](python/llm_benchmark/README.md)、[pyproject.toml](python/llm_benchmark/pyproject.toml) |
 | [python/projects/py-cycle-lab/](python/projects/py-cycle-lab/) | LongCycle 长周期投资研究工作台 | [README](python/projects/py-cycle-lab/README.md)、[pyproject.toml](python/projects/py-cycle-lab/pyproject.toml) |
 | [python/projects/py-ego/](python/projects/py-ego/) | 对话陪护与记忆；README 同时保留 StarRocks 监控背景 | [README](python/projects/py-ego/README.md)、[main.py](python/projects/py-ego/main.py) |
 | [python/projects/py-ego/miniprogram/](python/projects/py-ego/miniprogram/) | 微信小程序前端 | [README](python/projects/py-ego/miniprogram/README.md)、[package.json](python/projects/py-ego/miniprogram/package.json) |
@@ -141,9 +148,9 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | [Lyra email-digest](https://github.com/LiShuMing/lyra/tree/main/modules/email-digest) | Gmail/newsletter 邮件摘要；安装后命令 `my-email` | [README](https://github.com/LiShuMing/lyra/blob/main/modules/email-digest/README.md)、[pyproject.toml](https://github.com/LiShuMing/lyra/blob/main/modules/email-digest/pyproject.toml) |
 | [python/projects/py-lab/](python/projects/py-lab/) | Streamlit/LangChain AI 实验平台 | [README](python/projects/py-lab/README.md)、[app.py](python/projects/py-lab/app.py) |
 | [Lyra daily-learning](https://github.com/LiShuMing/lyra/tree/main/modules/daily-learning) | Telegram/SQLite 每日学习 Agent | [README](https://github.com/LiShuMing/lyra/blob/main/modules/daily-learning/README.md)、[源码](https://github.com/LiShuMing/lyra/tree/main/modules/daily-learning/src/) |
-| [python/projects/py-numpy-pandas/](python/projects/py-numpy-pandas/) | NumPy/pandas Jupyter 学习空间 | [README](python/projects/py-numpy-pandas/README.md)、[notebooks](python/projects/py-numpy-pandas/notebooks/) |
+| [labs/llm/numpy-pandas/](labs/llm/numpy-pandas/) | NumPy/pandas Jupyter 学习空间 | [README](labs/llm/numpy-pandas/README.md)、[notebooks](labs/llm/numpy-pandas/notebooks/) |
 | [python/projects/py-stock/](python/projects/py-stock/) | 股票历史价格采集、SQLite 存储与 Web/CLI 查询 | [README](python/projects/py-stock/README.md)、[cli.py](python/projects/py-stock/cli.py) |
-| [python/projects/py-torch/](python/projects/py-torch/) | PyTorch 学习、micrograd、自动求导 | [README](python/projects/py-torch/README.md)、[micrograd](python/projects/py-torch/micrograd/) |
+| [labs/llm/torch/](labs/llm/torch/) | PyTorch 学习、micrograd、自动求导 | [README](labs/llm/torch/README.md)、[micrograd](labs/llm/torch/micrograd/) |
 | [python/projects/py-toydb/](python/projects/py-toydb/) | ToyDB 文档数据库 | [README](python/projects/py-toydb/README.md)、[pyproject.toml](python/projects/py-toydb/pyproject.toml) |
 | [python/projects/strata-review/](python/projects/strata-review/) | 本地 Strata 只读 Git diff/代码审查 | [README](python/projects/strata-review/README.md)、[strata_review.py](python/projects/strata-review/strata_review.py) |
 | [carina/modules/tech-radar/](https://github.com/LiShuMing/carina/tree/main/modules/tech-radar/) | 技术信号采集、SQLite、日报；命令 `tech-radar` | [README](https://github.com/LiShuMing/carina/blob/main/modules/tech-radar/README.md)、[pyproject.toml](https://github.com/LiShuMing/carina/blob/main/modules/tech-radar/pyproject.toml) |
@@ -198,8 +205,7 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | [lean4/](lean4/) | 列表归纳、自然数 AST 和常量折叠正确性证明 | [README](lean4/README.md)、[教程](lean4/TUTORIAL.md)、[Lake](lean4/lakefile.lean) |
 
 Haskell 的四个旧项目及语言指南已按所有者要求移除，不再作为开发入口。
-它们不是新项目的等价迁移；原始文件及恢复提交见
-[退役与新增记录](docs/archive/migrations/2026-10-29-functional-learning.md)。
+它们不是新项目的等价迁移。
 
 ## JavaScript、TypeScript 与跨语言应用
 
@@ -225,19 +231,16 @@ Haskell 的四个旧项目及语言指南已按所有者要求移除，不再作
 | [shell/docker/](shell/docker/) | Docker 与 Folly 构建脚本 | [Dockerfile](shell/docker/Dockerfile)、[build_folly.sh](shell/docker/build_folly.sh) |
 | [shell/fio/](shell/fio/) | fio I/O 测试配置 | [1.fio](shell/fio/1.fio)、[build.sh](shell/fio/build.sh) |
 | [shell/mysql/](shell/mysql/) | MySQL 并发、TPCH benchmark 脚本 | [目录](shell/mysql/) |
-| [llm/cuda/](llm/cuda/) | GPU 诊断、本地模型与 CUDA/ROCm 实验 | [PYTORCH_SETUP.md](llm/cuda/PYTORCH_SETUP.md)、[diagnose_gpu.sh](llm/cuda/diagnose_gpu.sh) |
 | [tools/](tools/) | 仓库级工具 | [build-windows.ps1](tools/build-windows.ps1)、[healthcheck.sh](tools/healthcheck.sh) |
 | [cmake/](cmake/) | 共享 CMake 依赖与编译选项 | [XlabDependencies.cmake](cmake/XlabDependencies.cmake) |
 | [docs/](docs/) | 系统设计、系统剖析、方法与归档 | [文档导航](docs/README.md)、[Cygnus books](https://github.com/LiShuMing/cygnus/tree/main/books)、[systems](docs/systems/)、[playbooks](docs/playbooks/) |
 
 ## 第三方依赖与历史参考目录
 
-下面的路径保留原有参考目录，不能仅凭列表判断源码已恢复。归档决定和消费证据见 [逐项依赖审计](docs/contracts/dependency-declarations.md)。
+下面的路径保留原有参考目录，不能仅凭列表判断源码已恢复。
 当前 `.gitmodules` 仅包含 **2 个固定 gitlink**（GoogleTest 和 Benchmark）。
-全部 69 条历史声明及原始消费证据保留在审计清单；其他条目是包/显式源码依赖
-或参考目录，不应当作为已恢复的子模块。未知用途仍按未知记录。
-见 [当前依赖契约](docs/contracts/dependencies-current.md)、
-[历史消费审计](docs/contracts/dependency-declarations.md)。
+其他条目是包/显式源码依赖或参考目录，不应当作为已恢复的子模块。
+未知用途仍按未知记录。
 
 ### C 参考项目
 
@@ -344,7 +347,4 @@ Haskell 的四个旧项目及语言指南已按所有者要求移除，不再作
 - 有独立业务用途或清单的嵌套项目单独列出；`src/`、`tests/`、`docs/`、
   构建产物、虚拟环境、数据输出通常不是独立项目。
 - 第三方目录与依赖审计清单同步；仅需保留的声明在 `.gitmodules` 中。状态必须实际检查，不把参考路径视为已下载。
-- 本文件承担项目路由；仓库规则仍以 [AGENTS.md](AGENTS.md) 为准，
-  当前工作计划仍以 [TASKS.md](TASKS.md) 为准。
-
-Current retained-project decisions and cleanup boundaries: [classification](docs/contracts/retained-projects.md), [consolidated cleanup](docs/contracts/repository-cleanup.md).
+- 本文件承担项目路由；仓库规则仍以 [AGENTS.md](AGENTS.md) 为准。

@@ -17,7 +17,7 @@ class EntryPointTests(unittest.TestCase):
         self.assertFalse((ROOT / 'java/xlab-itest/README').exists())
         self.assertTrue((ROOT / 'java/xlab-itest/README.md').is_file())
         # Semantic package and Rust module markers are not directory placeholders.
-        self.assertTrue((ROOT / 'python/projects/py-torch/micrograd/__init__.py').is_file())
+        self.assertTrue((ROOT / 'labs/llm/torch/micrograd/__init__.py').is_file())
         self.assertTrue((ROOT / 'rust/rlab/tools/leetcode/src/problem/mod.rs').is_file())
 
     def test_go_help_matches_available_targets(self):

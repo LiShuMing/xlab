@@ -17,8 +17,7 @@ This is the canonical root instruction entry point for coding agents. Keep commi
 identity and public-content safety policy in `RULES.md`; keep other durable
 repository rules, build/test commands, style conventions, and safety notes here.
 For human-facing project navigation, use `README.md`. For personal
-knowledge-management workflows, use `SKILL.md`. For active backlog items, use
-`TASKS.md`.
+knowledge-management workflows and active backlog items, use `docs/`.
 
 Use `PROJECTS.md` for project discovery and task routing. Before editing a
 module, read its local instructions and build manifest. When adding, moving,
@@ -49,13 +48,16 @@ xlab/
 │   ├── golab/            # Standalone Go algorithm example
 │   ├── projects/         # Remaining personal C++ projects
 │   └── thirdparty/       # Declared references; see dependency status below
+├── labs/                 # Topic-oriented labs; the language is an implementation detail
+│   ├── linux/            # Kernel mechanisms: page faults, page tables, TLB, RCU
+│   ├── llm/              # LLM stages and foundations: env, train, bench, torch, numpy
+│   └── daft/             # Daft columnar execution experiments
 ├── rust/                 # Rust laboratory
 │   ├── rlab/             # Workspace-based Rust lab
 │   ├── rdb/              # Database implementation experiments
 │   └── thirdparty/       # Declared Rust research references
 ├── python/               # Python laboratory
 │   ├── pylab/            # Core Python lab with pytest
-│   ├── llm_benchmark/    # LLM evaluation framework
 │   ├── ivm/              # Incremental view maintenance prototypes
 │   ├── projects/         # Personal Python projects
 │   └── thirdparty/       # Declared Python references
@@ -66,7 +68,6 @@ xlab/
 │   └── xlab-itest/       # Interview/test projects
 ├── ocaml/                # OCaml language, interpreter and constant-folding lab
 ├── lean4/                # Lean 4 programming and proof lab
-├── llm/                  # GPU / ROCm environment setup notes
 ├── shell/                # Shell scripting utilities
 │   ├── bin/              # Executable scripts
 │   ├── docker/           # Docker scripts
@@ -75,6 +76,33 @@ xlab/
 ├── tools/                # Repository maintenance scripts (healthcheck.sh)
 └── docs/                 # Six sections: design/ systems/ playbooks/ notes/ contracts/ archive/
 ```
+
+## Project Placement
+
+One directory answers one organizing dimension. Decide the home before creating a path:
+
+| The work is about … | Home | Test |
+| --- | --- | --- |
+| a language: syntax, standard library, toolchain | `cc/`, `python/`, `rust/`, `go/`, `java/`, `ocaml/`, `lean4/`, `shell/` | the exercise loses meaning in another language |
+| a mechanism, system or product | `labs/<topic>/` | the topic survives a rewrite in another language |
+| knowledge without runnable code | `docs/` | the content survives deleting all code |
+| the repository itself | `tools/` | it serves the repo, not a topic |
+
+Rules for `labs/` (details in [labs/README.md](labs/README.md)):
+
+- The language layer never appears at topic level. `labs/linux/` holds experiments directly;
+  a `c/`, `rust/` or `python/` subdirectory appears only when one experiment has a second
+  implementation.
+- An experiment is a unit, not a library: it carries its own sources and run notes, and
+  `labs/<topic>/Makefile` only dispatches.
+- Shared code moves up, never sideways: same-topic sharing goes to `labs/<topic>/common/`,
+  cross-topic sharing to `labs/libs/`. Cross-topic relative paths such as `../python/...`
+  fail `tools/test_lab_isolation.py`.
+- A single-language application stays in its language tree (`python/projects/py-toydb`,
+  `py-ego`, …). `labs/` is not a second `python/projects/`.
+
+Moving, adding or removing a lab also updates `labs/README.md`, the `PROJECTS.md` routing
+table, and every CI path filter that names the old location.
 
 ## Migrated Project Routing
 
@@ -130,9 +158,8 @@ instructions and build manifests before working there.
 - **Testing**: pytest
 - **Key Packages**: numpy, pandas, duckdb, matplotlib, faiss-cpu
 - **Projects**: py-cycle-lab, py-ego, py-lab,
-  py-stock, py-torch, py-toydb
-- **Standalone**: `python/llm_benchmark` (LLM eval framework), `python/ivm`
-  (incremental view maintenance prototypes)
+  py-stock, py-toydb
+- **Standalone**: `python/ivm` (incremental view maintenance prototypes)
 
 ### Go (go/)
 - **Version**: 1.26.2 (per `go/k8s-lab/go.mod`)
@@ -254,6 +281,56 @@ Research-report documentation and commands now live in
 
 ## Code Style Guidelines
 
+### Style authority (mandatory)
+
+Every code change — design, naming, error handling, comments and file layout —
+must follow the authoritative style guide of its language. This applies to new
+files, refactors and review fixes alike; "it works" is not a style argument.
+
+| Language | Authoritative guide | Local enforcement |
+| --- | --- | --- |
+| C/C++ | [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html) | nearest `.clang-format` (Google base), `.clang-tidy` |
+| Python | [PEP 8](https://peps.python.org/pep-0008/) + [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html) | module pyproject (Ruff) |
+| Go | [Effective Go](https://go.dev/doc/effective_go) | `gofmt`, `golangci-lint` |
+| Rust | [Rust API Guidelines](https://rust-lang.github.io/api-guidelines/) | `cargo fmt --check`, `cargo clippy` |
+| Java | [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html) | module build plugins |
+| JS/TS | [Google JS/TS Style Guide](https://google.github.io/styleguide/) | module Prettier/ESLint |
+| Shell | [Google Shell Style Guide](https://google.github.io/styleguide/shellguide.html) | `bash -n`, `shellcheck` where available |
+| OCaml / Lean 4 | language and library conventions (Dune / Lake layout) | `dune build`, `lake build` |
+
+Precedence when sources disagree: [RULES.md](RULES.md) > module `AGENTS.md` /
+`RULES.md` > nearest formatter configuration > the guide above. A module may
+tighten naming or layout; it must not relax correctness, safety or the column
+limit. Report style work honestly — if a tool is unavailable (for example
+`clang-format` is not installed), check the rule by hand and say so instead of
+claiming the tool ran.
+
+### Naming and structure (C++, Google C++ Style)
+- Types `CamelCase`; functions and methods `CamelCase` verbs (`AddPath`, `Lca`).
+- Local variables and parameters `snake_case`; member variables keep a trailing
+  underscore (`parent_`); constants and enumerators `kCamelCase`
+  (`kTernaryIterations`); macros `PROJECT_UPPER_SNAKE`, and avoid macros anyway.
+- `using namespace std;` is a legacy property of `cc/algo/src/include/fwd.h`.
+  New code neither adds it nor introduces new unscoped `using` declarations.
+- Helpers needed by a single translation unit go into an unnamed namespace so
+  linkage stays internal; do not publish them from the global namespace.
+- Include only what the file uses, in the order: own header, C library, C++
+  standard library, third party, project headers.
+- Prefer `std::vector`/`std::array` and `std::` algorithms over hand-rolled
+  containers; no owning raw pointers, no manual `new`/`delete`.
+
+### Prefer direct code over speculative abstraction
+- Write the concrete algorithm first. Introduce a template, callback, functor or
+  wrapper type only when at least two real call sites need the variation; one
+  call site means the abstraction is cost without benefit.
+- Prefer a plain loop or `std::` algorithm over a new layer; prefer a named local
+  struct over a five-field tuple; prefer explicit parameters over captured state.
+- No speculative generality: no "future extension" hooks, empty virtual methods,
+  or configuration flags that only ever hold one value.
+- Name things after what they hold (`pressures`, `parent_`), not after the pattern
+  that produced them (`helper`, `manager`, `impl`).
+- Comments explain why, invariants and pitfalls; they do not restate the line.
+
 ### C++
 - **Formatter**: clang-format (Google style based)
 - **Linter**: clang-tidy with custom checks
@@ -264,6 +341,9 @@ Research-report documentation and commands now live in
   - Allow short functions inline
 - **Standards**: Use C++20 features, RAII, `[[nodiscard]]`, move semantics
 - **Modern C++**: Prefer `std::make_unique`, `std::make_shared`, smart pointers
+- **Compliance**: naming and visibility follow "Naming and structure" above;
+algorithm exercises keep a `main()` with a brute-force cross-check,
+but the cross-check must stay a direct implementation, not a second framework.
 
 ### Rust
 - Run `cargo fmt` and `cargo clippy` before committing
@@ -316,16 +396,14 @@ Research-report documentation and commands now live in
 ## Git Submodules
 
 `.gitmodules` contains exactly two pinned gitlinks, GoogleTest and Google
-Benchmark. Preserve their hashes and URLs. All 69 original declarations and the
-historical audit remain in [the catalog](docs/contracts/dependency-declarations.json).
+Benchmark. Preserve their hashes and URLs.
 Current dispositions separate installed-package/explicit-source dependencies
 from unversioned catalog references; historical unknown intent remains unknown.
-Do not invent source revisions or restore orphan declarations. See
-[current contracts](docs/contracts/dependencies-current.md). Legacy consumers must
-use explicit package/source inputs and fail clearly when prerequisites are absent.
-Validate with `python3 tools/check_dependencies.py` and `bash tools/healthcheck.sh`.
-A metadata pass is not whole-repository build certification. Actual verification
-status and core commands live in [the matrix](docs/contracts/validation-matrix.md).
+Do not invent source revisions or restore orphan declarations. Legacy consumers
+must use explicit package/source inputs and fail clearly when prerequisites are absent.
+Validate with `bash tools/healthcheck.sh`.
+A metadata pass is not whole-repository build certification. Record actual
+verification status and core commands in the module that owns them.
 
 ### Historical Reference Categories
 - **C++ reference catalog**: DuckDB, RocksDB, Folly, Arrow and other historical references
@@ -338,9 +416,9 @@ Compare declarations and tracked gitlinks before discussing initialization.
 ## Development Conventions
 
 ### Documentation Standards
-Use [docs/README.md](docs/README.md) for the six-section routing and Cygnus routes,
-[SKILL.md](SKILL.md) for knowledge workflow, and
-[writing-companion](docs/playbooks/skills/writing-companion/SKILL.md) for writing guidance:
+Use [docs/README.md](docs/README.md) for the six-section routing and Cygnus routes
+and [writing-companion](docs/playbooks/skills/writing-companion/SKILL.md) for
+writing guidance:
 
 - **Persona**: Senior database kernel engineer
 - **Report Types**:
@@ -424,6 +502,7 @@ When generating code for this repository:
 - **Open Source**: Committer on StarRocks
 - **Research Interests**: Incremental view maintenance (IVM), streaming systems, query optimizers
 
-All former `docs/books/` source roots are retired without stubs. Use the [accepted book routes](docs/archive/migrations/2026-10-15-remaining-books-retirement.md); do not recreate them in xlab.
+All former `docs/books/` source roots are retired without stubs; do not recreate
+them in xlab.
 
 Path, placeholder and formatting conventions: [FORMATTING.md](FORMATTING.md).

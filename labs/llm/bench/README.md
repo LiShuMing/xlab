@@ -11,7 +11,7 @@
 在 WSL 中运行：
 
 ```bash
-cd python/llm_benchmark
+cd labs/llm/bench
 python3 -m venv .venv
 .venv/bin/python -m pip install -e '.[dev]'
 
@@ -93,7 +93,7 @@ HumanEval 是 `[163, 28, 6, 70, 62, 57, 35, 26]`。
 ### 1. 安装
 
 ```bash
-cd python/llm_benchmark
+cd labs/llm/bench
 pip install -e ".[dev]"
 ```
 

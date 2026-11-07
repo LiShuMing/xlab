@@ -36,24 +36,10 @@ class HealthcheckTests(unittest.TestCase):
         self.git("config", "-f", ".gitmodules", f"submodule.{name}.url",
                  "https://example.com/reference.git")
 
-    def test_empty_repo_has_no_false_large_files(self):
+    def test_empty_repo_reports_no_submodules(self):
         result = self.run_check()
         self.assertEqual(result.returncode, 0, result.stdout)
-        self.assertIn("OK: no files larger than 10M", result.stdout)
         self.assertIn("declarations: 0\ngitlinks: 0", result.stdout)
-
-    def test_large_file_space_and_unicode(self):
-        for name in ["large file.txt", "大文件.txt", "new\nline.txt"]:
-            (self.repo / name).write_bytes(b"x" * 2048)
-        result = self.run_check(BIG_FILE_THRESHOLD="1k")
-        self.assertEqual(result.returncode, 0, result.stdout)
-        self.assertIn("WARN: large files found", result.stdout)
-        # Each complete shell-escaped path occupies one line, including non-ASCII.
-        lines = result.stdout.split("WARN: large files found\n")[1].split("\n\n")[0].splitlines()
-        self.assertEqual(len(lines), 3)
-        for line in lines:
-            self.assertIn("\t", line)
-        self.assertIn("large\\ file.txt", result.stdout)
 
     def test_orphan_declaration_is_failure_even_with_empty_submodule_status(self):
         self.declare("ref", "refs/space 中文")
@@ -110,14 +96,24 @@ class HealthcheckTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout)
         self.assertNotIn("worktree: n/a", result.stdout)
 
-    def test_invalid_gitmodules_and_broken_link(self):
+    def test_invalid_gitmodules_is_failure(self):
         (self.repo / ".gitmodules").write_text("[broken\n")
-        (self.repo / "missing link").symlink_to("absent")
         result = subprocess.run(["bash", str(SCRIPT)], cwd=self.repo,
                                 text=True, capture_output=True, timeout=20)
         self.assertEqual(result.returncode, 1)
         self.assertIn(".gitmodules cannot be parsed", result.stdout)
-        self.assertIn("broken symlinks found", result.stdout)
+
+    def test_untracked_local_artifacts_are_ignored(self):
+        # Build outputs and local environments belong to their project: a broken
+        # link or a large file inside the worktree must not fail the check.
+        (self.repo / "missing link").symlink_to("absent")
+        (self.repo / "blob.bin").write_bytes(b"x" * 4096)
+        (self.repo / "node_modules").mkdir()
+        (self.repo / "node_modules" / "link").symlink_to("absent")
+        result = self.run_check()
+        self.assertEqual(result.returncode, 0, result.stdout)
+        self.assertNotIn("broken symlinks", result.stdout)
+        self.assertNotIn("large files", result.stdout)
 
 
 if __name__ == "__main__":

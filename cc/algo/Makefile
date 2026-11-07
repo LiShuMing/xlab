@@ -20,7 +20,7 @@ ifeq ($(MAKEFILE_DIR),$(CURRENT_DIR)/)
     SRC_LCR_DIR = src/lcr
     SRC_DAILYPROGRAMMER_DIR = src/dailyprogrammer
     SRC_MSJD_DIR = src/msjd
-    SRC_LINUX_DIR = src/linux
+    SRC_OI_DIR = src/oi
 else
     # Running from subdirectory with -f flag, use paths relative to Makefile
     BIN_DIR = $(MAKEFILE_DIR)bin
@@ -30,7 +30,7 @@ else
     SRC_LCR_DIR = $(MAKEFILE_DIR)src/lcr
     SRC_DAILYPROGRAMMER_DIR = $(MAKEFILE_DIR)src/dailyprogrammer
     SRC_MSJD_DIR = $(MAKEFILE_DIR)src/msjd
-    SRC_LINUX_DIR = $(MAKEFILE_DIR)src/linux
+    SRC_OI_DIR = $(MAKEFILE_DIR)src/oi
 endif
 
 # Pattern rule for leetcode files - automatically builds any leetcode_*.cc file
@@ -64,7 +64,8 @@ jd_%: $(SRC_MSJD_DIR)/jd_%.cc
 	@mkdir -p $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) -o $(BIN_DIR)/$@ $<
 
-l_%: $(SRC_LINUX_DIR)/l_%.cc
+# Pattern rule for OI notes (file names already carry the oi prefix: oi1.cc, oi2.cc ...)
+oi%: $(SRC_OI_DIR)/oi%.cc
 	@mkdir -p $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) -o $(BIN_DIR)/$@ $<
 
@@ -90,8 +91,8 @@ run_dp_%: dp_%
 run_jd_%: jd_%
 	$(BIN_DIR)/jd_$* $(ARGS)
 
-run_l_%: l_%
-	$(BIN_DIR)/l_$* $(ARGS)
+run_oi%: oi%
+	$(BIN_DIR)/oi$* $(ARGS)
 
 # Test: build a few targets to verify toolchain and Makefile in this env
 test: leetcode_1102 lcr_161
@@ -114,7 +115,8 @@ help:
 	@echo "  lcr_<n>            - Build (e.g., make lcr_159)"
 	@echo "  run_leetcode_<n>   - Build and run (e.g., make run_leetcode_1102 [ARGS='...'])"
 	@echo "  run_lcr_<n>        - Build and run (e.g., make run_lcr_161)"
-	@echo "  run_algo_<name>    - Build and run algo (run_jd_*, run_dp_*, run_l_*, etc.)"
+	@echo "  run_algo_<name>    - Build and run algo (run_jd_*, run_dp_*, etc.)"
+	@echo "  (Linux 实验已迁到 ../../labs/linux：make -C ../../labs/linux all)"
 	@echo "  test               - Build a few targets to verify env"
 	@echo "  clean              - Remove all binaries"
 	@echo ""

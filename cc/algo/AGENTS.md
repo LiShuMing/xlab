@@ -26,7 +26,6 @@ cc/algo/
 │   ├── hackerrank/         # HackerRank solutions
 │   ├── dailyprogrammer/    # Reddit Daily Programmer challenges
 │   ├── msjd/               # Miscellaneous JD problems
-│   ├── linux/              # Linux-specific algorithms
 │   └── include/
 │       └── fwd.h           # Common headers and utilities
 ├── python/                 # Python test utilities
@@ -143,24 +142,36 @@ This provides:
 
 ### Naming Conventions
 
-- **Files**: `leetcode_XXX.cc`, `lcr_XXX.cc`, `algo_name.cc`
+C++ follows the Google C++ Style Guide; the binding rule and its precedence live in
+the root [AGENTS.md](../../AGENTS.md) "Style authority (mandatory)" section. What is
+specific to this module:
+
+- **Files**: `leetcode_XXX.cc`, `lcr_XXX.cc`, `algo_name.cc`, `oi_topic.cc`
 - **Classes**: `PascalCase` (e.g., `Solution`, `LRUCache`)
-- **Methods**: `camelCase` (e.g., `wordBreak`, `maxProfit`)
-- **Variables**: `snake_case` or `camelCase`
+- **LeetCode entry methods**: keep the exact `camelCase` signature from the problem
+  statement (`wordBreak`, `maxProfit`) — the judge calls them by name.
+- **Own functions and methods**: `CamelCase` verbs (`AddPath`, `Lca`, `TripleSum`)
+- **Variables**: locals and parameters `snake_case`; member variables carry a
+  trailing underscore (`parent_`, `diff_`)
+- **Constants**: `kCamelCase` (`kTernaryIterations`, `kRandomRounds`)
+- **Visibility**: do not add `using namespace std;` to new files (`fwd.h` already has
+  it); helpers used by a single file go into an unnamed namespace
+- **Abstraction budget**: a template, callback or wrapper type needs at least two
+  real call sites; otherwise write the concrete loop
 
 ### Solution Class Pattern
 
 ```cpp
 class Solution {
 public:
-    // Primary solution method
+    // Primary solution method: signature fixed by the judge, keep camelCase
     vector<int> twoSum(vector<int>& nums, int target) {
         // Implementation
     }
 
-    // Helper methods (private if needed)
+    // Helper: own code follows Google CamelCase
 private:
-    void helper() { }
+    void Helper() { }
 };
 ```
 

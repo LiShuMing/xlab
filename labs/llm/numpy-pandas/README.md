@@ -5,7 +5,7 @@ This project is a small, isolated learning workspace for NumPy and pandas.
 ## Quick Start
 
 ```bash
-cd /home/lism/work/xlab/python/projects/py-numpy-pandas
+cd labs/llm/numpy-pandas   # 从仓库根目录进入
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
@@ -17,7 +17,7 @@ jupyter lab --notebook-dir=.
 Or use the helper script:
 
 ```bash
-cd /home/lism/work/xlab/python/projects/py-numpy-pandas
+cd labs/llm/numpy-pandas   # 从仓库根目录进入
 bash scripts/start_jupyter.sh
 ```
 
@@ -34,7 +34,7 @@ kernel if Jupyter does not pick it automatically.
 ## Layout
 
 ```text
-py-numpy-pandas/
+numpy-pandas/
 ├── data/
 │   └── sales.csv
 ├── notebooks/

@@ -11,7 +11,7 @@
 每个镜像层都校验 SHA-256。运行器仅限制 CPU affinity，**没有内存 cgroup 限额**。
 
 当前运行基线是发行包 **Daft 0.7.26**，不是当前 Daft checkout 的源码编译产物。
-`source-reference.json` 单独记录 `/home/admin/xwork/Daft` 的阅读参考提交。
+`source-reference.json` 单独记录 `~/xwork/Daft` 的阅读参考提交。
 `doctor` 与每次实验的环境记录都明确区分这两个身份，避免将参考源码误认为实际加载版本。
 
 最小依赖由 `pyproject.toml` 和 `uv.lock` 固定，使用 HTTPS 阿里云 PyPI 镜像；
@@ -20,7 +20,7 @@ Python、虚拟环境、下载缓存、数据、日志和实验结果都位于�
 
 ## 快速开始
 
-以下命令在 `/home/admin/xwork/xlab/python/projects/daft-lab` 运行：
+以下命令在本目录（`labs/daft`）运行：
 
 ```bash
 python3 bootstrap.py
@@ -121,7 +121,7 @@ shuffle 倾斜。生成器限制最多 1000 万行、128 个目标文件，避�
 
 ## 对照源码
 
-阅读参考 checkout：`/home/admin/xwork/Daft`，完整提交见 `source-reference.json`。
+阅读参考 checkout：`~/xwork/Daft`，完整提交见 `source-reference.json` 。
 
 | 问题 | 参考源码位置，相对 Daft checkout |
 | --- | --- |

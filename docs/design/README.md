@@ -54,8 +54,8 @@
 | （新建） | [top-k.md](top-k.md) | 本次会话产出的 Top-K 设计 |
 
 `docs/questions/` 在迁出后已无文件，该目录随之消失。2026-11-01 `docs/` 整体重构后，
-原 `docs/learn/` 的三篇笔记分别归入本目录与 [notes/](../notes/)；原 `docs/meta/` 拆为
-[contracts/](../contracts/) 与 [archive/audits/](../archive/audits/)。
+原 `docs/learn/` 的三篇笔记分别归入本目录与 [notes/](../notes/)；原 `docs/meta/` 的内容
+归入 [archive/audits/](../archive/audits/)。
 
 历史审计记录 [knowledge-base-audit-2026-05.md](../archive/audits/knowledge-base-audit-2026-05.md)
 仍按当时的 `learn/` 路径描述，作为历史快照保留，不回改。

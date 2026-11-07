@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
+# Checks the tracked state of the repository only. Build outputs, local
+# environments and other on-disk artifacts belong to the project that owns
+# them; this script does not scan or judge them.
 set -euo pipefail
-
-BIG_FILE_THRESHOLD="${BIG_FILE_THRESHOLD:-10M}"
-GENERATED_NAMES="${GENERATED_NAMES:-node_modules .venv venv env ENV dist build target __pycache__ .pytest_cache .mypy_cache .ruff_cache .ipynb_checkpoints}"
 
 warn_count=0
 fail_count=0
@@ -59,75 +59,6 @@ print_repo_size() {
 
     if git --git-dir="$(git rev-parse --git-common-dir)" count-objects -vH >/dev/null 2>&1; then
         git --git-dir="$(git rev-parse --git-common-dir)" count-objects -vH | awk '/^(count|size|in-pack|packs|size-pack|garbage|size-garbage):/ {print}'
-    fi
-}
-
-check_big_files() {
-    section "Large Files"
-    printf 'threshold: %s\n' "$BIG_FILE_THRESHOLD"
-
-    local output
-    output="$(
-        find . \
-            -path ./.git -prune -o \
-            -path './*/thirdparty/*' -prune -o \
-            -type f -size +"$BIG_FILE_THRESHOLD" -print0 |
-        while IFS= read -r -d '' path; do
-            printf '%s\t%q\n' "$(human_du "$path")" "$path"
-        done
-    )"
-
-    if [[ -z "$output" ]]; then
-        ok "no files larger than ${BIG_FILE_THRESHOLD}"
-    else
-        warn "large files found"
-        printf '%s\n' "$output"
-    fi
-}
-
-check_generated_dirs() {
-    section "Generated Directories"
-
-    local find_expr=()
-    local name
-    for name in $GENERATED_NAMES; do
-        find_expr+=( -name "$name" -o )
-    done
-    unset 'find_expr[${#find_expr[@]}-1]'
-
-    local output
-    output="$(
-        find . \
-            -path ./.git -prune -o \
-            -path './*/thirdparty/*' -prune -o \
-            -type d \( "${find_expr[@]}" \) -print |
-        sort
-    )"
-
-    if [ -z "$output" ]; then
-        ok "no generated dependency/cache directories found"
-    else
-        warn "generated directories found"
-        printf '%s\n' "$output"
-    fi
-}
-
-check_bad_symlinks() {
-    section "Broken Symlinks"
-
-    local output
-    output="$(
-        find . \
-            -path ./.git -prune -o \
-            -type l ! -exec test -e {} \; -print |
-        sort
-    )"
-
-    if [ -z "$output" ]; then
-        ok "no broken symlinks"
-    else
-        fail "broken symlinks found"
-        printf '%s\n' "$output"
     fi
 }
 
@@ -246,20 +177,8 @@ main() {
     cd "$(git rev-parse --show-toplevel)"
 
     print_repo_size
-    check_big_files
-    check_generated_dirs
-    check_bad_symlinks
     check_gitmodules
     check_env_tracking
-    if [[ -f tools/check_dependencies.py && -f docs/contracts/dependency-declarations.json ]]; then
-        section "Dependency Catalog"
-        if command -v python3 >/dev/null; then
-            python3 tools/check_dependencies.py || fail "dependency catalog validation failed"
-            warn "legacy experiments require separate package/source validation; metadata health is not a full build pass"
-        else
-            fail "python3 is required to validate the dependency catalog"
-        fi
-    fi
     print_git_status_summary
 
     section "Summary"

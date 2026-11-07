@@ -14,7 +14,7 @@ A comprehensive PyTorch learning project implementing Karpathy's micrograd autog
 ## Project Structure
 
 ```
-py-torch/
+torch/
 ├── micrograd/              # Autograd engine from scratch
 │   ├── interfaces/         # Abstract base classes (contracts)
 │   │   ├── value.py        # ValueInterface
@@ -41,8 +41,9 @@ py-torch/
 ## Installation
 
 ```bash
-# Using the project virtual environment (recommended)
-source /home/lism/.venv/general-3.12/bin/activate
+# Create the project virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
