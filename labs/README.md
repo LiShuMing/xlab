@@ -8,6 +8,9 @@
 | `linux/` | 内核机制的用户态镜像：延迟缺页 → 页表遍历 → TLB（Translation Lookaside Buffer）→ RCU（Read-Copy-Update）宽限期 | [linux/README.md](linux/README.md) |
 | `llm/` | 大语言模型（Large Language Model）：环境、训练、评测三阶段，外加 PyTorch 与 NumPy/pandas 基础 | [llm/README.md](llm/README.md) |
 | `daft/` | Daft 列式执行引擎的可复现实验 | [daft/README.md](daft/README.md) |
+| `interpreter/` | 源码到结果的三条路：树遍历解释、自举解释、LLVM（Low Level Virtual Machine）后端 JIT（Just-In-Time compilation，即时编译） | [interpreter/README.md](interpreter/README.md) |
+| `async-io/` | Linux 异步 I/O 的库与服务两层：io_uring 协程封装 + io_uring / kqueue 双后端服务器 | [async-io/README.md](async-io/README.md) |
+| `runtime/` | 两种调度模型：单线程 reactor 与 work-stealing 线程池 | [runtime/README.md](runtime/README.md) |
 
 ## 放什么
 

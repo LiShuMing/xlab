@@ -64,8 +64,8 @@ speed_avx512bw_g++
 verify_avx512bw_g++
 
 # Extensionless compiled binaries (build outputs of CMake targets)
-/cc/projects/llvm-jit/benchmarks/LLVMJitExprFusion_benchmark
-/cc/projects/llvm-jit/test/LLVMJitExprFusion_test
+/labs/interpreter/jit/benchmarks/LLVMJitExprFusion_benchmark
+/labs/interpreter/jit/test/LLVMJitExprFusion_test
 
 # Packaged installers and driver blobs — fetch from upstream, do not vendor
 *.deb
@@ -220,19 +220,20 @@ pnpm-debug.log*
 /cc/projects/cpython/**/.benchmarks/
 /cc/projects/cpython/**/benchmark_*.svg
 /cc/projects/cpython/**/orderedstructs.egg-info/
-/cc/projects/io-uring/doc/sphinx/build/
-/cc/projects/io-uring/docs/build/
-/cc/projects/io-uring/docs/doxygen/
-/cc/projects/io-uring/skiplist.xcodeproj/
-/cc/projects/io-uring/**/.cache/
-/cc/projects/io-uring/**/.eggs/
-/cc/projects/io-uring/**/.project
-/cc/projects/io-uring/**/.pydevproject
-/cc/projects/io-uring/**/tmp/
-/cc/projects/io-uring/**/.depend
-/cc/projects/io-uring/**/.benchmarks/
-/cc/projects/io-uring/**/benchmark_*.svg
-/cc/projects/io-uring/**/orderedstructs.egg-info/
+/labs/async-io/uring/doc/sphinx/build/
+/labs/async-io/uring/docs/build/
+/labs/async-io/uring/docs/doxygen/
+/labs/async-io/uring/skiplist.xcodeproj/
+/labs/async-io/uring/**/.cache/
+/labs/async-io/uring/**/.eggs/
+/labs/async-io/server/**/.cache/
+/labs/async-io/uring/**/.project
+/labs/async-io/uring/**/.pydevproject
+/labs/async-io/uring/**/tmp/
+/labs/async-io/uring/**/.depend
+/labs/async-io/uring/**/.benchmarks/
+/labs/async-io/uring/**/benchmark_*.svg
+/labs/async-io/uring/**/orderedstructs.egg-info/
 /cc/projects/kv-store/**/out/
 /cc/projects/kv-store/**/test_arena
 /cc/projects/kv-store/**/test_node
@@ -252,13 +253,17 @@ pnpm-debug.log*
 /cc/projects/query-engine/**/*.idb
 /cc/projects/query-engine/**/*.pdb
 /cc/projects/query-engine/docs/_build/
-/cc/projects/llvm-jit/**/*-build/
-/cc/projects/write-a-C-interpreter/**/*.ko
-/cc/projects/write-a-C-interpreter/**/*.elf
-/cc/projects/write-a-C-interpreter/**/*.i*86
-/cc/projects/write-a-C-interpreter/**/*.x86_64
-/cc/projects/write-a-C-interpreter/**/*.hex
-/cc/projects/write-a-C-interpreter/**/xc
+/labs/interpreter/jit/**/*-build/
+/labs/interpreter/jit/Makefile
+/labs/interpreter/jit/**/Makefile
+/labs/interpreter/jit/CMakeCache.txt
+/labs/interpreter/jit/CMakeFiles/
+/labs/interpreter/self-hosting/**/*.ko
+/labs/interpreter/self-hosting/**/*.elf
+/labs/interpreter/self-hosting/**/*.i*86
+/labs/interpreter/self-hosting/**/*.x86_64
+/labs/interpreter/self-hosting/**/*.hex
+/labs/interpreter/self-hosting/**/xc
 
 # Python project-specific generated output
 /python/**/downloads/

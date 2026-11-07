@@ -37,7 +37,7 @@ cmake --build .
 ## Project Structure
 
 ```
-cc/projects/web-server/
+labs/async-io/server/
 ├── include/ringserver/
 │   ├── common/              # Shared utilities
 │   │   ├── status.hpp

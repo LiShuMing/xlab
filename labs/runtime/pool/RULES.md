@@ -34,7 +34,7 @@ ctest --output-on-failure
 ## Project Structure
 
 ```
-cc/projects/thread-pool/
+labs/runtime/pool/
 ├── include/wstp/              # Public headers
 │   ├── cache_padding.h        # Cache line utilities
 │   ├── status.h              # Status types

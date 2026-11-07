@@ -51,6 +51,9 @@ xlab/
 ├── labs/                 # Topic-oriented labs; the language is an implementation detail
 │   ├── linux/            # Kernel mechanisms: page faults, page tables, TLB, RCU
 │   ├── llm/              # LLM stages and foundations: env, train, bench, torch, numpy
+│   ├── interpreter/      # Source to result: tree-walk, self-hosting, LLVM JIT
+│   ├── async-io/         # Linux async I/O: io_uring wrapper and a dual-backend server
+│   ├── runtime/          # Scheduling models: single-thread reactor vs work-stealing pool
 │   └── daft/             # Daft columnar execution experiments
 ├── rust/                 # Rust laboratory
 │   ├── rlab/             # Workspace-based Rust lab
@@ -199,7 +202,8 @@ Haskell was owner-retired; do not restore its roots to satisfy historical links.
 
 ## Build Commands
 
-Root CMake covers only portable cclab and thread-pool, not all C++ labs.
+Root CMake covers only portable cclab and the work-stealing pool in
+labs/runtime, not all C++ labs.
 Native CI additionally tests rlab/rdb/ToyDB; other projects have independent
 requirements. See [README build/CI scope](README.md#build-and-ci-scope).
 Standalone cclab defaults to the portable subset. Set CCLAB_PORTABLE_ONLY=OFF

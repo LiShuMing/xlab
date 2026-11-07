@@ -30,17 +30,17 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | LeetCode、LCR、面试题、基础算法 | [cc/algo/](cc/algo/)、[rust/rlab/tools/leetcode/](rust/rlab/tools/leetcode/)、[python/pylab/](python/pylab/) |
 | KV、MemTable、SkipList、Arena | [vela/storage/](https://github.com/LiShuMing/vela/tree/main/storage/) |
 | 向量化执行、Hash Aggregate、Join、Sort、Top-N | [vela/execution/](https://github.com/LiShuMing/vela/tree/main/execution/) |
-| 线程池、work stealing、任务调度 | [cc/projects/thread-pool/](cc/projects/thread-pool/)、[rust/rlab/tools/thread-pool/](rust/rlab/tools/thread-pool/) |
+| 线程池、work stealing、任务调度 | [labs/runtime/pool/](labs/runtime/pool/)、[rust/rlab/tools/thread-pool/](rust/rlab/tools/thread-pool/) |
 | MPMC、MPSC、队列内存回收 | [rust/rlab/tools/lockfree-queue/](rust/rlab/tools/lockfree-queue/) |
 | Bloom、Split Block、XOR Filter | [rust/rlab/tools/bloom_filter/](rust/rlab/tools/bloom_filter/) |
 | Rust 数据库、SQL、存储引擎 | [rust/rdb/](rust/rdb/) |
 | Volcano、Cascades、优化器算法对照 | [vela/optimizer/](https://github.com/LiShuMing/vela/tree/main/optimizer/) |
 | 多数据库优化器源码分析 | [vela/research/optimizer-evidence](https://github.com/LiShuMing/vela/tree/main/research/optimizer-evidence)、[vela/research/optimizer-scanner](https://github.com/LiShuMing/vela/tree/main/research/optimizer-scanner) |
-| LLVM、JIT、表达式编译 | [cc/projects/llvm-jit/](cc/projects/llvm-jit/) |
+| LLVM、JIT、表达式编译 | [labs/interpreter/jit/](labs/interpreter/jit/) |
 | OCaml、函数式编程、AST、解释器、常量折叠 | [ocaml/](ocaml/)、[学习教程](ocaml/TUTORIAL.md) |
 | Lean 4、归纳证明、优化正确性、定理证明 | [lean4/](lean4/)、[学习教程](lean4/TUTORIAL.md) |
 | 增量计算、IVM、DBSP、差分数据流 | [python/ivm/](python/ivm/)、[python/pylab/dbsp/](python/pylab/dbsp/)，第三方见 `rust/thirdparty/` |
-| Linux io_uring、异步 I/O、Reactor | [cc/projects/io-uring/](cc/projects/io-uring/)、[cc/projects/mini-seastar/](cc/projects/mini-seastar/)、[cc/projects/web-server/](cc/projects/web-server/) |
+| Linux io_uring、异步 I/O、Reactor | [labs/async-io/uring/](labs/async-io/uring/)、[labs/runtime/reactor/](labs/runtime/reactor/)、[labs/async-io/server/](labs/async-io/server/) |
 | 缺页、页表遍历、TLB、RCU 宽限期与 stall | [labs/linux/](labs/linux/)、[rcu 笔记](labs/linux/rcu/README.md) |
 | Python C API、Cython、嵌入式 Python | [cc/projects/cpython/](cc/projects/cpython/) |
 | Iceberg、Java/JVM、Spark、Scala、Groovy | [java/xlab-iceberg/](java/xlab-iceberg/)、[java/xlab-itest/](java/xlab-itest/) |
@@ -92,16 +92,16 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | [cc/projects/cpython/cpython/](cc/projects/cpython/cpython/) | 在 C++ 中嵌入 Python | [CMakeLists](cc/projects/cpython/cpython/CMakeLists.txt)、[main.cc](cc/projects/cpython/cpython/main.cc) |
 | [cc/projects/cpython/py-extention/](cc/projects/cpython/py-extention/) | Python C API 与 Cython 扩展示例 | [setup.py](cc/projects/cpython/py-extention/setup.py) |
 | [cc/projects/cpython/skiplist-extention/](cc/projects/cpython/skiplist-extention/) | SkipList 的 Python 原生扩展 | [CMakeLists](cc/projects/cpython/skiplist-extention/CMakeLists.txt)、[setup.py](cc/projects/cpython/skiplist-extention/setup.py) |
-| [cc/projects/interpreter/](cc/projects/interpreter/) | Flex/Bison 词法、语法、AST 与解释执行 | [README](cc/projects/interpreter/README.md)、[CMakeLists](cc/projects/interpreter/CMakeLists.txt) |
-| [cc/projects/io-uring/](cc/projects/io-uring/) | Linux io_uring C++20 协程封装 | [README](cc/projects/io-uring/README.md)、[CMakeLists](cc/projects/io-uring/CMakeLists.txt) |
+| [labs/interpreter/tree-walk/](labs/interpreter/tree-walk/) | Flex/Bison 词法、语法、AST 与解释执行 | [README](labs/interpreter/tree-walk/README.md)、[CMakeLists](labs/interpreter/tree-walk/CMakeLists.txt) |
+| [labs/async-io/uring/](labs/async-io/uring/) | Linux io_uring C++20 协程封装 | [README](labs/async-io/uring/README.md)、[CMakeLists](labs/async-io/uring/CMakeLists.txt) |
 | [vela/storage/](https://github.com/LiShuMing/vela/tree/main/storage/) | TinyKV；MemTable、SkipList、Arena | [README](https://github.com/LiShuMing/vela/blob/main/storage/README.md)、[CMakeLists](https://github.com/LiShuMing/vela/blob/main/storage/CMakeLists.txt) |
 | [cc/projects/learn-balel/](cc/projects/learn-balel/) | Bazel 构建学习；主程序、数学库与测试 | [TASK](cc/projects/learn-balel/TASK.md)、[BUILD](cc/projects/learn-balel/BUILD)、[MODULE.bazel](cc/projects/learn-balel/MODULE.bazel) |
-| [cc/projects/llvm-jit/](cc/projects/llvm-jit/) | LLVM JIT 表达式编译与性能比较 | [CMakeLists](cc/projects/llvm-jit/CMakeLists.txt)、[源码](cc/projects/llvm-jit/src/) |
-| [cc/projects/mini-seastar/](cc/projects/mini-seastar/) | 协程调度、Reactor、Seastar-lite 实验 | [README](cc/projects/mini-seastar/README.md)、[CMakeLists](cc/projects/mini-seastar/CMakeLists.txt) |
+| [labs/interpreter/jit/](labs/interpreter/jit/) | LLVM JIT 表达式编译与性能比较 | [CMakeLists](labs/interpreter/jit/CMakeLists.txt)、[源码](labs/interpreter/jit/src/) |
+| [labs/runtime/reactor/](labs/runtime/reactor/) | 协程调度、Reactor、Seastar-lite 实验 | [README](labs/runtime/reactor/README.md)、[CMakeLists](labs/runtime/reactor/CMakeLists.txt) |
 | [vela/execution/](https://github.com/LiShuMing/vela/tree/main/execution/) | vagg 向量化查询执行引擎 | [README](https://github.com/LiShuMing/vela/blob/main/execution/README.md)、[CMakeLists](https://github.com/LiShuMing/vela/blob/main/execution/CMakeLists.txt) |
-| [cc/projects/thread-pool/](cc/projects/thread-pool/) | WSTP 全局队列与 work-stealing 线程池 | [README](cc/projects/thread-pool/README.md)、[CMakeLists](cc/projects/thread-pool/CMakeLists.txt) |
-| [cc/projects/web-server/](cc/projects/web-server/) | Linux/macOS 网络与 I/O 后端实验 | [README](cc/projects/web-server/README.md)、[CMakeLists](cc/projects/web-server/CMakeLists.txt) |
-| [cc/projects/write-a-C-interpreter/](cc/projects/write-a-C-interpreter/) | C 编写的自解释 C interpreter | [README](cc/projects/write-a-C-interpreter/README.md)、[xc.c](cc/projects/write-a-C-interpreter/xc.c) |
+| [labs/runtime/pool/](labs/runtime/pool/) | WSTP 全局队列与 work-stealing 线程池 | [README](labs/runtime/pool/README.md)、[CMakeLists](labs/runtime/pool/CMakeLists.txt) |
+| [labs/async-io/server/](labs/async-io/server/) | Linux/macOS 网络与 I/O 后端实验 | [README](labs/async-io/server/README.md)、[CMakeLists](labs/async-io/server/CMakeLists.txt) |
+| [labs/interpreter/self-hosting/](labs/interpreter/self-hosting/) | C 编写的自解释 C interpreter | [README](labs/interpreter/self-hosting/README.md)、[xc.c](labs/interpreter/self-hosting/xc.c) |
 | [cc/extentions/gdb-extension/](cc/extentions/gdb-extension/) | GDB/StarRocks 调试脚本 | [sr_gdbinit.py](cc/extentions/gdb-extension/sr_gdbinit.py) |
 | [cc/tools/duckdb/](cc/tools/duckdb/) | DuckDB/DuckLake SQL 实验脚本 | [duckdb.sql](cc/tools/duckdb/duckdb.sql) |
 

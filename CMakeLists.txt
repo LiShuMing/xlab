@@ -12,7 +12,7 @@ if(XLAB_BUILD_CCLAB)
     add_subdirectory(cc/cclab)
 endif()
 if(XLAB_BUILD_THREAD_POOL)
-    add_subdirectory(cc/projects/thread-pool)
+    add_subdirectory(labs/runtime/pool)
 endif()
 
 if(BUILD_TESTING AND XLAB_BUILD_CCLAB AND XLAB_BUILD_THREAD_POOL)

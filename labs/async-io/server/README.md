@@ -1,3 +1,13 @@
+# server —— io_uring / kqueue 双后端服务器
+
+把 Web 服务器的核心抽象拆成两层：业务层只看 Connection / Request / Response，I/O 层用
+统一接口对接不同操作系统的事件与完成机制。目标不是「把 io_uring 代码移植到 macOS」，
+而是在 Linux（io_uring，proactor）与 macOS（kqueue，reactor）上对比**系统 I/O 模型造成的
+性能差异**。
+
+下面按 Phase 记录设计思路与验收方式。
+
+---
 
 1) 第一性原理：为什么要做“双后端”？
 - io_uring 的价值在于：把 I/O 提交与完成用共享内存 ring（SQ/CQ）表达，减少 syscalls、减少 wakeups，并支持注册（fixed files / buffers）降低内核路径开销

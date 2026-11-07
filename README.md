@@ -76,7 +76,7 @@ their build systems; a scaffold is explicitly marked and has no build command.
 
 | Project | Path | Stack | Notes |
 | --- | --- | --- | --- |
-| MiniSeastar | `cc/projects/mini-seastar/` | C++20, CMake | Coroutine scheduler, per-thread reactor. |
+| MiniSeastar | `labs/runtime/reactor/` | C++20, CMake | Coroutine scheduler, per-thread reactor. |
 | OCaml Lab | [ocaml/](ocaml/) | OCaml, Dune | Language basics, expression interpreter and constant folding; [中文教程](ocaml/TUTORIAL.md). |
 | Lean 4 Lab | [lean4/](lean4/) | Lean 4, Lake | Structural induction and constant-folding correctness; [中文教程](lean4/TUTORIAL.md). |
 | K8s Lab | `go/k8s-lab/` | Go (stdlib only) | Mini Kubernetes control plane: MVCC store, apiserver, informers, workqueue, ReplicaSet controller, kubelet sim. |
@@ -136,7 +136,7 @@ the repository root, so there is nothing to build or serve.
 ## Build and CI Scope
 
 There is no whole-repository build. Root CMake builds only portable `cc/cclab`
-and `cc/projects/thread-pool`; its default dependency download setting is OFF.
+and `labs/runtime/pool`; its default dependency download setting is OFF.
 Without an installed/cached GoogleTest, default configure fails. Opt-in
 `XLAB_FETCH_DEPENDENCIES=ON` fetches pinned test dependencies (and Benchmark
 when requested), not the historical research reference catalog. Standalone

@@ -35,7 +35,7 @@ cmake --build .
 ## Project Structure
 
 ```
-cc/projects/mini-seastar/
+labs/runtime/reactor/
 ├── include/miniseastar/    # Public API headers
 │   ├── task.hpp           # Task<T> coroutine type
 │   ├── scheduler.hpp      # Coroutine scheduler

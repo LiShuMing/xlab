@@ -9,7 +9,7 @@ This document provides guidelines for AI Agents working on the MiniSeastar proje
 MiniSeastar is a C++20 coroutine-based asynchronous runtime inspired by Seastar. It's designed for learning modern C++ coroutines and high-performance async I/O patterns.
 
 ```
-cc/projects/mini-seastar/
+labs/runtime/reactor/
 ├── include/miniseastar/    # Public headers
 │   ├── task.hpp           # Coroutine Task<T> type
 │   ├── scheduler.hpp      # Coroutine scheduler

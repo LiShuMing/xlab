@@ -16,7 +16,7 @@ Use `../../../tools/build-windows.ps1 -Project thread-pool` from this directory,
 or consult the root `WINDOWS.md`. Benchmarks require `XLAB_BUILD_BENCHMARKS=ON`.
 
 ```
-cc/projects/thread-pool/
+labs/runtime/pool/
 ├── include/wstp/              # Public API headers
 │   ├── cache_padding.h        # Cache line alignment
 │   ├── status.h              # Status/error types

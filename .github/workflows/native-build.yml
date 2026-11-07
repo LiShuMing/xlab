@@ -12,7 +12,7 @@ on:
       - tools/cpp_smoke.cc
       - tools/build-windows.ps1
       - cc/cclab/**
-      - cc/projects/thread-pool/**
+      - labs/runtime/pool/**
       - rust/rlab/**
       - rust/rdb/**
       - python/projects/py-toydb/**
@@ -27,7 +27,7 @@ on:
       - tools/cpp_smoke.cc
       - tools/build-windows.ps1
       - cc/cclab/**
-      - cc/projects/thread-pool/**
+      - labs/runtime/pool/**
       - rust/rlab/**
       - rust/rdb/**
       - python/projects/py-toydb/**
@@ -72,7 +72,7 @@ jobs:
       - name: Package exact-checkout Windows sources
         run: >-
           tar -cf "${{ runner.temp }}/windows-source.tar"
-          CMakeLists.txt cmake tools cc/cclab cc/projects/thread-pool
+          CMakeLists.txt cmake tools cc/cclab labs/runtime/pool
           rust/rlab rust/rdb python/projects/py-toydb
       - uses: actions/upload-artifact@v4
         with:

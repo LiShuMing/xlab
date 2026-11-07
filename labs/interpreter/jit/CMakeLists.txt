@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-set(THIRDPARTY_DIR /Users/lishuming/work/xlab/cc/thirdparty)
+include(${CMAKE_CURRENT_SOURCE_DIR}/../../../cmake/XlabDependencies.cmake)
 
 find_package(LLVM REQUIRED CONFIG COMPONENTS Core Support ExecutionEngine IRCompiler)
 
@@ -26,11 +26,11 @@ option(ENABLE_TESTS "Enable tests" ON)
 add_subdirectory(src)
 if(ENABLE_TESTS)
     enable_testing()
-    add_subdirectory(${THIRDPARTY_DIR}/googletest googletest-build EXCLUDE_FROM_ALL)
+    xlab_require_googletest()
     add_subdirectory(test)
 endif()
 if(ENABLE_BENCHMARKS)
-    add_subdirectory(${THIRDPARTY_DIR}/benchmark benchmark-build EXCLUDE_FROM_ALL)
+    xlab_require_benchmark()
     add_subdirectory(benchmarks)
 endif()
 

@@ -14,7 +14,7 @@ on:
       - 'CMakeLists.txt'
       - 'cmake/**'
       - 'cc/cclab/**'
-      - 'cc/projects/thread-pool/**'
+      - 'labs/runtime/pool/**'
       - '.github/workflows/core-quality.yml'
   pull_request:
     paths:
@@ -29,7 +29,7 @@ on:
       - 'CMakeLists.txt'
       - 'cmake/**'
       - 'cc/cclab/**'
-      - 'cc/projects/thread-pool/**'
+      - 'labs/runtime/pool/**'
       - '.github/workflows/core-quality.yml'
   workflow_dispatch:
 

@@ -44,8 +44,10 @@ target_include_directories(miniseastar_lib
         ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-# GoogleTest from local submodule
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../../cc/thirdparty/googletest googletest-build EXCLUDE_FROM_ALL)
+# GoogleTest through the repository dependency module, so the same fallback
+# order (local source, fetch, installed package) applies inside labs.
+include(${CMAKE_CURRENT_SOURCE_DIR}/../../../cmake/XlabDependencies.cmake)
+xlab_require_googletest()
 
 # Unit tests
 enable_testing()
@@ -58,7 +60,7 @@ add_executable(miniseastar_tests
 target_link_libraries(miniseastar_tests
     PRIVATE
         miniseastar_lib
-        gtest_main
+        GTest::gtest_main
 )
 target_include_directories(miniseastar_tests PRIVATE include)
 

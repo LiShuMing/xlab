@@ -9,7 +9,7 @@ This document provides guidelines for AI Agents working on the RingServer cross-
 RingServer is a high-performance web server with pluggable I/O backends, supporting both io_uring (Linux) and kqueue (macOS) through a unified completion-event interface.
 
 ```
-cc/projects/web-server/
+labs/async-io/server/
 ├── include/ringserver/          # Public headers
 │   ├── common/                  # Shared utilities
 │   │   ├── status.hpp          # Status/error types
