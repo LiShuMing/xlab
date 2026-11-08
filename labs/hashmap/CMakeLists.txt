@@ -56,3 +56,36 @@ if(PERFECT_HASH_ROOT)
     add_test(NAME wide_contract COMMAND hashmap_bench --method wide --case short64
         --repeat 1 --batch-ms 1 --hit 0)
 endif()
+
+# Standalone mechanisms inspired by analytical operators; no StarRocks dependency.
+add_executable(hashmap_operators bench/operators.cc)
+target_link_libraries(hashmap_operators PRIVATE lab_options)
+add_executable(hashmap_operator_tests tests/operator_maps_test.cc)
+target_link_libraries(hashmap_operator_tests PRIVATE lab_options)
+add_test(NAME operator_correctness COMMAND hashmap_operator_tests)
+foreach(method std flat-u64 flat-fp direct)
+    add_test(NAME aggregate_${method} COMMAND hashmap_operators --method ${method}
+        --case agg-dense8 --mode aggregate --distribution phases --null-percent 10
+        --n 4096 --ndv 64 --domain 256 --repeat 1 --batch-ms 1)
+endforeach()
+foreach(method bucket chain chain-fp direct)
+    add_test(NAME join_${method} COMMAND hashmap_operators --method ${method}
+        --case join-dense --mode join-probe --n 4096 --ndv 64 --domain 256
+        --hit 50 --null-percent 10 --repeat 1 --batch-ms 1)
+endforeach()
+add_test(NAME bitmap_semijoin COMMAND hashmap_operators --method bitmap --case semi-dense
+    --mode semi-probe --n 4096 --ndv 64 --domain 256 --null-percent 10
+    --repeat 1 --batch-ms 1)
+add_test(NAME composite_serialized COMMAND hashmap_operators --method flat-bytes
+    --case agg-composite32x2 --mode aggregate --domain 0 --n 4096 --ndv 512
+    --repeat 1 --batch-ms 1)
+add_test(NAME operator_csv_contract COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/operator_contract_test.py" "$<TARGET_FILE:hashmap_operators>")
+
+add_executable(hashmap_states bench/states.cc)
+target_link_libraries(hashmap_states PRIVATE lab_options)
+add_executable(hashmap_state_tests tests/state_maps_test.cc)
+target_link_libraries(hashmap_state_tests PRIVATE lab_options)
+add_test(NAME state_correctness COMMAND hashmap_state_tests)
+add_test(NAME state_csv_contract COMMAND "${Python3_EXECUTABLE}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/tests/state_contract_test.py" "$<TARGET_FILE:hashmap_states>")

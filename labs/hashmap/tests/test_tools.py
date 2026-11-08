@@ -95,10 +95,8 @@ class ToolTests(unittest.TestCase):
 
     def test_render_escapes_imported_key_count(self):
         hostile = sample()
-        hostile["n"] = '<img src=x onerror=alert(1)>'
-        document, _ = render(
-            {"status": "completed", "failed_jobs": hostile["n"]}, [hostile]
-        )
+        hostile["n"] = "<img src=x onerror=alert(1)>"
+        document, _ = render({"status": "completed", "failed_jobs": hostile["n"]}, [hostile])
         self.assertNotIn(hostile["n"], document)
         self.assertIn("&lt;img src=x onerror=alert(1)&gt;", document)
 

@@ -24,7 +24,7 @@
 //             if (max <= l) {
 //                 max = std::distance(nums.begin(), std::max_element(nums.begin() + l, nums.begin() + r));
 //             } else {
-//                 // 
+//                 //
 //                 // max is in the window, compare nums[i] with nums[max]
 //                 if (nums[i] > nums[max]) {
 //                     max = i;

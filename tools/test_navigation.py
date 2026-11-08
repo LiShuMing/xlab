@@ -12,6 +12,8 @@ GUIDES = [
     "docs/README.md",
     "ocaml/README.md", "ocaml/TUTORIAL.md",
     "lean4/README.md", "lean4/TUTORIAL.md",
+    "labs/ivm/README.md", "labs/ivm/rust/README.md",
+    "labs/ivm/rust/TUTORIAL.md", "labs/ivm/rust/AGENTS.md",
     # Every docs section index is a maintained guide: adding a new top-level
     # docs directory without a README, or breaking a link inside one, fails here.
     *[str(path.relative_to(ROOT)) for path in (ROOT / "docs").glob("*/README.md")],

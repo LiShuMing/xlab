@@ -31,6 +31,18 @@ def text_command(command, cwd=None):
 
 
 def matrix(config, perfect):
+    if config.get("family") == "states":
+        from state_cases import jobs as state_jobs
+
+        jobs = state_jobs(config)
+        random.Random(20261108).shuffle(jobs)
+        return jobs
+    if config.get("family") == "operators":
+        from operator_cases import jobs as operator_jobs
+
+        jobs = operator_jobs(config)
+        random.Random(20261108).shuffle(jobs)
+        return jobs
     jobs = []
     for case, hit, distribution, seed in itertools.product(
         config["fixed_cases"], config["hits"], config["distributions"], config["seeds"]
@@ -106,7 +118,9 @@ def run_checked(command, output, timeout):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--suite", choices=("quick", "standard"), default="standard")
+    parser.add_argument(
+        "--suite", choices=("quick", "standard", "operators", "states"), default="standard"
+    )
     parser.add_argument("--perfect-hash-root", type=Path)
     parser.add_argument("--compiler", default=os.environ.get("CXX", "c++"))
     parser.add_argument("--cxx-flags", default="")
@@ -137,6 +151,7 @@ def main():
         schema_version=1,
         generator="20261108-v1",
         suite=args.suite,
+        family=config.get("family", "generic"),
         started_at=datetime.now(TZ).isoformat(),
         status="preparing",
         compiler=text_command([compiler, "--version"]),
@@ -145,7 +160,7 @@ def main():
         config=config,
         config_sha256=sha256(config_path),
         git_head=text_command(["git", "rev-parse", "HEAD"], LAB),
-        lab_status=text_command(["git", "status", "--short", "--", "labs/hashmap"], LAB),
+        lab_status=text_command(["git", "status", "--short", "--", "."], LAB),
         source_sha256={},
         jobs=[],
         failed_jobs=0,
@@ -157,11 +172,27 @@ def main():
             "memory excludes allocator overhead and shared literals",
         ],
     )
+    if config.get("family") == "states":
+        manifest["limitations"] = [
+            "shared host; process pinned to one allowed CPU",
+            "complete aggregate build/update/grow/destroy cycles, including phase timer overhead",
+            "phase batch averages are not operation percentiles",
+            "allocator-request live/peak bytes exclude allocator overhead, input and reference states",
+            "logical initialization counts are not measured hardware write traffic",
+            "independent mechanism experiment; no StarRocks runtime",
+        ]
     for directory in ("maps", "bench", "tools", "tests", "cases", "assets"):
         for path in sorted((LAB / directory).iterdir()):
             if path.is_file():
                 manifest["source_sha256"][str(path.relative_to(LAB))] = sha256(path)
-    for name in ("CMakeLists.txt", "Makefile", "README.md"):
+    for name in (
+        "CMakeLists.txt",
+        "Makefile",
+        "README.md",
+        "source-reference.json",
+        "SPECIALIZATIONS.md",
+        "STATE_LAYOUTS.md",
+    ):
         if (LAB / name).is_file():
             manifest["source_sha256"][name] = sha256(LAB / name)
     if args.perfect_hash_root:
@@ -224,7 +255,10 @@ def main():
         if (output / "build-resources.txt").is_file():
             wall, rss = (output / "build-resources.txt").read_text().strip().split(",")
             manifest["build"].update(wall_seconds=float(wall), peak_rss_kib=int(rss))
-        binary = build / "hashmap_bench"
+        binary = build / {
+            "operators": "hashmap_operators",
+            "states": "hashmap_states",
+        }.get(config.get("family"), "hashmap_bench")
         manifest["binary"] = dict(
             path=str(binary),
             sha256=sha256(binary),
@@ -232,10 +266,10 @@ def main():
             sections=text_command(["size", str(binary)]) if shutil.which("size") else None,
         )
         manifest["effective_compile_flags"] = (
-            build / "CMakeFiles/hashmap_bench.dir/flags.make"
+            build / f"CMakeFiles/{binary.name}.dir/flags.make"
         ).read_text()
         manifest["effective_link_command"] = (
-            build / "CMakeFiles/hashmap_bench.dir/link.txt"
+            build / f"CMakeFiles/{binary.name}.dir/link.txt"
         ).read_text()
         event("correctness")
         run_checked(
@@ -304,7 +338,7 @@ def main():
                     raise ValueError("sample count mismatch")
                 for sample in samples:
                     identity = tuple(
-                        sample[field]
+                        sample.get(field, "")
                         for field in (
                             "mode",
                             "case_name",
@@ -313,6 +347,10 @@ def main():
                             "distribution",
                             "target_load",
                             "seed",
+                            "ndv_config",
+                            "domain",
+                            "null_percent",
+                            "state_bytes",
                         )
                     )
                     previous = seen.setdefault(identity, sample["trace_hash"])

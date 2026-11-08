@@ -14,7 +14,7 @@ public:
     int jobScheduling(vector<int>& startTime, vector<int>& endTime, vector<int>& profit) {
         int n = startTime.size();
         if (n == 0) return 0;
-        
+
         vector<Job> jobs;
         for (int i = 0; i < n; ++i) {
             jobs.emplace_back(startTime[i], endTime[i], profit[i]);

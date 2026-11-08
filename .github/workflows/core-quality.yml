@@ -85,7 +85,7 @@ jobs:
             ivm)
               python -m pip install pytest
               cd labs/ivm
-              python -m unittest discover -s . -p 'test_*.py' -v
+              python -m unittest discover -s pyivm -p 'test_*.py' -v
               cd dbsp && python -m pytest -q
               ;;
             llm-benchmark)
@@ -104,6 +104,32 @@ jobs:
               OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python -m pytest test/test_duckdb.py test/test_distributed_kmeans.py -q
               ;;
           esac
+
+  ivm-rust:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        toolchain: ['1.75.0', stable]
+    defaults:
+      run:
+        working-directory: labs/ivm/rust
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.toolchain }}
+          components: rustfmt, clippy
+      - name: Format and lint (stable)
+        if: matrix.toolchain == 'stable'
+        run: |
+          cargo fmt -- --check
+          cargo clippy --offline --locked --all-targets -- -D warnings
+      - name: Offline debug/release tests and asserted example
+        run: |
+          cargo test --offline --locked
+          cargo test --offline --locked --release
+          cargo run --offline --locked --release --example time_series
 
   cpp-sanitizers:
     runs-on: ubuntu-latest

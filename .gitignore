@@ -343,3 +343,8 @@ gpt2-124M.ckpt
 
 # Hashmap laboratory: builds, measurements and offline reports
 /labs/hashmap/.local/
+
+# Low-level laboratory: SIMD, NASM and LLVM build outputs
+/labs/lowlevel/simd/bin/
+/labs/lowlevel/nasm/bin/
+/labs/lowlevel/llvm/bin/

@@ -1,0 +1,16 @@
+{
+  "family": "operators",
+  "seeds": [42, 1729, 2026],
+  "repeats": 5,
+  "batch_ms": 20,
+  "scenarios": [
+    {"case":"agg-dense8", "n":65536, "ndv":64, "domain":256, "null_percent":0, "distributions":["uniform","phases"], "methods":["std","flat-u64","flat-fp","direct"]},
+    {"case":"agg-dense16", "n":65536, "ndv":1024, "domain":65536, "null_percent":10, "distributions":["uniform","phases"], "methods":["std","flat-u64","flat-fp","direct"]},
+    {"case":"agg-sparse64", "n":65536, "ndv":4096, "domain":0, "null_percent":10, "distributions":["uniform","phases"], "methods":["std","flat-u64","flat-fp"]},
+    {"case":"agg-composite32x2", "n":65536, "ndv":4096, "domain":0, "null_percent":10, "distributions":["uniform","phases"], "methods":["std","flat-u64","flat-fp","flat-bytes"]},
+    {"case":"join-dense", "n":8192, "ndv":512, "domain":4096, "null_percent":10, "distributions":["uniform"], "methods":["bucket","chain","chain-fp","direct"], "modes":["join-build","join-probe"], "hits":[0,50,100]},
+    {"case":"join-sparse", "n":8192, "ndv":4096, "domain":0, "null_percent":0, "distributions":["uniform"], "methods":["bucket","chain","chain-fp"], "modes":["join-build","join-probe"], "hits":[0,50,100]},
+    {"case":"join-skew", "n":8192, "ndv":64, "domain":0, "null_percent":10, "distributions":["hot"], "methods":["bucket","chain","chain-fp"], "modes":["join-probe"], "hits":[50,100]},
+    {"case":"semi-dense", "n":8192, "ndv":512, "domain":4096, "null_percent":10, "distributions":["uniform","phases"], "methods":["std","bitmap"], "modes":["semi-probe"], "hits":[0,50,100]}
+  ]
+}

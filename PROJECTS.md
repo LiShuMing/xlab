@@ -33,6 +33,7 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | 线程池、work stealing、任务调度 | [labs/runtime/pool/](labs/runtime/pool/)、[rust/rlab/tools/thread-pool/](rust/rlab/tools/thread-pool/) |
 | MPMC、MPSC、队列内存回收 | [rust/rlab/tools/lockfree-queue/](rust/rlab/tools/lockfree-queue/) |
 | Bloom、Split Block、XOR Filter | [rust/rlab/tools/bloom_filter/](rust/rlab/tools/bloom_filter/) |
+| 数据库、SQL、存储引擎 | 原 `rust/rdb/` 已移除；相关实验见 [vela](https://github.com/LiShuMing/vela) |
 | Volcano、Cascades、优化器算法对照 | [vela/optimizer/](https://github.com/LiShuMing/vela/tree/main/optimizer/) |
 | 多数据库优化器源码分析 | [vela/research/optimizer-evidence](https://github.com/LiShuMing/vela/tree/main/research/optimizer-evidence)、[vela/research/optimizer-scanner](https://github.com/LiShuMing/vela/tree/main/research/optimizer-scanner) |
 | LLVM、JIT、表达式编译 | [labs/interpreter/jit/](labs/interpreter/jit/) |
@@ -41,6 +42,8 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | 增量计算、IVM、DBSP、差分数据流 | [labs/ivm/](labs/ivm/)（含 [dbsp/](labs/ivm/dbsp/)），第三方见 `rust/thirdparty/` |
 | Linux io_uring、异步 I/O、Reactor | [labs/async-io/uring/](labs/async-io/uring/)、[labs/runtime/reactor/](labs/runtime/reactor/)、[labs/async-io/server/](labs/async-io/server/) |
 | 缺页、页表遍历、TLB、RCU 宽限期与 stall | [labs/linux/](labs/linux/)、[rcu 笔记](labs/linux/rcu/README.md) |
+| SIMD、AVX2、汇编、系统调用、栈与 libc 链接 | [labs/lowlevel/](labs/lowlevel/) |
+| LLVM IR、opt pass、优化器、SSA | [labs/lowlevel/llvm/](labs/lowlevel/llvm/)（含手写 IR、自写 new PM 插件与逐 pass diff） |
 | Python C API、Cython、嵌入式 Python | [cc/projects/cpython/](cc/projects/cpython/) |
 | Iceberg、Java/JVM、Spark、Scala、Groovy | [java/xlab-iceberg/](java/xlab-iceberg/)、[java/xlab-itest/](java/xlab-itest/) |
 | LLM 数学/代码评测、Strata benchmark | [labs/llm/bench/](labs/llm/bench/) |
@@ -72,10 +75,11 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | [labs/llm/](labs/llm/) | 大模型三阶段：GPU 环境与诊断、Tiny Transformer 训练、量化评测 | [README](labs/llm/README.md)、[train](labs/llm/train/README.md)、[bench](labs/llm/bench/README.md) |
 | [labs/daft/](labs/daft/) | Daft native 列式执行、batch 与 UDF 可复现实验 | [README](labs/daft/README.md)、[实验入口](labs/daft/lab.py) |
 | [labs/k8s-lab/](labs/k8s-lab/) | 纯标准库 mini Kubernetes 控制面（Go 1.26.2）：MVCC store、apiserver、informer、workqueue、ReplicaSet controller、kubelet 模拟 | [README](labs/k8s-lab/README.md)、[go.mod](labs/k8s-lab/go.mod)、[AGENTS](labs/k8s-lab/AGENTS.md) |
-| [labs/ivm/](labs/ivm/) | 增量视图维护（Incremental View Maintenance）与 DBSP 代数结构原型：join 增量公式、ZSet/Stream | [README](labs/ivm/README.md)、[ivm.py](labs/ivm/ivm.py)、[dbsp](labs/ivm/dbsp/dbsp.py) |
+| [labs/ivm/](labs/ivm/) | 增量视图维护（Incremental View Maintenance）与 DBSP 代数结构原型：join 增量公式、ZSet/Stream | [README](labs/ivm/README.md)、[Python join](labs/ivm/pyivm/ivm.py)、[Rust](labs/ivm/rust/README.md)、[dbsp](labs/ivm/dbsp/dbsp.py) |
 | [labs/hashmap/](labs/hashmap/) | 哈希表策略、固定键 perfect hash 对照与离线性能报告 | [README](labs/hashmap/README.md)、[CMakeLists](labs/hashmap/CMakeLists.txt) |
+| [labs/lowlevel/](labs/lowlevel/) | 贴硬件的优化三件套：SIMD 的标量/SSE（Streaming SIMD Extensions）/AVX2（Advanced Vector Extensions 2）写法对照、NASM（Netwide Assembler）系统调用与 libc 链接教程、LLVM（Low Level Virtual Machine）18 的 IR（Intermediate Representation）四层实验 | [README](labs/lowlevel/README.md)、[Makefile](labs/lowlevel/Makefile)、[llvm](labs/lowlevel/llvm/README.md) |
 
-## C、C++、汇编及扩展工具
+## C、C++ 及扩展工具
 
 `cc/projects/` 是独立项目集合；其余目录是语言实验室或辅助工具。
 保留磁盘上的原始拼写，例如 `extentions`、`py-extention`、`learn-balel`。
@@ -86,8 +90,6 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | [cc/algo/](cc/algo/) | 算法与刷题集合 | [README](cc/algo/README.md)、[Makefile](cc/algo/Makefile) |
 | [cc/ccbench/](cc/ccbench/) | C++ benchmark 实验室 | [CMakeLists](cc/ccbench/CMakeLists.txt)、[build.sh](cc/ccbench/build.sh) |
 | [cc/srlab/](cc/srlab/) | SR Lab CMake scaffold 与实验；共享第三方依赖 | [README](cc/srlab/README.md)、[CMakeLists](cc/srlab/CMakeLists.txt) |
-| [cc/simd/](cc/simd/) | SIMD 指令与性能实验 | [Makefile](cc/simd/Makefile) |
-| [cc/nasm/](cc/nasm/) | NASM 汇编 hello 与教程 | [Makefile](cc/nasm/Makefile)、[源码](cc/nasm/src/) |
 | [cc/projects/cpython/](cc/projects/cpython/) | Python/C/C++ 互操作项目集合 | [README](cc/projects/cpython/README.md) |
 | [cc/projects/cpython/cpython/](cc/projects/cpython/cpython/) | 在 C++ 中嵌入 Python | [CMakeLists](cc/projects/cpython/cpython/CMakeLists.txt)、[main.cc](cc/projects/cpython/cpython/main.cc) |
 | [cc/projects/cpython/py-extention/](cc/projects/cpython/py-extention/) | Python C API 与 Cython 扩展示例 | [setup.py](cc/projects/cpython/py-extention/setup.py) |

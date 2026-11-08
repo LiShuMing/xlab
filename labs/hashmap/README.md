@@ -123,3 +123,19 @@ ctest --test-dir .local/sanitize --output-on-failure
 
 报告样式与交互复用了 html-report-design 的离线主题，资源均保存在本实验 `assets/` 下，
 运行和生成报告不依赖技能目录。
+
+## 分析型算子特化
+
+新增独立的 `operators` 实验矩阵，包含直寻址聚合、复合键打包、指纹过滤、重复键行号链 Join 和位图 Semi Join。
+机制来源、语义边界、非定常输入与复现方法见 [SPECIALIZATIONS.md](SPECIALIZATIONS.md)。
+
+```sh
+CXX=clang++ python3 tools/run.py --suite operators --build-dir .local/operators-build
+```
+
+大聚合状态实验见 [STATE_LAYOUTS.md](STATE_LAYOUTS.md)：对照 16/256/4096 B 状态的内联、
+分离存储和延迟初始化，并展示热点迁移四个阶段的耗时及内存请求峰值。
+
+```sh
+CXX=clang++ python3 tools/run.py --suite states --build-dir .local/states-build
+```

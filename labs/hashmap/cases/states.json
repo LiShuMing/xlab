@@ -1,0 +1,16 @@
+{
+  "family": "states",
+  "repeats": 5,
+  "batch_ms": 20,
+  "seeds": [42, 1729, 2026],
+  "state_bytes": [16, 256, 4096],
+  "methods": ["std", "std-eager", "inline", "arena-lazy"],
+  "scenarios": [
+    {"case": "few-groups", "n": 65536, "ndv": 64, "null_percent": 10,
+     "distributions": ["uniform", "phases"]},
+    {"case": "many-groups", "n": 65536, "ndv": 16384, "null_percent": 10,
+     "distributions": ["uniform", "phases"]},
+    {"case": "unique", "n": 16384, "ndv": 16384, "null_percent": 0,
+     "distributions": ["uniform"]}
+  ]
+}

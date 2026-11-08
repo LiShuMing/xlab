@@ -2,11 +2,12 @@
 
 把内核里某个子系统压缩成几十到几百行用户态代码，观察它的行为边界。
 这里的实验都不需要编译内核、不进 QEMU（Quick EMUlator，快速模拟器）、不需要 root，
-只依赖 libc / pthread 与 `/proc`。
+原有模拟实验只依赖 libc / pthread 与 `/proc`；`kernel-lens` 使用 Rust 和终端 UI 库读取真实系统指标。
 
 | 子目录 | 主题 | 入口 |
 | --- | --- | --- |
 | `pagetable/` | 虚拟内存：延迟缺页、RSS（Resident Set Size，常驻内存集）、页表遍历、TLB（Translation Lookaside Buffer，地址转换旁路缓冲） | `l_page1.cc`、`l_page2.cc`、`l_pagetable.cc`、`l_tlb1.cc` |
+| `kernel-lens/` | Rust 配置总览与系统观测 TUI：容器、CPU/NUMA、网络/存储、perf/BPF 能力，以及可选基准测试 | [运行与学习指南](kernel-lens/README.md) |
 | `rcu/` | RCU（Read-Copy-Update，读-复制-更新）宽限期、强制静止状态、stall 检测 | [rcu/README.md](rcu/README.md)、`rcu_lab.c` |
 
 ## 构建与运行
@@ -17,6 +18,8 @@ make            # 编译全部实验，产物在 bin/
 make pagetable  # 只编页表 / TLB 实验
 make rcu        # 只编 RCU 实验
 make run_rcu    # 编译并运行 RCU 的三个场景
+make run_kernel_lens  # Rust 终端监控（需 Rust 1.94+，首次构建下载依赖）
+make test_kernel_lens # 仅测试 Rust 监控实验
 make clean
 ```
 

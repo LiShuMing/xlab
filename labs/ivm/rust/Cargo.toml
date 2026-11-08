@@ -1,0 +1,12 @@
+[package]
+name = "ivm-radix-lab"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.75"
+publish = false
+description = "Offline ZSet, ordered batch and incremental radix-tree learning lab"
+license = "MIT OR Apache-2.0"
+
+[workspace]
+
+[dependencies]

@@ -42,8 +42,6 @@ xlab/
 │   ├── algo/             # Algorithm implementations (LeetCode, etc.)
 │   ├── ccbench/          # Benchmarks
 │   ├── srlab/            # Serialization experiments
-│   ├── simd/             # SIMD optimizations
-│   ├── nasm/             # Assembly experiments
 │   ├── extentions/       # GDB / editor extensions
 │   ├── projects/         # Remaining personal C++ projects
 │   └── thirdparty/       # Declared references; see dependency status below
@@ -53,11 +51,13 @@ xlab/
 │   ├── interpreter/      # Source to result: tree-walk, self-hosting, LLVM JIT
 │   ├── async-io/         # Linux async I/O: io_uring wrapper and a dual-backend server
 │   ├── runtime/          # Scheduling models: single-thread reactor vs work-stealing pool
+│   ├── lowlevel/         # SIMD vectorization, hand-written NASM assembly, LLVM IR and pass plugins
 │   ├── k8s-lab/          # Mini Kubernetes control plane from scratch (pure stdlib)
 │   ├── ivm/              # Incremental view maintenance and DBSP prototypes
 │   └── daft/             # Daft columnar execution experiments
 ├── rust/                 # Rust laboratory
 │   ├── rlab/             # Workspace-based Rust lab
+│   ├── rdb/              # Database implementation experiments
 │   └── thirdparty/       # Declared Rust research references
 ├── python/               # Python laboratory
 │   ├── pylab/            # Core Python lab with pytest
@@ -152,6 +152,7 @@ instructions and build manifests before working there.
 - **Workspace root**: none — there is no `rust/Cargo.toml`; run Cargo inside the selected project or pass `--manifest-path`. `rlab` owns its workspace.
 - **Key Projects**:
   - `rlab`: Core experiments (lockfree, thread-pool, bloom filter)
+  - `rdb`: Database implementation with tokio
 - **Key Dependencies**: tokio, parking_lot, serde, zstd, roaring
 - **Third-party declarations (currently no gitlinks)**: RisingWave, Materialize, DataFusion, Timely/Differential Dataflow
 
@@ -209,7 +210,7 @@ Haskell was owner-retired; do not restore its roots to satisfy historical links.
 
 Root CMake covers only portable cclab and the work-stealing pool in
 labs/runtime, not all C++ labs.
-Native CI additionally tests rlab/ToyDB; other projects have independent
+Native CI additionally tests rlab/rdb/ToyDB; other projects have independent
 requirements. See [README build/CI scope](README.md#build-and-ci-scope).
 Standalone cclab defaults to the portable subset. Set CCLAB_PORTABLE_ONLY=OFF
 only for the separately provisioned legacy laboratory.
@@ -246,6 +247,19 @@ make leetcode_<number>        # Build specific LeetCode solution
 make run_leetcode_<number>    # Build and run
 make test                     # Verify toolchain
 ```
+
+### Low-level SIMD, assembly and LLVM IR (labs/lowlevel)
+```bash
+make -C labs/lowlevel                     # SIMD benchmarks, NASM tutorials, LLVM IR lab
+make -C labs/lowlevel/nasm run-t1         # Run one tutorial
+make -C labs/lowlevel/llvm check          # Assert the four IR layers
+make -C labs/lowlevel/llvm passes         # Per-pass instruction counts and diff
+```
+The SIMD half needs a C++17 compiler and AVX2; the assembly half needs NASM 2.x;
+the LLVM half needs the `llvm18` conda environment (`opt`, `lli`, `clang`,
+`llvmdev` headers) plus `gxx_linux-64` for plugin builds — the system g++ is
+pinned to the old C++ ABI and produces plugins `opt` cannot load. Each half
+writes into its own `bin/`, and the topic Makefile only dispatches.
 
 ### Rust
 ```bash

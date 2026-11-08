@@ -15,7 +15,7 @@ public:
             in_degree[recipes[i]] = 0;
             for (string ingredient : ingredients[i]) {
                 graph[ingredient].push_back(recipe);
-                // since supply_set contains all supplies, 
+                // since supply_set contains all supplies,
                 // we only need to check if the ingredient is not in the supply_set
                 if (supply_set.find(ingredient) == supply_set.end()) {
                     in_degree[recipe]++;

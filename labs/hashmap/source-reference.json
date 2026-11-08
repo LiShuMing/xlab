@@ -1,0 +1,14 @@
+{
+  "project": "StarRocks",
+  "upstream": "https://github.com/StarRocks/starrocks",
+  "local_revision": "f977b53c13eab90425f552675f3b3463ada8b2fc",
+  "evidence": "local source inspection; not a StarRocks build or runtime measurement",
+  "upstream_revision_verified": false,
+  "license": "Apache-2.0 (source file headers)",
+  "files": {
+    "be/src/exec/aggregate/agg_hash_map.h": "f8632e773ab5cb3b1cd6fd5217d53222f6877055e68eb8c3fb1cec1a90b7380c",
+    "be/src/base/container/fixed_hash_map.h": "2c1eedd060e59747cc81cdbe454108e1153bcd8b47e7de9a9472868aa7e6deac",
+    "be/src/exec/join/join_hash_table.cpp": "8f8f0527b6abe10a9f02158aa410683c9ae777e3933602cf9dd60bf6b461d9d7",
+    "be/src/exec/join/join_hash_map_method.h": "833ddb57e560ad65ced928a03ef11ddfdefc194e9c7250e78cc1458d401db275"
+  }
+}

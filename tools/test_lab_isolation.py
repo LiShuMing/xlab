@@ -9,6 +9,7 @@
 """
 
 import re
+import subprocess
 import unittest
 from pathlib import Path
 
@@ -35,7 +36,12 @@ SKIP_PARTS = {
 
 
 def lab_text_files():
-    for path in LABS.rglob('*'):
+    paths = subprocess.check_output(
+        ['git', '-C', str(ROOT), 'ls-files', '--cached', '--others',
+         '--exclude-standard', '-z', '--', 'labs/'],
+    ).decode().split('\0')
+    for name in filter(None, paths):
+        path = ROOT / name
         if not path.is_file():
             continue
         if any(part in SKIP_PARTS for part in path.parts):

@@ -66,11 +66,11 @@ for epoch in range(100):
     x = [Value(1.0), Value(2.0)]
     output = model(x)
     loss = (output - target) ** 2
-    
+
     # Backward pass
     optimizer.zero_grad()
     loss.backward()
-    
+
     # Update weights
     optimizer.step()
 ```

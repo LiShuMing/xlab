@@ -14,6 +14,7 @@
 | `runtime/` | 两种调度模型：单线程 reactor 与 work-stealing 线程池 | [runtime/README.md](runtime/README.md) |
 | `k8s-lab/` | 从零实现的 mini Kubernetes 控制面：MVCC 存储、apiserver、informer、workqueue、ReplicaSet 控制器、kubelet 模拟 | [k8s-lab/README.md](k8s-lab/README.md) |
 | `ivm/` | 增量视图维护（Incremental View Maintenance）：join 的增量公式与 DBSP（Database Stream Processing）代数结构原型 | [ivm/README.md](ivm/README.md) |
+| `lowlevel/` | 贴硬件的优化：SIMD（Single Instruction Multiple Data，单指令多数据）的标量/SSE（Streaming SIMD Extensions）/AVX2（Advanced Vector Extensions 2）写法对照，NASM（Netwide Assembler）系统调用与 libc 链接教程，LLVM（Low Level Virtual Machine）IR（Intermediate Representation，中间表示）与自写优化 pass 插件 | [lowlevel/README.md](lowlevel/README.md) |
 
 ## 放什么
 
@@ -51,4 +52,5 @@ cd labs/llm/train && ./scripts/setup.sh
 cd labs/daft && ./env.sh
 cd labs/k8s-lab && go run ./cmd/demo   # mini Kubernetes 控制面
 cd labs/ivm && python3 -m unittest discover -s . -p 'test_*.py'   # IVM join 用例
+make -C labs/lowlevel     # SIMD 基准、NASM 教程与 LLVM IR 实验（需 AVX2、NASM 2.x 与 LLVM 18）
 ```
