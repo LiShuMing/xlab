@@ -15,7 +15,7 @@ public:
                 }
             }
             if (r == t.size()) {
-                if (t.size() > ans.size()) {
+                if (t.size() > ans.size() || (t.size() == ans.size() && t < ans)) {
                     ans = t;
                 }
             }
