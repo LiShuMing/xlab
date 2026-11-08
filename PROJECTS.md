@@ -46,6 +46,7 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 
 | 需求或关键词 | 优先定位 |
 | --- | --- |
+| Linux 配置总览、容器监控、CPU/NUMA、网络/存储、perf/BPF、基准测试 | [kernel-lens](labs/linux/kernel-lens/README.md) |
 | 工作日记、菜单栏、提醒、SwiftUI | [carina/apps/daylog](https://github.com/LiShuMing/carina/tree/main/apps/daylog)（刻白，已迁移） |
 | Kubernetes、控制面、MVCC、Informer | [go/k8s-lab/](go/k8s-lab/) |
 | LLM 训练与推理实验 | [python/projects/llm-lab/](python/projects/llm-lab/) |
@@ -83,6 +84,12 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | NumPy、pandas、Jupyter | [python/projects/py-numpy-pandas/](python/projects/py-numpy-pandas/) |
 | GPU、CUDA/ROCm、本地模型 | [llm/cuda/](llm/cuda/) |
 | Windows 构建、兼容性 | [tools/build-windows.ps1](tools/build-windows.ps1)、[WINDOWS.md](WINDOWS.md) |
+
+## 主题实验（labs）
+
+| 项目目录 | 用途 | 入口 |
+| --- | --- | --- |
+| [labs/linux/kernel-lens/](labs/linux/kernel-lens/) | Rust 系统配置总览、容器资源观测、可选 CPU/内存/线程/TCP 回环/文件基准 | [README](labs/linux/kernel-lens/README.md)、[Cargo.toml](labs/linux/kernel-lens/Cargo.toml) |
 
 ## C、C++、汇编及扩展工具
 
