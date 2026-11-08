@@ -24,9 +24,6 @@ python/pylab/
 ├── uttest/                 # Additional tests
 │   ├── test_skiplist.py
 │   └── test_string.py
-├── dbsp/                   # DBSP (Database Stream Processing)
-│   ├── dbsp.py
-│   └── test_dbsp.py
 ├── tools/                  # Utility tools
 │   ├── pyspark/            # PySpark experiments
 │   ├── benchmark/          # Benchmarking tools
@@ -51,9 +48,8 @@ python/pylab/
 - ML/Vector tests (FAISS)
 - Cryptography tests
 
-### DBSP (`dbsp/`)
-- Database Stream Processing experiments
-- Incremental view maintenance concepts
+### DBSP
+- Prototype moved to `labs/ivm/dbsp/` (incremental-computation lab).
 
 ### Tools (`tools/`)
 - **pyspark/**: Apache Spark experiments with Iceberg
@@ -173,8 +169,7 @@ def test_example():
 
 1. `test/test_basic.py` - Basic Python patterns
 2. `leetcode/` - Algorithm examples
-3. `dbsp/` - Database concepts
-4. `tools/` - Utility examples
+3. `tools/` - Utility examples
 
 ## Communication Style
 

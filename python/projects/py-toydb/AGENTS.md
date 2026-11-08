@@ -199,6 +199,58 @@ with ToyDB('data.json') as db:
 - Test query operations comprehensively
 - Test edge cases (empty DB, missing fields, etc.)
 
+## 补充工程规范
+
+以下条款原先独立成 `RULES.md`，已并入本文件。
+
+### 类型与文档
+
+- 所有公开 API 必须带类型注解。
+- 文档字符串用 Sphinx 风格：`:param:` / `:returns:` / `:raises:`；可运行示例用 `Example::`
+  加 doctest 形式。
+
+### 测试组织
+
+- 测试类内用 `setup_method`/`teardown_method` 建毁实例，`teardown` 必须 `db.close()`。
+- 通用准备用 pytest fixture（`db`、`populated_db`），内存库优先（`MemoryStorage`）。
+
+### Storage 契约
+
+- 所有后端继承 `Storage`，实现 `read()`/`write()`/`close()`；`read()` 无数据时返回 `None`。
+- 后端要求线程安全、写入原子、异常类型恰当、`close()` 释放资源且重复调用不报错。
+
+### Query 能力清单
+
+比较（`== != < > <= >=`）、字符串（`matches`/`contains`/`search`）、集合
+（`one_of`/`has`/`any`/`all`）、逻辑（`&`/`|`/`~`）、自定义判定（`test(fn)`）。
+
+### 异常约定
+
+`ValueError` 参数非法、`KeyError` 缺字段、`IOError`/`OSError` 存储错误、
+`RuntimeError` 非预期状态。
+
+### 版本与发布
+
+SemVer（MAJOR 破坏性、MINOR 兼容新增、PATCH 修复），版本号在 `toydb/version.py`；
+发布顺序：改 `version.py` → 更新 `CHANGELOG.md` → 全量测试 → `poetry build` → `poetry publish`。
+
+### 文档
+
+README 至少含简介、安装、快速开始、API 概览与示例；`CHANGELOG.md` 按 Added/Fixed/Changed 分组。
+
+### Middleware 契约
+
+继承 `Middleware(storage)`，包装 `read`/`write`，可选 `flush()` 清理自身缓存。
+
+### 性能
+
+ToyDB 全量载入内存，不适合超过可用内存的数据集；查询尽量单趟组合条件，避免多次遍历；
+重复查询用 middleware 缓存。
+
+### 提交信息
+
+`<type>: <description>`，type 取 `feat`/`fix`/`docs`/`style`/`refactor`/`perf`/`test`。
+
 ## Reading Order for New Contributors
 
 1. `toydb/__init__.py` - Package overview and exports

@@ -3,8 +3,9 @@ name: core-quality
 on:
   push:
     paths:
-      - 'go/k8s-lab/**'
-      - 'python/ivm/**'
+      - 'labs/k8s-lab/**'
+      - 'go/golab/**'
+      - 'labs/ivm/**'
       - 'labs/llm/bench/**'
       - 'python/pylab/**'
       - 'python/projects/py-toydb/**'
@@ -18,8 +19,9 @@ on:
       - '.github/workflows/core-quality.yml'
   pull_request:
     paths:
-      - 'go/k8s-lab/**'
-      - 'python/ivm/**'
+      - 'labs/k8s-lab/**'
+      - 'go/golab/**'
+      - 'labs/ivm/**'
       - 'labs/llm/bench/**'
       - 'python/pylab/**'
       - 'python/projects/py-toydb/**'
@@ -41,12 +43,12 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: go/k8s-lab
+        working-directory: labs/k8s-lab
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version-file: go/k8s-lab/go.mod
+          go-version-file: labs/k8s-lab/go.mod
           cache: false
       - name: Format, vet, race and coverage
         run: |
@@ -54,10 +56,13 @@ jobs:
           go vet ./...
           go test -race -count=1 -coverprofile=coverage.out ./...
           go run ./cmd/demo
+      - name: Format LeetCode programs
+        working-directory: go/golab
+        run: test -z "$(gofmt -l .)"
       - uses: actions/upload-artifact@v4
         with:
           name: k8s-lab-coverage
-          path: go/k8s-lab/coverage.out
+          path: labs/k8s-lab/coverage.out
 
   python:
     runs-on: ubuntu-latest
@@ -78,7 +83,10 @@ jobs:
           set -euo pipefail
           case "$PROJECT" in
             ivm)
-              python -m unittest discover -s python/ivm -p 'test_*.py' -v
+              python -m pip install pytest
+              cd labs/ivm
+              python -m unittest discover -s . -p 'test_*.py' -v
+              cd dbsp && python -m pytest -q
               ;;
             llm-benchmark)
               python -m pip install -e 'labs/llm/bench[dev]'

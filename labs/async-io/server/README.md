@@ -1,205 +1,125 @@
-# server —— io_uring / kqueue 双后端服务器
+# server：相同 HTTP 逻辑下对照 I/O 后端
 
-把 Web 服务器的核心抽象拆成两层：业务层只看 Connection / Request / Response，I/O 层用
-统一接口对接不同操作系统的事件与完成机制。目标不是「把 io_uring 代码移植到 macOS」，
-而是在 Linux（io_uring，proactor）与 macOS（kqueue，reactor）上对比**系统 I/O 模型造成的
-性能差异**。
+前置：C++20 编译器、CMake 3.22+。Linux 默认 epoll，可显式构建和选择 io_uring；
+macOS 单独构建 kqueue。本轮只在 Linux 验证，不能据此宣称 macOS 路径可用或性能相当。
 
-下面按 Phase 记录设计思路与验收方式。
+## 构建与运行
 
----
+```sh
+cmake -S server -B build/server -G Ninja -DCMAKE_BUILD_TYPE=Release \
+  -DRINGSERVER_ENABLE_URING=ON -DLIBURING_ROOT="$PWD/build/deps"
+cmake --build build/server --parallel 2
+ctest --test-dir build/server --output-on-failure
+build/server/ringserver -b epoll -p 8080
+# 另一个终端
+build/server/ringserver_bench 8080 64 2000
+```
 
-1) 第一性原理：为什么要做“双后端”？
-- io_uring 的价值在于：把 I/O 提交与完成用共享内存 ring（SQ/CQ）表达，减少 syscalls、减少 wakeups，并支持注册（fixed files / buffers）降低内核路径开销
-- macOS 没有 io_uring；kqueue 更像就绪通知（Reactor）。你仍然可以写高性能服务器，但模型不同
+省略 RINGSERVER_ENABLE_URING 或设为 OFF 可以构建不依赖 liburing 的 epoll 版本。
+选择 uring 却没有编译该后端会明确失败，不静默退回 epoll。
+macOS 不编译 Linux 压测器；需要在对应系统单独补充构建/运行证据。
 
-所以工程目标不是“把 io_uring 代码移植到 macOS”，而是：
+### 在 Linux 编译运行 kqueue 接口
 
-把 WebServer 的核心抽象拆出来：
-业务层只看 Connection/Request/Response，
-I/O 层用统一接口对接不同 OS 的事件/完成机制，
-从而在 Linux/macOS 上对比“系统 I/O 模型导致的性能差异”。
+Linux 没有原生 kqueue。显式启用上游 libkqueue 兼容层后，同一服务器二进制可以选择
+`epoll`、`uring` 或 `kqueue-compat`，不会将兼容层伪装成原生 `kqueue` 或静默回退。
+从主题目录运行：
 
-⸻
+```sh
+make deps-kqueue
+KQUEUE_COMPAT=ON make build
+make test BACKENDS='epoll uring kqueue-compat'
+build/server/ringserver -b kqueue-compat -p 8080
+# 三后端在同一轮次、相同负载下测量；输出目录必须是新的
+python3 scripts/benchmark.py --build build --out results/linux-three-backends \
+  --backends epoll uring kqueue-compat --repeats 3 --duration-ms 1000
+```
 
-2) 统一抽象：I/O Backend Interface（关键）
+独立 CMake 对应选项为 `-DRINGSERVER_ENABLE_KQUEUE_COMPAT=ON`
+和 `-DLIBKQUEUE_ROOT="$PWD/build/deps"`，默认关闭，无配置期下载。
+libkqueue 固定 [上游 v2.7.0](https://github.com/mheily/libkqueue/tree/v2.7.0)，源码归档
+SHA-256 为 `359702489ded4e466c721c5b02b0e569b914f13806b88c5846341efa5d05081b`，
+仅安装到被忽略的 build/deps；本地保留上游 LICENSE，源码主体许可为 ISC，event.h 为 BSD-2-Clause。
 
-你需要一个最小、但能覆盖两种模型的接口。推荐用“Completion-first”的统一抽象（即使后端是 Reactor 也在内部转成 completion events）。
+兼容层在 Linux 上将 kevent 翻译为 epoll 等机制，并创建内部资源监控线程。
+服务器仍只有一个业务事件循环，但不是全进程只有一个线程；CPU 指标包含辅助线程。
+显式删除监听后才关闭 fd，避免兼容层保留无效注册状态。
+这条路径的构建/功能/性能结果不能用来宣称 macOS 或 BSD 原生 kqueue 已验证。
 
-2.1 统一事件：CompletionEvent
+### 对齐监听生命周期的实验
 
-enum class OpKind { Accept, Read, Write, SendFile, Close };
+默认后端不变，增加两个显式实验变体；所有变体共用相同 HTTP 处理、逐项注册、批量完成、
+单在途请求和响应内容。不修改 libkqueue，不在这一轮引入批量 changelist 或立即读写。
 
-struct CompletionEvent {
-  OpKind op;
-  int fd;
-  int64_t user_data;      // connection id or pointer-tag
-  int32_t result;         // bytes or new fd or error(-errno)
-  uint32_t flags;         // optional
-};
+| 选择 | 事件返回后 | 下一次注册 | 用途 |
+| --- | --- | --- | --- |
+| `epoll` | EPOLLONESHOT 停用，保留内核监听 | MOD | 原始直接调用基线 |
+| `epoll-recreate` | 显式 DEL | ADD | 对齐兼容层的内核监听增删 |
+| `kqueue-compat` | EV_ONESHOT 删除库内监听对象 | EV_ADD，新建对象 | 原始兼容基线 |
+| `kqueue-compat-dispatch` | EV_DISPATCH 停用，保留库内读/写监听对象 | 已有过滤器用 EV_ENABLE | 隔离对象重建成本 |
 
-### 2.2 统一后端接口：IoBackend
+EV_DISPATCH 是 kqueue 的官方停用语义，而非本地模拟；读/写过滤器分别登记，在 close 时
+显式删除。libkqueue 在 Linux 停用时仍会 epoll DEL，启用时 ADD。因此 dispatch 与原始
+epoll 只对齐了“保留监听对象”，并未对齐内核操作；与 epoll-recreate 比较才能控制
+底层 ADD/DEL。类型探测、ioctl、锁和库内状态维护仍是剩余差异，不能据此单项归因。
+两条 epoll 路径均保留相同的本地 registered_ 索引至 close；不会把本地索引重建
+混入“内核监听重建”控制组。连接初始化仍有 accept4 与 accept/fcntl 的差别，
+但各组每轮均只建立固定数量的持久连接，不按请求重新连接。
 
-class IoBackend {
- public:
-  virtual ~IoBackend() = default;
+```sh
+KQUEUE_COMPAT=ON make build
+make test BACKENDS='epoll epoll-recreate kqueue-compat kqueue-compat-dispatch'
+python3 scripts/benchmark.py --build build --out results/linux-readiness-aligned \
+  --backends epoll epoll-recreate kqueue-compat kqueue-compat-dispatch \
+  --repeats 5 --warmup-ms 300 --duration-ms 1000
+```
 
-  virtual Status Init() = 0;
-  virtual Status SubmitAccept(int listen_fd, int64_t user_data) = 0;
-  virtual Status SubmitRead(int fd, uint8_t* buf, size_t cap, int64_t user_data) = 0;
-  virtual Status SubmitWrite(int fd, const uint8_t* buf, size_t len, int64_t user_data) = 0;
-  virtual Status SubmitSendFile(int out_fd, int file_fd, off_t offset, size_t len,
-                                int64_t user_data) = 0;
-  virtual Status SubmitClose(int fd, int64_t user_data) = 0;
+命令从主题目录运行。5 轮随机顺序、相同 CPU 放置，同时比较 basic/detailed；每轮核对
+双端成功数、结束活动连接和描述符数量。额外的 `http-syscall-diagnostic.json` 与
+`strace-http-*.txt` 是独立 1 连接诊断，不参与性能统计；无法 attach 时明确记录不可用。
+保留旧报告，只在同轮结果间比较，不以跨时间差值推导单变量收益。
 
-  // Poll completions (blocking with timeout).
-  virtual Status Poll(std::vector<CompletionEvent>* out, int timeout_ms) = 0;
-};
+## 协议与所有权
 
-### 2.3 两种后端映射
+统一完成语义：
 
-- **Linux io_uring**：天然 Proactor，CQE 就是 completion
-- **macOS kqueue**：是 readiness → 你内部做一次 read/write，把结果包装成 CompletionEvent，对上层伪装成 completion
+- accept 的结果就是新连接 fd，上层不再二次 accept。
+- read/write 的结果是本次实际字节数；EAGAIN 保留/重提操作，不伪装成 EOF。
+- 一个连接最多一个收发操作；写完完整响应才读取下一请求，自然限制慢客户端的积压。
+- request 使用有上限的 16 KiB 缓冲，支持半包、连续请求与流水请求。
+- 只接受 GET HTTP/1.0 或 HTTP/1.1、无请求体，返回 1024 个 x 字节；这是测量用最小子集，
+  不是完整 RFC 实现。非零 Content-Length、Transfer-Encoding 和畸形/超长头返回 400 后关闭。
+- FD 仅作为表索引，同时核对单调连接 ID，避免把迟到事件应用到复用后的 fd。
+- io_uring 操作拥有自己的缓冲，close 先清除用户目的指针再发取消，取消确认和目标完成
+  全部排空后才释放内存；操作对象与缓冲可复用。这里的复制成本是可观测的，不隐瞒成零拷贝。
+- 固定响应缓存一次生成，连接写缓冲复用容量，不在每请求上重新拼装响应。
+- 5 秒无活动连接会关闭，连接数和待处理操作数均有上限。
+- SIGINT/SIGTERM 进入有界排空；若底层不能完成排空，失败退出而不将悬空操作伪装成成功。
 
-这样上层代码完全不关心 Reactor/Proactor 差异。
+默认 ring 深度 512、完成批量 64、连接上限 256；uring 连接上限必须小于 ring 深度。
+锁页上限过小时，初始化会失败。内核版本号不是能力判断，运行时检查实际操作支持。
 
-## 3. Connection 与 HTTP 层：独立于后端
+## 观测接口
 
-### 3.1 Connection 状态机（建议）
+`-m basic|detailed` 切换内部延迟观测；两者都保留正确性与事件计数。
+SIGUSR1 输出单行 JSON 快照，终止时输出最终快照：
 
-- ConnState::Accepting / Reading / Parsing / Writing / Closing
-- 维护：
-    - read buffer（ring buffer 或 linear buffer）
-    - write buffer（small response + file response）
-    - keep-alive 状态
-    - request parser state
+- success：合法请求的完整响应已全部写出，不是 read 次数或开始发送次数。
+- errors / rejected：协议/I/O 错误与连接限额/闲置超时分开。
+- active / peak_connections、字节数、短写数、过期事件数。
+- submitted / completed、取消数、轮询次数、空轮询、批量提交、EAGAIN、队列满。
+- operation_allocations：仅后端 Operation 新建次数；不是全进程 malloc 次数。
+- copied_bytes：io_uring 后端缓冲安全复制字节数；不是所有内存复制总量。
+- CPU 时间、上下文切换与生命周期峰值 RSS。
+- service_p50_ns / service_p99_ns：从首段请求数据被观察到到完整响应写完成，含预热的累计直方图，
+  不是独立测量窗口的客户端延迟。
 
-### 3.2 HTTP/1.1 parser（Phase 2）
+`-w` 仅用于注入单次写长度上限，验证分段完成；不是性能优化开关。
+`-t` 只接受 1，避免把未实现的多线程参数算入实验。
 
-写一个状态机解析器（不引入第三方库，练功）：
+`scripts/integration_test.py` 通过真实 loopback 检查半包/流水、强制短写、错误请求、
+连接上限、慢连接、FD 复用和带未完成读的退出，检查两后端的最终完成账目。
+原来的 GoogleTest / Google Benchmark 占位程序已替换为 Release 下仍有效的原生检查与
+真实 C++ 非阻塞发压器，构建不再为占位代码联网获取测试框架。
 
-- REQ_LINE → HEADERS → BODY (optional) → DONE
-- MVP 支持：
-    - GET
-    - keep-alive
-    - Content-Length（可选）
-    - 只服务静态资源（Phase 3）
-
-⸻
-
-4) 静态文件与零拷贝（Phase 3）
-
-Linux / macOS 支持差异：
-	•	Linux：sendfile(out_fd, file_fd, &offset, len)
-	•	macOS：sendfile(file_fd, out_fd, offset, &len, nullptr, 0)（签名不同）
-	•	另外：可以提供 fallback：mmap + writev / read + write。
-
-实现方式：
-	•	SubmitSendFile() 在不同后端实现各自的 syscall 或者 io_uring opcode。
-
-⸻
-
-5) Phase 路线（你给的 3 阶段，但补全“跨 OS”）
-
-Phase 0（强烈建议加）：基础脚手架 + kqueue MVP
-
-原因：你现在在 macOS 开发，得先跑起来。
-
-- 实现 KqueueBackend：支持 Accept/Read/Write（就绪 + 真实 syscall）
-- 实现 Connection + 最小 HTTP 200 OK（固定字符串）
-- 用 wrk 跑通
-
-### Phase 1：Linux io_uring backend（liburing）
-
-- IoUringBackend：SQE/CQE 提交与收割
-- 跑通 Accept/Read/Write
-- 加入可选：fixed files / registered buffers（先留开关，不强上）
-
-### Phase 2：HTTP/1.1 parser
-
-- 状态机 + keep-alive + path routing
-- 处理：
-    - 半包/粘包（read buffer accumulation）
-    - header 限制（防止 OOM）
-    - 400/404
-
-### Phase 3：静态资源 + sendfile
-
-- path → filesystem mapping
-- sendfile（Linux/macOS）
-- ETag/Last-Modified 可选
-
-⸻
-
-6) 性能对比实验设计（必须写进 Promoting）
-
-你要的不是“感觉快”，而是可以对比：
-
-6.1 对比维度
-	•	OS：macOS(kqueue) vs Linux(io_uring) vs Linux(epoll baseline 可选)
-	•	workload：
-	•	fixed response（CPU/协议开销极低，主要测 I/O 与调度）
-	•	static file 4KB/64KB/1MB（测 sendfile / 零拷贝优势）
-	•	concurrency：50 / 200 / 1000 / 5000 connections
-	•	threads：1 / N（绑定 CPU 核心）
-
-6.2 指标
-	•	QPS
-	•	p50/p95/p99 latency
-	•	CPU utilization
-	•	context switches（Linux: perf stat；macOS: Instruments System Trace）
-	•	syscalls/sec（Linux: strace/perf；macOS: dtruss）
-
-6.3 重要注意
-	•	macOS 与 Linux 网络栈差异巨大，不能“公平等价”，你要做的是：
-	•	保持应用层逻辑相同
-	•	只换 I/O 后端
-	•	用同一套 wrk script 与同样的 payload
-
-## 7. 项目目录结构（建议 Claude 生成的最终形态）
-
-ringserver/
-  CMakeLists.txt
-  include/ringserver/
-    common/status.h
-    common/config.h
-    common/likely.h
-    common/time.h
-    net/socket_util.h
-    io/io_backend.h
-    io/kqueue_backend.h
-    io/uring_backend.h          # linux only
-    http/http_parser.h
-    http/http_types.h
-    server/connection.h
-    server/server.h
-    server/router.h
-  src/
-    io/kqueue_backend.cc
-    io/uring_backend.cc         # linux only
-    http/http_parser.cc
-    server/connection.cc
-    server/server.cc
-    main.cc
-  bench/
-    wrk_scripts/
-  tools/
-    run_wrk.md
-    run_instruments.md
-    run_perf.md
-  tests/
-    test_http_parser.cc
-    test_router.cc
-  docs/
-    design.md
-
-
-## 8. Claude Code Promoting（直接复制使用）
-
-下面这份就是你要的 “claude promoting”。它会逼 Claude 输出：工程结构、CMake、跨平台抽象、每 phase 的可编译增量、以及性能对比方法。
-
-8) 你一个人做这个项目的“现实技巧”（让它不烂尾）
-	1.	先做 fixed response（1KB 固定 body），只测调度/I/O，不被文件系统干扰。
-	2.	HTTP parser 先做最小子集：request line + headers + keep-alive。
-	3.	sendfile 做成独立模块，避免污染核心 I/O 抽象。
-	4.	每个 Phase 都要有 wrk 脚本和运行指南，否则你很难知道优化是否生效。
+Linux 基准通过主题脚本运行，参见 [主题入口](../README.md)。

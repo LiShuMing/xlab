@@ -1,0 +1,10 @@
+{
+  "fixed_cases": ["short8", "short64", "short256", "prefix64"],
+  "hits": [0, 50, 100],
+  "distributions": ["uniform"],
+  "seeds": [42],
+  "repeats": 3,
+  "batch_ms": 10,
+  "dynamic": [["uint64", 4096], ["strings", 4096]],
+  "load_sweep": []
+}

@@ -1,275 +1,72 @@
-# AI Agent Guidelines
+# RingServer agent guide
 
-## Overview
+Read [repository RULES](../../../RULES.md) before work and again before any Git write.
+Only the authorized Gmail Author/Committer identity is permitted. Never commit private corporate
+material, credentials, build trees, dependency downloads or raw runtime data. Do not push implicitly.
 
-This document provides guidelines for AI Agents working on the RingServer cross-platform web server project.
+## Current implementation
 
-## Project Architecture
+Read [README](README.md), CMakeLists.txt and the current diff. The former Phase 0–3 notes are historical,
+not proof of implementation or a reason to recreate placeholders.
 
-RingServer is a high-performance web server with pluggable I/O backends, supporting both io_uring (Linux) and kqueue (macOS) through a unified completion-event interface.
+- C++20; Linux epoll, optional io_uring and opt-in libkqueue `kqueue-compat`.
+- Native macOS kqueue remains a separate, unverified path; Linux compatibility is not native proof.
+- One event loop, bounded GET-only HTTP subset, fixed 1024-byte body.
+- No static files/sendfile, TLS, multithreading, SQPOLL or multishot.
+- No FetchContent: explicit dependency prefixes, no configure-time network access.
+- Native test and client targets need no GoogleTest/Benchmark dependencies.
+- libkqueue uses Linux epoll internally and a resource-monitor thread; one event loop is not one process thread.
 
-```
-labs/async-io/server/
-├── include/ringserver/          # Public headers
-│   ├── common/                  # Shared utilities
-│   │   ├── status.hpp          # Status/error types
-│   │   ├── likely.hpp          # Branch prediction hints
-│   │   └── util.hpp            # General utilities
-│   ├── io/                      # I/O backend layer
-│   │   ├── io_backend.hpp      # Abstract IoBackend interface
-│   │   └── kqueue_backend.hpp  # macOS kqueue implementation
-│   ├── server/                  # HTTP server layer
-│   │   ├── connection.hpp      # Connection state machine
-│   │   └── server.hpp          # Main server class
-│   └── http/                    # HTTP layer (Phase 2)
-├── src/                         # Implementation
-│   ├── common/
-│   ├── io/
-│   ├── server/
-│   └── main.cpp                # Entry point
-├── tests/                       # Unit tests
-│   └── http/
-├── bench/                       # Benchmarks
-│   └── http/
-├── CMakeLists.txt              # Build configuration
-├── README.md                   # Design documentation
-└── CLAUDE.md                   # Development guidelines
-```
+## Invariants
 
-## Key Components
+- Backend returns a completed accept with the new fd, never a readiness event disguised as a read.
+- Handle partial read/write and EAGAIN without losing bytes or treating retry as EOF.
+- Connection ID must match even when fd matches.
+- Cancelled io_uring targets retain owned buffers until the target CQE and cancellation ack are drained.
+- Never detach a task or free buffers still referenced by the kernel.
+- Bounded connection/request/operation state; close slow clients; no implicit backend fallback.
+- Count success only after the full valid response is written. Cross-check against client payload checks.
+- Measure basic/detailed overhead separately. User-space submit counts are not syscall counts.
+- Bind benchmark server to loopback. Own and reap every launched test/benchmark child.
 
-### IoBackend (`include/ringserver/io/io_backend.hpp`)
-Unified I/O abstraction layer:
+## Validation
 
-```cpp
-class IoBackend {
- public:
-  virtual Status Init() = 0;
-  virtual Status SubmitAccept(int listen_fd, int64_t user_data) = 0;
-  virtual Status SubmitRead(int fd, uint8_t* buf, size_t cap, int64_t user_data) = 0;
-  virtual Status SubmitWrite(int fd, const uint8_t* buf, size_t len, int64_t user_data) = 0;
-  virtual Status SubmitSendFile(int out_fd, int file_fd, off_t offset, size_t len, int64_t user_data) = 0;
-  virtual Status SubmitClose(int fd, int64_t user_data) = 0;
-  virtual Status Poll(std::vector<CompletionEvent>* out, int timeout_ms) = 0;
-};
+From the topic directory:
+
+```sh
+make build
+make test
+python3 scripts/benchmark.py --build build --out results/new-run --repeats 5
 ```
 
-### CompletionEvent
-Unified completion event structure:
+Use standard CXX/CXXFLAGS/LDFLAGS for toolchain choice. An epoll-only standalone build must work without
+liburing. Platform-specific sources must be conditionally selected. Linux success is not macOS proof.
+For Linux compatibility: `make deps-kqueue`, `KQUEUE_COMPAT=ON make build`, then
+`make test BACKENDS='epoll uring kqueue-compat'`. Never rename this path to native `kqueue`.
+Keep source/header names and error handling consistent with the Google C++ style and root formatter.
+Do not silence a failing test or regenerate expectations to hide a defect.
 
-```cpp
-enum class OpKind { Accept, Read, Write, SendFile, Close };
+Runtime evidence stays in ignored results/. A reviewed Markdown summary may be retained in the topic.
+No source commit or push is authorized merely by running the experiment.
 
-struct CompletionEvent {
-  OpKind op;           // Operation type
-  int fd;              // File descriptor
-  int64_t user_data;   // Connection ID or context
-  int32_t result;      // Bytes transferred or error (-errno)
-  uint32_t flags;      // Optional flags
-};
-```
+## Engineering conventions
 
-### KqueueBackend (`include/ringserver/io/kqueue_backend.hpp`)
-macOS implementation using kqueue:
-- Converts readiness events to completion events
-- Performs actual I/O syscalls internally
-- Presents unified completion interface
+Formerly kept in a separate `RULES.md`; only the parts that still match the current code are kept.
+The old Phase 0-3 design notes are superseded by the implementation notes above.
 
-### IoUringBackend (Linux, Phase 1)
-Linux implementation using io_uring:
-- True completion-based I/O
-- SQE/CQE submission and completion
-- Optional: fixed files, registered buffers
-
-### Connection (`include/ringserver/server/connection.hpp`)
-HTTP connection state machine:
-- Read buffer (ring buffer or linear)
-- Write buffer
-- Connection state: Accepting → Reading → Parsing → Writing → Closing
-- Keep-alive support
-
-## Build System
-
-```bash
-# macOS (kqueue only)
-mkdir build && cd build
-cmake ..
-cmake --build .
-
-# Linux with io_uring
-mkdir build && cd build
-cmake -DRINGSERVER_ENABLE_URING=ON ..
-cmake --build .
-
-# Run server
-./ringserver
-
-# Run tests
-./ringserver_test
-
-# Run benchmarks
-./ringserver_bench
-```
-
-## Dependencies
-
-- **CMake 3.16+**
-- **C++20 compiler**
-- **Threads** (pthread)
-- **liburing** (Linux only, optional)
-- **GoogleTest** (fetched)
-- **Google Benchmark** (fetched)
-
-## Development Phases
-
-### Phase 0: macOS MVP (IN PROGRESS)
-- KqueueBackend implementation
-- Fixed "200 OK" response
-- wrk benchmarking
-- Instruments profiling
-
-### Phase 1: Linux io_uring
-- IoUringBackend with liburing
-- Same server/connection/http code
-- Build option: `-DRINGSERVER_ENABLE_URING=ON`
-
-### Phase 2: HTTP/1.1 Parser
-- State machine parser
-- Keep-alive support
-- 400/404 handling
-- Unit tests
-
-### Phase 3: Static Files + Zero-Copy
-- Path to filesystem mapping
-- sendfile() on Linux/macOS
-- Fallback: read+write
-- ETag/Last-Modified (optional)
-
-## Common Tasks
-
-### Adding a New I/O Backend
-
-1. Inherit from `IoBackend`
-2. Implement all virtual methods
-3. Add platform detection in CMake
-4. Update factory method
-
-```cpp
-class MyBackend : public IoBackend {
- public:
-  Status Init() override;
-  Status SubmitAccept(int listen_fd, int64_t user_data) override;
-  // ... implement all methods
-};
-```
-
-### Handling Completion Events
-
-```cpp
-void Server::HandleCompletion(const CompletionEvent& event) {
-  switch (event.op) {
-    case OpKind::Accept:
-      HandleAccept(event);
-      break;
-    case OpKind::Read:
-      HandleRead(event);
-      break;
-    case OpKind::Write:
-      HandleWrite(event);
-      break;
-    // ...
-  }
-}
-```
-
-### Connection State Machine
-
-```cpp
-enum class ConnState {
-  kAccepting,   // Waiting for accept completion
-  kReading,     // Reading request
-  kParsing,     // Parsing HTTP
-  kProcessing,  // Handling request
-  kWriting,     // Writing response
-  kClosing      // Closing connection
-};
-```
-
-## Error Handling
-
-### Status Codes
-
-```cpp
-Status status = backend_->SubmitRead(fd, buf, size, conn_id);
-if (!status.ok()) {
-  LOG_ERROR("SubmitRead failed: {}", status.message());
-  CloseConnection(conn_id);
-}
-```
-
-### Completion Errors
-
-```cpp
-if (event.result < 0) {
-  // Error: -errno
-  int err = -event.result;
-  HandleError(conn_id, err);
-}
-```
-
-## Prohibited Actions
-
-1. **DO NOT** use blocking I/O
-2. **DO NOT** ignore EAGAIN/EWOULDBLOCK
-3. **DO NOT** unboundedly grow buffers (implement backpressure)
-4. **DO NOT** leak file descriptors (use RAII)
-5. **DO NOT** mix readiness and completion models without clear abstraction
-
-## Performance Methodology
-
-### Benchmarking with wrk
-
-```bash
-# Fixed response test
-wrk -t4 -c100 -d30s http://localhost:8080/
-
-# Static file test
-wrk -t4 -c100 -d30s http://localhost:8080/static/4kb.txt
-
-# Keep-alive test
-wrk -t4 -c100 -d30s -H "Connection: keep-alive" http://localhost:8080/
-```
-
-### Metrics to Record
-
-- QPS (requests per second)
-- p50/p95/p99 latency
-- CPU utilization
-- Context switches
-- Syscalls/sec
-
-### Profiling
-
-**macOS Instruments:**
-- Time Profiler: Find CPU hotspots
-- System Trace: Context switches, wakeups
-
-**Linux perf:**
-```bash
-perf stat -e cycles,instructions,cache-misses,context-switches ./ringserver
-perf record -g ./ringserver
-perf report
-```
-
-## Resources
-
-- [io_uring documentation](https://unixism.net/loti/)
-- [kqueue man page](https://man.freebsd.org/cgi/man.cgi?kqueue)
-- [HTTP/1.1 RFC 7230](https://tools.ietf.org/html/rfc7230)
-
-## Communication Style
-
-- Emphasize I/O model differences (Reactor vs Proactor)
-- Reference specific syscalls and flags
-- Show before/after performance comparisons
-- Document OS-specific behaviors
+- **Backend contract**: completion-first, non-blocking, 64-bit `user_data` token, negative `result`
+  carries `-errno`. Exactly one pending read/write per connection. Keep the interface in
+  `include/ringserver/io/io_backend.hpp` authoritative instead of copying its signatures here.
+- **Errors**: use `ringserver::Status` (`include/ringserver/common/status.hpp`); `kAgain`/
+  `kWouldBlock` means retry, `kConnectionReset`/`kEndOfFile` means close, never treat retry as EOF.
+- **Resources**: file descriptors are RAII (move-only) wrappers; no manual `close`, no detached
+  work, no buffer freed while the kernel still references it.
+- **Buffers and backpressure**: read buffers have explicit initial and maximum sizes; when pending
+  output exceeds the documented threshold, stop reading until it drains.
+- **Platform abstraction**: platform-specific sources are selected conditionally, never by an
+  implicit fallback; Linux results are not macOS results.
+- **Performance**: prefer zero-copy, buffer reuse and fewer syscalls; measure before claiming.
+- **Docs**: classes and public methods carry Doxygen-style comments stating ownership, threading
+  and error behaviour.
+- **Commit messages**: `<type>(<scope>): <description>` with `feat`/`fix`/`docs`/`refactor`/
+  `perf`/`test`.

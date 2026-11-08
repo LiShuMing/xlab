@@ -10,8 +10,6 @@ GUIDES = [
     "README.md", "PROJECTS.md", "AGENTS.md",
     "cc/cclab/docs/api/README.md", "cc/cclab/docs/architecture/README.md",
     "docs/README.md",
-    *[f"{language}/SKILL.md" for language in
-      ("cc", "go", "java", "python", "rust", "shell")],
     "ocaml/README.md", "ocaml/TUTORIAL.md",
     "lean4/README.md", "lean4/TUTORIAL.md",
     # Every docs section index is a maintained guide: adding a new top-level

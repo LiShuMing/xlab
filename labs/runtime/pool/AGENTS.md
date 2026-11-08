@@ -247,6 +247,83 @@ instruments -t "Time Profiler" ./bench_throughput
 # Add logging in StealTop() to count successful steals
 ```
 
+## 工程规范
+
+以下条款原先独立成 `RULES.md`，已并入本文件。
+
+### 错误处理
+
+- 错误传播用 `wstp::Status`（`StatusCode`：`kOk`/`kInvalidArgument`/`kQueueFull`/`kStopped`/`kUnknown`）。
+- 公开 API 用异常报告不可恢复错误；内部用 `Status`/`std::optional` 报告预期失败。
+- 线程入口必须 catch 所有异常并记录，不允许异常逸出线程函数。
+
+### 测试
+
+- 用 gtest fixture（`SetUp`/`TearDown`）管资源，测试结束后必须 `Stop()` 线程池。
+- 四类必覆盖：功能正确性、高竞争压力、边界（空/单元素/队列满）、线程安全（TSan 验证）。
+- 命名 `ClassName_TestDescription`，如 `WSDeque_SingleElementRace`。
+
+### 文档
+
+- 类注释写算法名称、各操作复杂度与内存序职责（哪一步 release 发布、哪一步 acquire 消费、
+  CAS 用 acq_rel）。
+- 公开方法注释带 `@param`/`@return`/`@throws` 与 `@threadsafe` 标记。
+
+### 性能
+
+- 热路径内联且避免分配；小任务优先栈上存储而不是 `std::function` 堆分配。
+- 跨线程频繁写的原子量用 `alignas(64)` 避免伪共享；热数据与冷数据分开布局。
+
+### 构建
+
+- 构建类型 `Release`/`Debug`/`RelWithDebInfo`；竞态用 `-fsanitize=thread`、内存用
+  `-fsanitize=address`、未定义行为用 `-fsanitize=undefined`。
+- 警告：`-Wall -Wextra -Wpedantic -Werror=return-type -Werror=uninitialized`。
+
+### 提交信息
+
+`<type>(<scope>): <description>`，scope 取 `deque`/`pool`/`api`/`bench`/`test`，
+type 取 `feat`/`fix`/`perf`/`refactor`/`test`/`docs`，例如 `perf(deque): reduce CAS failures`。
+
+### 安全检查清单
+
+线程安全：共享状态均为 atomic 或 mutex 保护；内存序显式；TSan 无竞态；死锁顺序有文档；
+无 use-after-free（智能指针或 RAII）。
+无锁代码额外检查：ABA 已考虑；CAS 循环有退避；内存回收策略明确；进度保证
+（lock-free vs wait-free）有文档。
+
+## 待办（原 TODOS.md）
+
+### 已知局限
+
+- [ ] deque 容量固定（每 worker 1024 个任务），无动态扩容与满时反压
+- [ ] 无任务取消机制；`Stop()` 不中断正在运行的任务
+- [ ] 无优先级、无任务亲和（任务可能迁移）
+- [ ] `std::function` 对小任务有分配开销
+- [ ] worker 可能偶发虚假唤醒；无线程数动态调整；worker 异常回传有限
+
+### 计划改进
+
+- [ ] 动态 deque 扩容（grow-only、内存映射环形缓冲、满时反压）
+- [ ] 小对象优化：小 functor 内联存储，去掉 `std::function` 分配
+- [ ] 性能计数器：提交/完成数、steal 尝试与成功数、CAS 失败率、队列深度直方图
+- [ ] NUMA 感知分配：按 NUMA 节点线程本地存储与内存绑定
+- [ ] 任务优先级、任务依赖（DAG 执行、continuation 链）、工作亲和
+- [ ] 线程池自动伸缩（按负载、空闲超时）、worker 异常汇聚
+- [ ] 测试补强：WSDeque fuzz、百万级压力、长稳定运行、性能回归、TSan/ASan 进 CI
+- [ ] 文档补强：Doxygen API 参考、并行算法/流水线/生产者消费者示例、死锁与调优排障指南
+
+### 设计决策（沿用）
+
+- 选用 Chase-Lev：steal 无锁、缓存局部性好，Java `ForkJoinPool` 等已验证。
+- 容量固定：简化实现并避开扩容带来的 ABA，1024 对大多数场景够用，动态扩容列为后续。
+- `std::function` 任务：保留任意可调用体的灵活性，代价是小任务分配开销，后续做小对象优化。
+
+### 性能目标
+
+当前（Phase 2）：单核百万级微小任务/秒，p50 < 1µs、p99 < 10µs。
+目标（Phase 3）：单核 5M+ 任务/秒、小任务零分配、动态伸缩。
+
 ## Resources
 
 - [Chase-Lev Paper](https://doi.org/10.1145/1073970.1073974)

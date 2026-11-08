@@ -34,7 +34,7 @@ torch/
 ├── examples/               # Demo scripts
 ├── ARCHITECTURE.md         # Implementation documentation
 ├── CHANGES_LOG.md          # Change history
-├── TASKS.md                # Task tracking
+├── AGENTS.md               # Agent guide, conventions, backlog
 └── requirements.txt        # Dependencies
 ```
 
@@ -123,7 +123,7 @@ This demonstrates:
 
 - **[ARCHITECTURE.md](ARCHITECTURE.md)**: Implementation details and design decisions
 - **[CHANGES_LOG.md](CHANGES_LOG.md)**: Change history and development log
-- **[TASKS.md](TASKS.md)**: Task tracking and progress
+- **[AGENTS.md](AGENTS.md)**: Agent guide, conventions and backlog
 
 ## Learning Path
 

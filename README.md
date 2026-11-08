@@ -19,7 +19,7 @@ Use the root documents by audience:
 | `CLAUDE.md` | Claude Code compatibility | Thin pointer to `AGENTS.md` to avoid duplicated agent instructions. |
 | [docs/README.md](docs/README.md) | Readers/writers | Knowledge ownership, retained sources, and Cygnus routes. |
 
-Module-level files such as `cc/SKILL.md`, `python/SKILL.md`, or
+Module-level `AGENTS.md` files such as `cc/cclab/AGENTS.md`, `labs/k8s-lab/AGENTS.md`, or
 `rust/rlab/AGENTS.md` override or refine the root guidance for that subtree.
 
 ## Repository Map
@@ -34,7 +34,7 @@ xlab/
 |-- rust/               Rust lab, database experiments, async/concurrency projects
 |-- python/             Python lab, AI/data tooling, research prototypes
 |-- java/               Java projects, Iceberg and interview/test labs
-|-- go/                 Go lab: k8s-lab (mini Kubernetes control plane from scratch)
+|-- go/                 Go lab: golab (LeetCode exercises)
 |-- ocaml/              Functional programming, expression interpreter and constant folding
 |-- lean4/              Functional programming and machine-checked correctness proofs
 |-- llm/                GPU/ROCm environment setup notes and scripts
@@ -79,7 +79,8 @@ their build systems; a scaffold is explicitly marked and has no build command.
 | MiniSeastar | `labs/runtime/reactor/` | C++20, CMake | Coroutine scheduler, per-thread reactor. |
 | OCaml Lab | [ocaml/](ocaml/) | OCaml, Dune | Language basics, expression interpreter and constant folding; [中文教程](ocaml/TUTORIAL.md). |
 | Lean 4 Lab | [lean4/](lean4/) | Lean 4, Lake | Structural induction and constant-folding correctness; [中文教程](lean4/TUTORIAL.md). |
-| K8s Lab | `go/k8s-lab/` | Go (stdlib only) | Mini Kubernetes control plane: MVCC store, apiserver, informers, workqueue, ReplicaSet controller, kubelet sim. |
+| K8s Lab | `labs/k8s-lab/` | Go (stdlib only) | Mini Kubernetes control plane: MVCC store, apiserver, informers, workqueue, ReplicaSet controller, kubelet sim. |
+| Go LeetCode | `go/golab/` | Go | Standalone LeetCode solutions, one `main` per file; built and run with `make leetcode_<id>`. |
 | Linux Lab | [labs/linux/](labs/linux/) | C, C++ | Page faults, page-table walk, TLB and RCU grace-period demos. |
 | LLM Lab | [labs/llm/](labs/llm/) | Python | Three stages: GPU environment, tiny-transformer training, quantified evaluation. |
 | Daft Lab | `labs/daft/` | Python | Daft columnar execution experiments. |
@@ -120,7 +121,7 @@ cd python/pylab
 pytest
 
 # k8s-lab: mini Kubernetes control plane (pure Go, zero deps)
-cd go/k8s-lab
+cd labs/k8s-lab
 go run ./cmd/demo               # end-to-end: apply, self-heal, scale
 go test -race ./...             # -race is mandatory here
 ```
@@ -144,7 +145,7 @@ when requested), not the historical research reference catalog. Standalone
 `CCLAB_PORTABLE_ONLY=OFF` explicitly selects the legacy full laboratory.
 
 [Native CI](.github/workflows/native-build.yml) covers portable C++ on
-Linux/Windows, Rust rlab/rdb tests and Clippy on Linux/Windows, and ToyDB on Windows.
+Linux/Windows, Rust rlab tests and Clippy on Linux/Windows, and ToyDB on Windows.
 [Core quality](.github/workflows/core-quality.yml) adds Go vet/race/demo,
 IVM, LLM Benchmark, Linux ToyDB, DuckDB smoke, and portable C++ ASAN/UBSAN.
 [Repository checks](.github/workflows/repository-checks.yml) validate dependency

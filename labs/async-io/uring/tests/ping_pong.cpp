@@ -1,81 +1,50 @@
-#include <fmt/color.h>
-#include <fmt/core.h>
+#include <sys/socket.h>
+#include <unistd.h>
 
+#include <array>
+#include <async_lab/measure.hpp>
+#include <iostream>
 #include <liburing/io_service.hpp>
-#include <string_view>
+#include <liburing/utils.hpp>
+#include <vector>
 
-auto ping(uio::io_service& service, int read_fd, int write_fd) -> uio::task<> {
-    std::string_view msg = "ping!";
-    std::string_view expected = "pong!";
-    std::array<char, 64> buffer;
-
-    for (int i = 0; i < 20; i++) {
-        int count = co_await service.read(read_fd, buffer.data(), buffer.size(), 0) |
-                    uio::panic_on_err("ping: Unable to read from read_fd", false);
-
-        auto recieved = std::string_view(buffer.data(), count);
-
-        fmt::print(fg(fmt::color::cyan) | fmt::emphasis::bold, "ping: Recieved {}\n", recieved);
-        if (recieved != expected) uio::panic("Unexpected message", 0);
-
-        co_await service.write(write_fd, msg.data(), msg.size(), 0) |
-                uio::panic_on_err("ping: Unable to write to write_fd", false);
+namespace {
+uio::Task<> Peer(uio::IoService& service, int fd, bool initiator) {
+    std::array<char, 64> output {}, input {};
+    output.fill('x');
+    for (int round = 0; round < 100; ++round) {
+        for (bool write : {initiator, !initiator}) {
+            size_t offset = 0;
+            while (offset < output.size()) {
+                const int result = write ? co_await service.Write(fd, output.data() + offset,
+                                                                  output.size() - offset)
+                                         : co_await service.Read(fd, input.data() + offset,
+                                                                 input.size() - offset);
+                async_lab::Require(result > 0, "short/failed peer transfer");
+                offset += result;
+            }
+            if (!write) async_lab::Require(input == output, "payload mismatch");
+        }
     }
-
-    co_await service.close(write_fd) | uio::panic_on_err("ping: Unable to close write_fd", false);
-
-    // Check for EOF before exiting
-    if (0 != co_await service.read(read_fd, buffer.data(), buffer.size(), 0)) {
-        throw std::runtime_error("pong: Pipe not at EOF like expected");
-    }
-
-    co_await service.close(read_fd) | uio::panic_on_err("ping: Unable to close read_fd", false);
 }
-
-auto pong(uio::io_service& service, int read_fd, int write_fd) -> uio::task<> {
-    std::string_view msg = "pong!";
-    std::string_view expected = "ping!";
-    std::array<char, 64> buffer;
-
-    for (int i = 0; i < 20; i++) {
-        co_await service.write(write_fd, msg.data(), msg.size(), 0) |
-                uio::panic_on_err("pong: Unable to write to write_fd", false);
-
-        int count = co_await service.read(read_fd, buffer.data(), buffer.size(), 0) |
-                    uio::panic_on_err("pong: Unable to read from read_fd", false);
-
-        auto recieved = std::string_view(buffer.data(), count);
-
-        fmt::print(fg(fmt::color::magenta) | fmt::emphasis::bold, "pong: Recieved {}\n", recieved);
-        if (recieved != expected) uio::panic("Unexpected message", 0);
-    }
-
-    co_await service.close(write_fd) | uio::panic_on_err("pong: Unable to close write_fd", false);
-
-    // Check for EOF before exiting
-    if (0 != co_await service.read(read_fd, buffer.data(), buffer.size(), 0)) {
-        throw std::runtime_error("pong: Pipe not at EOF like expected");
-    }
-
-    co_await service.close(read_fd) | uio::panic_on_err("pong: Unable to close read_fd", false);
-}
-
+} // namespace
 int main() {
-    using uio::io_service;
-    using uio::task;
-
-    io_service io;
-
-    std::array<int, 2> p1;
-    std::array<int, 2> p2;
-    pipe(p1.data()) | uio::panic_on_err("Unable to open pipe", true);
-    pipe(p2.data()) | uio::panic_on_err("Unable to open pipe", true);
-
-    // ping reads from p1 and writes to p2
-    auto t1 = ping(io, p1[0], p2[1]);
-    // pong writes to p1 and reads from p2
-    auto t2 = pong(io, p2[0], p1[1]);
-
-    io.run(t1);
-    io.run(t2);
+    std::array<int, 2> sockets {-1, -1};
+    try {
+        async_lab::Require(socketpair(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0, sockets.data()) == 0,
+                           "socketpair failed");
+        uio::IoService service(8);
+        std::vector<uio::Task<>> tasks;
+        tasks.push_back(Peer(service, sockets[0], true));
+        tasks.push_back(Peer(service, sockets[1], false));
+        service.RunAll(tasks);
+        close(sockets[0]);
+        close(sockets[1]);
+        std::cout << "PASS 100 socketpair round trips, exact payload verification\n";
+    } catch (const std::exception& e) {
+        for (int fd : sockets)
+            if (fd >= 0) close(fd);
+        std::cerr << e.what() << '\n';
+        return 1;
+    }
 }

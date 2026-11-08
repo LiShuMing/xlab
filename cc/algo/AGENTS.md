@@ -302,6 +302,66 @@ pytest test/test_leetcode.py -v
 3. `src/leetcode/leetcode_1.cc` - Simple example
 4. `Makefile` - Build system
 
+## 补充工程规范
+
+以下条款原先独立成 `RULES.md`，已并入本文件。
+
+### 数据结构实现索引
+
+每个 `src/algo/algo_<name>.cc` 都带 `main()` 中的逐条用例，并在注释里点明它在数据库引擎中的对应物：
+
+| 文件 | 结构 | 引擎侧类比 |
+| --- | --- | --- |
+| `algo_dsu.cc` | 并查集 | 谓词等价类、join 图 |
+| `algo_fenwick.cc` | 树状数组 | 前缀聚合、增量视图维护 |
+| `algo_sparse_table.cc` | 稀疏表（RMQ） | 块级 min/max 索引、静态查找 |
+| `algo_monotonic_queue.cc` | 单调队列 / 单调栈 | 窗口聚合增量、下一个更大边界 |
+| `algo_skiplist.cc` | 跳表 | MemTable（RocksDB/LevelDB） |
+| `algo_segment_tree.cc` | 线段树（基础） | 区间聚合 |
+| `algo_segment_tree_beats.cc` | 线段树 beats | 运行最大值 / TopN 边界收缩 |
+| `algo_segment_tree_merge_split.cc` | 合并分裂线段树 | 分区/rowset 合并、compaction |
+| `algo_persistent_segment_tree.cc` | 可持久化线段树 | MVCC 快照、as-of join、flashback |
+| `algo_li_chao_tree.cc` | 李超树 | 分段线性代价模型 |
+| `algo_kd_tree.cc` | K-D 树 | 空间索引、分区裁剪 |
+| `algo_block_decompose.cc` | 分块 | zone map、块跳过 |
+
+其余分类：`algo_sort.cc`（比较/线性/混合排序）、`algo_binary_tree.cc`（遍历、增删查、
+序列化、LCA）、`algo_graph.cc`（BFS/DFS、最短路、MST、拓扑排序）、`algo_hash_table.cc`
+（实现变体、冲突解决、扩容）、`algo_cache.cc`（LRU/LFU/FIFO）、`algo_lock_free*.cc`
+（无锁队列、内存序、ABA）。
+
+### 构建变体
+
+```makefile
+# 调试（默认）
+CXXFLAGS = -std=c++17 -O0 -fno-omit-frame-pointer -g
+# 发布
+CXXFLAGS = -std=c++17 -O2
+```
+
+目标规则 `leetcode_XXX` / `lcr_XXX` / `algo_NAME` / `hackerrank_NAME` 产物落 `bin/`，
+`run_` 前缀构建后直接执行。
+
+### 测试要求
+
+- 每个解法文件必须有 `main()`，逐条打印用例的 PASS/FAIL，不许省略用例。
+- 需要回归的复杂逻辑补 Python 测试（`cc/algo/python/test/`，用 `pytest` 运行）。
+
+### 文档头格式
+
+解法文件头部保留题号、难度、题意、示例、约束与标签；算法说明写 Approach / Intuition /
+步骤 / 正确性理由 / 复杂度，复杂度是必填项。
+
+### 禁止模式
+
+无魔法数字（用具名常量）、无全局变量（走参数）、递归必须有终止条件、不许越界访问、
+分配的内存必须有归属（优先智能指针）。
+
+### 提交信息
+
+`<type>: <description>`，type 取 `feat`/`fix`/`docs`/`refactor`/`test`，
+例如 `feat: add solution for LeetCode 300 (LIS)`。
+
 ## Communication Style
 
 - Be concise in code comments

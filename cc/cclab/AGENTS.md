@@ -248,6 +248,69 @@ When ASAN/LSAN/UBSAN detect issues, they print detailed stack traces. Use `ASAN_
 ASAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer ./common_test
 ```
 
+## 补充工程规范
+
+以下条款原先独立成 `RULES.md`，已并入本文件。
+
+### 包含顺序
+
+```cpp
+#pragma once                            // 头文件第一行
+
+#include <vector>                     // 1. 标准库
+#include <gtest/gtest.h>              // 2. 第三方
+#include "common/skiplist/SkipList.h" // 3. 项目头文件（组内按字母序）
+```
+
+### 现代 C++ 口径
+
+必需：`std::unique_ptr`/`std::make_unique`、RAII、`[[nodiscard]]`、`override`、`final`、
+`constexpr`、`const` 成员函数。
+禁止：裸 `new`/`delete`、手工内存管理、C 风格转换、`NULL`（用 `nullptr`）、宏
+（用 `constexpr`/`inline`）、用异常做控制流。
+
+### 并发
+
+- 每个共享状态必须有明确的同步策略；以 `std::lock_guard<std::mutex>` + `mutable` 锁成员为准。
+- 无锁代码必须注释内存序要求；`std::atomic` 显式写 `memory_order`，除非性能关键，否则用
+  默认 `seq_cst`。
+
+### 错误处理
+
+- 异常只用于异常情形；可预期的失败用返回值（`std::optional`、错误码）。
+- 函数注释里必须写明会抛出的异常。
+
+### 测试覆盖
+
+核心组件行覆盖 ≥ 80%；每个组件必须覆盖 happy path、边界（空/单元素/最大）、错误条件与
+边界条件。
+
+### 文档
+
+- 文件头用 Doxygen：`@file`、`@brief`，概述文件责任与不变量。
+- 类与公开函数写 `@brief`/`@param`/`@return`/`@throws`。
+
+### 构建
+
+- CMake ≥ 3.22；用 target 级属性（`target_compile_features`、`target_include_directories`），
+  不写全局 `include_directories`/`CMAKE_CXX_FLAGS`。
+- 发布构建把警告当错误：`target_compile_options(target PRIVATE -Wall -Wextra -Werror)`。
+
+### 提交信息
+
+`<type>: <短描述>` 加可选正文，type 取 `feat`/`fix`/`docs`/`style`/`refactor`/`test`/`chore`；
+提交身份与 trailer 要求见根 `RULES.md`。
+
+### 代码审查清单
+
+- [ ] 编译无警告
+- [ ] 测试全过
+- [ ] 已跑 clang-format
+- [ ] 已跑 clang-tidy
+- [ ] 新代码带测试
+- [ ] 文档同步
+- [ ] 提交信息符合约定
+
 ## Contact & References
 
 - **Repository**: https://github.com/LiShuMing/xlab

@@ -1,190 +1,151 @@
-#include "ringserver/io/kqueue_backend.hpp"
-
-#include <cerrno>
-#include <cstring>
-#include <iostream>
+#include <fcntl.h>
+#include <sys/event.h>
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include <algorithm>
+#include <cerrno>
+#include <cstring>
+#include <unordered_map>
+
+#include "ringserver/io/io_backend.hpp"
+
 namespace ringserver {
-
-KqueueBackend::KqueueBackend() = default;
-
-KqueueBackend::~KqueueBackend() {
-    if (kq_fd_ >= 0) {
-        ::close(kq_fd_);
+namespace {
+class KqueueBackend final : public IoBackend {
+public:
+    KqueueBackend(unsigned batch, bool dispatch) : events_(batch), dispatch_(dispatch) {}
+    ~KqueueBackend() override {
+        if (kqueue_fd_ >= 0) ::close(kqueue_fd_);
     }
-}
-
-Status KqueueBackend::Init() {
-    kq_fd_ = ::kqueue();
-    if (kq_fd_ < 0) {
-        return Status::Unknown(
-            std::string_view(strerror(errno)));
+    Status Init() override {
+        kqueue_fd_ = kqueue();
+        if (kqueue_fd_ >= 0) fcntl(kqueue_fd_, F_SETFD, FD_CLOEXEC);
+        return kqueue_fd_ < 0 ? Status::Unknown(std::strerror(errno)) : Status::Ok();
     }
-    return Status::Ok();
-}
-
-Status KqueueBackend::SubmitAccept(int listen_fd, int64_t user_data) {
-    // Register interest in accept readiness
-    struct kevent change;
-    EV_SET(&change, listen_fd, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0,
-           reinterpret_cast<void*>(user_data));
-
-    if (::kevent(kq_fd_, &change, 1, nullptr, 0, nullptr) < 0) {
-        return Status::Unknown(
-            std::string_view(strerror(errno)));
+    Status SubmitAccept(int fd, int64_t token) override {
+        return Register({OpKind::kAccept, fd, token, nullptr, nullptr, 0}, EVFILT_READ);
     }
-    return Status::Ok();
-}
-
-Status KqueueBackend::SubmitRead(int fd, uint8_t* buf, size_t cap, int64_t user_data) {
-    // For kqueue, we register read interest and track context
-    // Actual read happens in Poll when socket is ready
-    struct kevent change;
-    EV_SET(&change, fd, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0,
-           reinterpret_cast<void*>(user_data));
-
-    if (::kevent(kq_fd_, &change, 1, nullptr, 0, nullptr) < 0) {
-        return Status::Unknown(
-            std::string_view(strerror(errno)));
+    Status SubmitRead(int fd, uint8_t* buffer, size_t size, int64_t token) override {
+        return Register({OpKind::kRead, fd, token, buffer, nullptr, size}, EVFILT_READ);
     }
-
-    // Store context for when socket becomes ready
-    read_pending_[fd] = {buf, cap, user_data};
-    return Status::Ok();
-}
-
-Status KqueueBackend::SubmitWrite(int fd, const uint8_t* buf, size_t len, int64_t user_data) {
-    struct kevent change;
-    EV_SET(&change, fd, EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0,
-           reinterpret_cast<void*>(user_data));
-
-    if (::kevent(kq_fd_, &change, 1, nullptr, 0, nullptr) < 0) {
-        return Status::Unknown(
-            std::string_view(strerror(errno)));
+    Status SubmitWrite(int fd, const uint8_t* buffer, size_t size, int64_t token) override {
+        return Register({OpKind::kWrite, fd, token, nullptr, buffer, size}, EVFILT_WRITE);
     }
-
-    write_pending_[fd] = {buf, len, user_data};
-    return Status::Ok();
-}
-
-Status KqueueBackend::SubmitSendFile(int out_fd, int file_fd, off_t offset,
-                                     size_t len, int64_t user_data) {
-    // TODO: Implement sendfile for macOS
-    // For Phase 0, fall back to read+write
-    return Status::InvalidArg("SendFile not implemented in kqueue backend");
-}
-
-Status KqueueBackend::SubmitClose(int fd, int64_t user_data) {
-    // Remove from kqueue tracking
-    struct kevent change;
-    EV_SET(&change, fd, EVFILT_READ, EV_DELETE, 0, 0, nullptr);
-    ::kevent(kq_fd_, &change, 1, nullptr, 0, nullptr);
-    EV_SET(&change, fd, EVFILT_WRITE, EV_DELETE, 0, 0, nullptr);
-    ::kevent(kq_fd_, &change, 1, nullptr, 0, nullptr);
-
-    read_pending_.erase(fd);
-    write_pending_.erase(fd);
-
-    return Status::Ok();
-}
-
-Status KqueueBackend::Poll(std::vector<CompletionEvent>* out, int timeout_ms) {
-    struct timespec ts;
-    if (timeout_ms >= 0) {
-        ts.tv_sec = timeout_ms / 1000;
-        ts.tv_nsec = (timeout_ms % 1000) * 1000000;
-    }
-
-    std::array<struct kevent, 64> events;
-    int n = ::kevent(kq_fd_, nullptr, 0, events.data(), events.size(),
-                     timeout_ms >= 0 ? &ts : nullptr);
-
-    if (n < 0) {
-        if (errno == EINTR) {
-            return Status::Again();
+    Status SubmitClose(int fd, int64_t) override {
+        // A missing read filter must not prevent deleting a still-live write filter.
+        // libkqueue requires explicit removal before close, unlike native kernel cleanup.
+        int error = 0;
+        for (int16_t filter : {EVFILT_READ, EVFILT_WRITE}) {
+            struct kevent change;
+            EV_SET(&change, fd, filter, EV_DELETE, 0, 0, nullptr);
+            int result;
+            do {
+                result = kevent(kqueue_fd_, &change, 1, nullptr, 0, nullptr);
+            } while (result < 0 && errno == EINTR);
+            if (result < 0 && errno != ENOENT) error = errno;
         }
-        return Status::Unknown(
-            std::string_view(strerror(errno)));
+        stats.cancelled += pending_.erase(fd);
+        registered_filters_.erase(fd);
+        return error ? Status::Unknown(std::strerror(error)) : Status::Ok();
     }
-
-    out->clear();
-    out->reserve(n);
-
-    for (int i = 0; i < n; ++i) {
-        const struct kevent& ev = events[i];
-        int fd = static_cast<int>(ev.ident);
-        int64_t user_data = reinterpret_cast<int64_t>(ev.udata);
-
-        CompletionEvent ce;
-        ce.fd = fd;
-        ce.user_data = user_data;
-        ce.result = 0;
-        ce.flags = 0;
-
-        if (ev.flags & EV_EOF) {
-            // Connection closed
-            ce.op = OpKind::kClose;
-            ce.result = -ECONNRESET;
-            ce.flags |= EV_EOF;
-            read_pending_.erase(fd);
-            write_pending_.erase(fd);
-        } else if (ev.filter == EVFILT_READ) {
-            ce.op = OpKind::kRead;
-            // Perform the actual read
-            auto it = read_pending_.find(fd);
-            if (it != read_pending_.end()) {
-                ssize_t r = ::read(fd, it->second.buf, it->second.cap);
-                if (r < 0) {
-                    if (errno == EAGAIN || errno == EWOULDBLOCK) {
-                        ce.result = 0;  // No data yet
-                    } else {
-                        ce.result = -errno;
+    Status Drain() override {
+        return pending_.empty() ? Status::Ok() : Status::Unknown("pending operations");
+    }
+    std::string_view name() const override {
+#ifdef RINGSERVER_KQUEUE_COMPAT
+        return dispatch_ ? "kqueue-compat-dispatch" : "kqueue-compat";
+#else
+        return "kqueue";
+#endif
+    }
+    Status Poll(std::vector<CompletionEvent>* out, int timeout_ms) override {
+        out->clear();
+        ++stats.polls;
+        timespec timeout {timeout_ms / 1000, (timeout_ms % 1000) * 1000000L};
+        int count = kevent(kqueue_fd_, nullptr, 0, events_.data(), events_.size(),
+                           timeout_ms < 0 ? nullptr : &timeout);
+        if (count < 0)
+            return errno == EINTR ? Status::Again() : Status::Unknown(std::strerror(errno));
+        if (!count) ++stats.empty_polls;
+        for (int i = 0; i < count; ++i) {
+            const auto found = pending_.find(int(events_[i].ident));
+            if (found == pending_.end()) continue;
+            const Operation operation = found->second;
+            int result;
+            do {
+                if (operation.kind == OpKind::kAccept) {
+                    result = accept(operation.fd, nullptr, nullptr);
+                    if (result >= 0) {
+                        if (fcntl(result, F_SETFL, O_NONBLOCK) < 0 ||
+                            fcntl(result, F_SETFD, FD_CLOEXEC) < 0) {
+                            const int error = errno;
+                            close(result);
+                            errno = error;
+                            result = -1;
+                        }
                     }
-                } else if (r == 0) {
-                    ce.result = 0;  // EOF
-                    ce.flags |= EV_EOF;
-                } else {
-                    ce.result = static_cast<int32_t>(r);
-                }
-                read_pending_.erase(it);
-            } else {
-                // Accept ready
-                ce.op = OpKind::kAccept;
-                ce.result = 0;
+                } else if (operation.kind == OpKind::kRead)
+                    result = recv(operation.fd, operation.read, operation.size, 0);
+                else
+                    result = send(operation.fd, operation.write, operation.size, 0);
+            } while (result < 0 && errno == EINTR);
+            if (result < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
+                ++stats.retries;
+                auto status = Arm(operation.fd,
+                                  operation.kind == OpKind::kWrite ? EVFILT_WRITE : EVFILT_READ);
+                if (!status.ok()) return status;
+                continue;
             }
-        } else if (ev.filter == EVFILT_WRITE) {
-            ce.op = OpKind::kWrite;
-            auto it = write_pending_.find(fd);
-            if (it != write_pending_.end()) {
-                ssize_t w = ::write(fd, it->second.buf, it->second.len);
-                if (w < 0) {
-                    if (errno == EAGAIN || errno == EWOULDBLOCK) {
-                        ce.result = 0;
-                    } else {
-                        ce.result = -errno;
-                    }
-                } else {
-                    ce.result = static_cast<int32_t>(w);
-                }
-                if (w != static_cast<ssize_t>(it->second.len)) {
-                    // Partial write, keep pending
-                    write_pending_[fd] = {
-                        it->second.buf + w,
-                        it->second.len - static_cast<size_t>(w),
-                        it->second.user_data
-                    };
-                } else {
-                    write_pending_.erase(it);
-                }
-            }
+            out->push_back(
+                    {operation.kind, operation.fd, operation.token, result < 0 ? -errno : result});
+            pending_.erase(found);
+            ++stats.completed;
         }
-
-        out->push_back(ce);
+        return Status::Ok();
     }
 
-    return Status::Ok();
+private:
+    struct Operation {
+        OpKind kind;
+        int fd;
+        int64_t token;
+        uint8_t* read;
+        const uint8_t* write;
+        size_t size;
+    };
+    Status Arm(int fd, int16_t interest) {
+        struct kevent event;
+        const uint8_t bit = interest == EVFILT_READ ? 1 : 2;
+        const auto found = registered_filters_.find(fd);
+        const bool exists = found != registered_filters_.end() && (found->second & bit);
+        // Bare EV_ENABLE avoids re-declaring a socket filter; libkqueue rejects that modify.
+        const uint16_t flags =
+                dispatch_ ? (exists ? EV_ENABLE : EV_ADD | EV_DISPATCH) : EV_ADD | EV_ONESHOT;
+        EV_SET(&event, fd, interest, flags, 0, 0, nullptr);
+        if (kevent(kqueue_fd_, &event, 1, nullptr, 0, nullptr) < 0)
+            return Status::Unknown(std::strerror(errno));
+        if (dispatch_) registered_filters_[fd] |= bit;
+        return Status::Ok();
+    }
+    Status Register(Operation operation, int16_t interest) {
+        if (pending_.contains(operation.fd))
+            return Status::InvalidArg("duplicate pending operation");
+        auto status = Arm(operation.fd, interest);
+        if (!status.ok()) return status;
+        pending_.emplace(operation.fd, operation);
+        ++stats.submitted;
+        stats.max_pending = std::max<uint64_t>(stats.max_pending, pending_.size());
+        return Status::Ok();
+    }
+    int kqueue_fd_ = -1;
+    std::vector<struct kevent> events_;
+    std::unordered_map<int, Operation> pending_;
+    std::unordered_map<int, uint8_t> registered_filters_;
+    const bool dispatch_;
+};
+} // namespace
+std::unique_ptr<IoBackend> MakeKqueueBackend(unsigned batch, bool dispatch) {
+    return std::make_unique<KqueueBackend>(batch, dispatch);
 }
-
-}  // namespace ringserver
+} // namespace ringserver

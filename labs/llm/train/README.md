@@ -54,7 +54,7 @@
 ## 文档与目录
 
 - [ARCHITECTURE.md](ARCHITECTURE.md)：计算结构与实现边界。
-- [TASKS.md](TASKS.md)：阶段进度。
+- [AGENTS.md](AGENTS.md)：修改约定与阶段进度。
 - [模型产物契约](docs/artifact-contract.md)：未来 Python/Rust 交换格式。
 - [experiments/](experiments/)：本机验收记录。
 - `src/llm_lab/`：模型、数据、训练、检查点、生成、CLI。

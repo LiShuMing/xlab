@@ -306,6 +306,8 @@ pnpm-debug.log*
 
 # Go binaries
 /go/hello/hello
+/go/golab/bin/
+/labs/k8s-lab/coverage.out
 
 # Local/generated data
 spark-warehouse/
@@ -338,3 +340,6 @@ gpt2-124M.ckpt
 
 # K-means synthetic runs and per-round evidence (not source)
 /python/pylab/.local/
+
+# Hashmap laboratory: builds, measurements and offline reports
+/labs/hashmap/.local/

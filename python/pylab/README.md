@@ -17,7 +17,7 @@ pylab is a personal laboratory for exploring Python concepts, algorithms, data s
   - 剑指Offer (Chinese interview problems)
 
 ### Database Experiments
-- **DBSP**: Database Stream Processing concepts
+- **DBSP**: prototype moved to [`labs/ivm/dbsp/`](../../labs/ivm/dbsp/)
 - **DuckDB**: In-process OLAP queries
 - **Benchmarking**: MySQL and StarRocks performance testing
 
@@ -113,9 +113,6 @@ python/pylab/
 ├── uttest/                 # Unit tests
 │   ├── test_skiplist.py    # Skip list implementation
 │   └── test_string.py      # String algorithms
-├── dbsp/                   # Database Stream Processing
-│   ├── dbsp.py
-│   └── test_dbsp.py
 ├── tools/                  # Utilities
 │   ├── pyspark/            # Spark experiments
 │   │   ├── test_spark.py
@@ -211,21 +208,6 @@ df = conn.execute("""
 """).fetchdf()
 ```
 
-### DBSP (Stream Processing)
-
-```python
-from dbsp import DBSP
-
-# Incremental view maintenance
-dbsp = DBSP()
-view = dbsp.create_view("SELECT * FROM users WHERE active")
-
-# Updates flow through incrementally
-for update in input_stream:
-    changes = view.apply(update)
-    output(changes)
-```
-
 ## Benchmarking
 
 ### MySQL Benchmark
@@ -290,7 +272,6 @@ python tools/pyspark/pyspark_iceberg_tpcds.py
 
 - [ ] Add more LeetCode solutions
 - [ ] Implement more data structures
-- [ ] Expand DBSP implementation
 - [ ] Add ML experiments
 - [ ] More visualization tools
 

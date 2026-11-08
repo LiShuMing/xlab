@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [ValidateSet('all', 'cpp', 'cclab', 'thread-pool', 'rlab', 'rdb', 'toydb')]
+    [ValidateSet('all', 'cpp', 'cclab', 'thread-pool', 'rlab', 'toydb')]
     [string]$Project = 'cpp',
     [ValidateSet('Debug', 'Release', 'RelWithDebInfo')]
     [string]$Configuration = 'Debug',
@@ -150,13 +150,12 @@ function Build-ToyDb {
 }
 
 $projects = @($Project)
-if ($Project -eq 'all') { $projects = @('cpp', 'rlab', 'rdb', 'toydb') }
+if ($Project -eq 'all') { $projects = @('cpp', 'rlab', 'toydb') }
 $failures = @()
 foreach ($name in $projects) {
     try {
         switch ($name) {
             'rlab' { Build-Rust $name }
-            'rdb' { Build-Rust $name }
             'toydb' { Build-ToyDb }
             default { Build-Cpp $name }
         }

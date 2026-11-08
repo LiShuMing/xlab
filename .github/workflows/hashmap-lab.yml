@@ -1,0 +1,20 @@
+name: hashmap-lab
+on:
+  push:
+    paths: ['labs/hashmap/**', '.github/workflows/hashmap-lab.yml']
+  pull_request:
+    paths: ['labs/hashmap/**', '.github/workflows/hashmap-lab.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  offline-core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure offline core (external perfect_hash is optional)
+        run: cmake -S labs/hashmap -B labs/hashmap/.local/build -DCMAKE_BUILD_TYPE=Release
+      - name: Build and verify
+        run: |
+          cmake --build labs/hashmap/.local/build --parallel 2
+          ctest --test-dir labs/hashmap/.local/build --output-on-failure --no-tests=error --timeout 60

@@ -1,0 +1,46 @@
+{
+  "fixed_cases": [
+    "short8",
+    "short64",
+    "short255",
+    "short256",
+    "short1024",
+    "prefix64"
+  ],
+  "hits": [
+    0,
+    50,
+    100
+  ],
+  "distributions": [
+    "uniform",
+    "hot"
+  ],
+  "seeds": [
+    42,
+    1729,
+    2026
+  ],
+  "repeats": 5,
+  "batch_ms": 20,
+  "dynamic": [
+    [
+      "uint64",
+      4096
+    ],
+    [
+      "uint64",
+      65536
+    ],
+    [
+      "strings",
+      4096
+    ]
+  ],
+  "load_sweep": [
+    0.5,
+    0.75,
+    0.85,
+    0.9
+  ]
+}

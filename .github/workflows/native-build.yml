@@ -14,7 +14,6 @@ on:
       - cc/cclab/**
       - labs/runtime/pool/**
       - rust/rlab/**
-      - rust/rdb/**
       - python/projects/py-toydb/**
       - .github/workflows/native-build.yml
   pull_request:
@@ -29,7 +28,6 @@ on:
       - cc/cclab/**
       - labs/runtime/pool/**
       - rust/rlab/**
-      - rust/rdb/**
       - python/projects/py-toydb/**
       - .github/workflows/native-build.yml
 
@@ -73,7 +71,7 @@ jobs:
         run: >-
           tar -cf "${{ runner.temp }}/windows-source.tar"
           CMakeLists.txt cmake tools cc/cclab labs/runtime/pool
-          rust/rlab rust/rdb python/projects/py-toydb
+          rust/rlab python/projects/py-toydb
       - uses: actions/upload-artifact@v4
         with:
           name: native-windows-source
@@ -138,12 +136,8 @@ jobs:
           components: clippy
       - name: Workspace tests including doctests
         run: cargo test --manifest-path rust/rlab/Cargo.toml --workspace --locked --release
-      - name: RDB tests
-        run: cargo test --manifest-path rust/rdb/Cargo.toml --locked
       - name: Workspace Clippy
         run: cargo clippy --manifest-path rust/rlab/Cargo.toml --workspace --all-targets --locked
-      - name: RDB Clippy
-        run: cargo clippy --manifest-path rust/rdb/Cargo.toml --all-targets --locked
 
   python:
     needs: windows-source

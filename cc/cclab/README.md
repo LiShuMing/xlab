@@ -297,14 +297,12 @@ cc/cclab/
 ├── build.sh             # Build script
 ├── .clang-format        # Code formatting
 ├── .clang-tidy          # Static analysis
-├── AGENTS.md            # AI agent guide
-└── RULES.md             # Coding standards
+└── AGENTS.md            # Agent guide: rules, standards, backlog
 ```
 
 ## Documentation
 
-- **[AGENTS.md](AGENTS.md)** - Guide for AI coding agents
-- **[RULES.md](RULES.md)** - Coding standards and conventions
+- **[AGENTS.md](AGENTS.md)** - Guide for AI coding agents, including coding standards and conventions
 - **[docs/](docs/)** - Architecture and API documentation
 
 ### Code Style
@@ -321,7 +319,7 @@ clang-tidy src/common/skiplist/SkipList.h
 
 ## Contributing
 
-1. Follow the coding standards in [RULES.md](RULES.md)
+1. Follow the coding standards in [AGENTS.md](AGENTS.md)
 2. Add tests for new functionality
 3. Ensure all tests pass with sanitizers
 4. Run clang-format before committing

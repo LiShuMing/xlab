@@ -14,7 +14,7 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 
 1. 已知项目名：搜索项目名或路径，例如 `query-engine`、`py-email`。
 2. 已知需求：先查下面的“按任务路由”，再进入对应语言表。
-3. 修改代码前：读取目标目录的 `AGENTS.md`、`RULES.md` 和构建清单；
+3. 修改代码前：读取目标目录的 `AGENTS.md` 和构建清单；
    README 中的历史设计不一定等于当前实现。
 4. “旧目录”保留用于定位，不应当作为可运行项目入口。
 5. 第三方声明不等于 gitlink；先查本文末尾的状态说明，不要默认递归下载全部依赖。
@@ -24,7 +24,7 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | 需求或关键词 | 优先定位 |
 | --- | --- |
 | 工作日记、菜单栏、提醒、SwiftUI | [carina/apps/daylog](https://github.com/LiShuMing/carina/tree/main/apps/daylog)（刻白，已迁移） |
-| Kubernetes、控制面、MVCC、Informer | [go/k8s-lab/](go/k8s-lab/) |
+| Kubernetes、控制面、MVCC、Informer | [labs/k8s-lab/](labs/k8s-lab/) |
 | LLM 训练与推理实验 | [labs/llm/train/](labs/llm/train/) |
 | C++ 数据结构、并发、协程、COW、一致性哈希 | [cc/cclab/](cc/cclab/) |
 | LeetCode、LCR、面试题、基础算法 | [cc/algo/](cc/algo/)、[rust/rlab/tools/leetcode/](rust/rlab/tools/leetcode/)、[python/pylab/](python/pylab/) |
@@ -33,13 +33,12 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | 线程池、work stealing、任务调度 | [labs/runtime/pool/](labs/runtime/pool/)、[rust/rlab/tools/thread-pool/](rust/rlab/tools/thread-pool/) |
 | MPMC、MPSC、队列内存回收 | [rust/rlab/tools/lockfree-queue/](rust/rlab/tools/lockfree-queue/) |
 | Bloom、Split Block、XOR Filter | [rust/rlab/tools/bloom_filter/](rust/rlab/tools/bloom_filter/) |
-| Rust 数据库、SQL、存储引擎 | [rust/rdb/](rust/rdb/) |
 | Volcano、Cascades、优化器算法对照 | [vela/optimizer/](https://github.com/LiShuMing/vela/tree/main/optimizer/) |
 | 多数据库优化器源码分析 | [vela/research/optimizer-evidence](https://github.com/LiShuMing/vela/tree/main/research/optimizer-evidence)、[vela/research/optimizer-scanner](https://github.com/LiShuMing/vela/tree/main/research/optimizer-scanner) |
 | LLVM、JIT、表达式编译 | [labs/interpreter/jit/](labs/interpreter/jit/) |
 | OCaml、函数式编程、AST、解释器、常量折叠 | [ocaml/](ocaml/)、[学习教程](ocaml/TUTORIAL.md) |
 | Lean 4、归纳证明、优化正确性、定理证明 | [lean4/](lean4/)、[学习教程](lean4/TUTORIAL.md) |
-| 增量计算、IVM、DBSP、差分数据流 | [python/ivm/](python/ivm/)、[python/pylab/dbsp/](python/pylab/dbsp/)，第三方见 `rust/thirdparty/` |
+| 增量计算、IVM、DBSP、差分数据流 | [labs/ivm/](labs/ivm/)（含 [dbsp/](labs/ivm/dbsp/)），第三方见 `rust/thirdparty/` |
 | Linux io_uring、异步 I/O、Reactor | [labs/async-io/uring/](labs/async-io/uring/)、[labs/runtime/reactor/](labs/runtime/reactor/)、[labs/async-io/server/](labs/async-io/server/) |
 | 缺页、页表遍历、TLB、RCU 宽限期与 stall | [labs/linux/](labs/linux/)、[rcu 笔记](labs/linux/rcu/README.md) |
 | Python C API、Cython、嵌入式 Python | [cc/projects/cpython/](cc/projects/cpython/) |
@@ -72,6 +71,9 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | [labs/linux/](labs/linux/) | 内核机制的用户态镜像：缺页/RSS、页表遍历、TLB 微基准，以及 pthread 模拟 RCU 宽限期（自报 QS、强制 QS、stall 检测；对应 Linux 7.0.0 `kernel/rcu/tree.c`） | [README](labs/linux/README.md)、[Makefile](labs/linux/Makefile)、[rcu 笔记](labs/linux/rcu/README.md) |
 | [labs/llm/](labs/llm/) | 大模型三阶段：GPU 环境与诊断、Tiny Transformer 训练、量化评测 | [README](labs/llm/README.md)、[train](labs/llm/train/README.md)、[bench](labs/llm/bench/README.md) |
 | [labs/daft/](labs/daft/) | Daft native 列式执行、batch 与 UDF 可复现实验 | [README](labs/daft/README.md)、[实验入口](labs/daft/lab.py) |
+| [labs/k8s-lab/](labs/k8s-lab/) | 纯标准库 mini Kubernetes 控制面（Go 1.26.2）：MVCC store、apiserver、informer、workqueue、ReplicaSet controller、kubelet 模拟 | [README](labs/k8s-lab/README.md)、[go.mod](labs/k8s-lab/go.mod)、[AGENTS](labs/k8s-lab/AGENTS.md) |
+| [labs/ivm/](labs/ivm/) | 增量视图维护（Incremental View Maintenance）与 DBSP 代数结构原型：join 增量公式、ZSet/Stream | [README](labs/ivm/README.md)、[ivm.py](labs/ivm/ivm.py)、[dbsp](labs/ivm/dbsp/dbsp.py) |
+| [labs/hashmap/](labs/hashmap/) | 哈希表策略、固定键 perfect hash 对照与离线性能报告 | [README](labs/hashmap/README.md)、[CMakeLists](labs/hashmap/CMakeLists.txt) |
 
 ## C、C++、汇编及扩展工具
 
@@ -85,8 +87,6 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | [cc/ccbench/](cc/ccbench/) | C++ benchmark 实验室 | [CMakeLists](cc/ccbench/CMakeLists.txt)、[build.sh](cc/ccbench/build.sh) |
 | [cc/srlab/](cc/srlab/) | SR Lab CMake scaffold 与实验；共享第三方依赖 | [README](cc/srlab/README.md)、[CMakeLists](cc/srlab/CMakeLists.txt) |
 | [cc/simd/](cc/simd/) | SIMD 指令与性能实验 | [Makefile](cc/simd/Makefile) |
-| [go/k8s-lab/](go/k8s-lab/) | 纯标准库 mini Kubernetes 控制面，Go 1.26.2；MVCC、apiserver、informer、controller、kubelet 模拟 | [README](go/k8s-lab/README.md)、[go.mod](go/k8s-lab/go.mod)、[AGENTS](go/k8s-lab/AGENTS.md) |
-| [cc/golab/](cc/golab/) | 实际为 Go 算法实验，放在 cc 目录下 | [Makefile](cc/golab/Makefile)、[源码](cc/golab/src/leetcode/) |
 | [cc/nasm/](cc/nasm/) | NASM 汇编 hello 与教程 | [Makefile](cc/nasm/Makefile)、[源码](cc/nasm/src/) |
 | [cc/projects/cpython/](cc/projects/cpython/) | Python/C/C++ 互操作项目集合 | [README](cc/projects/cpython/README.md) |
 | [cc/projects/cpython/cpython/](cc/projects/cpython/cpython/) | 在 C++ 中嵌入 Python | [CMakeLists](cc/projects/cpython/cpython/CMakeLists.txt)、[main.cc](cc/projects/cpython/cpython/main.cc) |
@@ -132,15 +132,12 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | [rust/rlab/tools/lockfree-queue/](rust/rlab/tools/lockfree-queue/) | MPMC/MPSC API 与 Crossbeam 队列 | [README](rust/rlab/tools/lockfree-queue/README.md)、[Cargo.toml](rust/rlab/tools/lockfree-queue/Cargo.toml) |
 | [rust/rlab/tools/bloom_filter/](rust/rlab/tools/bloom_filter/) | Bloom、Split Block、XOR Filter | [Cargo.toml](rust/rlab/tools/bloom_filter/Cargo.toml) |
 | [rust/rlab/tools/leetcode/](rust/rlab/tools/leetcode/) | Rust 算法题与题目工具 | [Cargo.toml](rust/rlab/tools/leetcode/Cargo.toml) |
-| [rust/rdb/](rust/rdb/) | Rust 数据库；SQL 到执行与存储 | [README](rust/rdb/README.md)、[Cargo.toml](rust/rdb/Cargo.toml) |
 
 ## Python
 
 | 项目目录 | 用途 | 入口 |
 | --- | --- | --- |
 | [python/pylab/](python/pylab/) | 核心 Python 实验室、算法、数据库及 benchmark 工具 | [README](python/pylab/README.md)、[AGENTS](python/pylab/AGENTS.md) |
-| [python/pylab/dbsp/](python/pylab/dbsp/) | DBSP 增量计算子实验 | [dbsp.py](python/pylab/dbsp/dbsp.py) |
-| [python/ivm/](python/ivm/) | 增量视图维护与 join 实验 | [ivm.py](python/ivm/ivm.py) |
 | [python/projects/py-cycle-lab/](python/projects/py-cycle-lab/) | LongCycle 长周期投资研究工作台 | [README](python/projects/py-cycle-lab/README.md)、[pyproject.toml](python/projects/py-cycle-lab/pyproject.toml) |
 | [python/projects/py-ego/](python/projects/py-ego/) | 对话陪护与记忆；README 同时保留 StarRocks 监控背景 | [README](python/projects/py-ego/README.md)、[main.py](python/projects/py-ego/main.py) |
 | [python/projects/py-ego/miniprogram/](python/projects/py-ego/miniprogram/) | 微信小程序前端 | [README](python/projects/py-ego/miniprogram/README.md)、[package.json](python/projects/py-ego/miniprogram/package.json) |
@@ -191,11 +188,10 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 
 | 项目目录 | 用途 | 入口 |
 | --- | --- | --- |
-| [go/k8s-lab/](go/k8s-lab/) | 纯标准库 mini Kubernetes 控制面，Go 1.26.2；MVCC、apiserver、informer、controller、kubelet 模拟 | [README](go/k8s-lab/README.md)、[go.mod](go/k8s-lab/go.mod)、[AGENTS](go/k8s-lab/AGENTS.md) |
-| [cc/golab/](cc/golab/) | Go 算法实验，位于 C++ 顶层目录下 | [Makefile](cc/golab/Makefile)、[源码](cc/golab/src/leetcode/) |
+| [go/golab/](go/golab/) | Go 算法练习（LeetCode），每个源文件自带 `main` | [Makefile](go/golab/Makefile)、[源码](go/golab/src/leetcode/) |
 | [lyra/llm-wiki/](https://github.com/LiShuMing/lyra/tree/main/llm-wiki/) | 个人上下文维护 POC、CLI 与服务 | [README](https://github.com/LiShuMing/lyra/blob/main/llm-wiki/README.md)、[go.mod](https://github.com/LiShuMing/lyra/blob/main/llm-wiki/go.mod)、[Makefile](https://github.com/LiShuMing/lyra/blob/main/llm-wiki/Makefile) |
 
-[go/SKILL.md](go/SKILL.md) 是语言指南；`go/k8s-lab` 的并发测试应运行 `go test -race ./...`。旧 `go/hello/` 不存在。
+mini Kubernetes 控制面按主题归入 [labs/k8s-lab/](labs/k8s-lab/)，其并发测试运行 `go test -race ./...`；`go/golab` 没有 `go.mod`，用其 `Makefile`（`make leetcode_<id>`）构建运行。旧 `go/hello/` 不存在。
 
 ## OCaml 与 Lean 4
 

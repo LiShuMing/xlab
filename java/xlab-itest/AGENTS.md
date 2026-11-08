@@ -311,6 +311,78 @@ class SSBTest : Suite() {
 - Use appropriate timeouts for long-running queries
 - Monitor memory usage in benchmarks
 
+## 工程规范
+
+以下条款原先独立成 `RULES.md`，已并入本文件。
+
+### 工具链与命令
+
+Kotlin 1.9.20、JVM target 17、Gradle（Kotlin DSL）。
+
+```bash
+./gradlew build
+./gradlew test
+./gradlew ktlintFormat   # 仅在已配置 ktlint 时
+./gradlew check
+```
+
+### 命名
+
+- 包名 `com.starrocks.itest.{module}`；类与接口 `PascalCase`；函数与变量 `camelCase`；
+  常量 `SCREAMING_SNAKE_CASE`（companion object 内可用 `PascalCase`）。
+- 测试类 `ClassNameTest`，benchmark 类 `ClassNameBench`。
+- import 分组固定：stdlib → 第三方 → 项目自身。
+
+### Kotlin 习惯
+
+- 可空性显式表达，优先 `?.`、`?:`，不写多余的 `if (x != null)`；能用 `val` 与只读集合
+  就不用可变版本。
+- 通用能力优先写成扩展函数（如 `Connection.executeQuery(sql)`）。
+- 资源获取用 `use { }`，连接与 Statement 必须关闭。
+
+### 测试
+
+- JUnit 5，用 `@BeforeEach`/`@AfterEach` 建毁资源；测试名用反引号写可读句子，例如
+  `fun `should rewrite query using materialized view`() { }`。
+- 断言用 `kotlin.test`（`assertEquals`/`assertTrue`/`assertFailsWith`）或 AssertJ；
+  测试结束必须清理表与 MV，不允许跳过清理，也不允许吞掉异常。
+
+### SQL 风格
+
+- 关键字大写、列定义对齐，显式写 `DUPLICATE KEY` / `DISTRIBUTED BY` / `PROPERTIES`。
+- MV 定义保持 `CREATE MATERIALIZED VIEW <name> AS SELECT ...` 的固定形状，列别名显式，
+  便于回归比对。
+
+### 错误处理与日志
+
+- 捕获具体异常（`SQLException` 等），打日志后包装为 `TestException` 抛出，不静默吞掉；
+  也可用 `runCatching {}.onFailure{}.getOrThrow()`。
+- 一律用 `LOGGER`（slf4j），禁止 `println` 输出调试信息。
+
+### 配置与数据库访问
+
+- 配置类是 `@Serializable` data class（如 `SRConf`），必须带默认值并从 YAML 加载；
+  数据库密码与连接串不得硬编码、不得入库。
+- JDBC 走 HikariCP 连接池（默认 `maximumPoolSize = 10`），连接串由 `SRConf` 拼装。
+
+### Benchmark
+
+- 基准类继承 `MVSuite`，按查询名统计耗时并输出汇总，便于平均耗时对比。
+
+### 提交信息
+
+`<type>: <description>`，type 取 `feat`/`fix`/`test`/`perf`/`refactor`/`docs`，
+例如 `perf: optimize connection pool sizing`。
+
+### 依赖
+
+新依赖写进 `build.gradle.kts` 的 `implementation` / `testImplementation`；版本收敛到
+`gradle/libs.versions.toml` 版本目录，不散落写死。
+
+### 文档
+
+公开 API 用 KDoc，包含 `@param`/`@return`/`@throws` 与最小示例。
+
 ## Resources
 
 - [StarRocks Documentation](https://docs.starrocks.io/)

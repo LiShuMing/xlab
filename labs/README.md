@@ -7,10 +7,13 @@
 | --- | --- | --- |
 | `linux/` | 内核机制的用户态镜像：延迟缺页 → 页表遍历 → TLB（Translation Lookaside Buffer）→ RCU（Read-Copy-Update）宽限期 | [linux/README.md](linux/README.md) |
 | `llm/` | 大语言模型（Large Language Model）：环境、训练、评测三阶段，外加 PyTorch 与 NumPy/pandas 基础 | [llm/README.md](llm/README.md) |
+| `hashmap/` | 哈希表策略、固定键 perfect hash 对照与离线性能报告 | [hashmap/README.md](hashmap/README.md) |
 | `daft/` | Daft 列式执行引擎的可复现实验 | [daft/README.md](daft/README.md) |
 | `interpreter/` | 源码到结果的三条路：树遍历解释、自举解释、LLVM（Low Level Virtual Machine）后端 JIT（Just-In-Time compilation，即时编译） | [interpreter/README.md](interpreter/README.md) |
 | `async-io/` | Linux 异步 I/O 的库与服务两层：io_uring 协程封装 + io_uring / kqueue 双后端服务器 | [async-io/README.md](async-io/README.md) |
 | `runtime/` | 两种调度模型：单线程 reactor 与 work-stealing 线程池 | [runtime/README.md](runtime/README.md) |
+| `k8s-lab/` | 从零实现的 mini Kubernetes 控制面：MVCC 存储、apiserver、informer、workqueue、ReplicaSet 控制器、kubelet 模拟 | [k8s-lab/README.md](k8s-lab/README.md) |
+| `ivm/` | 增量视图维护（Incremental View Maintenance）：join 的增量公式与 DBSP（Database Stream Processing）代数结构原型 | [ivm/README.md](ivm/README.md) |
 
 ## 放什么
 
@@ -21,7 +24,8 @@
 | 结论性知识，没有可执行代码 | `docs/` | 删掉代码后内容依然成立 |
 | 仓库自身的维护脚本 | `tools/` | 服务于仓库，不服务于某个主题 |
 
-`labs/` 只收「以理解机制为目的、需要多语言或多阶段对照」的实验。单一语言的完整应用
+`labs/` 收「以理解机制为目的」的实验：既可以是同一机制的多语言实现，也可以是单一语言的
+机制复现（如 `k8s-lab/` 复现 Kubernetes 控制面）。面向交付的完整应用
 （`python/projects/py-toydb`、`py-ego`、`py-stock` 等）留在语言目录：语言就是它们的组织维度。
 
 ## 内部约定
@@ -45,4 +49,6 @@ make -C labs/linux run_rcu      # 跑 RCU 的三个场景
 cd labs/llm/bench && python -m pytest tests -q
 cd labs/llm/train && ./scripts/setup.sh
 cd labs/daft && ./env.sh
+cd labs/k8s-lab && go run ./cmd/demo   # mini Kubernetes 控制面
+cd labs/ivm && python3 -m unittest discover -s . -p 'test_*.py'   # IVM join 用例
 ```

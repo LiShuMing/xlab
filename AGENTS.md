@@ -45,7 +45,6 @@ xlab/
 │   ├── simd/             # SIMD optimizations
 │   ├── nasm/             # Assembly experiments
 │   ├── extentions/       # GDB / editor extensions
-│   ├── golab/            # Standalone Go algorithm example
 │   ├── projects/         # Remaining personal C++ projects
 │   └── thirdparty/       # Declared references; see dependency status below
 ├── labs/                 # Topic-oriented labs; the language is an implementation detail
@@ -54,18 +53,17 @@ xlab/
 │   ├── interpreter/      # Source to result: tree-walk, self-hosting, LLVM JIT
 │   ├── async-io/         # Linux async I/O: io_uring wrapper and a dual-backend server
 │   ├── runtime/          # Scheduling models: single-thread reactor vs work-stealing pool
+│   ├── k8s-lab/          # Mini Kubernetes control plane from scratch (pure stdlib)
+│   ├── ivm/              # Incremental view maintenance and DBSP prototypes
 │   └── daft/             # Daft columnar execution experiments
 ├── rust/                 # Rust laboratory
 │   ├── rlab/             # Workspace-based Rust lab
-│   ├── rdb/              # Database implementation experiments
 │   └── thirdparty/       # Declared Rust research references
 ├── python/               # Python laboratory
 │   ├── pylab/            # Core Python lab with pytest
-│   ├── ivm/              # Incremental view maintenance prototypes
 │   ├── projects/         # Personal Python projects
 │   └── thirdparty/       # Declared Python references
-├── go/                   # Go laboratory
-│   └── k8s-lab/          # Mini Kubernetes control plane from scratch (zero deps)
+├── go/                   # Go laboratory: LeetCode exercises (`golab`)
 ├── java/                 # Java laboratory
 │   ├── xlab-iceberg/     # Apache Iceberg related
 │   └── xlab-itest/       # Interview/test projects
@@ -102,7 +100,9 @@ Rules for `labs/` (details in [labs/README.md](labs/README.md)):
   cross-topic sharing to `labs/libs/`. Cross-topic relative paths such as `../python/...`
   fail `tools/test_lab_isolation.py`.
 - A single-language application stays in its language tree (`python/projects/py-toydb`,
-  `py-ego`, …). `labs/` is not a second `python/projects/`.
+  `py-ego`, …). `labs/` is not a second `python/projects/`. The deciding question is purpose:
+  reproducing a system's mechanism belongs in `labs/` even when one language suffices
+  (`labs/k8s-lab/`).
 
 Moving, adding or removing a lab also updates `labs/README.md`, the `PROJECTS.md` routing
 table, and every CI path filter that names the old location.
@@ -149,9 +149,9 @@ instructions and build manifests before working there.
 ### Rust (rust/)
 - **Edition**: 2021
 - **Build System**: Cargo workspace
+- **Workspace root**: none — there is no `rust/Cargo.toml`; run Cargo inside the selected project or pass `--manifest-path`. `rlab` owns its workspace.
 - **Key Projects**:
   - `rlab`: Core experiments (lockfree, thread-pool, bloom filter)
-  - `rdb`: Database implementation with tokio
 - **Key Dependencies**: tokio, parking_lot, serde, zstd, roaring
 - **Third-party declarations (currently no gitlinks)**: RisingWave, Materialize, DataFusion, Timely/Differential Dataflow
 
@@ -159,18 +159,21 @@ instructions and build manifests before working there.
 - **Version**: 3.13.5 (managed via pyenv)
 - **Environment**: Virtual environments (.venv)
 - **Testing**: pytest
+- **Manifests**: none at the `python/` root; each project owns its own `requirements.txt` or `pyproject.toml`.
 - **Key Packages**: numpy, pandas, duckdb, matplotlib, faiss-cpu
 - **Projects**: py-cycle-lab, py-ego, py-lab,
   py-stock, py-toydb
-- **Standalone**: `python/ivm` (incremental view maintenance prototypes)
+- **Incremental computation**: `labs/ivm/` — incremental view maintenance (IVM) join
+  formulas and DBSP (differential dataflow) algebra prototypes, stdlib only
 
 ### Go (go/)
-- **Version**: 1.26.2 (per `go/k8s-lab/go.mod`)
+- **Version**: 1.26.2 (per `labs/k8s-lab/go.mod`)
 - **Module**: Go modules
-- **Projects**: `go/k8s-lab/` — a from-scratch mini Kubernetes control plane
-  (pure stdlib, zero dependencies): MVCC store, apiserver facade, informers,
+- **Projects**: `go/golab/` — standalone LeetCode solutions built and run by its
+  own `Makefile` (`make leetcode_433`), no `go.mod` and no cgo import. The
+  from-scratch mini Kubernetes control plane lives in `labs/k8s-lab/` (pure
+  stdlib, zero dependencies): MVCC store, apiserver facade, informers,
   workqueue, ReplicaSet controller, kubelet simulator, `cmd/demo`.
-- **Other Go code**: `cc/golab/` holds a standalone Go LeetCode file (no cgo import).
 - **Migrated Go module**: [Lyra llm-wiki](https://github.com/LiShuMing/lyra/tree/main/llm-wiki/)
   (formerly `liminalis/llm-wiki/`) owns the context CLI and web service.
   Use its current `go.mod` and README for toolchain and test instructions.
@@ -178,6 +181,7 @@ instructions and build manifests before working there.
 ### Java (java/)
 - **Build Tools**: Gradle (primary), Maven
 - **Projects**: xlab-iceberg, xlab-itest (interview prep)
+- **Independent manifests**: modules under `java/xlab-itest/` carry their own Maven/SBT files; the root Gradle build does not cover them.
 
 ### OCaml (ocaml/)
 - **Version**: 5.5.2, pinned in `.ocaml-version`
@@ -199,12 +203,13 @@ Haskell was owner-retired; do not restore its roots to satisfy historical links.
 ### Shell (shell/)
 - **Shell**: Bash/Zsh
 - **Tools**: bin/ utilities, Docker scripts, MySQL utilities
+- **Before running**: read each script — several act on the personal host (docker, mysql, fio).
 
 ## Build Commands
 
 Root CMake covers only portable cclab and the work-stealing pool in
 labs/runtime, not all C++ labs.
-Native CI additionally tests rlab/rdb/ToyDB; other projects have independent
+Native CI additionally tests rlab/ToyDB; other projects have independent
 requirements. See [README build/CI scope](README.md#build-and-ci-scope).
 Standalone cclab defaults to the portable subset. Set CCLAB_PORTABLE_ONLY=OFF
 only for the separately provisioned legacy laboratory.
@@ -261,7 +266,7 @@ cd test && make test          # All tests
 
 ### Go
 ```bash
-cd go/k8s-lab
+cd labs/k8s-lab
 go run ./cmd/demo               # end-to-end mini control plane demo
 go test -race ./...             # -race is mandatory (heavy concurrency)
 ```
@@ -302,10 +307,9 @@ files, refactors and review fixes alike; "it works" is not a style argument.
 | Shell | [Google Shell Style Guide](https://google.github.io/styleguide/shellguide.html) | `bash -n`, `shellcheck` where available |
 | OCaml / Lean 4 | language and library conventions (Dune / Lake layout) | `dune build`, `lake build` |
 
-Precedence when sources disagree: [RULES.md](RULES.md) > module `AGENTS.md` /
-`RULES.md` > nearest formatter configuration > the guide above. A module may
-tighten naming or layout; it must not relax correctness, safety or the column
-limit. Report style work honestly — if a tool is unavailable (for example
+Precedence when sources disagree: [RULES.md](RULES.md) > module `AGENTS.md` >
+nearest formatter configuration > the guide above. A module may tighten naming or
+layout; it must not relax correctness, safety or the column limit. Report style work honestly — if a tool is unavailable (for example
 `clang-format` is not installed), check the rule by hand and say so instead of
 claiming the tool ran.
 
@@ -420,9 +424,8 @@ Compare declarations and tracked gitlinks before discussing initialization.
 ## Development Conventions
 
 ### Documentation Standards
-Use [docs/README.md](docs/README.md) for the six-section routing and Cygnus routes
-and [writing-companion](docs/playbooks/skills/writing-companion/SKILL.md) for
-writing guidance:
+Use [docs/README.md](docs/README.md) for the six-section routing and Cygnus routes.
+Writing guidance:
 
 - **Persona**: Senior database kernel engineer
 - **Report Types**:
@@ -496,8 +499,7 @@ When generating code for this repository:
 - `.clang-tidy` — C++ linting configuration  
 - `CLAUDE.md` — Claude Code compatibility pointer to this file
 - `QWEN.md` — Qwen Code compatibility pointer (mirrors `CLAUDE.md`)
-- `**/SKILL.md` — Language/module specific guidelines (root, cc, go, java, python, rust, shell)
-- `**/AGENTS.md`, `**/RULES.md`, `**/TODOS.md` — Subtree-specific guidance; may refine local workflows but must not relax root `RULES.md` identity and safety requirements
+- `**/AGENTS.md` — Subtree-specific guidance; it may refine local workflows but must not relax root `RULES.md` identity and safety requirements. Each module keeps exactly one such file — module rules, engineering standards and open backlog live in it, not in a second `RULES.md` or `TODOS.md`.
 
 ## Contact & Context
 

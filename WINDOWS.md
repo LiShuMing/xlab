@@ -31,7 +31,6 @@ Run these from the repository root:
 # Select one project.
 ./tools/build-windows.ps1 -Project thread-pool
 ./tools/build-windows.ps1 -Project rlab -Configuration Release
-./tools/build-windows.ps1 -Project rdb
 ./tools/build-windows.ps1 -Project toydb
 
 # Include available C++ benchmarks in the build.
@@ -64,9 +63,8 @@ are expensive in Debug, so Release is useful for a full workspace verification.
 | `cclab` | Consistent hash library; enum, floating-point, copy-on-write column, and defer tests. |
 | `thread-pool` | Global/work-stealing pool, deque tests, and optional latency/throughput benchmarks. |
 | `rlab` | All six Rust workspace packages, including tests and doctests. |
-| `rdb` | Database executable and storage tests using isolated OS temporary directories. |
 | `toydb` | Editable Python package installation and existing pytest suite. |
-| `all` | `cpp`, `rlab`, `rdb`, and `toydb`; failures are collected and reported. |
+| `all` | `cpp`, `rlab`, and `toydb`; failures are collected and reported. |
 
 TinyKV and the query engine moved to [Vela](https://github.com/LiShuMing/vela).
 Use Vela’s own build instructions and CI matrix; this page does not establish

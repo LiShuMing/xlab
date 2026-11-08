@@ -21,7 +21,7 @@ class EntryPointTests(unittest.TestCase):
         self.assertTrue((ROOT / 'rust/rlab/tools/leetcode/src/problem/mod.rs').is_file())
 
     def test_go_help_matches_available_targets(self):
-        path = ROOT / 'cc/golab'
+        path = ROOT / 'go/golab'
         text = (path / 'Makefile').read_text()
         self.assertNotIn('go mod tidy', text)
         self.assertNotIn('PROG=', text)
