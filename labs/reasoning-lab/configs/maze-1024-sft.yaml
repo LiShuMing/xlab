@@ -1,0 +1,24 @@
+stage: sft
+task: maze
+model: .local/models/qwen3-0.6b
+data: .local/data/maze-v1
+output: .local/maze-1024/sft-runs
+device: auto
+dtype: float32
+rank: 16
+alpha: 16.0
+max_length: 1280
+max_new_tokens: 1024
+temperature: 0.7
+samples: 4
+steps: 200
+max_seconds: 10800
+learning_rate: 0.0001
+accumulation: 1
+# Two development checks instead of four: a 1024-token generation budget makes
+# each dev-quick pass expensive, and the loss curve already answers "keep going".
+eval_every: 100
+save_every: 50
+split: dev
+hypothesis: Answer-only LoRA updates on maze solutions remove the narration that the 64-token cap exposed.
+change: Supervise the 1000 solver-verified maze action strings; raise max_new_tokens to 1024.

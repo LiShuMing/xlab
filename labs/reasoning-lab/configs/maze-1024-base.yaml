@@ -1,0 +1,15 @@
+stage: eval
+task: maze
+model: .local/models/qwen3-0.6b
+data: .local/data/maze-v1
+device: auto
+dtype: float32
+# max_length must exceed max_new_tokens; 1280 leaves ~250 tokens for the prompt
+# while allowing a 1024-token answer.
+max_length: 1280
+max_new_tokens: 1024
+temperature: 0.7
+samples: 4
+max_seconds: 21600
+hypothesis: The 64-token budget, not maze ability, caused the 800/800 format failures.
+change: Raise max_new_tokens to 1024 and max_length to 1280; same data, verifier and sampling.

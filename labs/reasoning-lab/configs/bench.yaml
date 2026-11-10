@@ -1,0 +1,6 @@
+stage: bench
+max_new_tokens: 32
+temperature: 0
+max_seconds: 300
+hypothesis: KV caching reduces fixed-work inference time while preserving probabilities.
+change: Compare eager full recomputation, eager cache, and SDPA cache.

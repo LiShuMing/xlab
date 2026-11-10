@@ -1,0 +1,12 @@
+stage: eval
+task: countdown
+model: .local/models/qwen3-0.6b
+data: .local/data/countdown-v1
+device: auto
+dtype: float32
+max_length: 256
+max_new_tokens: 64
+temperature: 0.7
+samples: 4
+max_seconds: 7200
+hypothesis: Establish single-sample and four-candidate baseline at a fixed budget.

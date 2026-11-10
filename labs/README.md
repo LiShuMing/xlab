@@ -6,7 +6,10 @@
 | 主题 | 内容 | 入口 |
 | --- | --- | --- |
 | `linux/` | 内核机制的用户态镜像：延迟缺页 → 页表遍历 → TLB（Translation Lookaside Buffer）→ RCU（Read-Copy-Update）宽限期，以及 Rust kernel-lens 配置总览、实时观测与可选基准 | [linux/README.md](linux/README.md) |
+| `mac-lens/` | macOS 推理性能观察：Apple GPU、CPU、内存压力与 swap、磁盘/网络、进程及可选 vLLM 指标 | [mac-lens/README.md](mac-lens/README.md) |
+| `llm-observability/` | LLM 请求链路、Prometheus 指标、OTel traces 与系统背景的可复现实验平台 | [llm-observability/README.md](llm-observability/README.md) |
 | `llm/` | 大语言模型（Large Language Model）：环境、训练、评测三阶段，外加 PyTorch 与 NumPy/pandas 基础 | [llm/README.md](llm/README.md) |
+| `reasoning-lab/` | Apple Silicon 上的 Qwen3、LoRA、SFT/GRPO、程序判题、实验恢复与成本评测 | [reasoning-lab/README.md](reasoning-lab/README.md) |
 | `hashmap/` | 哈希表策略、固定键 perfect hash 对照与离线性能报告 | [hashmap/README.md](hashmap/README.md) |
 | `daft/` | Daft 列式执行引擎的可复现实验 | [daft/README.md](daft/README.md) |
 | `interpreter/` | 源码到结果的三条路：树遍历解释、自举解释、LLVM（Low Level Virtual Machine）后端 JIT（Just-In-Time compilation，即时编译） | [interpreter/README.md](interpreter/README.md) |

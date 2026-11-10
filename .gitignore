@@ -344,6 +344,15 @@ gpt2-124M.ckpt
 # Hashmap laboratory: builds, measurements and offline reports
 /labs/hashmap/.local/
 
+# Cache laboratory: builds, measurements and offline reports
+/labs/cache/.local/
+
+# Local machine telemetry captures may contain process/interface/mount names.
+/labs/mac-lens/.local/
+
+# Downloaded observability tools, environments, captures, logs and databases.
+/labs/llm-observability/.local/
+
 # Low-level laboratory: SIMD, NASM and LLVM build outputs
 /labs/lowlevel/simd/bin/
 /labs/lowlevel/nasm/bin/

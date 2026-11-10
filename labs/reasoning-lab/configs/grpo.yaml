@@ -1,0 +1,12 @@
+stage: grpo
+task: countdown
+dtype: float32
+steps: 100
+learning_rate: 0.00001
+group_size: 4
+kl_beta: 0.02
+clip_eps: 0.2
+eval_every: 25
+save_every: 25
+hypothesis: Binary program rewards improve the selected SFT policy.
+change: One-epoch GRPO with temperature-only sampling and an immutable starting reference.

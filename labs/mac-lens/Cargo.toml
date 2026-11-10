@@ -1,0 +1,23 @@
+[package]
+name = "mac-lens"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.94"
+description = "Read-only macOS inference performance observability TUI"
+license = "MIT"
+publish = false
+
+[dependencies]
+crossterm = "=0.29.0"
+ratatui = "=0.30.1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sysinfo = "=0.37.0"
+ureq = { version = "=3.0.12", default-features = false }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+libc = "0.2"
+mach2 = "=0.7.0"
+
+[target.'cfg(all(target_os = "macos", target_arch = "aarch64"))'.dependencies]
+macmon = { version = "=0.11.0", default-features = false }

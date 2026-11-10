@@ -1,0 +1,22 @@
+stage: sft
+task: sql
+model: .local/models/qwen3-0.6b
+data: .local/data/sql-v1
+output: .local/sft-runs
+device: auto
+dtype: float32
+rank: 16
+alpha: 16.0
+max_length: 256
+max_new_tokens: 64
+temperature: 0.7
+samples: 4
+steps: 200
+max_seconds: 7200
+learning_rate: 0.0001
+accumulation: 1
+eval_every: 50
+save_every: 50
+split: dev
+hypothesis: Answer-only LoRA updates remove the Markdown fence and turn existing SQL ability into valid output.
+change: Supervise the 1000 solver-verified train answers with bare SELECT statements; no verifier, protocol or data change.
