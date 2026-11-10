@@ -1,0 +1,14 @@
+{
+  "project": "CacheSystem",
+  "upstream": "https://github.com/M4cr0Chen/CacheSystem",
+  "local_revision": "b07a0c33b2111dc41f3557abb2bef2aa4b94abbe",
+  "license": "No license file upstream; no upstream line is copied",
+  "reference_adapter": "reference_lru.h reimplements the upstream LruCache structure in this lab's style (mutex, shared_ptr/weak_ptr list, stored-value check); no upstream file is read and the other policies are independent implementations",
+  "files": {
+    "CacheStrategy.h": "347d0f99b8552cdf8da1d8bdc85a3094bfa3cf0c84874951ea76050fb5545858",
+    "LruCache.h": "cc21eae766c656469c18479f9f161958e447151fcabdb47dcde1f56c6bce44f6",
+    "LfuCache.h": "1228eb59f72bcd0e8a7603407d4c4ecbab7091b2ff1c28196a6a078a2cb06981",
+    "ArcCache/ArcCache.h": "e4d76db2f0635895c833ac21efbcd1b42a53a5534440c277ee367cd6a6062f25",
+    "main.cpp": "7647074075095222c5a990b14e145ac76a6b3faf2f547cea54316528cfe753db"
+  }
+}

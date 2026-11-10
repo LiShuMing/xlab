@@ -1,0 +1,17 @@
+annotated-doc==0.0.4
+annotated-types==0.8.0
+fsspec==2025.3.0
+grpcio==1.67.1
+h11==0.16.0
+iniconfig==2.3.1
+pandas==2.2.3
+pluggy==1.7.0
+pyarrow==17.0.0
+pydantic==2.10.6
+pydantic_core==2.27.2
+pyOpenSSL==26.4.0
+pytest==8.3.5
+pytest-timeout==2.3.1
+pytz==2026.6
+typing-inspection==0.4.2
+tzdata==2026.6

@@ -1,0 +1,13 @@
+{
+  "standard": {
+    "count": 65536, "window_size": 2048, "repeats": 3, "batch_ms": 20,
+    "seeds": [42, 1729, 2026], "capacities": [128, 512, 1024],
+    "workloads": ["uniform", "zipf", "loop", "scan_mix", "interleaved", "hot_shift", "recency_bursts", "one_hit"],
+    "sensitivity": true
+  },
+  "quick": {
+    "count": 8192, "window_size": 512, "repeats": 1, "batch_ms": 2,
+    "seeds": [42], "capacities": [64, 256],
+    "workloads": ["scan_mix", "hot_shift", "recency_bursts"], "sensitivity": false
+  }
+}

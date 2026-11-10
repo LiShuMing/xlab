@@ -29,6 +29,8 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | 工作日记、菜单栏、提醒、SwiftUI | [carina/apps/daylog](https://github.com/LiShuMing/carina/tree/main/apps/daylog)（刻白，已迁移） |
 | Kubernetes、控制面、MVCC、Informer | [labs/k8s-lab/](labs/k8s-lab/) |
 | LLM 训练与推理实验 | [labs/llm/train/](labs/llm/train/) |
+| Ray Task/Actor、资源调度、Ray Data、shuffle、对象生命周期 | [labs/raylab/](labs/raylab/) |
+| 缓存淘汰与准入、FIFO/LRU/LFU/SLRU/W-TinyLFU/ARC | [labs/cache/](labs/cache/) |
 | Qwen3 本机持续实验、LoRA、SFT、GRPO、凑数/迷宫/SQL 程序奖励 | [labs/reasoning-lab/](labs/reasoning-lab/) |
 | C++ 数据结构、并发、协程、COW、一致性哈希 | [cc/cclab/](cc/cclab/) |
 | LeetCode、LCR、面试题、基础算法 | [cc/algo/](cc/algo/)、[rust/rlab/tools/leetcode/](rust/rlab/tools/leetcode/)、[python/pylab/](python/pylab/) |
@@ -82,6 +84,8 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | [labs/llm/](labs/llm/) | 大模型三阶段：GPU 环境与诊断、Tiny Transformer 训练、量化评测 | [README](labs/llm/README.md)、[train](labs/llm/train/README.md)、[bench](labs/llm/bench/README.md) |
 | [labs/reasoning-lab/](labs/reasoning-lab/) | 独立 Qwen3 MPS 实验台：手写模型、LoRA、SFT/GRPO、可验证任务与配对评测 | [README](labs/reasoning-lab/README.md)、[pyproject.toml](labs/reasoning-lab/pyproject.toml) |
 | [labs/daft/](labs/daft/) | Daft native 列式执行、batch 与 UDF 可复现实验 | [README](labs/daft/README.md)、[实验入口](labs/daft/lab.py) |
+| [labs/raylab/](labs/raylab/) | Ray 调度、数据流水线、shuffle、故障恢复与对象生命周期实验 | [README](labs/raylab/README.md)、[启动器](labs/raylab/lab.py)、[依赖](labs/raylab/requirements.txt) |
+| [labs/cache/](labs/cache/) | 六种缓存策略的确定性轨迹重放、行为观测和离线报告 | [README](labs/cache/README.md)、[Makefile](labs/cache/Makefile)、[CMakeLists](labs/cache/CMakeLists.txt) |
 | [labs/k8s-lab/](labs/k8s-lab/) | 纯标准库 mini Kubernetes 控制面（Go 1.26.2）：MVCC store、apiserver、informer、workqueue、ReplicaSet controller、kubelet 模拟 | [README](labs/k8s-lab/README.md)、[go.mod](labs/k8s-lab/go.mod)、[AGENTS](labs/k8s-lab/AGENTS.md) |
 | [labs/ivm/](labs/ivm/) | 增量视图维护（Incremental View Maintenance）与 DBSP 代数结构原型：join 增量公式、ZSet/Stream | [README](labs/ivm/README.md)、[Python join](labs/ivm/pyivm/ivm.py)、[Rust](labs/ivm/rust/README.md)、[dbsp](labs/ivm/dbsp/dbsp.py) |
 | [labs/hashmap/](labs/hashmap/) | 哈希表策略、固定键 perfect hash 对照与离线性能报告 | [README](labs/hashmap/README.md)、[CMakeLists](labs/hashmap/CMakeLists.txt) |

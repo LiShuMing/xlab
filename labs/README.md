@@ -11,6 +11,8 @@
 | `llm/` | 大语言模型（Large Language Model）：环境、训练、评测三阶段，外加 PyTorch 与 NumPy/pandas 基础 | [llm/README.md](llm/README.md) |
 | `reasoning-lab/` | Apple Silicon 上的 Qwen3、LoRA、SFT/GRPO、程序判题、实验恢复与成本评测 | [reasoning-lab/README.md](reasoning-lab/README.md) |
 | `hashmap/` | 哈希表策略、固定键 perfect hash 对照与离线性能报告 | [hashmap/README.md](hashmap/README.md) |
+| `cache/` | 缓存淘汰与准入：确定性轨迹、策略行为、参数对照和离线报告 | [cache/README.md](cache/README.md) |
+| `raylab/` | Ray 资源调度、数据流水线、shuffle、故障恢复与对象生命周期 | [raylab/README.md](raylab/README.md) |
 | `daft/` | Daft 列式执行引擎的可复现实验 | [daft/README.md](daft/README.md) |
 | `interpreter/` | 源码到结果的三条路：树遍历解释、自举解释、LLVM（Low Level Virtual Machine）后端 JIT（Just-In-Time compilation，即时编译） | [interpreter/README.md](interpreter/README.md) |
 | `async-io/` | Linux 异步 I/O 的库与服务两层：io_uring 协程封装 + io_uring / kqueue 双后端服务器 | [async-io/README.md](async-io/README.md) |

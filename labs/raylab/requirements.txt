@@ -1,0 +1,13 @@
+# Ray and NumPy are inherited from the existing, locally built Conda environment.
+# These wheels support this machine's glibc 2.17 and Python 3.11.
+pandas==2.2.3
+pyarrow==17.0.0
+grpcio==1.67.1
+pydantic==2.10.6
+fsspec==2025.3.0
+pytest==8.3.5
+pytest-timeout==2.3.1
+annotated-doc==0.0.4
+typing-inspection==0.4.2
+h11==0.16.0
+pyOpenSSL==26.4.0
