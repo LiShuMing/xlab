@@ -352,6 +352,9 @@ gpt2-124M.ckpt
 
 # Downloaded observability tools, environments, captures, logs and databases.
 /labs/llm-observability/.local/
+/labs/gpu-kernel/.local/
+/labs/gpu-kernel/fused_ops/bin/
+/labs/infer-engine/.local/
 
 # Low-level laboratory: SIMD, NASM and LLVM build outputs
 /labs/lowlevel/simd/bin/

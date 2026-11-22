@@ -84,13 +84,22 @@ func Key(resource, namespace, name string) string {
 
 // PodSpec is the desired configuration of a Pod (subset).
 type PodSpec struct {
-	// NodeName is set by the scheduler in real k8s. In this lab the
-	// ReplicaSet controller leaves it empty and the kubelet simulator adopts
-	// any unscheduled Pod, standing in for scheduling+binding.
+	// NodeName is set by the scheduler in real k8s. In the basic demo the
+	// kubelet adopts unscheduled Pods; when internal/scheduler runs, the
+	// scheduler binds NodeName (and AssignedGPUs for GPU workloads).
 	NodeName string `json:"nodeName,omitempty"`
 	// Image is a stand-in for containers[0].image; the simulator does not run
 	// anything, it just tracks lifecycle.
 	Image string `json:"image,omitempty"`
+
+	// GPU scheduling fields (all optional; zero means a CPU-only Pod).
+	GPURequest   int   `json:"gpuRequest,omitempty"`
+	GPUMemoryMiB int   `json:"gpuMemoryMiB,omitempty"`
+	AssignedGPUs []int `json:"assignedGPUs,omitempty"`
+	// PodGroup + MinAvailable express Gang Scheduling (coscheduling):
+	// all MinAvailable pods in the group must be scheduled atomically or none.
+	PodGroup     string `json:"podGroup,omitempty"`
+	MinAvailable int    `json:"minAvailable,omitempty"`
 }
 
 // PodStatus is the observed state of a Pod (subset).
@@ -116,8 +125,63 @@ func (p *Pod) DeepCopyObject() Object {
 	}
 	out := *p
 	out.Labels = copyLabels(p.Labels)
+	if p.Spec.AssignedGPUs != nil {
+		out.Spec.AssignedGPUs = append([]int(nil), p.Spec.AssignedGPUs...)
+	}
 	if p.DeletionTimestamp != nil {
 		t := *p.DeletionTimestamp
+		out.DeletionTimestamp = &t
+	}
+	return &out
+}
+
+// ---------------------------------------------------------------------------
+// Node (GPU & interconnect topology model for internal/scheduler)
+// ---------------------------------------------------------------------------
+
+// GPUDevice models one physical GPU on a Node, including its VRAM capacity
+// and NVLink island identifier (GPUs sharing the same NVLinkGroup have
+// high-bandwidth direct interconnect; cross-group traffic falls back to PCIe).
+type GPUDevice struct {
+	ID          int    `json:"id"`
+	MemoryMiB   int    `json:"memoryMiB"`
+	NVLinkGroup string `json:"nvlinkGroup,omitempty"`
+}
+
+// NodeSpec declares the static hardware inventory of a simulated node.
+type NodeSpec struct {
+	GPUs          []GPUDevice `json:"gpus,omitempty"`
+	Unschedulable bool        `json:"unschedulable,omitempty"`
+}
+
+// NodeStatus records observed node readiness.
+type NodeStatus struct {
+	Ready bool `json:"ready"`
+}
+
+// Node mirrors corev1.Node (minimal subset for GPU topology scheduling).
+type Node struct {
+	TypeMeta   `json:",inline"`
+	ObjectMeta `json:"metadata"`
+	Spec       NodeSpec   `json:"spec"`
+	Status     NodeStatus `json:"status"`
+}
+
+func (n *Node) GetTypeMeta() *TypeMeta     { return &n.TypeMeta }
+func (n *Node) GetObjectMeta() *ObjectMeta { return &n.ObjectMeta }
+
+// DeepCopyObject returns a deep copy of the Node including its GPU slice.
+func (n *Node) DeepCopyObject() Object {
+	if n == nil {
+		return nil
+	}
+	out := *n
+	out.Labels = copyLabels(n.Labels)
+	if n.Spec.GPUs != nil {
+		out.Spec.GPUs = append([]GPUDevice(nil), n.Spec.GPUs...)
+	}
+	if n.DeletionTimestamp != nil {
+		t := *n.DeletionTimestamp
 		out.DeletionTimestamp = &t
 	}
 	return &out

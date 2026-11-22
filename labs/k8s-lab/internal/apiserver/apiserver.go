@@ -67,6 +67,11 @@ var registry = map[string]kindInfo{
 		apiVersion: "apps/v1",
 		newObj:     func() apis.Object { return &apis.ReplicaSet{} },
 	},
+	"nodes": {
+		kind:       "Node",
+		apiVersion: "v1",
+		newObj:     func() apis.Object { return &apis.Node{} },
+	},
 }
 
 func lookup(resource string) (kindInfo, error) {
@@ -154,6 +159,12 @@ func copyStatus(dst, src apis.Object) error {
 		s, ok := src.(*apis.ReplicaSet)
 		if !ok {
 			return fmt.Errorf("apiserver: status source is %T, want *ReplicaSet", src)
+		}
+		d.Status = s.Status
+	case *apis.Node:
+		s, ok := src.(*apis.Node)
+		if !ok {
+			return fmt.Errorf("apiserver: status source is %T, want *Node", src)
 		}
 		d.Status = s.Status
 	default:
@@ -256,7 +267,26 @@ func validate(resource string, obj apis.Object) error {
 			return fmt.Errorf("apiserver: replicasets %q: selector must not be empty (it would adopt every pod)", meta.Name)
 		}
 	case *apis.Pod:
-		// Pods carry no extra invariants in the lab beyond the name check.
+		if o.Spec.GPURequest < 0 {
+			return fmt.Errorf("apiserver: pods %q: spec.gpuRequest must be >= 0, got %d", meta.Name, o.Spec.GPURequest)
+		}
+		if o.Spec.GPUMemoryMiB < 0 {
+			return fmt.Errorf("apiserver: pods %q: spec.gpuMemoryMiB must be >= 0, got %d", meta.Name, o.Spec.GPUMemoryMiB)
+		}
+		if o.Spec.MinAvailable < 0 {
+			return fmt.Errorf("apiserver: pods %q: spec.minAvailable must be >= 0, got %d", meta.Name, o.Spec.MinAvailable)
+		}
+	case *apis.Node:
+		seen := make(map[int]struct{}, len(o.Spec.GPUs))
+		for _, g := range o.Spec.GPUs {
+			if g.ID < 0 || g.MemoryMiB < 0 {
+				return fmt.Errorf("apiserver: nodes %q: invalid GPU device %+v", meta.Name, g)
+			}
+			if _, dup := seen[g.ID]; dup {
+				return fmt.Errorf("apiserver: nodes %q: duplicate GPU ID %d", meta.Name, g.ID)
+			}
+			seen[g.ID] = struct{}{}
+		}
 	}
 	return nil
 }

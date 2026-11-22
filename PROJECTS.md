@@ -68,6 +68,8 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | PyTorch、micrograd、自动求导 | [labs/llm/torch/](labs/llm/torch/) |
 | NumPy、pandas、Jupyter | [labs/llm/numpy-pandas/](labs/llm/numpy-pandas/) |
 | GPU、CUDA/ROCm、本地模型 | [labs/llm/env/](labs/llm/env/) |
+| GPU Roofline、CUDA/Triton 融合算子、CUDA Graph、单卡共享干扰 | [labs/gpu-kernel/](labs/gpu-kernel/) |
+| 迷你推理引擎、Paged KV、Continuous Batching、Prefix Cache、投机解码 | [labs/infer-engine/](labs/infer-engine/) |
 | Windows 构建、兼容性 | [tools/build-windows.ps1](tools/build-windows.ps1)、[WINDOWS.md](WINDOWS.md) |
 
 ## 主题实验室（labs/）
@@ -82,6 +84,8 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | [labs/mac-lens/](labs/mac-lens/) | Rust macOS 推理性能 TUI：整机 Apple GPU/CPU/内存压力、swap、磁盘/网络、候选进程及可选回环 vLLM Prometheus | [README](labs/mac-lens/README.md)、[Cargo.toml](labs/mac-lens/Cargo.toml) |
 | [labs/llm-observability/](labs/llm-observability/) | 本地 LLM 可观测性平台：原生 Prometheus/Jaeger、系统 exporter、流式 traces 与生命周期脚本 | [README](labs/llm-observability/README.md)、[pyproject.toml](labs/llm-observability/pyproject.toml) |
 | [labs/llm/](labs/llm/) | 大模型三阶段：GPU 环境与诊断、Tiny Transformer 训练、量化评测 | [README](labs/llm/README.md)、[train](labs/llm/train/README.md)、[bench](labs/llm/bench/README.md) |
+| [labs/gpu-kernel/](labs/gpu-kernel/) | 单卡 GPU Roofline 标定、CUDA C++ / Triton 融合算子、CUDA Graph 与单卡多进程干扰实验 | [README](labs/gpu-kernel/README.md)、[Makefile](labs/gpu-kernel/Makefile)、[RESULTS](labs/gpu-kernel/RESULTS.md) |
+| [labs/infer-engine/](labs/infer-engine/) | 从零实现的单机迷你推理引擎（mini-vLLM）：Static/Paged KV、Continuous Batching、Prefix Cache 与投机解码 | [README](labs/infer-engine/README.md)、[Makefile](labs/infer-engine/Makefile)、[RESULTS](labs/infer-engine/RESULTS.md) |
 | [labs/reasoning-lab/](labs/reasoning-lab/) | 独立 Qwen3 MPS 实验台：手写模型、LoRA、SFT/GRPO、可验证任务与配对评测 | [README](labs/reasoning-lab/README.md)、[pyproject.toml](labs/reasoning-lab/pyproject.toml) |
 | [labs/daft/](labs/daft/) | Daft native 列式执行、batch 与 UDF 可复现实验 | [README](labs/daft/README.md)、[实验入口](labs/daft/lab.py) |
 | [labs/raylab/](labs/raylab/) | Ray 调度、数据流水线、shuffle、故障恢复与对象生命周期实验 | [README](labs/raylab/README.md)、[启动器](labs/raylab/lab.py)、[依赖](labs/raylab/requirements.txt) |

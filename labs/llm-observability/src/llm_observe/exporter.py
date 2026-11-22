@@ -38,6 +38,42 @@ def parse_gpu(text: str) -> dict[str, float]:
     return {"gpu_device_utilization_ratio": int(value[1]) / 100}
 
 
+def parse_nvidia_smi(text: str) -> dict[str, float]:
+    """Parse `nvidia-smi --query-gpu=utilization.gpu,utilization.memory,memory.used,memory.total,temperature.gpu,power.draw --format=csv,noheader,nounits`."""
+    lines = [line.strip() for line in text.splitlines() if line.strip()]
+    if not lines:
+        raise ValueError("nvidia-smi returned no GPU rows")
+    parts = [part.strip() for part in lines[0].split(",")]
+    if len(parts) < 6:
+        raise ValueError(f"Unexpected nvidia-smi CSV format: {lines[0]!r}")
+
+    def parse_float(raw: str, field: str) -> float:
+        if raw.upper() in {"N/A", "[N/A]", "[NOT SUPPORTED]", ""}:
+            raise ValueError(f"nvidia-smi field {field} unavailable")
+        return float(raw)
+
+    gpu_util = parse_float(parts[0], "utilization.gpu")
+    mem_util = parse_float(parts[1], "utilization.memory")
+    mem_used_mib = parse_float(parts[2], "memory.used")
+    mem_total_mib = parse_float(parts[3], "memory.total")
+    temp_c = parse_float(parts[4], "temperature.gpu")
+    if not (0.0 <= gpu_util <= 100.0 and 0.0 <= mem_util <= 100.0):
+        raise ValueError("nvidia-smi utilization percentage out of [0, 100]")
+
+    metrics: dict[str, float] = {
+        "gpu_device_utilization_ratio": gpu_util / 100.0,
+        "gpu_memory_utilization_ratio": mem_util / 100.0,
+        "gpu_memory_used_bytes": mem_used_mib * 1024.0 * 1024.0,
+        "gpu_memory_total_bytes": mem_total_mib * 1024.0 * 1024.0,
+        "gpu_temperature_celsius": temp_c,
+    }
+    try:
+        metrics["gpu_power_draw_watts"] = parse_float(parts[5], "power.draw")
+    except ValueError:
+        pass
+    return metrics
+
+
 def parse_cpu(text: str) -> dict[str, float]:
     value = re.search(r"CPU usage:\s+([\d.]+)% user,\s+([\d.]+)% sys,\s+([\d.]+)% idle", text)
     if value is None:
@@ -137,12 +173,27 @@ class HostCollector:
 
     def sample(self) -> None:
         cycle = 0
+        sysname = os.uname().sysname
         while not self.stop.is_set():
             self.probe("vm_stat", self.vm)
-            self.probe(
-                "ioreg",
-                lambda: parse_gpu(command(["ioreg", "-r", "-c", "AGXAccelerator", "-d", "1"])),
-            )
+            if sysname == "Darwin":
+                self.probe(
+                    "ioreg",
+                    lambda: parse_gpu(command(["ioreg", "-r", "-c", "AGXAccelerator", "-d", "1"])),
+                )
+            else:
+                self.probe(
+                    "nvidia_smi",
+                    lambda: parse_nvidia_smi(
+                        command(
+                            [
+                                "nvidia-smi",
+                                "--query-gpu=utilization.gpu,utilization.memory,memory.used,memory.total,temperature.gpu,power.draw",
+                                "--format=csv,noheader,nounits",
+                            ]
+                        )
+                    ),
+                )
             if cycle % 5 == 0:
                 self.probe("process", self.processes)
                 self.probe("system", self.system)

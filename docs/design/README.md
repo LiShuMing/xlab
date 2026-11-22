@@ -31,6 +31,7 @@
 | [top-k.md](top-k.md) | 海量数据 Top-K | 决定方案的是 K 与内存的关系、是否允许近似、是原始行还是聚合后排序，N 的大小几乎不参与决策 |
 | [vectorized-execution.md](vectorized-execution.md) | 向量化执行 | 批处理化把逐行的解释开销与缓存失效摊薄，典型分析型负载 10–100x |
 | [llm-inference-optimization.md](llm-inference-optimization.md) | LLM 推理优化 | 瓶颈在 prefill 是算力、在 decode 是显存带宽；KV cache 组织方式决定吞吐上限 |
+| [gpu-inference-and-scheduling.md](gpu-inference-and-scheduling.md) | 单卡推理与四层 GPU 调度 | 基于 RTX 5070 Ti 实测 Roofline 拆解算子、自研引擎、可观测性与四层 GPU 调度的实验边界、验证不变量与里程碑 |
 | [ai-platform-design.md](ai-platform-design.md) | 多租户 AI 平台 | 用一道系统设计题把资源配额、背压、故障恢复、发布灰度串成一条链路 |
 
 ## 新增文档约定

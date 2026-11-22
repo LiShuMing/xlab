@@ -4,7 +4,13 @@ import pytest
 from prometheus_client import CollectorRegistry, generate_latest
 
 from llm_observe import manager
-from llm_observe.exporter import HostCollector, parse_cpu, parse_gpu, parse_vm
+from llm_observe.exporter import (
+    HostCollector,
+    parse_cpu,
+    parse_gpu,
+    parse_nvidia_smi,
+    parse_vm,
+)
 from llm_observe.paths import local_origin
 from llm_observe.safegit import source_allowed
 
@@ -85,3 +91,21 @@ def test_commit_guard_rejects_runtime_or_vendored_content(path):
 def test_commit_guard_keeps_own_source_and_templates():
     assert source_allowed(Path("src/llm_observe/manager.py"))
     assert source_allowed(Path("config/jaeger.yml.in"))
+
+
+def test_parse_nvidia_smi_extracts_linux_gpu_metrics():
+    metrics = parse_nvidia_smi("42, 65, 8192, 16303, 58, 185.40\n")
+    assert metrics["gpu_device_utilization_ratio"] == pytest.approx(0.42)
+    assert metrics["gpu_memory_utilization_ratio"] == pytest.approx(0.65)
+    assert metrics["gpu_memory_used_bytes"] == pytest.approx(8192 * 1024 * 1024)
+    assert metrics["gpu_memory_total_bytes"] == pytest.approx(16303 * 1024 * 1024)
+    assert metrics["gpu_temperature_celsius"] == pytest.approx(58.0)
+    assert metrics["gpu_power_draw_watts"] == pytest.approx(185.4)
+
+
+def test_parse_nvidia_smi_tolerates_missing_power_and_rejects_empty():
+    metrics = parse_nvidia_smi("10, 5, 512, 16303, 41, [N/A]\n")
+    assert metrics["gpu_device_utilization_ratio"] == pytest.approx(0.10)
+    assert "gpu_power_draw_watts" not in metrics
+    with pytest.raises(ValueError):
+        parse_nvidia_smi("")

@@ -9,6 +9,8 @@
 | `mac-lens/` | macOS 推理性能观察：Apple GPU、CPU、内存压力与 swap、磁盘/网络、进程及可选 vLLM 指标 | [mac-lens/README.md](mac-lens/README.md) |
 | `llm-observability/` | LLM 请求链路、Prometheus 指标、OTel traces 与系统背景的可复现实验平台 | [llm-observability/README.md](llm-observability/README.md) |
 | `llm/` | 大语言模型（Large Language Model）：环境、训练、评测三阶段，外加 PyTorch 与 NumPy/pandas 基础 | [llm/README.md](llm/README.md) |
+| `gpu-kernel/` | 单卡 GPU Roofline 标定、CUDA C++ / Triton 融合算子（Fused RMSNorm / Online Softmax）与 CUDA Graph / 单卡共享实验 | [gpu-kernel/README.md](gpu-kernel/README.md) |
+| `infer-engine/` | 从零实现的单机迷你推理引擎（mini-vLLM）：Static/Paged KV、Continuous Batching、Chunked Prefill、Prefix Cache 与投机解码 | [infer-engine/README.md](infer-engine/README.md) |
 | `reasoning-lab/` | Apple Silicon 上的 Qwen3、LoRA、SFT/GRPO、程序判题、实验恢复与成本评测 | [reasoning-lab/README.md](reasoning-lab/README.md) |
 | `hashmap/` | 哈希表策略、固定键 perfect hash 对照与离线性能报告 | [hashmap/README.md](hashmap/README.md) |
 | `cache/` | 缓存淘汰与准入：确定性轨迹、策略行为、参数对照和离线报告 | [cache/README.md](cache/README.md) |
@@ -58,4 +60,5 @@ cd labs/daft && ./env.sh
 cd labs/k8s-lab && go run ./cmd/demo   # mini Kubernetes 控制面
 cd labs/ivm && python3 -m unittest discover -s pyivm -p 'test_*.py'   # IVM join 用例
 make -C labs/lowlevel     # SIMD 基准、NASM 教程与 LLVM IR 实验（需 AVX2、NASM 2.x 与 LLVM 18）
+make -C labs/gpu-kernel test && make -C labs/gpu-kernel roofline   # RTX GPU 对拍测试与 Roofline 标定
 ```
