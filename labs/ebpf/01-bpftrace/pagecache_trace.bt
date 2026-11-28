@@ -1,0 +1,44 @@
+#!/usr/bin/env bpftrace
+/*
+ * Observe Page Cache misses (folio insertions) and block-layer read latency
+ * for the controlled workload `pagecache_bench`.
+ *
+ * Usage:
+ *   sudo bpftrace -q pagecache_trace.bt
+ */
+
+BEGIN {
+  printf("Tracing Page Cache misses & block I/O for comm='pagecache_bench'...\n");
+}
+
+tracepoint:filemap:mm_filemap_add_to_page_cache
+/comm == "pagecache_bench"/
+{
+  @page_cache_miss_folios = count();
+  @page_cache_miss_pages = sum(1 << args->order);
+  @folio_order_hist = lhist(args->order, 0, 10, 1);
+}
+
+tracepoint:block:block_rq_issue
+{
+  /* block_rq_complete runs in IRQ/softirq context, so track by (dev, sector). */
+  if (comm == "pagecache_bench") {
+    @rq_start[args->dev, args->sector] = nsecs;
+    @target_rq_bytes = hist(args->bytes);
+    @target_rq_count = count();
+    @target_rq_total_kb = sum(args->bytes / 1024);
+  }
+}
+
+tracepoint:block:block_rq_complete
+/@rq_start[args->dev, args->sector]/
+{
+  $lat_us = (nsecs - @rq_start[args->dev, args->sector]) / 1000;
+  @block_io_lat_us = hist($lat_us);
+  delete(@rq_start, (args->dev, args->sector));
+}
+
+END {
+  clear(@rq_start);
+  printf("\n=== Page Cache & Block I/O Summary ===\n");
+}

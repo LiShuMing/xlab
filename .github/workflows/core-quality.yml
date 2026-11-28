@@ -6,9 +6,13 @@ on:
       - 'labs/k8s-lab/**'
       - 'go/golab/**'
       - 'labs/ivm/**'
+      - 'labs/slatedb-oss/**'
+      - 'labs/lab-viewer/**'
       - 'labs/llm/bench/**'
       - 'python/pylab/**'
       - 'python/projects/py-toydb/**'
+      - 'tools/check_workspace_env.py'
+      - 'tools/test_workspace_env.py'
       - 'tools/cpp_smoke.cc'
       - '.gitmodules'
       - 'cc/thirdparty/googletest'
@@ -22,9 +26,13 @@ on:
       - 'labs/k8s-lab/**'
       - 'go/golab/**'
       - 'labs/ivm/**'
+      - 'labs/slatedb-oss/**'
+      - 'labs/lab-viewer/**'
       - 'labs/llm/bench/**'
       - 'python/pylab/**'
       - 'python/projects/py-toydb/**'
+      - 'tools/check_workspace_env.py'
+      - 'tools/test_workspace_env.py'
       - 'tools/cpp_smoke.cc'
       - '.gitmodules'
       - 'cc/thirdparty/googletest'
@@ -69,12 +77,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: [ivm, llm-benchmark, toydb, pylab-smoke]
+        project: [ivm, llm-benchmark, toydb, pylab-smoke, ruff-tools]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.13'
       - name: Test selected offline core
         env:
           PROJECT: ${{ matrix.project }}
@@ -103,7 +111,44 @@ jobs:
               cd python/pylab
               OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python -m pytest test/test_duckdb.py test/test_distributed_kmeans.py -q
               ;;
+            ruff-tools)
+              python -m pip install ruff
+              ruff check tools/check_workspace_env.py tools/test_workspace_env.py labs/slatedb-oss/compare/duckdb_oss_compare.py
+              ;;
           esac
+
+  slatedb-oss-rust:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: labs/slatedb-oss
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - name: Format, clippy, and offline InMemory tests
+        run: |
+          cargo fmt -- --check
+          cargo clippy --all-targets -- -D warnings
+          cargo test
+
+  lab-viewer-ts:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: labs/lab-viewer
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install TypeScript CLI tools
+        run: npm install -g typescript tsx
+      - name: Typecheck and unit tests
+        run: |
+          npm run typecheck
+          npm test
 
   ivm-rust:
     runs-on: ubuntu-latest

@@ -1,0 +1,63 @@
+#!/usr/bin/env bpftrace
+/*
+ * Experiment 1B: Decompose futex WAIT latency into two distinct stages:
+ *   Stage 1 (lock_wait_us): sys_enter_futex(WAIT) -> sched:sched_wakeup
+ *                           Time spent asleep waiting for the lock holder to unlock.
+ *   Stage 2 (runq_wait_us): sched:sched_wakeup    -> sched:sched_switch (next_pid)
+ *                           Time spent runnable on the CPU runqueue waiting to be scheduled.
+ *   Total   (total_us):     sys_enter_futex(WAIT) -> sys_exit_futex
+ */
+
+BEGIN
+{
+    printf("Tracing futex 2-stage contention latency for futex_bench...\n");
+}
+
+tracepoint:syscalls:sys_enter_futex
+/comm == "futex_bench"/
+{
+    // Mask off FUTEX_PRIVATE_FLAG (128) and FUTEX_CLOCK_REALTIME (256).
+    $cmd = args.op & 0x7f;
+    // FUTEX_WAIT (0) or FUTEX_WAIT_BITSET (9)
+    if ($cmd == 0 || $cmd == 9) {
+        @futex_enter[tid] = nsecs;
+    }
+}
+
+tracepoint:sched:sched_wakeup
+/@futex_enter[args.pid]/
+{
+    $now = nsecs;
+    $wait_us = ($now - @futex_enter[args.pid]) / 1000;
+    @stage1_lock_wait_us = hist($wait_us);
+    @stage1_sum_us = sum($wait_us);
+    @stage1_cnt = count();
+    @wakeup_ts[args.pid] = $now;
+}
+
+tracepoint:sched:sched_switch
+/@wakeup_ts[args.next_pid]/
+{
+    $runq_us = (nsecs - @wakeup_ts[args.next_pid]) / 1000;
+    @stage2_runq_wait_us = hist($runq_us);
+    @stage2_sum_us = sum($runq_us);
+    @stage2_cnt = count();
+    delete(@wakeup_ts[args.next_pid]);
+}
+
+tracepoint:syscalls:sys_exit_futex
+/@futex_enter[tid]/
+{
+    $total_us = (nsecs - @futex_enter[tid]) / 1000;
+    @total_futex_wait_us = hist($total_us);
+    @total_sum_us = sum($total_us);
+    @total_cnt = count();
+    delete(@futex_enter[tid]);
+    delete(@wakeup_ts[tid]);
+}
+
+END
+{
+    clear(@futex_enter);
+    clear(@wakeup_ts);
+}

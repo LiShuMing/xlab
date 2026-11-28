@@ -1,7 +1,7 @@
 ---
 created: 2026-03-27
 topics: [llm, rag, ai-systems]
-projects: [py-ego]
+projects: [lyra, puppis]
 review: 2026-03-30
 stage: active
 ---
@@ -167,7 +167,7 @@ test_cases = [
 
 ## My RAG Projects
 
-### py-ego (Planned)
+### Personal Knowledge Assistant (Lyra / Evidplane)
 Personal knowledge assistant using my knowledge base.
 
 **Features:**
@@ -199,8 +199,8 @@ Personal knowledge assistant using my knowledge base.
 - Prompt Engineering（计划笔记，尚未创建：`./prompt-engineering.md`）
 
 ### Projects
-- [py-ego](../../python/projects/py-ego/) - Personal RAG assistant
-- [py-radar](https://github.com/LiShuMing/lyra/tree/main/backend/radar) - Data source for RAG
+- [lyra/backend/ego](https://github.com/LiShuMing/lyra/tree/main/backend/ego) - Personal RAG assistant
+- [lyra/backend/radar](https://github.com/LiShuMing/lyra/tree/main/backend/radar) - Data source for RAG
 
 ### Readings
 - RAG Survey Paper（计划笔记，尚未创建：`../read/papers/rag-survey.md`）

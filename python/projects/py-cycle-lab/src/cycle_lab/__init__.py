@@ -1,1 +1,0 @@
-"""LongCycle research package placeholder."""

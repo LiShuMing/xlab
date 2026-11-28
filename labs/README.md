@@ -6,6 +6,8 @@
 | 主题 | 内容 | 入口 |
 | --- | --- | --- |
 | `linux/` | 内核机制的用户态镜像：延迟缺页 → 页表遍历 → TLB（Translation Lookaside Buffer）→ RCU（Read-Copy-Update）宽限期，以及 Rust kernel-lens 配置总览、实时观测与可选基准 | [linux/README.md](linux/README.md) |
+| `ebpf/` | Linux eBPF 实机实验台：bpftrace Page Cache 与 Futex 两段延迟拆解、Linux 7.0 `sched_ext` 调度器、libbpf CO-RE + RingBuffer 与 Verifier 拒绝画廊、TCP `netem` 观测与 XDP 拦截 | [ebpf/README.md](ebpf/README.md) |
+| `ebpf/` | Linux 7.0 eBPF 实验台：`bpftrace` Page Cache/Futex 观测、`sched_ext` 调度器、`libbpf + CO-RE + RingBuffer` 与 Verifier 拒绝案例集、TCP `netem` 与 XDP 数据面拦截 | [ebpf/README.md](ebpf/README.md) |
 | `mac-lens/` | macOS 推理性能观察：Apple GPU、CPU、内存压力与 swap、磁盘/网络、进程及可选 vLLM 指标 | [mac-lens/README.md](mac-lens/README.md) |
 | `llm-observability/` | LLM 请求链路、Prometheus 指标、OTel traces 与系统背景的可复现实验平台 | [llm-observability/README.md](llm-observability/README.md) |
 | `llm/` | 大语言模型（Large Language Model）：环境、训练、评测三阶段，外加 PyTorch 与 NumPy/pandas 基础 | [llm/README.md](llm/README.md) |
@@ -21,6 +23,8 @@
 | `runtime/` | 两种调度模型：单线程 reactor 与 work-stealing 线程池 | [runtime/README.md](runtime/README.md) |
 | `k8s-lab/` | 从零实现的 mini Kubernetes 控制面：MVCC 存储、apiserver、informer、workqueue、ReplicaSet 控制器、kubelet 模拟 | [k8s-lab/README.md](k8s-lab/README.md) |
 | `ivm/` | 增量视图维护（Incremental View Maintenance）：join 的增量公式与 DBSP（Database Stream Processing）代数结构原型 | [ivm/README.md](ivm/README.md) |
+| `slatedb-oss/` | 存算分离对象存储 LSM 验证：SlateDB 经 OpenDAL 直连阿里云 OSS（无 `s3s`）的 E2E、Foyer 缓存与 Group Commit 基准、薄 HTTP KV 服务及 DuckDB 同桶对比 | [slatedb-oss/README.md](slatedb-oss/README.md) |
+| `lab-viewer/` | 零依赖 TypeScript 实验报告聚合与离线 HTML/Markdown 可视化对比面板 | [lab-viewer/README.md](lab-viewer/README.md) |
 | `lowlevel/` | 贴硬件的优化：SIMD（Single Instruction Multiple Data，单指令多数据）的标量/SSE（Streaming SIMD Extensions）/AVX2（Advanced Vector Extensions 2）写法对照，NASM（Netwide Assembler）系统调用与 libc 链接教程，LLVM（Low Level Virtual Machine）IR（Intermediate Representation，中间表示）与自写优化 pass 插件 | [lowlevel/README.md](lowlevel/README.md) |
 
 ## 放什么
@@ -34,7 +38,7 @@
 
 `labs/` 收「以理解机制为目的」的实验：既可以是同一机制的多语言实现，也可以是单一语言的
 机制复现（如 `k8s-lab/` 复现 Kubernetes 控制面）。面向交付的完整应用
-（`python/projects/py-toydb`、`py-ego`、`py-stock` 等）留在语言目录：语言就是它们的组织维度。
+（如 `python/projects/py-toydb`、`strata-review`）留在语言目录：语言就是它们的组织维度。
 
 ## 内部约定
 
@@ -59,6 +63,7 @@ cd labs/llm/train && ./scripts/setup.sh
 cd labs/daft && ./env.sh
 cd labs/k8s-lab && go run ./cmd/demo   # mini Kubernetes 控制面
 cd labs/ivm && python3 -m unittest discover -s pyivm -p 'test_*.py'   # IVM join 用例
+cd labs/slatedb-oss && cargo test && cargo run -- --backend oss --bucket xlab-slatedb-dev   # SlateDB + OpenDAL OSS E2E
 make -C labs/lowlevel     # SIMD 基准、NASM 教程与 LLVM IR 实验（需 AVX2、NASM 2.x 与 LLVM 18）
 make -C labs/gpu-kernel test && make -C labs/gpu-kernel roofline   # RTX GPU 对拍测试与 Roofline 标定
 ```

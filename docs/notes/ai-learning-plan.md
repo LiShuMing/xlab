@@ -61,8 +61,8 @@ Query Engine工程师的系统能力（执行调度、资源管理、缓存优�
 - [AI & LLM Index](../README.md)
 
 ### Projects to Build
-- [py-ego](../../python/projects/py-ego/) - 个人知识助手
-- [py-radar](https://github.com/LiShuMing/lyra/tree/main/backend/radar) - 数据监控（可作为数据源）
+- [lyra/backend/ego](https://github.com/LiShuMing/lyra/tree/main/backend/ego) - 个人知识助手
+- [lyra/backend/radar](https://github.com/LiShuMing/lyra/tree/main/backend/radar) - 数据监控（可作为数据源）
 
 ### External Resources
 - RAG Survey（计划笔记，尚未创建：`../papers/rag-survey.md`） - 待读

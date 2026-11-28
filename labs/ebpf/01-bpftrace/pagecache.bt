@@ -1,0 +1,45 @@
+#!/usr/bin/env bpftrace
+/*
+ * Experiment 1A: Observe Page Cache insertions (misses / readahead) and
+ * block-layer I/O latency & request sizes while pagecache_bench runs.
+ *
+ * Note: Test file must reside on a block-backed filesystem (e.g. /var/tmp on
+ * ext4/xfs), NOT tmpfs, so drop_caches and block_rq_* actually fire.
+ */
+
+BEGIN
+{
+    printf("Tracing filemap page cache adds and block I/O for pagecache_bench...\n");
+}
+
+tracepoint:filemap:mm_filemap_add_to_page_cache
+/comm == "pagecache_bench"/
+{
+    @page_cache_adds = count();
+    @folio_order = lhist(args.order, 0, 8, 1);
+}
+
+tracepoint:block:block_rq_issue
+/comm == "pagecache_bench"/
+{
+    if (args.bytes > 0) {
+        @rq_start[args.dev, args.sector] = nsecs;
+        @rq_bytes_hist = hist(args.bytes);
+        @rq_issue_cnt = count();
+        @rq_total_bytes = sum((uint64)args.bytes);
+    }
+}
+
+tracepoint:block:block_rq_complete
+/@rq_start[args.dev, args.sector]/
+{
+    $lat_us = (nsecs - @rq_start[args.dev, args.sector]) / 1000;
+    @block_io_lat_us = hist($lat_us);
+    @block_io_cnt = count();
+    delete(@rq_start[args.dev, args.sector]);
+}
+
+END
+{
+    clear(@rq_start);
+}

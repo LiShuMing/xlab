@@ -1,0 +1,12 @@
+{
+  "name": "xlab-lab-viewer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Zero-dependency TypeScript benchmark report aggregator and static HTML/Markdown visualizer for xlab labs",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test tests/viewer.test.ts",
+    "demo": "tsx src/cli.ts --input fixtures --format markdown"
+  }
+}

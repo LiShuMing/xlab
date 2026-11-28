@@ -30,14 +30,16 @@ or removing a project, update its entry and routing in `PROJECTS.md`.
 ### Repository Information
 - **Origin**: https://github.com/LiShuMing/xlab
 - **Type**: Personal R&D laboratory / Code experiments collection
-- **Language Distribution**: C++ (primary), Python, Rust, Go, Java, OCaml, Lean 4, Shell
+- **Primary Engineering Languages**: **Python, Rust, Go, TypeScript**
+- **Language Policy**: Default to **Python, Rust, Go, or TypeScript** for all new engineering projects, services, tools, and mechanism labs. **C++ is NOT an engineering language here** — existing `cc/` modules are kept only as historical reference, algorithm practice, and low-level study; do not choose C++ for new engineering work unless explicitly requested.
+- **Other / Legacy Languages in Repo**: C++ (historical/study only), Java, OCaml, Lean 4, Shell
 - **Documentation**: Chinese (Markdown, Obsidian vault in `docs/`), Code comments: Mixed
 
 ## Project Structure
 
 ```
 xlab/
-├── cc/                   # C++ laboratory (main focus)
+├── cc/                   # Historical C++ lab & algorithm/low-level exercises (not an engineering language)
 │   ├── cclab/            # Core C++ lab with CMake build
 │   ├── algo/             # Algorithm implementations (LeetCode, etc.)
 │   ├── ccbench/          # Benchmarks
@@ -54,6 +56,7 @@ xlab/
 │   ├── lowlevel/         # SIMD vectorization, hand-written NASM assembly, LLVM IR and pass plugins
 │   ├── k8s-lab/          # Mini Kubernetes control plane from scratch (pure stdlib)
 │   ├── ivm/              # Incremental view maintenance and DBSP prototypes
+│   ├── slatedb-oss/      # SlateDB over Aliyun OSS via OpenDAL E2E verification
 │   └── daft/             # Daft columnar execution experiments
 ├── rust/                 # Rust laboratory
 │   ├── rlab/             # Workspace-based Rust lab
@@ -100,7 +103,7 @@ Rules for `labs/` (details in [labs/README.md](labs/README.md)):
   cross-topic sharing to `labs/libs/`. Cross-topic relative paths such as `../python/...`
   fail `tools/test_lab_isolation.py`.
 - A single-language application stays in its language tree (`python/projects/py-toydb`,
-  `py-ego`, …). `labs/` is not a second `python/projects/`. The deciding question is purpose:
+  `strata-review`, …). `labs/` is not a second `python/projects/`. The deciding question is purpose:
   reproducing a system's mechanism belongs in `labs/` even when one language suffices
   (`labs/k8s-lab/`).
 
@@ -162,8 +165,7 @@ instructions and build manifests before working there.
 - **Testing**: pytest
 - **Manifests**: none at the `python/` root; each project owns its own `requirements.txt` or `pyproject.toml`.
 - **Key Packages**: numpy, pandas, duckdb, matplotlib, faiss-cpu
-- **Projects**: py-cycle-lab, py-ego, py-lab,
-  py-stock, py-toydb
+- **Projects**: py-toydb, strata-review
 - **Incremental computation**: `labs/ivm/` — incremental view maintenance (IVM) join
   formulas and DBSP (differential dataflow) algebra prototypes, stdlib only
 
@@ -205,6 +207,41 @@ Haskell was owner-retired; do not restore its roots to satisfy historical links.
 - **Shell**: Bash/Zsh
 - **Tools**: bin/ utilities, Docker scripts, MySQL utilities
 - **Before running**: read each script — several act on the personal host (docker, mysql, fio).
+
+### TypeScript / Node.js
+- **Role**: One of the four primary engineering languages (alongside Python, Rust, Go)
+- **Runtime & Tools**: Node.js 24+, `typescript` (`tsc`), `tsx`, `pnpm` (managed under `$HOME/.ENVS/npm-global`)
+
+## Local Toolchain Environment (`~/.ENVS`)
+
+On local development hosts (macOS / Linux), non-secret toolchain installations and
+environment metadata are unified under `$HOME/.ENVS/` rather than scattered across
+shell profiles or mixed into credential files:
+
+- **Primary language stack provisioned**: **Python (`3.13.5` via `pyenv`/`uv` + unified Jupyter venv), Rust (`cargo`/`rustc`/`clippy`/`rustfmt`), Go (`1.26.2+` + `golangci-lint`), TypeScript (`node`/`tsc`/`tsx`/`pnpm`)**. C/C++ build tools (`clang`, `cmake`, `ninja`, `clang-format`) are kept only for native dependency builds and historical `cc/` labs, not for new engineering projects.
+- **Activation**: run `source "$HOME/.ENVS/env.sh"` (Bash/Zsh compatible; non-interactive
+  agent commands should source it when present before invoking `python3`, `pyenv`,
+  `jupyter`, `go`, `cargo`, `node`, `tsc`, `tsx`, `pnpm`, `duckdb`, `jq`, or `shellcheck`).
+- **Inventory**: read `$HOME/.ENVS/README.md` for the host's actual installed versions,
+  roots (`PYENV_ROOT`, `XLAB_VENV`, `GOROOT`, `GOPATH`, `NPM_CONFIG_PREFIX`, `CARGO_HOME`, `ENVS_ROOT/bin`),
+  and Jupyter kernel names (e.g. `xlab-py313`).
+- **Standard layout under `$HOME/.ENVS/`**:
+  - `env.sh` — unified `PATH` and toolchain root exports
+  - `README.md` — non-secret local toolchain manifest
+  - `pyenv/` (`~/.pyenv` symlink) + `python/` (`UV_PYTHON_INSTALL_DIR`) — Python 3.13.5 runtime
+  - `venv/` — unified Python 3.13.5 virtualenv (`jupyterlab`, `ipykernel`, `pytest`, `ruff`, `clang-format`, `numpy`, `pandas`, `duckdb`, `matplotlib`)
+  - `go/` & `gopath/` — Go toolchain (`1.26.2+`) and `GOBIN`
+  - `npm-global/` — TypeScript global CLI tools (`tsc`, `tsx`, `pnpm`)
+  - `bin/` — standalone prebuilt CLI tools (`golangci-lint`, `duckdb`, `jq`, `ninja`, `shellcheck`)
+- **Strict secret separation**: `$HOME/.ENVS/` holds **toolchains and non-secret metadata only**.
+  Runtime credentials and API keys remain exclusively in `$HOME/.env` (never copy secrets
+  into `$HOME/.ENVS/`, `AGENTS.md`, or Git commits).
+- **Cross-repository registry (`$HOME/.PROJECTS`)**: `$HOME/.PROJECTS` records every
+  repository under `$HOME/work/` along with its GitHub remote URL, primary stack, and
+  purpose so multiple agents can route tasks across repos immediately. Whenever a repo
+  is added, cloned, renamed, or removed under `$HOME/work/`, update `$HOME/.PROJECTS`
+  in the same workflow (keep it strictly non-secret).
+- **Isolated learning tools**: OCaml / Lean 4 continue to use `source tools/learning-env.sh`.
 
 ## Build Commands
 

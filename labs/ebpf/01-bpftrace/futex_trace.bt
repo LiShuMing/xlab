@@ -1,0 +1,57 @@
+#!/usr/bin/env bpftrace
+/*
+ * Dissect futex lock contention latency into two stages:
+ *   Stage 1 (lock_wait_us):   sys_enter_futex(WAIT) -> sched_wakeup
+ *                             Waiting for the current holder to release the lock.
+ *   Stage 2 (runq_wait_us):   sched_wakeup -> sched_switch (next_pid == tid)
+ *                             Waiting in the CPU runqueue after being woken.
+ *   Total   (futex_total_us): sys_enter_futex(WAIT) -> sys_exit_futex
+ *
+ * Usage:
+ *   sudo bpftrace -q futex_trace.bt
+ */
+
+BEGIN {
+  printf("Tracing futex two-stage latency for comm='futex_bench'...\n");
+}
+
+tracepoint:syscalls:sys_enter_futex
+/comm == "futex_bench"/
+{
+  /* Mask out FUTEX_PRIVATE_FLAG (128) and FUTEX_CLOCK_REALTIME (256). */
+  $cmd = args->op & 0x7f;
+  if ($cmd == 0 || $cmd == 9) {
+    @futex_enter[tid] = nsecs;
+    @futex_waits = count();
+  }
+}
+
+tracepoint:sched:sched_wakeup
+/@futex_enter[args->pid]/
+{
+  $now = nsecs;
+  @lock_wait_us = hist(($now - @futex_enter[args->pid]) / 1000);
+  @wakeup_ts[args->pid] = $now;
+}
+
+tracepoint:sched:sched_switch
+/@wakeup_ts[args->next_pid]/
+{
+  $now = nsecs;
+  @runq_wait_us = hist(($now - @wakeup_ts[args->next_pid]) / 1000);
+  delete(@wakeup_ts, args->next_pid);
+}
+
+tracepoint:syscalls:sys_exit_futex
+/@futex_enter[tid]/
+{
+  @futex_total_us = hist((nsecs - @futex_enter[tid]) / 1000);
+  delete(@futex_enter, tid);
+  delete(@wakeup_ts, tid);
+}
+
+END {
+  clear(@futex_enter);
+  clear(@wakeup_ts);
+  printf("\n=== Futex Two-Stage Latency Summary (us) ===\n");
+}

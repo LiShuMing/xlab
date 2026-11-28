@@ -1,0 +1,32 @@
+#!/usr/bin/env bpftrace
+/*
+ * Experiment 4A: Observe TCP SRTT, cwnd, and retransmissions per flow.
+ *
+ * Usage:
+ *   sudo bpftrace -q --no-warnings tcp_trace.bt <port>
+ * Example:
+ *   sudo bpftrace -q --no-warnings tcp_trace.bt 19999
+ */
+
+BEGIN
+{
+    printf("Tracing tcp:tcp_probe and tcp:tcp_retransmit_skb on port %d...\n", $1);
+}
+
+tracepoint:tcp:tcp_probe
+/args.sport == $1 || args.dport == $1/
+{
+    @probe_samples = count();
+    @srtt_us_hist = hist(args.srtt);
+    @cwnd_hist = hist(args.snd_cwnd);
+    @srtt_avg_us = avg(args.srtt);
+    @cwnd_min = min(args.snd_cwnd);
+    @cwnd_max = max(args.snd_cwnd);
+}
+
+tracepoint:tcp:tcp_retransmit_skb
+/args.sport == $1 || args.dport == $1/
+{
+    @retransmit_cnt = count();
+    @retransmit_by_port[args.sport, args.dport] = count();
+}

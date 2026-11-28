@@ -3,9 +3,11 @@
 `xlab` is a personal research and engineering laboratory for systems programming,
 database internals, algorithms, and AI-assisted development workflows.
 
-The repository is intentionally multi-language. C++ is the main systems lab, while
-Rust, Python, Java, Go, OCaml, Lean 4, Shell, and documentation projects capture focused
-experiments, prototypes, reading notes, and tools.
+The repository is intentionally multi-language. **Python, Rust, Go, and TypeScript**
+are the primary engineering languages for new experiments, services, and tools. Existing
+`cc/` modules remain as historical C++ references, algorithm practice, and low-level
+study (C++ is not used as an engineering language for new work), alongside Java, OCaml,
+Lean 4, Shell, and Markdown documentation.
 
 ## Documentation Entry Points
 
@@ -30,22 +32,22 @@ and identifies legacy directories without current source code.
 
 ```text
 xlab/
-|-- cc/                 C++ lab, algorithms, benchmarks, systems/database experiments
-|-- rust/               Rust lab, database experiments, async/concurrency projects
-|-- python/             Python lab, AI/data tooling, research prototypes
+|-- labs/               Topic-oriented mechanism labs (slatedb-oss, k8s-lab, ivm, linux, mac-lens, llm, infer-engine, ...)
+|-- rust/               Rust lab, async/concurrency and data-structure workspace (`rlab`)
+|-- python/             Python lab (`pylab`) and retained/historical prototypes (`projects/`)
+|-- go/                 Go lab: `golab` (LeetCode exercises)
+|-- cc/                 Historical C++ lab, algorithms, benchmarks and low-level study (not for new engineering)
 |-- java/               Java projects, Iceberg and interview/test labs
-|-- go/                 Go lab: golab (LeetCode exercises)
 |-- ocaml/              Functional programming, expression interpreter and constant folding
 |-- lean4/              Functional programming and machine-checked correctness proofs
-|-- llm/                GPU/ROCm environment setup notes and scripts
 |-- shell/              Shell utilities, Docker/MySQL/FIO helpers
-|-- tools/              Repository-level maintenance scripts
+|-- tools/              Repository maintenance and local environment/registry check scripts
 `-- docs/               Six sections: design/ systems/ playbooks/ notes/ contracts/ archive/
 ```
 
 ### Migrated Projects
 
-These thirteen source roots have moved to their own repositories. Continue development,
+These fifteen source roots have moved to their own repositories. Continue development,
 builds, and issue tracking in the current homes; the old paths are historical.
 
 | Former xlab path | Current home |
@@ -63,6 +65,8 @@ builds, and issue tracking in the current homes; the old paths are historical.
 | `python/projects/py-optimizer2/` | [vela/research/optimizer-scanner](https://github.com/LiShuMing/vela/tree/main/research/optimizer-scanner) |
 | `python/projects/py-pia/` | [carina/modules/product-intelligence](https://github.com/LiShuMing/carina/tree/main/modules/product-intelligence) |
 | `python/projects/py-report/` | [carina/modules/research-report](https://github.com/LiShuMing/carina/tree/main/modules/research-report) |
+| `python/projects/py-email/` | [lyra/modules/email-digest](https://github.com/LiShuMing/lyra/tree/main/modules/email-digest) |
+| `python/projects/py-learn/` | [lyra/modules/daily-learning](https://github.com/LiShuMing/lyra/tree/main/modules/daily-learning) |
 
 DayLog native UI acceptance was not run; the owner waived it as a source-retirement
 prerequisite.
@@ -80,6 +84,9 @@ their build systems; a scaffold is explicitly marked and has no build command.
 | OCaml Lab | [ocaml/](ocaml/) | OCaml, Dune | Language basics, expression interpreter and constant folding; [中文教程](ocaml/TUTORIAL.md). |
 | Lean 4 Lab | [lean4/](lean4/) | Lean 4, Lake | Structural induction and constant-folding correctness; [中文教程](lean4/TUTORIAL.md). |
 | K8s Lab | `labs/k8s-lab/` | Go (stdlib only) | Mini Kubernetes control plane: MVCC store, apiserver, informers, workqueue, ReplicaSet controller, kubelet sim. |
+| SlateDB-OSS | [labs/slatedb-oss/](labs/slatedb-oss/) | Rust, OpenDAL | E2E verification of SlateDB over Aliyun OSS (`PutMode::Create` CAS, writer fencing, stateless reader, checkpoints). |
+| mac-lens | [labs/mac-lens/](labs/mac-lens/) | Rust | Read-only macOS / Apple Silicon inference performance observability TUI. |
+| Infer Engine | [labs/infer-engine/](labs/infer-engine/) | Python | Mini-vLLM inference engine lab: Paged KV, continuous batching, prefix cache, speculative decoding. |
 | Go LeetCode | `go/golab/` | Go | Standalone LeetCode solutions, one `main` per file; built and run with `make leetcode_<id>`. |
 | Linux Lab | [labs/linux/](labs/linux/) | C, C++ | Page faults, page-table walk, TLB and RCU grace-period demos. |
 | LLM Lab | [labs/llm/](labs/llm/) | Python | Three stages: GPU environment, tiny-transformer training, quantified evaluation. |
@@ -96,6 +103,10 @@ cd xlab
 
 # Diagnose the checkout before selecting a module:
 bash tools/healthcheck.sh
+
+# On hosts using unified ~/.ENVS/ and ~/.PROJECTS:
+source "$HOME/.ENVS/env.sh"
+python3 tools/check_workspace_env.py
 ```
 
 Dependency status: `.gitmodules` contains exactly two pinned gitlinks
@@ -124,6 +135,11 @@ pytest
 cd labs/k8s-lab
 go run ./cmd/demo               # end-to-end: apply, self-heal, scale
 go test -race ./...             # -race is mandatory here
+
+# SlateDB over Aliyun OSS via OpenDAL (offline unit test + live OSS E2E)
+cd labs/slatedb-oss
+cargo test
+cargo run -- --backend oss --bucket xlab-slatedb-dev
 ```
 
 For migrated application and database commands, follow the current

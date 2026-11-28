@@ -76,22 +76,6 @@ class EntryPointTests(unittest.TestCase):
                                     capture_output=True, text=True, timeout=5)
             self.assertEqual(result.returncode, 7, result.stderr)
 
-    def test_deployment_missing_migrations_fails_before_docker(self):
-        source = ROOT / 'python/projects/py-ego/py-ego-miniapp/deploy/scripts/deploy.sh'
-        with tempfile.TemporaryDirectory() as temp:
-            root = Path(temp)
-            scripts = root / 'deploy/scripts'
-            scripts.mkdir(parents=True)
-            shutil.copy2(source, scripts / 'deploy.sh')
-            result = subprocess.run(['/bin/bash', str(scripts / 'deploy.sh')], cwd=root / 'deploy',
-                                    env={**os.environ, 'HOME': str(root)}, capture_output=True,
-                                    text=True, timeout=5)
-            self.assertEqual(result.returncode, 2)
-            self.assertIn('missing migration prerequisite alembic.ini', result.stdout)
-            self.assertIn('No deployment was attempted', result.stdout)
-            self.assertEqual(sorted(p.name for p in root.iterdir()), ['deploy'])
-        self.assertNotIn('alembic upgrade head ||', source.read_text())
-
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,0 +1,7 @@
+bin/
+common/vmlinux.h
+**/*.skel.h
+**/*.bpf.o
+**/*.o
+*.tmp
+*.log

@@ -9,7 +9,7 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 ## 使用方式
 
 本索引不将“目录存在”视为测试通过；每个项目的环境与最小验证命令写在该项目自己的 README 里。
-`pylab` 是语言/算法/数据库学习实验，`py-lab` 是 AI 应用实验；
+`pylab` 是语言/算法/数据库学习实验；
 `labs/llm/` 下 `env`、`train`、`bench` 分别负责环境、训练实验和评测。
 
 1. 已知项目名：搜索项目名或路径，例如 `query-engine`、`py-email`。
@@ -31,6 +31,8 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | LLM 训练与推理实验 | [labs/llm/train/](labs/llm/train/) |
 | Ray Task/Actor、资源调度、Ray Data、shuffle、对象生命周期 | [labs/raylab/](labs/raylab/) |
 | 缓存淘汰与准入、FIFO/LRU/LFU/SLRU/W-TinyLFU/ARC | [labs/cache/](labs/cache/) |
+| SlateDB、OpenDAL、阿里云 OSS、存算分离 LSM、Writer Fencing、Foyer 缓存 | [labs/slatedb-oss/](labs/slatedb-oss/)、[内核剖析](docs/systems/slatedb/slatedb-deep-dive.md) |
+| TypeScript 实验报告可视化、JSON 基准聚合对比面板 | [labs/lab-viewer/](labs/lab-viewer/) |
 | Qwen3 本机持续实验、LoRA、SFT、GRPO、凑数/迷宫/SQL 程序奖励 | [labs/reasoning-lab/](labs/reasoning-lab/) |
 | C++ 数据结构、并发、协程、COW、一致性哈希 | [cc/cclab/](cc/cclab/) |
 | LeetCode、LCR、面试题、基础算法 | [cc/algo/](cc/algo/)、[rust/rlab/tools/leetcode/](rust/rlab/tools/leetcode/)、[python/pylab/](python/pylab/) |
@@ -48,20 +50,22 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | 增量计算、IVM、DBSP、差分数据流 | [labs/ivm/](labs/ivm/)（含 [dbsp/](labs/ivm/dbsp/)），第三方见 `rust/thirdparty/` |
 | Linux io_uring、异步 I/O、Reactor | [labs/async-io/uring/](labs/async-io/uring/)、[labs/runtime/reactor/](labs/runtime/reactor/)、[labs/async-io/server/](labs/async-io/server/) |
 | 缺页、页表遍历、TLB、RCU 宽限期与 stall | [labs/linux/](labs/linux/)、[rcu 笔记](labs/linux/rcu/README.md) |
+| eBPF、bpftrace、sched_ext 调度器、libbpf CO-RE、RingBuffer、BPF Verifier、XDP | [labs/ebpf/](labs/ebpf/)、[深度原理与讲稿](labs/ebpf/DEEP_DIVE.md)、[实测结果](labs/ebpf/RESULTS.md) |
+| eBPF、bpftrace、sched_ext、libbpf CO-RE、RingBuffer、Verifier、XDP | [labs/ebpf/](labs/ebpf/)、[实测结果](labs/ebpf/RESULTS.md) |
 | SIMD、AVX2、汇编、系统调用、栈与 libc 链接 | [labs/lowlevel/](labs/lowlevel/) |
 | LLVM IR、opt pass、优化器、SSA | [labs/lowlevel/llvm/](labs/lowlevel/llvm/)（含手写 IR、自写 new PM 插件与逐 pass diff） |
 | Python C API、Cython、嵌入式 Python | [cc/projects/cpython/](cc/projects/cpython/) |
 | Iceberg、Java/JVM、Spark、Scala、Groovy | [java/xlab-iceberg/](java/xlab-iceberg/)、[java/xlab-itest/](java/xlab-itest/) |
 | LLM 数学/代码评测、Strata benchmark | [labs/llm/bench/](labs/llm/bench/) |
 | Strata 只读代码审查 | [python/projects/strata-review/](python/projects/strata-review/) |
-| AI 沙盒、Streamlit、LangChain | [python/projects/py-lab/](python/projects/py-lab/) |
+| AI 沙盒、Agent 工作台 | [orion](https://github.com/LiShuMing/orion)、[lyra](https://github.com/LiShuMing/lyra) |
 | 邮件、newsletter、Gmail 摘要 | [Lyra email-digest](https://github.com/LiShuMing/lyra/tree/main/modules/email-digest) |
 | 产品 release notes、数据库产品情报 | [carina/modules/product-intelligence](https://github.com/LiShuMing/carina/tree/main/modules/product-intelligence) |
 | 技术信号、X/Reddit、OpenCLI、日报 | [carina/modules/tech-radar/](https://github.com/LiShuMing/carina/tree/main/modules/tech-radar/) |
 | LLM 深度研究报告 | [carina/modules/research-report](https://github.com/LiShuMing/carina/tree/main/modules/research-report) |
-| Git 变更分析、仓库收集 | [lyra/modules/developer-tools](https://github.com/LiShuMing/lyra/tree/main/modules/developer-tools)、[lyra/modules/developer-tools](https://github.com/LiShuMing/lyra/tree/main/modules/developer-tools) |
-| 投资、周期、股票 | [python/projects/py-cycle-lab/](python/projects/py-cycle-lab/)、[python/projects/py-stock/](python/projects/py-stock/)、[lyra/backend/invest/](https://github.com/LiShuMing/lyra/tree/main/backend/invest/) |
-| 心理陪护、对话记忆、微信 | [python/projects/py-ego/](python/projects/py-ego/)、[lyra/backend/ego/](https://github.com/LiShuMing/lyra/tree/main/backend/ego/)、[lyra/backend/wechat/](https://github.com/LiShuMing/lyra/tree/main/backend/wechat/) |
+| Git 变更分析、仓库收集 | [lyra/modules/developer-tools](https://github.com/LiShuMing/lyra/tree/main/modules/developer-tools) |
+| 投资、周期、股票 | [invest-lab](https://github.com/LiShuMing/invest-lab)、[lyra/backend/invest/](https://github.com/LiShuMing/lyra/tree/main/backend/invest/) |
+| 心理陪护、对话记忆、微信 | [lyra/backend/ego/](https://github.com/LiShuMing/lyra/tree/main/backend/ego/)、[lyra/backend/wechat/](https://github.com/LiShuMing/lyra/tree/main/backend/wechat/) |
 | 个人知识工作台、采集、日报、博客与文库 | [carina](https://github.com/LiShuMing/carina/tree/main) |
 | 统一个人工作台、技术雷达、投资与对话 | [lyra/](https://github.com/LiShuMing/lyra/tree/main/) |
 | 个人上下文、llm-wiki、Go API | [lyra/llm-wiki/](https://github.com/LiShuMing/lyra/tree/main/llm-wiki/) |
@@ -80,6 +84,8 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | 项目目录 | 用途 | 入口 |
 | --- | --- | --- |
 | [labs/linux/](labs/linux/) | 内核机制的用户态镜像：缺页/RSS、页表遍历、TLB 微基准，以及 pthread 模拟 RCU 宽限期（自报 QS、强制 QS、stall 检测；对应 Linux 7.0.0 `kernel/rcu/tree.c`） | [README](labs/linux/README.md)、[Makefile](labs/linux/Makefile)、[rcu 笔记](labs/linux/rcu/README.md) |
+| [labs/ebpf/](labs/ebpf/) | Linux eBPF 实机实验台：bpftrace Page Cache / Futex 两段延迟、Linux 7.0 `sched_ext` 双 DSQ 调度器、libbpf CO-RE + RingBuffer + Verifier 画廊、TCP `netem` 与 XDP 拦截 | [README](labs/ebpf/README.md)、[DEEP_DIVE](labs/ebpf/DEEP_DIVE.md)、[RESULTS](labs/ebpf/RESULTS.md)、[Makefile](labs/ebpf/Makefile) |
+| [labs/ebpf/](labs/ebpf/) | Linux 7.0 eBPF 实验台：`bpftrace` Page Cache/Futex 观测、`sched_ext` 双 DSQ 调度器、`libbpf + CO-RE + RingBuffer` 与 Verifier 画廊、TCP `netem` 与 XDP 拦截 | [README](labs/ebpf/README.md)、[Makefile](labs/ebpf/Makefile)、[RESULTS](labs/ebpf/RESULTS.md) |
 | [labs/linux/kernel-lens/](labs/linux/kernel-lens/) | Rust 系统配置总览、容器资源观测、可选 CPU/内存/线程/TCP 回环/文件基准 | [README](labs/linux/kernel-lens/README.md)、[Cargo.toml](labs/linux/kernel-lens/Cargo.toml) |
 | [labs/mac-lens/](labs/mac-lens/) | Rust macOS 推理性能 TUI：整机 Apple GPU/CPU/内存压力、swap、磁盘/网络、候选进程及可选回环 vLLM Prometheus | [README](labs/mac-lens/README.md)、[Cargo.toml](labs/mac-lens/Cargo.toml) |
 | [labs/llm-observability/](labs/llm-observability/) | 本地 LLM 可观测性平台：原生 Prometheus/Jaeger、系统 exporter、流式 traces 与生命周期脚本 | [README](labs/llm-observability/README.md)、[pyproject.toml](labs/llm-observability/pyproject.toml) |
@@ -92,6 +98,8 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 | [labs/cache/](labs/cache/) | 六种缓存策略的确定性轨迹重放、行为观测和离线报告 | [README](labs/cache/README.md)、[Makefile](labs/cache/Makefile)、[CMakeLists](labs/cache/CMakeLists.txt) |
 | [labs/k8s-lab/](labs/k8s-lab/) | 纯标准库 mini Kubernetes 控制面（Go 1.26.2）：MVCC store、apiserver、informer、workqueue、ReplicaSet controller、kubelet 模拟 | [README](labs/k8s-lab/README.md)、[go.mod](labs/k8s-lab/go.mod)、[AGENTS](labs/k8s-lab/AGENTS.md) |
 | [labs/ivm/](labs/ivm/) | 增量视图维护（Incremental View Maintenance）与 DBSP 代数结构原型：join 增量公式、ZSet/Stream | [README](labs/ivm/README.md)、[Python join](labs/ivm/pyivm/ivm.py)、[Rust](labs/ivm/rust/README.md)、[dbsp](labs/ivm/dbsp/dbsp.py) |
+| [labs/slatedb-oss/](labs/slatedb-oss/) | SlateDB + OpenDAL 阿里云 OSS 存算分离 E2E、Foyer 缓存/Group Commit 基准、薄 HTTP KV 服务与 DuckDB 同桶对比 | [README](labs/slatedb-oss/README.md)、[Cargo.toml](labs/slatedb-oss/Cargo.toml) |
+| [labs/lab-viewer/](labs/lab-viewer/) | 零依赖 TypeScript 实验报告聚合器与离线 HTML/Markdown 对比面板 | [README](labs/lab-viewer/README.md)、[package.json](labs/lab-viewer/package.json) |
 | [labs/hashmap/](labs/hashmap/) | 哈希表策略、固定键 perfect hash 对照与离线性能报告 | [README](labs/hashmap/README.md)、[CMakeLists](labs/hashmap/CMakeLists.txt) |
 | [labs/lowlevel/](labs/lowlevel/) | 贴硬件的优化三件套：SIMD 的标量/SSE（Streaming SIMD Extensions）/AVX2（Advanced Vector Extensions 2）写法对照、NASM（Netwide Assembler）系统调用与 libc 链接教程、LLVM（Low Level Virtual Machine）18 的 IR（Intermediate Representation）四层实验 | [README](labs/lowlevel/README.md)、[Makefile](labs/lowlevel/Makefile)、[llvm](labs/lowlevel/llvm/README.md) |
 
@@ -155,19 +163,13 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 
 | 项目目录 | 用途 | 入口 |
 | --- | --- | --- |
-| [python/pylab/](python/pylab/) | 核心 Python 实验室、算法、数据库及 benchmark 工具 | [README](python/pylab/README.md)、[AGENTS](python/pylab/AGENTS.md) |
-| [python/projects/py-cycle-lab/](python/projects/py-cycle-lab/) | LongCycle 长周期投资研究工作台 | [README](python/projects/py-cycle-lab/README.md)、[pyproject.toml](python/projects/py-cycle-lab/pyproject.toml) |
-| [python/projects/py-ego/](python/projects/py-ego/) | 对话陪护与记忆；README 同时保留 StarRocks 监控背景 | [README](python/projects/py-ego/README.md)、[main.py](python/projects/py-ego/main.py) |
-| [python/projects/py-ego/miniprogram/](python/projects/py-ego/miniprogram/) | 微信小程序前端 | [README](python/projects/py-ego/miniprogram/README.md)、[package.json](python/projects/py-ego/miniprogram/package.json) |
-| [python/projects/py-ego/py-ego-miniapp/](python/projects/py-ego/py-ego-miniapp/) | miniapp 服务与部署辅助项目 | [部署说明](python/projects/py-ego/py-ego-miniapp/deploy/README.md) |
+| [python/pylab/](python/pylab/) | 核心 Python 实验室、算法、数据库及 benchmark 工具（**活跃**） | [README](python/pylab/README.md)、[AGENTS](python/pylab/AGENTS.md) |
+| [python/projects/py-toydb/](python/projects/py-toydb/) | ToyDB 文档数据库（**活跃**，CI 覆盖） | [README](python/projects/py-toydb/README.md)、[pyproject.toml](python/projects/py-toydb/pyproject.toml) |
+| [python/projects/strata-review/](python/projects/strata-review/) | 本地 Strata 只读 Git diff/代码审查工具（**活跃**） | [README](python/projects/strata-review/README.md)、[strata_review.py](python/projects/strata-review/strata_review.py) |
 | [Lyra email-digest](https://github.com/LiShuMing/lyra/tree/main/modules/email-digest) | Gmail/newsletter 邮件摘要；安装后命令 `my-email` | [README](https://github.com/LiShuMing/lyra/blob/main/modules/email-digest/README.md)、[pyproject.toml](https://github.com/LiShuMing/lyra/blob/main/modules/email-digest/pyproject.toml) |
-| [python/projects/py-lab/](python/projects/py-lab/) | Streamlit/LangChain AI 实验平台 | [README](python/projects/py-lab/README.md)、[app.py](python/projects/py-lab/app.py) |
 | [Lyra daily-learning](https://github.com/LiShuMing/lyra/tree/main/modules/daily-learning) | Telegram/SQLite 每日学习 Agent | [README](https://github.com/LiShuMing/lyra/blob/main/modules/daily-learning/README.md)、[源码](https://github.com/LiShuMing/lyra/tree/main/modules/daily-learning/src/) |
 | [labs/llm/numpy-pandas/](labs/llm/numpy-pandas/) | NumPy/pandas Jupyter 学习空间 | [README](labs/llm/numpy-pandas/README.md)、[notebooks](labs/llm/numpy-pandas/notebooks/) |
-| [python/projects/py-stock/](python/projects/py-stock/) | 股票历史价格采集、SQLite 存储与 Web/CLI 查询 | [README](python/projects/py-stock/README.md)、[cli.py](python/projects/py-stock/cli.py) |
 | [labs/llm/torch/](labs/llm/torch/) | PyTorch 学习、micrograd、自动求导 | [README](labs/llm/torch/README.md)、[micrograd](labs/llm/torch/micrograd/) |
-| [python/projects/py-toydb/](python/projects/py-toydb/) | ToyDB 文档数据库 | [README](python/projects/py-toydb/README.md)、[pyproject.toml](python/projects/py-toydb/pyproject.toml) |
-| [python/projects/strata-review/](python/projects/strata-review/) | 本地 Strata 只读 Git diff/代码审查 | [README](python/projects/strata-review/README.md)、[strata_review.py](python/projects/strata-review/strata_review.py) |
 | [carina/modules/tech-radar/](https://github.com/LiShuMing/carina/tree/main/modules/tech-radar/) | 技术信号采集、SQLite、日报；命令 `tech-radar` | [README](https://github.com/LiShuMing/carina/blob/main/modules/tech-radar/README.md)、[pyproject.toml](https://github.com/LiShuMing/carina/blob/main/modules/tech-radar/pyproject.toml) |
 | [python/tools/](python/tools/) | StarRocks 分区/锁日志分析及 Hacker News 示例脚本 | [目录](python/tools/) |
 | [vela/optimizer/](https://github.com/LiShuMing/vela/tree/main/optimizer/) | Vela Python 模块；Volcano/Cascades 对照与 join reorder | [README](https://github.com/LiShuMing/vela/blob/main/optimizer/README.md)、[核心代码](https://github.com/LiShuMing/vela/tree/main/optimizer/optimizer/) |
@@ -177,7 +179,7 @@ Windows 原生支持范围以 [WINDOWS.md](WINDOWS.md) 为准。
 
 | 当前目录 | 扫描结果与路由建议 |
 | --- | --- |
-| `python/projects/py-invest/`（历史路径，当前不存在） | 未发现项目源码或构建清单；投资功能优先查 [lyra/backend/invest/](https://github.com/LiShuMing/lyra/tree/main/backend/invest/) 和 `py-cycle-lab` |
+| `python/projects/py-invest/`（历史路径，当前不存在） | 未发现项目源码或构建清单；投资功能优先查 [invest-lab](https://github.com/LiShuMing/invest-lab) 与 [lyra/backend/invest/](https://github.com/LiShuMing/lyra/tree/main/backend/invest/) |
 | `python/projects/py-paper/`（历史路径，当前不存在） | `paper-agent/` 下未发现项目源码或构建清单；该历史路径不作为当前维护入口 |
 | `python/projects/py-radar/`（历史路径，当前不存在） | 不恢复历史输出数据；当前雷达功能见 [lyra/backend/radar/](https://github.com/LiShuMing/lyra/tree/main/backend/radar/) |
 | `python/projects/py-scrapy/`（历史路径，当前不存在） | `blog_crawler/` 下未发现项目源码或构建清单 |
@@ -235,7 +237,6 @@ Haskell 的四个旧项目及语言指南已按所有者要求移除，不再作
 | [lyra/backend/radar/](https://github.com/LiShuMing/lyra/tree/main/backend/radar/) | 技术雷达业务模块 | [cli.py](https://github.com/LiShuMing/lyra/blob/main/backend/radar/cli.py) |
 | [lyra/backend/wechat/](https://github.com/LiShuMing/lyra/tree/main/backend/wechat/) | 微信集成业务模块 | [目录](https://github.com/LiShuMing/lyra/tree/main/backend/wechat/) |
 | [lyra/llm-wiki/](https://github.com/LiShuMing/lyra/tree/main/llm-wiki/) | Go 个人上下文维护子项目 | [README](https://github.com/LiShuMing/lyra/blob/main/llm-wiki/README.md) |
-| [python/projects/py-ego/miniprogram/](python/projects/py-ego/miniprogram/) | 微信小程序前端 | [package.json](python/projects/py-ego/miniprogram/package.json) |
 
 ## Shell、GPU 与仓库辅助入口
 
@@ -245,7 +246,7 @@ Haskell 的四个旧项目及语言指南已按所有者要求移除，不再作
 | [shell/docker/](shell/docker/) | Docker 与 Folly 构建脚本 | [Dockerfile](shell/docker/Dockerfile)、[build_folly.sh](shell/docker/build_folly.sh) |
 | [shell/fio/](shell/fio/) | fio I/O 测试配置 | [1.fio](shell/fio/1.fio)、[build.sh](shell/fio/build.sh) |
 | [shell/mysql/](shell/mysql/) | MySQL 并发、TPCH benchmark 脚本 | [目录](shell/mysql/) |
-| [tools/](tools/) | 仓库级工具 | [build-windows.ps1](tools/build-windows.ps1)、[healthcheck.sh](tools/healthcheck.sh) |
+| [tools/](tools/) | 仓库级工具与本机环境/多仓校验 | [build-windows.ps1](tools/build-windows.ps1)、[healthcheck.sh](tools/healthcheck.sh)、[check_workspace_env.py](tools/check_workspace_env.py) |
 | [cmake/](cmake/) | 共享 CMake 依赖与编译选项 | [XlabDependencies.cmake](cmake/XlabDependencies.cmake) |
 | [docs/](docs/) | 系统设计、系统剖析、方法与归档 | [文档导航](docs/README.md)、[Cygnus books](https://github.com/LiShuMing/cygnus/tree/main/books)、[systems](docs/systems/)、[playbooks](docs/playbooks/) |
 

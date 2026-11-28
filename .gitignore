@@ -285,18 +285,6 @@ pnpm-debug.log*
 /python/pylab/tools/articles/
 /labs/llm/bench/results/*
 !/labs/llm/bench/results/.gitkeep
-/python/projects/py-cycle-lab/**/data/
-/python/projects/py-cycle-lab/**/*.duckdb
-/python/projects/py-cycle-lab/**/*.db
-/python/projects/py-cycle-lab/**/*.sqlite
-/python/projects/py-cycle-lab/**/*.parquet
-/python/projects/py-cycle-lab/**/*.csv
-/python/projects/py-ego/**/chat_logs/
-/python/projects/py-ego/data/*.json
-/python/projects/py-ego/data/*.pkl
-/python/projects/py-ego/miniprogram/preview-*.png
-# Runtime SQLite database (created by app/config.py on first run)
-/python/projects/py-ego/py-ego-miniapp/pyego_local.db
 /python/projects/py-email/**/credentials/
 /python/projects/py-email/**/data/
 /python/projects/py-email/**/.worktrees/

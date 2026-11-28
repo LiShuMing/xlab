@@ -17,7 +17,7 @@
 | [iceberg](iceberg/) | 1 | [maxcompute](maxcompute/) | 1 | [oracle](oracle/) | 2 |
 | [postgres](postgres/) | 1 | [risingwave](risingwave/) | 1 | [snowflake](snowflake/) | 1 |
 | [spark](spark/) | 1 | [starrocks](starrocks/) | 2 | [tidb](tidb/) | 1 |
-| [trino](trino/) | 2 | [velox](velox/) | 1 |  |  |
+| [trino](trino/) | 2 | [velox](velox/) | 1 | [slatedb](slatedb/) | 1 |
 
 ## 文件命名
 
